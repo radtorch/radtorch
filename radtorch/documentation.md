@@ -31,19 +31,19 @@ pip3 uninstall radtorch
 ## RadTorch Sub-Modules
 RadTorch includes 5 sub-modules, each specialized in part of the machine learning pipeline:
 
-### **radtorch.vis**
+### **radtorch.visutils**
 Contains functions/classes related to data visualization.
 
-### **radtorch.data**
+### **radtorch.datautils**
 Contains functions/classes related to data import and preprocessing.
 
-### **radtorch.dicom**
+### **radtorch.dicomutils**
 Contains functions/classes related to handling DICOM image objects.
 
-### **radtorch.models**
+### **radtorch.modelsutils**
 Contains functions/classes related to creating and training machine learning models
 
-### **radtorch.general**
+### **radtorch.generalutils**
 Contains general purpose functions that do not belong to any sub-module
 
 

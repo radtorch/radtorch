@@ -117,7 +117,22 @@ def dicom_to_narray(filepath, mode=&#39;RAW&#39;, wl=None):
             img1 = window_dicom(filepath, wl[1][0], wl[1][1]).astype(&#39;int16&#39;)
             img2 = window_dicom(filepath, wl[2][0], wl[2][1]).astype(&#39;int16&#39;)
             mwin_img = np.stack((img0,img1,img2), axis=-1)
-            return mwin_img</code></pre>
+            return mwin_img
+
+def dicom_to_pil(filepath):
+  &#39;&#39;&#39;
+    Converts DICOM image to PIL image object.
+    Inputs:
+        filepath: [str] path to target DICOM file.
+    Outputs:
+        Output: [pil image object]
+
+    .. image:: pass.jpg
+  &#39;&#39;&#39;
+  ds = pydicom.read_file(filepath)
+  pixels = ds.pixel_array
+  pil_image = Image.fromarray(np.rollaxis(pixels, 0,1))
+  return pil_image</code></pre>
 </details>
 </section>
 <section>
@@ -206,6 +221,42 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
             return mwin_img</code></pre>
 </details>
 </dd>
+<dt id="radtorch.dicomutils.dicom_to_pil"><code class="name flex">
+<span>def <span class="ident">dicom_to_pil</span></span>(<span>filepath)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Converts DICOM image to PIL image object.</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>filepath</code></strong></dt>
+<dd>[str] path to target DICOM file.</dd>
+</dl>
+<h2 id="outputs">Outputs</h2>
+<dl>
+<dt><strong><code>Output</code></strong></dt>
+<dd>[pil image object]</dd>
+</dl>
+<p><img alt="" src="pass.jpg"></p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dicom_to_pil(filepath):
+  &#39;&#39;&#39;
+    Converts DICOM image to PIL image object.
+    Inputs:
+        filepath: [str] path to target DICOM file.
+    Outputs:
+        Output: [pil image object]
+
+    .. image:: pass.jpg
+  &#39;&#39;&#39;
+  ds = pydicom.read_file(filepath)
+  pixels = ds.pixel_array
+  pil_image = Image.fromarray(np.rollaxis(pixels, 0,1))
+  return pil_image</code></pre>
+</details>
+</dd>
 <dt id="radtorch.dicomutils.window_dicom"><code class="name flex">
 <span>def <span class="ident">window_dicom</span></span>(<span>filepath, level, width)</span>
 </code></dt>
@@ -278,6 +329,7 @@ Converts DICOM image to numpy array with certain width and level</p>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="radtorch.dicomutils.dicom_to_narray" href="#radtorch.dicomutils.dicom_to_narray">dicom_to_narray</a></code></li>
+<li><code><a title="radtorch.dicomutils.dicom_to_pil" href="#radtorch.dicomutils.dicom_to_pil">dicom_to_pil</a></code></li>
 <li><code><a title="radtorch.dicomutils.window_dicom" href="#radtorch.dicomutils.window_dicom">window_dicom</a></code></li>
 </ul>
 </li>

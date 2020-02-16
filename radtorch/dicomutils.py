@@ -92,3 +92,18 @@ def dicom_to_narray(filepath, mode='RAW', wl=None):
             img2 = window_dicom(filepath, wl[2][0], wl[2][1]).astype('int16')
             mwin_img = np.stack((img0,img1,img2), axis=-1)
             return mwin_img
+
+def dicom_to_pil(filepath):
+  '''
+    Converts DICOM image to PIL image object.
+    Inputs:
+        filepath: [str] path to target DICOM file.
+    Outputs:
+        Output: [pil image object]
+
+    .. image:: pass.jpg
+  '''
+  ds = pydicom.read_file(filepath)
+  pixels = ds.pixel_array
+  pil_image = Image.fromarray(np.rollaxis(pixels, 0,1))
+  return pil_image

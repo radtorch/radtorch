@@ -22,6 +22,36 @@ from radtorch.visutils import show_dataset_info
 
 
 
+def list_of_files(root):
+    """
+      Create a list of file paths from a root folder and its sub directories.
+      Inputs:
+        root: [str] path of target folder.
+
+      Outputs:
+        [list] list of file paths.
+
+      Examples:
+        This examples assumes a root directory with subdirectories (folder1 and folder2) which contain images correpsonding to each class.
+        ```
+        root_path = 'root/'
+        list_of_files(root_path)
+        ['root/folder1/0000.dcm', 'root/folder1/0001.dcm', 'root/folder2/0000.dcm', ...]
+
+        ```
+
+    """
+
+    listOfFile = os.listdir(root)
+    allFiles = list()
+    for entry in listOfFile:
+        fullPath = os.path.join(root, entry)
+        if os.path.isdir(fullPath):
+            allFiles = allFiles + getListOfFiles(fullPath)
+        else:
+            allFiles.append(fullPath)
+    return allFiles
+
 def path_to_class(filepath):
     """
     Creates a class name from the immediate parent folder of a target file
@@ -93,16 +123,15 @@ def class_to_idx(classes):
 
 class dataset_from_table(Dataset):
     """
-    Creates a dataset from directory with labels from table which can be either a excel sheet or pandas dataframe.
-    Default values for columns are: "IMAGE_PATH", "IMAGE_LABEL". These can be changed as needed.
+    Creates a dataset using labels and filepaths from a table which can be either a excel sheet or pandas dataframe.
     Inputs:
         data_directory: [str] target data directory.
         is_csv: [boolean] True for csv, False for pandas dataframe. (default=True)
         is_dicom: [boolean] True for DICOM images, False for regular images.(default=True)
         input_source: [str or pandas dataframe object] source for labelling data.
                       This is path to csv file or name of pandas dataframe if pandas to be used.
-        img_path_column: [list] name of the image path column in data input
-        img_label_column: [str] name of label column in the data input
+        img_path_column: [list] name of the image path column in data input. (default = "IMAGE_PATH")
+        img_label_column: [str] name of label column in the data input (default = "IMAGE_LABEL")
         mode: [str] output mode for DICOM images only.
                     options: RAW= Raw pixels,
                     HU= Image converted to Hounsefield Units,
@@ -188,3 +217,88 @@ class dataset_from_table(Dataset):
 
     def info(self):
         return show_dataset_info(self)
+
+class dataset_from_folder(Dataset):
+    """
+    Creates a dataset from a root directory using subdirectories as classes/labels.
+    Inputs:
+        data_directory: [str] target data root directory.
+        is_dicom: [boolean] True for DICOM images, False for regular images.(default=True)
+        mode: [str] output mode for DICOM images only.
+                    options: RAW= Raw pixels,
+                    HU= Image converted to Hounsefield Units,
+                    WIN= 'window' image windowed to certain W and L,
+                    MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].
+        wl: [list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
+                    In the form of : [[Level,Width], [Level,Width],...].
+                    Only 3 combinations are allowed for MWIN (for now).
+        transforms: [pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+
+    Outputs:
+        output: [pytorch dataset object]
+
+
+    """
+
+    def __init__(self,
+                data_directory,
+                is_dicom=True,
+                input_source=None,
+                mode='RAW',
+                wl=None, trans=transforms.Compose([transforms.ToTensor()])):
+
+        self.data_directory = data_directory
+        self.is_dicom = is_dicom
+        self.mode = mode
+        self.wl = wl
+        self.trans = trans
+        self.classes, self.class_to_idx = root_to_class(self.data_directory)
+        self.all_files = list_of_files(self.data_directory)
+
+        if self.is_dicom:
+            self.dataset_files = [x for x in self.all_files if x[-3:] == 'dcm'] # Returns only DICOM files from folder
+        else:
+            self.dataset_files = [x for x in self.all_files]
+
+
+        if len(self.dataset_files)==0:
+            print ('Error! No data files found in directory:', self.data_directory)
+
+        if len(self.classes)==0:
+            print ('Error! No classes extracted from directory:', self.data_directory)
+
+    def __getitem__(self, index):
+        image_path = self.dataset_files[index]
+        if self.is_dicom:
+            image = dicom_to_narray(image_path, self.mode, self.wl)
+
+        else:
+            image = Image.open(img_path).convert('RGB')
+
+        image = self.trans(image)
+
+        label = path_to_class(image_path)
+        label_idx = [v for k, v in self.class_to_idx.items() if k == label][0]
+
+        return image, label_idx
+
+    def __len__(self):
+        return len(self.dataset_files)
+
+    def classes(self):
+        return self.classes
+
+    def class_to_idx(self):
+        return self.class_to_idx
+
+    def info(self):
+        return show_dataset_info(self)
+
+
+
+
+
+
+
+
+##
