@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
-<title>radtorch.dicom API documentation</title>
+<title>radtorch.dicomutils API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>radtorch.dicom</code></h1>
+<h1 class="title">Module <code>radtorch.dicomutils</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -40,27 +40,36 @@ from tqdm import tqdm_notebook as tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
+from pathlib import Path
 
 
 
 def window_dicom(filepath, level, width):
     &#34;&#34;&#34;
+    :white_check_mark:
     Converts DICOM image to numpy array with certain width and level
     Inputs:
         filepath: [str] input DICOM image path.
         level: [int] requested window level.
         width: [int] requested window width.
     Outputs:
-        [array] windowed image numpy array
+        output: [array] windowed image numpy array.
+
+    .. image:: pass.jpg
     &#34;&#34;&#34;
+
     ds = pydicom.read_file(filepath)
     pixels = ds.pixel_array
-    img_hu = pixels*ds.RescaleSlope + ds.RescaleIntercept
-    lower = level - (width / 2)
-    upper = level + (width / 2)
-    img_hu[img_hu&lt;=lower] = lower
-    img_hu[img_hu&gt;=upper] = upper
-    return img_hu
+    if ds.Modality == &#39;CT&#39;:
+        img_hu = pixels*ds.RescaleSlope + ds.RescaleIntercept
+        lower = level - (width / 2)
+        upper = level + (width / 2)
+        img_hu[img_hu&lt;=lower] = lower
+        img_hu[img_hu&gt;=upper] = upper
+        return img_hu
+    else:
+        return (pixels)
+        print (&#39;Attention! file:&#39;,filepath, &#39;Modality is not CT. DICOM Image conversion to Hounsefield Units is not possible&#39;)
 
 def dicom_to_narray(filepath, mode=&#39;RAW&#39;, wl=None):
     &#34;&#34;&#34;
@@ -76,8 +85,11 @@ def dicom_to_narray(filepath, mode=&#39;RAW&#39;, wl=None):
             In the form of : [[Level,Width], [Level,Width],...].
             Only 3 combinations are allowed for MWIN (for now).
     Outputs:
-        [array] of same shape as input DICOM image with 1 channel. In case of MWIN mode, output has same size by 3 channels.
+        output: [array] of same shape as input DICOM image with 1 channel. In case of MWIN mode, output has same size by 3 channels.
+
+    .. image:: pass.jpg
     &#34;&#34;&#34;
+
     if mode == &#39;RAW&#39;:
         ds = pydicom.read_file(filepath)
         img = ds.pixel_array
@@ -104,7 +116,7 @@ def dicom_to_narray(filepath, mode=&#39;RAW&#39;, wl=None):
             img0 = window_dicom(filepath, wl[0][0], wl[0][1]).astype(&#39;int16&#39;)
             img1 = window_dicom(filepath, wl[1][0], wl[1][1]).astype(&#39;int16&#39;)
             img2 = window_dicom(filepath, wl[2][0], wl[2][1]).astype(&#39;int16&#39;)
-            mwin_img = np.stack((img0,img1,img2), axis=0)
+            mwin_img = np.stack((img0,img1,img2), axis=-1)
             return mwin_img</code></pre>
 </details>
 </section>
@@ -115,7 +127,7 @@ def dicom_to_narray(filepath, mode=&#39;RAW&#39;, wl=None):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="radtorch.dicom.dicom_to_narray"><code class="name flex">
+<dt id="radtorch.dicomutils.dicom_to_narray"><code class="name flex">
 <span>def <span class="ident">dicom_to_narray</span></span>(<span>filepath, mode='RAW', wl=None)</span>
 </code></dt>
 <dd>
@@ -136,7 +148,11 @@ In the form of : [[Level,Width], [Level,Width],&hellip;].
 Only 3 combinations are allowed for MWIN (for now).</dd>
 </dl>
 <h2 id="outputs">Outputs</h2>
-<p>[array] of same shape as input DICOM image with 1 channel. In case of MWIN mode, output has same size by 3 channels.</p></section>
+<dl>
+<dt><strong><code>output</code></strong></dt>
+<dd>[array] of same shape as input DICOM image with 1 channel. In case of MWIN mode, output has same size by 3 channels.</dd>
+</dl>
+<p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -155,8 +171,11 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
             In the form of : [[Level,Width], [Level,Width],...].
             Only 3 combinations are allowed for MWIN (for now).
     Outputs:
-        [array] of same shape as input DICOM image with 1 channel. In case of MWIN mode, output has same size by 3 channels.
+        output: [array] of same shape as input DICOM image with 1 channel. In case of MWIN mode, output has same size by 3 channels.
+
+    .. image:: pass.jpg
     &#34;&#34;&#34;
+
     if mode == &#39;RAW&#39;:
         ds = pydicom.read_file(filepath)
         img = ds.pixel_array
@@ -183,15 +202,16 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
             img0 = window_dicom(filepath, wl[0][0], wl[0][1]).astype(&#39;int16&#39;)
             img1 = window_dicom(filepath, wl[1][0], wl[1][1]).astype(&#39;int16&#39;)
             img2 = window_dicom(filepath, wl[2][0], wl[2][1]).astype(&#39;int16&#39;)
-            mwin_img = np.stack((img0,img1,img2), axis=0)
+            mwin_img = np.stack((img0,img1,img2), axis=-1)
             return mwin_img</code></pre>
 </details>
 </dd>
-<dt id="radtorch.dicom.window_dicom"><code class="name flex">
+<dt id="radtorch.dicomutils.window_dicom"><code class="name flex">
 <span>def <span class="ident">window_dicom</span></span>(<span>filepath, level, width)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Converts DICOM image to numpy array with certain width and level</p>
+<section class="desc"><p>:white_check_mark:
+Converts DICOM image to numpy array with certain width and level</p>
 <h2 id="inputs">Inputs</h2>
 <dl>
 <dt><strong><code>filepath</code></strong></dt>
@@ -202,29 +222,41 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 <dd>[int] requested window width.</dd>
 </dl>
 <h2 id="outputs">Outputs</h2>
-<p>[array] windowed image numpy array</p></section>
+<dl>
+<dt><strong><code>output</code></strong></dt>
+<dd>[array] windowed image numpy array.</dd>
+</dl>
+<p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def window_dicom(filepath, level, width):
     &#34;&#34;&#34;
+    :white_check_mark:
     Converts DICOM image to numpy array with certain width and level
     Inputs:
         filepath: [str] input DICOM image path.
         level: [int] requested window level.
         width: [int] requested window width.
     Outputs:
-        [array] windowed image numpy array
+        output: [array] windowed image numpy array.
+
+    .. image:: pass.jpg
     &#34;&#34;&#34;
+
     ds = pydicom.read_file(filepath)
     pixels = ds.pixel_array
-    img_hu = pixels*ds.RescaleSlope + ds.RescaleIntercept
-    lower = level - (width / 2)
-    upper = level + (width / 2)
-    img_hu[img_hu&lt;=lower] = lower
-    img_hu[img_hu&gt;=upper] = upper
-    return img_hu</code></pre>
+    if ds.Modality == &#39;CT&#39;:
+        img_hu = pixels*ds.RescaleSlope + ds.RescaleIntercept
+        lower = level - (width / 2)
+        upper = level + (width / 2)
+        img_hu[img_hu&lt;=lower] = lower
+        img_hu[img_hu&gt;=upper] = upper
+        return img_hu
+    else:
+        return (pixels)
+        print (&#39;Attention! file:&#39;,filepath, &#39;Modality is not CT. DICOM Image conversion to Hounsefield Units is not possible&#39;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -245,8 +277,8 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="radtorch.dicom.dicom_to_narray" href="#radtorch.dicom.dicom_to_narray">dicom_to_narray</a></code></li>
-<li><code><a title="radtorch.dicom.window_dicom" href="#radtorch.dicom.window_dicom">window_dicom</a></code></li>
+<li><code><a title="radtorch.dicomutils.dicom_to_narray" href="#radtorch.dicomutils.dicom_to_narray">dicom_to_narray</a></code></li>
+<li><code><a title="radtorch.dicomutils.window_dicom" href="#radtorch.dicomutils.window_dicom">window_dicom</a></code></li>
 </ul>
 </li>
 </ul>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
-<title>radtorch.vis API documentation</title>
+<title>radtorch.visutils API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>radtorch.vis</code></h1>
+<h1 class="title">Module <code>radtorch.visutils</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -40,17 +40,26 @@ from tqdm import tqdm_notebook as tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
+from pathlib import Path
 
 
-def show_dataset_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=True):
-  &#39;&#39;&#39;
+
+from radtorch.generalutils import getDuplicatesWithCount
+
+
+
+def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=True):
+  &#34;&#34;&#34;
     Displays sample of certain dataloader with corresponding class idx
     Inputs:
         dataloader: [dataloader object] selected pytorch dataloader
         num_of_images_per_row: [int] number of images per row (default=)
         figsize: [tuple] size of displayed figure (default = (10,10))
         show_labels: [boolen] display class idx of the sample displayed (default=True)
-  &#39;&#39;&#39;
+
+    .. image:: pass.jpg
+  &#34;&#34;&#34;
+
   batch = next(iter(dataloader))
   images, labels = batch
   grid = torchvision.utils.make_grid(images, nrow=num_of_images_per_row)
@@ -60,7 +69,7 @@ def show_dataset_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), s
       print (&#39;labels:&#39;, labels)
 
 def show_roc(true_labels, predicted_labels, auc = True, figsize=(10,10), title=&#39;ROC Curve&#39;):
-    &#39;&#39;&#39;
+    &#34;&#34;&#34;
     Displays ROC curve of a certain model and the AUC
     Inputs:
         true_labels: [list] true labels of test set
@@ -68,7 +77,9 @@ def show_roc(true_labels, predicted_labels, auc = True, figsize=(10,10), title=&
         auc: [boolen] displays area under curve for ROC (default=True)
         figsize: [tuple] size of displayed figure (default = (10,10))
         title: [str] title of the displayed curve (default = &#39;ROC Curve&#39;)
-    &#39;&#39;&#39;
+
+    .. image:: pass.jpg
+    &#34;&#34;&#34;
 
     fpr, tpr, thresholds = metrics.roc_curve(true_labels, predicted_labels)
     plt.figure(figsize=figsize)
@@ -81,11 +92,13 @@ def show_roc(true_labels, predicted_labels, auc = True, figsize=(10,10), title=&
         print (metrics.roc_auc_score(true_labels, predicted_labels))
 
 def show_dataset_info(dataset):
-    &#39;&#39;&#39;
+    &#34;&#34;&#34;
     Displays a summary of the pytorch dataset information
     Inputs:
-        dataset = [pytorch dataset object] target dataset
-    &#39;&#39;&#39;
+        dataset: [pytorch dataset object] target dataset.
+
+    .. image:: pass.jpg
+    &#34;&#34;&#34;
 
     label_list = [i[1] for i in dataset]
     label_stats = getDuplicatesWithCount(label_list)
@@ -100,9 +113,10 @@ def show_dataset_info(dataset):
         print(&#39;{0:2d} {1:3s} {2:4d}&#39;.format(key, &#39;&#39;,value))
 
 def show_metrics(source, fig_size=(15,5)):
-    &#39;&#39;&#39;
+    &#34;&#34;&#34;
     Displays metrics created by the training loop
-    &#39;&#39;&#39;
+    &#34;&#34;&#34;
+
     metrics = np.array(source)
     loss = metrics[:,0:2]
     accuracy = metrics[:,2:4]
@@ -125,9 +139,10 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
     Inputs:
         dataloader: [pytorch dataloader object] target dataloader
         figsize: [tuple] size of displayed figure when 3 images are displayed (default = (30,10))
-    Outputs:
-        matplotlib displayed image
+
+    .. image:: pass.jpg
     &#34;&#34;&#34;
+
     i, l = next(iter(dataloader))
     l = l.detach().cpu().numpy();
     if i[0].shape[0] == 3:
@@ -153,23 +168,71 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="radtorch.vis.show_dataset_info"><code class="name flex">
+<dt id="radtorch.visutils.show_dataloader_sample"><code class="name flex">
+<span>def <span class="ident">show_dataloader_sample</span></span>(<span>dataloader, num_of_images_per_row=10, figsize=(10, 10), show_labels=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Displays sample of certain dataloader with corresponding class idx</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>dataloader</code></strong></dt>
+<dd>[dataloader object] selected pytorch dataloader</dd>
+<dt><strong><code>num_of_images_per_row</code></strong></dt>
+<dd>[int] number of images per row (default=)</dd>
+<dt><strong><code>figsize</code></strong></dt>
+<dd>[tuple] size of displayed figure (default = (10,10))</dd>
+<dt><strong><code>show_labels</code></strong></dt>
+<dd>[boolen] display class idx of the sample displayed (default=True)</dd>
+</dl>
+<p><img alt="" src="pass.jpg"></p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=True):
+  &#34;&#34;&#34;
+    Displays sample of certain dataloader with corresponding class idx
+    Inputs:
+        dataloader: [dataloader object] selected pytorch dataloader
+        num_of_images_per_row: [int] number of images per row (default=)
+        figsize: [tuple] size of displayed figure (default = (10,10))
+        show_labels: [boolen] display class idx of the sample displayed (default=True)
+
+    .. image:: pass.jpg
+  &#34;&#34;&#34;
+
+  batch = next(iter(dataloader))
+  images, labels = batch
+  grid = torchvision.utils.make_grid(images, nrow=num_of_images_per_row)
+  plt.figure(figsize=(figsize))
+  plt.imshow(np.transpose(grid, (1,2,0)))
+  if show_labels:
+      print (&#39;labels:&#39;, labels)</code></pre>
+</details>
+</dd>
+<dt id="radtorch.visutils.show_dataset_info"><code class="name flex">
 <span>def <span class="ident">show_dataset_info</span></span>(<span>dataset)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Displays a summary of the pytorch dataset information</p>
 <h2 id="inputs">Inputs</h2>
-<p>dataset = [pytorch dataset object] target dataset</p></section>
+<dl>
+<dt><strong><code>dataset</code></strong></dt>
+<dd>[pytorch dataset object] target dataset.</dd>
+</dl>
+<p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def show_dataset_info(dataset):
-    &#39;&#39;&#39;
+    &#34;&#34;&#34;
     Displays a summary of the pytorch dataset information
     Inputs:
-        dataset = [pytorch dataset object] target dataset
-    &#39;&#39;&#39;
+        dataset: [pytorch dataset object] target dataset.
+
+    .. image:: pass.jpg
+    &#34;&#34;&#34;
 
     label_list = [i[1] for i in dataset]
     label_stats = getDuplicatesWithCount(label_list)
@@ -184,45 +247,7 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
         print(&#39;{0:2d} {1:3s} {2:4d}&#39;.format(key, &#39;&#39;,value))</code></pre>
 </details>
 </dd>
-<dt id="radtorch.vis.show_dataset_sample"><code class="name flex">
-<span>def <span class="ident">show_dataset_sample</span></span>(<span>dataloader, num_of_images_per_row=10, figsize=(10, 10), show_labels=True)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Displays sample of certain dataloader with corresponding class idx</p>
-<h2 id="inputs">Inputs</h2>
-<dl>
-<dt><strong><code>dataloader</code></strong></dt>
-<dd>[dataloader object] selected pytorch dataloader</dd>
-<dt><strong><code>num_of_images_per_row</code></strong></dt>
-<dd>[int] number of images per row (default=)</dd>
-<dt><strong><code>figsize</code></strong></dt>
-<dd>[tuple] size of displayed figure (default = (10,10))</dd>
-<dt><strong><code>show_labels</code></strong></dt>
-<dd>[boolen] display class idx of the sample displayed (default=True)</dd>
-</dl></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def show_dataset_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=True):
-  &#39;&#39;&#39;
-    Displays sample of certain dataloader with corresponding class idx
-    Inputs:
-        dataloader: [dataloader object] selected pytorch dataloader
-        num_of_images_per_row: [int] number of images per row (default=)
-        figsize: [tuple] size of displayed figure (default = (10,10))
-        show_labels: [boolen] display class idx of the sample displayed (default=True)
-  &#39;&#39;&#39;
-  batch = next(iter(dataloader))
-  images, labels = batch
-  grid = torchvision.utils.make_grid(images, nrow=num_of_images_per_row)
-  plt.figure(figsize=(figsize))
-  plt.imshow(np.transpose(grid, (1,2,0)))
-  if show_labels:
-      print (&#39;labels:&#39;, labels)</code></pre>
-</details>
-</dd>
-<dt id="radtorch.vis.show_dicom_sample"><code class="name flex">
+<dt id="radtorch.visutils.show_dicom_sample"><code class="name flex">
 <span>def <span class="ident">show_dicom_sample</span></span>(<span>dataloader, figsize=(30, 10))</span>
 </code></dt>
 <dd>
@@ -235,8 +260,7 @@ Returns a single image in case of one window and 3 images in case of mutiple win
 <dt><strong><code>figsize</code></strong></dt>
 <dd>[tuple] size of displayed figure when 3 images are displayed (default = (30,10))</dd>
 </dl>
-<h2 id="outputs">Outputs</h2>
-<p>matplotlib displayed image</p></section>
+<p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -248,9 +272,10 @@ Returns a single image in case of one window and 3 images in case of mutiple win
     Inputs:
         dataloader: [pytorch dataloader object] target dataloader
         figsize: [tuple] size of displayed figure when 3 images are displayed (default = (30,10))
-    Outputs:
-        matplotlib displayed image
+
+    .. image:: pass.jpg
     &#34;&#34;&#34;
+
     i, l = next(iter(dataloader))
     l = l.detach().cpu().numpy();
     if i[0].shape[0] == 3:
@@ -269,7 +294,7 @@ Returns a single image in case of one window and 3 images in case of mutiple win
         plt.title(l[0]);</code></pre>
 </details>
 </dd>
-<dt id="radtorch.vis.show_metrics"><code class="name flex">
+<dt id="radtorch.visutils.show_metrics"><code class="name flex">
 <span>def <span class="ident">show_metrics</span></span>(<span>source, fig_size=(15, 5))</span>
 </code></dt>
 <dd>
@@ -279,9 +304,10 @@ Returns a single image in case of one window and 3 images in case of mutiple win
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def show_metrics(source, fig_size=(15,5)):
-    &#39;&#39;&#39;
+    &#34;&#34;&#34;
     Displays metrics created by the training loop
-    &#39;&#39;&#39;
+    &#34;&#34;&#34;
+
     metrics = np.array(source)
     loss = metrics[:,0:2]
     accuracy = metrics[:,2:4]
@@ -298,7 +324,7 @@ Returns a single image in case of one window and 3 images in case of mutiple win
     ax2.grid(True)</code></pre>
 </details>
 </dd>
-<dt id="radtorch.vis.show_roc"><code class="name flex">
+<dt id="radtorch.visutils.show_roc"><code class="name flex">
 <span>def <span class="ident">show_roc</span></span>(<span>true_labels, predicted_labels, auc=True, figsize=(10, 10), title='ROC Curve')</span>
 </code></dt>
 <dd>
@@ -315,13 +341,14 @@ Returns a single image in case of one window and 3 images in case of mutiple win
 <dd>[tuple] size of displayed figure (default = (10,10))</dd>
 <dt><strong><code>title</code></strong></dt>
 <dd>[str] title of the displayed curve (default = 'ROC Curve')</dd>
-</dl></section>
+</dl>
+<p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def show_roc(true_labels, predicted_labels, auc = True, figsize=(10,10), title=&#39;ROC Curve&#39;):
-    &#39;&#39;&#39;
+    &#34;&#34;&#34;
     Displays ROC curve of a certain model and the AUC
     Inputs:
         true_labels: [list] true labels of test set
@@ -329,7 +356,9 @@ Returns a single image in case of one window and 3 images in case of mutiple win
         auc: [boolen] displays area under curve for ROC (default=True)
         figsize: [tuple] size of displayed figure (default = (10,10))
         title: [str] title of the displayed curve (default = &#39;ROC Curve&#39;)
-    &#39;&#39;&#39;
+
+    .. image:: pass.jpg
+    &#34;&#34;&#34;
 
     fpr, tpr, thresholds = metrics.roc_curve(true_labels, predicted_labels)
     plt.figure(figsize=figsize)
@@ -360,11 +389,11 @@ Returns a single image in case of one window and 3 images in case of mutiple win
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="radtorch.vis.show_dataset_info" href="#radtorch.vis.show_dataset_info">show_dataset_info</a></code></li>
-<li><code><a title="radtorch.vis.show_dataset_sample" href="#radtorch.vis.show_dataset_sample">show_dataset_sample</a></code></li>
-<li><code><a title="radtorch.vis.show_dicom_sample" href="#radtorch.vis.show_dicom_sample">show_dicom_sample</a></code></li>
-<li><code><a title="radtorch.vis.show_metrics" href="#radtorch.vis.show_metrics">show_metrics</a></code></li>
-<li><code><a title="radtorch.vis.show_roc" href="#radtorch.vis.show_roc">show_roc</a></code></li>
+<li><code><a title="radtorch.visutils.show_dataloader_sample" href="#radtorch.visutils.show_dataloader_sample">show_dataloader_sample</a></code></li>
+<li><code><a title="radtorch.visutils.show_dataset_info" href="#radtorch.visutils.show_dataset_info">show_dataset_info</a></code></li>
+<li><code><a title="radtorch.visutils.show_dicom_sample" href="#radtorch.visutils.show_dicom_sample">show_dicom_sample</a></code></li>
+<li><code><a title="radtorch.visutils.show_metrics" href="#radtorch.visutils.show_metrics">show_metrics</a></code></li>
+<li><code><a title="radtorch.visutils.show_roc" href="#radtorch.visutils.show_roc">show_roc</a></code></li>
 </ul>
 </li>
 </ul>

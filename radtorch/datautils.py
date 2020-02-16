@@ -14,17 +14,25 @@ from tqdm import tqdm_notebook as tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
+from pathlib import Path
+
+
+from radtorch.dicomutils import  dicom_to_narray, window_dicom
+from radtorch.visutils import show_dataset_info
 
 
 
 def path_to_class(filepath):
-    '''
+    """
     Creates a class from the folder name of a file
     Inputs:
         filepath: [str] path to target file
-    Output:
-        [str] folder name / class name
-    '''
+    Outputs:
+        output: [str] folder name / class name
+
+    .. image:: pass.jpg
+    """
+
     item_class = (Path(filepath)).parts
     return item_class[-2]
 
@@ -36,8 +44,11 @@ def root_to_class(root):
     Inputs:
         root: [str] path of the desired root.
     Outputs:
-        [tuple] classes: [list] of generated classes, class_to_idx: [dictionary] of classes and class id numbers
+        output: [tuple] classes: [list] of generated classes, class_to_idx: [dictionary] of classes and class id numbers
+
+    .. image:: pass.jpg
     """
+
     classes = [d.name for d in os.scandir(root) if d.is_dir()]
     classes.sort()
     class_to_idx = {classes[i]: i for i in range(len(classes))}
@@ -47,10 +58,14 @@ def class_to_idx(classes):
     """
     Creates a dictionary of classes to classes idx from provided list of classes
     Inputs:
-        classes: [list] list of target classes
-    Output:
-        [dictionary] of classes and class id numbers
+        classes: [list] list of target classes.
+        
+    Outputs:
+        output: [dictionary] of classes and class id numbers.
+
+    .. image:: pass.jpg
     """
+
     classes.sort()
     class_to_idx = {classes[i]: i for i in range(len(classes))}
     return class_to_idx
@@ -75,8 +90,14 @@ class dataset_from_table(Dataset):
         wl: [list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
                     In the form of : [[Level,Width], [Level,Width],...].
                     Only 3 combinations are allowed for MWIN (for now).
-        transforms: [pytorch transforms] pytroch transforms to be performed on the dataset.
+        transforms: [pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+
+    Outputs:
+        output: [pytorch dataset object]
+
+    .. image:: pass.jpg
     """
+
     def __init__(self,
                 data_directory,
                 is_csv=True,
@@ -85,7 +106,7 @@ class dataset_from_table(Dataset):
                 img_path_column='IMAGE_PATH',
                 img_label_column='IMAGE_LABEL',
                 mode='RAW',
-                wl=None, trans=None):
+                wl=None, trans=transforms.Compose([transforms.ToTensor()])):
 
         self.data_directory = data_directory
         self.is_csv = is_csv
@@ -123,13 +144,12 @@ class dataset_from_table(Dataset):
     def __getitem__(self, index):
         image_path = self.input_data.iloc[index][self.image_path_col]
         if self.is_dicom:
-            image = convert_dcm_to_np(image_path, self.mode, self.wl)
+            image = dicom_to_narray(image_path, self.mode, self.wl)
 
         else:
             image = Image.open(img_path).convert('RGB')
 
-        if self.trans:
-            image = self.trans(image)
+        image = self.trans(image)
 
         label = self.input_data.iloc[index][self.image_label_col]
         label_idx = [v for k, v in self.class_to_idx.items() if k == label][0]

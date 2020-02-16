@@ -14,27 +14,36 @@ from tqdm import tqdm_notebook as tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
+from pathlib import Path
 
 
 
 def window_dicom(filepath, level, width):
     """
+    :white_check_mark:
     Converts DICOM image to numpy array with certain width and level
     Inputs:
         filepath: [str] input DICOM image path.
         level: [int] requested window level.
         width: [int] requested window width.
     Outputs:
-        [array] windowed image numpy array
+        output: [array] windowed image numpy array.
+
+    .. image:: pass.jpg
     """
+
     ds = pydicom.read_file(filepath)
     pixels = ds.pixel_array
-    img_hu = pixels*ds.RescaleSlope + ds.RescaleIntercept
-    lower = level - (width / 2)
-    upper = level + (width / 2)
-    img_hu[img_hu<=lower] = lower
-    img_hu[img_hu>=upper] = upper
-    return img_hu
+    if ds.Modality == 'CT':
+        img_hu = pixels*ds.RescaleSlope + ds.RescaleIntercept
+        lower = level - (width / 2)
+        upper = level + (width / 2)
+        img_hu[img_hu<=lower] = lower
+        img_hu[img_hu>=upper] = upper
+        return img_hu
+    else:
+        return (pixels)
+        print ('Attention! file:',filepath, 'Modality is not CT. DICOM Image conversion to Hounsefield Units is not possible')
 
 def dicom_to_narray(filepath, mode='RAW', wl=None):
     """
@@ -50,8 +59,11 @@ def dicom_to_narray(filepath, mode='RAW', wl=None):
             In the form of : [[Level,Width], [Level,Width],...].
             Only 3 combinations are allowed for MWIN (for now).
     Outputs:
-        [array] of same shape as input DICOM image with 1 channel. In case of MWIN mode, output has same size by 3 channels.
+        output: [array] of same shape as input DICOM image with 1 channel. In case of MWIN mode, output has same size by 3 channels.
+
+    .. image:: pass.jpg
     """
+
     if mode == 'RAW':
         ds = pydicom.read_file(filepath)
         img = ds.pixel_array
@@ -78,5 +90,5 @@ def dicom_to_narray(filepath, mode='RAW', wl=None):
             img0 = window_dicom(filepath, wl[0][0], wl[0][1]).astype('int16')
             img1 = window_dicom(filepath, wl[1][0], wl[1][1]).astype('int16')
             img2 = window_dicom(filepath, wl[2][0], wl[2][1]).astype('int16')
-            mwin_img = np.stack((img0,img1,img2), axis=0)
+            mwin_img = np.stack((img0,img1,img2), axis=-1)
             return mwin_img

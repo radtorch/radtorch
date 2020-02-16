@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
-<title>radtorch.models API documentation</title>
+<title>radtorch.generalutils API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>radtorch.models</code></h1>
+<h1 class="title">Module <code>radtorch.generalutils</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -39,7 +39,24 @@ from sklearn import metrics
 from tqdm import tqdm_notebook as tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
-from PIL import Image</code></pre>
+from PIL import Image
+from pathlib import Path
+
+
+
+def getDuplicatesWithCount(listOfElems):
+    &#34;&#34;&#34;
+    .. image:: pass.jpg
+    &#34;&#34;&#34;
+
+    dictOfElems = dict()
+    for elem in listOfElems:
+        if elem in dictOfElems:
+            dictOfElems[elem] += 1
+        else:
+            dictOfElems[elem] = 1
+    dictOfElems = { key:value for key, value in dictOfElems.items() if value &gt; 1}
+    return dictOfElems</code></pre>
 </details>
 </section>
 <section>
@@ -47,6 +64,33 @@ from PIL import Image</code></pre>
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="radtorch.generalutils.getDuplicatesWithCount"><code class="name flex">
+<span>def <span class="ident">getDuplicatesWithCount</span></span>(<span>listOfElems)</span>
+</code></dt>
+<dd>
+<section class="desc"><p><img alt="" src="pass.jpg"></p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getDuplicatesWithCount(listOfElems):
+    &#34;&#34;&#34;
+    .. image:: pass.jpg
+    &#34;&#34;&#34;
+
+    dictOfElems = dict()
+    for elem in listOfElems:
+        if elem in dictOfElems:
+            dictOfElems[elem] += 1
+        else:
+            dictOfElems[elem] = 1
+    dictOfElems = { key:value for key, value in dictOfElems.items() if value &gt; 1}
+    return dictOfElems</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 </section>
@@ -60,6 +104,11 @@ from PIL import Image</code></pre>
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="radtorch" href="index.html">radtorch</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="radtorch.generalutils.getDuplicatesWithCount" href="#radtorch.generalutils.getDuplicatesWithCount">getDuplicatesWithCount</a></code></li>
 </ul>
 </li>
 </ul>

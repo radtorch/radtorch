@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
-<title>radtorch.general API documentation</title>
+<title>radtorch.modelsutils API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>radtorch.general</code></h1>
+<h1 class="title">Module <code>radtorch.modelsutils</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -40,17 +40,7 @@ from tqdm import tqdm_notebook as tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
-
-
-def getDuplicatesWithCount(listOfElems):
-    dictOfElems = dict()
-    for elem in listOfElems:
-        if elem in dictOfElems:
-            dictOfElems[elem] += 1
-        else:
-            dictOfElems[elem] = 1
-    dictOfElems = { key:value for key, value in dictOfElems.items() if value &gt; 1}
-    return dictOfElems</code></pre>
+from pathlib import Path</code></pre>
 </details>
 </section>
 <section>
@@ -58,29 +48,6 @@ def getDuplicatesWithCount(listOfElems):
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="radtorch.general.getDuplicatesWithCount"><code class="name flex">
-<span>def <span class="ident">getDuplicatesWithCount</span></span>(<span>listOfElems)</span>
-</code></dt>
-<dd>
-<section class="desc"></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def getDuplicatesWithCount(listOfElems):
-    dictOfElems = dict()
-    for elem in listOfElems:
-        if elem in dictOfElems:
-            dictOfElems[elem] += 1
-        else:
-            dictOfElems[elem] = 1
-    dictOfElems = { key:value for key, value in dictOfElems.items() if value &gt; 1}
-    return dictOfElems</code></pre>
-</details>
-</dd>
-</dl>
 </section>
 <section>
 </section>
@@ -94,11 +61,6 @@ def getDuplicatesWithCount(listOfElems):
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="radtorch" href="index.html">radtorch</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="radtorch.general.getDuplicatesWithCount" href="#radtorch.general.getDuplicatesWithCount">getDuplicatesWithCount</a></code></li>
 </ul>
 </li>
 </ul>

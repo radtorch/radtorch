@@ -14,17 +14,26 @@ from tqdm import tqdm_notebook as tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
+from pathlib import Path
 
 
-def show_dataset_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=True):
-  '''
+
+from radtorch.generalutils import getDuplicatesWithCount
+
+
+
+def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=True):
+  """
     Displays sample of certain dataloader with corresponding class idx
     Inputs:
         dataloader: [dataloader object] selected pytorch dataloader
         num_of_images_per_row: [int] number of images per row (default=)
         figsize: [tuple] size of displayed figure (default = (10,10))
         show_labels: [boolen] display class idx of the sample displayed (default=True)
-  '''
+
+    .. image:: pass.jpg
+  """
+
   batch = next(iter(dataloader))
   images, labels = batch
   grid = torchvision.utils.make_grid(images, nrow=num_of_images_per_row)
@@ -34,7 +43,7 @@ def show_dataset_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), s
       print ('labels:', labels)
 
 def show_roc(true_labels, predicted_labels, auc = True, figsize=(10,10), title='ROC Curve'):
-    '''
+    """
     Displays ROC curve of a certain model and the AUC
     Inputs:
         true_labels: [list] true labels of test set
@@ -42,7 +51,9 @@ def show_roc(true_labels, predicted_labels, auc = True, figsize=(10,10), title='
         auc: [boolen] displays area under curve for ROC (default=True)
         figsize: [tuple] size of displayed figure (default = (10,10))
         title: [str] title of the displayed curve (default = 'ROC Curve')
-    '''
+
+    .. image:: pass.jpg
+    """
 
     fpr, tpr, thresholds = metrics.roc_curve(true_labels, predicted_labels)
     plt.figure(figsize=figsize)
@@ -55,11 +66,13 @@ def show_roc(true_labels, predicted_labels, auc = True, figsize=(10,10), title='
         print (metrics.roc_auc_score(true_labels, predicted_labels))
 
 def show_dataset_info(dataset):
-    '''
+    """
     Displays a summary of the pytorch dataset information
     Inputs:
-        dataset = [pytorch dataset object] target dataset
-    '''
+        dataset: [pytorch dataset object] target dataset.
+
+    .. image:: pass.jpg
+    """
 
     label_list = [i[1] for i in dataset]
     label_stats = getDuplicatesWithCount(label_list)
@@ -74,9 +87,10 @@ def show_dataset_info(dataset):
         print('{0:2d} {1:3s} {2:4d}'.format(key, '',value))
 
 def show_metrics(source, fig_size=(15,5)):
-    '''
+    """
     Displays metrics created by the training loop
-    '''
+    """
+
     metrics = np.array(source)
     loss = metrics[:,0:2]
     accuracy = metrics[:,2:4]
@@ -99,9 +113,10 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
     Inputs:
         dataloader: [pytorch dataloader object] target dataloader
         figsize: [tuple] size of displayed figure when 3 images are displayed (default = (30,10))
-    Outputs:
-        matplotlib displayed image
+
+    .. image:: pass.jpg
     """
+
     i, l = next(iter(dataloader))
     l = l.detach().cpu().numpy();
     if i[0].shape[0] == 3:

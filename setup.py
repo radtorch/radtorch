@@ -7,5 +7,5 @@ setup(name='radtorch',
       author='Mohamed Elbanan, MD',
       license='MIT',
       packages=['radtorch'],
-      install_requires=['torch', 'torchvision', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 'tqdm', 'sklearn'],
+      install_requires=['torch', 'torchvision', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 'tqdm', 'sklearn', 'pathlib'],
       zip_safe=False)
