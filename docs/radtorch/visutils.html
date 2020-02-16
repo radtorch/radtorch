@@ -43,15 +43,9 @@ from PIL import Image
 from pathlib import Path
 
 
-
 from radtorch.generalutils import getDuplicatesWithCount
 
-&#34;&#34;&#34;
-RadTorch is a package of higher level functions and classes that I found very handy during my journey of machine learning in diagnostic imaging. The package includes different functions and classes built upon pytorch, matplotlib and sckikit-learn.
 
-The purpose of this tool kit is to provide users with a number of functions and classes that will save a lot of time which would have been otherwise spent converting DICOM images to other formats and modifying them to fit into modern machine learning and deep learning frameworks.
-
-&#34;&#34;&#34;
 
 
 def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=True):

@@ -24,11 +24,17 @@ from radtorch.visutils import show_dataset_info
 
 def path_to_class(filepath):
     """
-    Creates a class from the folder name of a file
+    Creates a class name from the immediate parent folder of a target file
     Inputs:
         filepath: [str] path to target file
     Outputs:
         output: [str] folder name / class name
+    Examples:
+        ```
+        file_path = 'root/folder1/folder2/0000.dcm'
+        path_to_class(file_path)
+        'folder2'
+        ```
 
     .. image:: pass.jpg
     """
@@ -45,6 +51,13 @@ def root_to_class(root):
         root: [str] path of the desired root.
     Outputs:
         output: [tuple] classes: [list] of generated classes, class_to_idx: [dictionary] of classes and class id numbers
+    Examples:
+        This example assumes that root folder contains 3 folders (folder1, folder2 and folder3) each contains images of 1 class.
+        ```
+        root_folder = 'root/'
+        root_to_class(root_folder)
+        ['folder1', 'folder2', 'folder3'], {'folder1':0, 'folder2':1, 'folder3':2}
+        ```
 
     .. image:: pass.jpg
     """
@@ -62,6 +75,14 @@ def class_to_idx(classes):
 
     Outputs:
         output: [dictionary] of classes and class id numbers.
+    Examples:
+        ```
+        class_list = ['class1','class4', 'class2', 'class3']
+        class_to_idx(class_list)
+        {'class1':0, 'class2':1, 'class3':2, 'class4':3}
+
+        ```
+
 
     .. image:: pass.jpg
     """

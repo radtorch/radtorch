@@ -10,7 +10,7 @@ The purpose of this tool kit is to provide users with a number of functions and 
 
 
 ## Who created RadTorch?
-My name is Mohamed Elbanan. I am a Radiology Resident at Yale New Haven Health System, Clinical Research Associate at Yale School of Medicine and a Machine-learning enthusiast.
+My name is Mohamed Elbanan. I am a Radiology Resident at Yale New Haven Health System, Clinical Research Affiliate at Yale School of Medicine and a Machine-learning enthusiast.
 
 ## How to install RadTorch?
 

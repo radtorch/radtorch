@@ -50,11 +50,17 @@ from radtorch.visutils import show_dataset_info
 
 def path_to_class(filepath):
     &#34;&#34;&#34;
-    Creates a class from the folder name of a file
+    Creates a class name from the immediate parent folder of a target file
     Inputs:
         filepath: [str] path to target file
     Outputs:
         output: [str] folder name / class name
+    Examples:
+        ```
+        file_path = &#39;root/folder1/folder2/0000.dcm&#39;
+        path_to_class(file_path)
+        &#39;folder2&#39;
+        ```
 
     .. image:: pass.jpg
     &#34;&#34;&#34;
@@ -71,6 +77,13 @@ def root_to_class(root):
         root: [str] path of the desired root.
     Outputs:
         output: [tuple] classes: [list] of generated classes, class_to_idx: [dictionary] of classes and class id numbers
+    Examples:
+        This example assumes that root folder contains 3 folders (folder1, folder2 and folder3) each contains images of 1 class.
+        ```
+        root_folder = &#39;root/&#39;
+        root_to_class(root_folder)
+        [&#39;folder1&#39;, &#39;folder2&#39;, &#39;folder3&#39;], {&#39;folder1&#39;:0, &#39;folder2&#39;:1, &#39;folder3&#39;:2}
+        ```
 
     .. image:: pass.jpg
     &#34;&#34;&#34;
@@ -85,9 +98,17 @@ def class_to_idx(classes):
     Creates a dictionary of classes to classes idx from provided list of classes
     Inputs:
         classes: [list] list of target classes.
-        
+
     Outputs:
         output: [dictionary] of classes and class id numbers.
+    Examples:
+        ```
+        class_list = [&#39;class1&#39;,&#39;class4&#39;, &#39;class2&#39;, &#39;class3&#39;]
+        class_to_idx(class_list)
+        {&#39;class1&#39;:0, &#39;class2&#39;:1, &#39;class3&#39;:2, &#39;class4&#39;:3}
+
+        ```
+
 
     .. image:: pass.jpg
     &#34;&#34;&#34;
@@ -106,8 +127,8 @@ class dataset_from_table(Dataset):
         is_dicom: [boolean] True for DICOM images, False for regular images.(default=True)
         input_source: [str or pandas dataframe object] source for labelling data.
                       This is path to csv file or name of pandas dataframe if pandas to be used.
-        img_path_column = [list] name of the image path column in data input
-        img_label_column = [str] name of label column in the data input
+        img_path_column: [list] name of the image path column in data input
+        img_label_column: [str] name of label column in the data input
         mode: [str] output mode for DICOM images only.
                     options: RAW= Raw pixels,
                     HU= Image converted to Hounsefield Units,
@@ -217,6 +238,12 @@ class dataset_from_table(Dataset):
 <dt><strong><code>output</code></strong></dt>
 <dd>[dictionary] of classes and class id numbers.</dd>
 </dl>
+<h2 id="examples">Examples</h2>
+<pre><code>class_list = ['class1','class4', 'class2', 'class3']
+class_to_idx(class_list)
+{'class1':0, 'class2':1, 'class3':2, 'class4':3}
+
+</code></pre>
 <p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
@@ -227,9 +254,17 @@ class dataset_from_table(Dataset):
     Creates a dictionary of classes to classes idx from provided list of classes
     Inputs:
         classes: [list] list of target classes.
-        
+
     Outputs:
         output: [dictionary] of classes and class id numbers.
+    Examples:
+        ```
+        class_list = [&#39;class1&#39;,&#39;class4&#39;, &#39;class2&#39;, &#39;class3&#39;]
+        class_to_idx(class_list)
+        {&#39;class1&#39;:0, &#39;class2&#39;:1, &#39;class3&#39;:2, &#39;class4&#39;:3}
+
+        ```
+
 
     .. image:: pass.jpg
     &#34;&#34;&#34;
@@ -243,7 +278,7 @@ class dataset_from_table(Dataset):
 <span>def <span class="ident">path_to_class</span></span>(<span>filepath)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Creates a class from the folder name of a file</p>
+<section class="desc"><p>Creates a class name from the immediate parent folder of a target file</p>
 <h2 id="inputs">Inputs</h2>
 <dl>
 <dt><strong><code>filepath</code></strong></dt>
@@ -254,6 +289,11 @@ class dataset_from_table(Dataset):
 <dt><strong><code>output</code></strong></dt>
 <dd>[str] folder name / class name</dd>
 </dl>
+<h2 id="examples">Examples</h2>
+<pre><code>file_path = 'root/folder1/folder2/0000.dcm'
+path_to_class(file_path)
+'folder2'
+</code></pre>
 <p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
@@ -261,11 +301,17 @@ class dataset_from_table(Dataset):
 </summary>
 <pre><code class="python">def path_to_class(filepath):
     &#34;&#34;&#34;
-    Creates a class from the folder name of a file
+    Creates a class name from the immediate parent folder of a target file
     Inputs:
         filepath: [str] path to target file
     Outputs:
         output: [str] folder name / class name
+    Examples:
+        ```
+        file_path = &#39;root/folder1/folder2/0000.dcm&#39;
+        path_to_class(file_path)
+        &#39;folder2&#39;
+        ```
 
     .. image:: pass.jpg
     &#34;&#34;&#34;
@@ -290,6 +336,12 @@ All first level subfolders within the root are converted into classes and given 
 <dt><strong><code>output</code></strong></dt>
 <dd>[tuple] classes: [list] of generated classes, class_to_idx: [dictionary] of classes and class id numbers</dd>
 </dl>
+<h2 id="examples">Examples</h2>
+<p>This example assumes that root folder contains 3 folders (folder1, folder2 and folder3) each contains images of 1 class.</p>
+<pre><code>root_folder = 'root/'
+root_to_class(root_folder)
+['folder1', 'folder2', 'folder3'], {'folder1':0, 'folder2':1, 'folder3':2}
+</code></pre>
 <p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
@@ -304,6 +356,13 @@ All first level subfolders within the root are converted into classes and given 
         root: [str] path of the desired root.
     Outputs:
         output: [tuple] classes: [list] of generated classes, class_to_idx: [dictionary] of classes and class id numbers
+    Examples:
+        This example assumes that root folder contains 3 folders (folder1, folder2 and folder3) each contains images of 1 class.
+        ```
+        root_folder = &#39;root/&#39;
+        root_to_class(root_folder)
+        [&#39;folder1&#39;, &#39;folder2&#39;, &#39;folder3&#39;], {&#39;folder1&#39;:0, &#39;folder2&#39;:1, &#39;folder3&#39;:2}
+        ```
 
     .. image:: pass.jpg
     &#34;&#34;&#34;
@@ -339,8 +398,10 @@ Default values for columns are: "IMAGE_PATH", "IMAGE_LABEL". These can be change
 <dt><strong><code>input_source</code></strong></dt>
 <dd>[str or pandas dataframe object] source for labelling data.
 This is path to csv file or name of pandas dataframe if pandas to be used.</dd>
-<dt>img_path_column = [list] name of the image path column in data input</dt>
-<dt>img_label_column = [str] name of label column in the data input</dt>
+<dt><strong><code>img_path_column</code></strong></dt>
+<dd>[list] name of the image path column in data input</dd>
+<dt><strong><code>img_label_column</code></strong></dt>
+<dd>[str] name of label column in the data input</dd>
 <dt><strong><code>mode</code></strong></dt>
 <dd>[str] output mode for DICOM images only.
 options: RAW= Raw pixels,
@@ -374,8 +435,8 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
         is_dicom: [boolean] True for DICOM images, False for regular images.(default=True)
         input_source: [str or pandas dataframe object] source for labelling data.
                       This is path to csv file or name of pandas dataframe if pandas to be used.
-        img_path_column = [list] name of the image path column in data input
-        img_label_column = [str] name of label column in the data input
+        img_path_column: [list] name of the image path column in data input
+        img_label_column: [str] name of label column in the data input
         mode: [str] output mode for DICOM images only.
                     options: RAW= Raw pixels,
                     HU= Image converted to Hounsefield Units,
