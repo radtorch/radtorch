@@ -243,9 +243,9 @@ class dataset_from_folder(Dataset):
     def __init__(self,
                 data_directory,
                 is_dicom=True,
-                input_source=None,
                 mode='RAW',
-                wl=None, trans=transforms.Compose([transforms.ToTensor()])):
+                wl=None,
+                trans=transforms.Compose([transforms.ToTensor()])):
 
         self.data_directory = data_directory
         self.is_dicom = is_dicom
