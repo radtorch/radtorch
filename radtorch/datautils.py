@@ -47,7 +47,7 @@ def list_of_files(root):
     for entry in listOfFile:
         fullPath = os.path.join(root, entry)
         if os.path.isdir(fullPath):
-            allFiles = allFiles + getListOfFiles(fullPath)
+            allFiles = allFiles + list_of_files(fullPath)
         else:
             allFiles.append(fullPath)
     return allFiles
