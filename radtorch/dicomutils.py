@@ -71,7 +71,11 @@ def dicom_to_narray(filepath, mode='RAW', wl=None):
     elif mode == 'HU':
         ds = pydicom.read_file(filepath)
         pixels = ds.pixel_array
-        hu_img = pixels*ds.RescaleSlope + ds.RescaleIntercept
+        if ds.Modality == 'CT':
+            hu_img = pixels*ds.RescaleSlope + ds.RescaleIntercept
+        else:
+            print ('Attention! Modality is not CT. Conversion to HU not possible.')
+            hu_img = pixels
         return hu_img
     elif mode == 'WIN':
         if wl==None:
