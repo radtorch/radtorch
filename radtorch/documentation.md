@@ -1,6 +1,13 @@
-## What is RadTorch?
+
+## RadTorch
 
 RadTorch is a package of higher level functions and classes that I found very handy during my journey of machine learning in diagnostic imaging. The package includes different functions and classes built upon pytorch, matplotlib and sckikit-learn.
+
+
+The purpose of this tool kit is to provide users with a number of functions and classes that will save a lot of time which would have been otherwise spent converting DICOM images to other formats and modifying them to fit into modern machine learning and deep learning frameworks.
+
+![](radtorch_stack.png)
+
 
 ## Who created RadTorch?
 My name is Mohamed Elbanan. I am a Radiology Resident at Yale New Haven Health System, Clinical Research Associate at Yale School of Medicine and a Machine-learning enthusiast.

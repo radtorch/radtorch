@@ -59,7 +59,7 @@ def class_to_idx(classes):
     Creates a dictionary of classes to classes idx from provided list of classes
     Inputs:
         classes: [list] list of target classes.
-        
+
     Outputs:
         output: [dictionary] of classes and class id numbers.
 
@@ -80,8 +80,8 @@ class dataset_from_table(Dataset):
         is_dicom: [boolean] True for DICOM images, False for regular images.(default=True)
         input_source: [str or pandas dataframe object] source for labelling data.
                       This is path to csv file or name of pandas dataframe if pandas to be used.
-        img_path_column = [list] name of the image path column in data input
-        img_label_column = [str] name of label column in the data input
+        img_path_column: [list] name of the image path column in data input
+        img_label_column: [str] name of label column in the data input
         mode: [str] output mode for DICOM images only.
                     options: RAW= Raw pixels,
                     HU= Image converted to Hounsefield Units,
