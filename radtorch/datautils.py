@@ -17,7 +17,7 @@ from PIL import Image
 from pathlib import Path
 
 
-from radtorch.dicomutils import  dicom_to_narray, window_dicom
+from radtorch.dicomutils import  dicom_to_narray, window_dicom, dicom_to_pil
 from radtorch.visutils import show_dataset_info
 
 
@@ -232,7 +232,7 @@ class dataset_from_folder(Dataset):
         wl: [list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
                     In the form of : [[Level,Width], [Level,Width],...].
                     Only 3 combinations are allowed for MWIN (for now).
-        transforms: [pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+        trans: [pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
 
     Outputs:
         output: [pytorch dataset object]

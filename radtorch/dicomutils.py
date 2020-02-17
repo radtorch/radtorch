@@ -43,7 +43,6 @@ def window_dicom(filepath, level, width):
         return img_hu
     else:
         return (pixels)
-        print ('Attention! file:',filepath, 'Modality is not CT. DICOM Image conversion to Hounsefield Units is not possible')
 
 def dicom_to_narray(filepath, mode='RAW', wl=None):
     """
@@ -74,7 +73,6 @@ def dicom_to_narray(filepath, mode='RAW', wl=None):
         if ds.Modality == 'CT':
             hu_img = pixels*ds.RescaleSlope + ds.RescaleIntercept
         else:
-            print ('Attention! Modality is not CT. Conversion to HU not possible.')
             hu_img = pixels
         return hu_img
     elif mode == 'WIN':
