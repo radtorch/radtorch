@@ -14,12 +14,11 @@ My name is Mohamed Elbanan. I am a Radiology Resident at Yale New Haven Health S
 
 ## How to install RadTorch?
 
-RadTorch tool kit and its dependencies can be installed by downloading the tool kit source from the github repo [here](https://github.com/radtorch/radtorch)
-
-then using the command line/terminal, navigate to the RadTorch tool kit folder and type:
+RadTorch tool kit and its dependencies can be installed using the following terminal commands:
 
 ```
-pip3 install .
+! git clone https://github.com/radtorch/radtorch.git
+! pip3 install radtorch/.
 ```
 
 To uninstall simply use:
