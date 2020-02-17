@@ -1,7 +1,5 @@
-![](/resources/status.png)
-![](/resources/version.png)
 
-# RadTorch
+# RADTorch
 
 This is the repository for RadTorch - The Radiology Machine Learning Tool Kit
 
