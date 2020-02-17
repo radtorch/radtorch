@@ -195,6 +195,7 @@ class dataset_from_table(Dataset):
         image_path = self.input_data.iloc[index][self.image_path_col]
         if self.is_dicom:
             image = dicom_to_narray(image_path, self.mode, self.wl)
+            image = Image.fromarray(image)
 
         else:
             image = Image.open(img_path).convert('RGB')
