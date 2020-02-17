@@ -1,4 +1,10 @@
-# RadTorch
-Repository for RadTorch - The Radiology Machine Learning Tool Kit
+![](/resources/status.png)
+![](/resources/version.png)
 
-To download the latest version, please go to 'dist' folder above.
+# RadTorch
+
+This is the repository for RadTorch - The Radiology Machine Learning Tool Kit
+
+Work is still in progress.
+
+Documentation: https://radtorch.github.io/radtorch/
