@@ -1,24 +1,25 @@
 
-## RadTorch
 
-RadTorch is a package of higher level functions and classes that I found very handy during my journey of machine learning in diagnostic imaging. The package includes different functions and classes built upon pytorch, matplotlib and sckikit-learn.
+RADTorch provides a package of higher level functions and classes that significantly decrease the coding time needed for implementation of different machine and deep learning algorithms on DICOM medical images. The purpose of this tool kit is to provide users with a number of functions and classes that will save a lot of time which would have been otherwise spent converting DICOM images to other formats and modifying them to fit into modern machine learning and deep learning frameworks.
+
+RADTorch includes different functions and classes built upon pytorch, pydicom, matplotlib and sckikit-learn as seen in the stack chart below.
 
 
-The purpose of this tool kit is to provide users with a number of functions and classes that will save a lot of time which would have been otherwise spent converting DICOM images to other formats and modifying them to fit into modern machine learning and deep learning frameworks.
+
 
 ![](radtorch_stack.png)
 
 
-## Who created RadTorch?
+## Who created RADTorch?
 My name is Mohamed Elbanan. I am a Radiology Resident at Yale New Haven Health System, Clinical Research Affiliate at Yale School of Medicine and a Machine-learning enthusiast.
 
-## How to install RadTorch?
+## How to install RADTorch?
 
-RadTorch tool kit and its dependencies can be installed using the following terminal commands:
+RADTorch tool kit and its dependencies can be installed using the following terminal commands:
 
 ```
-! git clone https://github.com/radtorch/radtorch.git
-! pip3 install radtorch/.
+git clone https://github.com/radtorch/radtorch.git
+pip3 install radtorch/.
 ```
 
 To uninstall simply use:
@@ -28,7 +29,7 @@ pip3 uninstall radtorch
 ```
 
 ## RadTorch Sub-Modules
-RadTorch includes 5 sub-modules, each specialized in part of the machine learning pipeline:
+RADTorch includes 5 sub-modules, each specialized in part of the machine learning pipeline:
 
 ### **radtorch.visutils**
 Contains functions/classes related to data visualization.
