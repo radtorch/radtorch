@@ -239,6 +239,7 @@ class dataset_from_folder(Dataset):
         output: [pytorch dataset object]
 
 
+    .. image:: pass.jpg
     """
 
     def __init__(self,

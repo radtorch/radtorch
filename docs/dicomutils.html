@@ -69,7 +69,6 @@ def window_dicom(filepath, level, width):
         return img_hu
     else:
         return (pixels)
-        print (&#39;Attention! file:&#39;,filepath, &#39;Modality is not CT. DICOM Image conversion to Hounsefield Units is not possible&#39;)
 
 def dicom_to_narray(filepath, mode=&#39;RAW&#39;, wl=None):
     &#34;&#34;&#34;
@@ -97,7 +96,10 @@ def dicom_to_narray(filepath, mode=&#39;RAW&#39;, wl=None):
     elif mode == &#39;HU&#39;:
         ds = pydicom.read_file(filepath)
         pixels = ds.pixel_array
-        hu_img = pixels*ds.RescaleSlope + ds.RescaleIntercept
+        if ds.Modality == &#39;CT&#39;:
+            hu_img = pixels*ds.RescaleSlope + ds.RescaleIntercept
+        else:
+            hu_img = pixels
         return hu_img
     elif mode == &#39;WIN&#39;:
         if wl==None:
@@ -198,7 +200,10 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
     elif mode == &#39;HU&#39;:
         ds = pydicom.read_file(filepath)
         pixels = ds.pixel_array
-        hu_img = pixels*ds.RescaleSlope + ds.RescaleIntercept
+        if ds.Modality == &#39;CT&#39;:
+            hu_img = pixels*ds.RescaleSlope + ds.RescaleIntercept
+        else:
+            hu_img = pixels
         return hu_img
     elif mode == &#39;WIN&#39;:
         if wl==None:
@@ -306,8 +311,7 @@ Converts DICOM image to numpy array with certain width and level</p>
         img_hu[img_hu&gt;=upper] = upper
         return img_hu
     else:
-        return (pixels)
-        print (&#39;Attention! file:&#39;,filepath, &#39;Modality is not CT. DICOM Image conversion to Hounsefield Units is not possible&#39;)</code></pre>
+        return (pixels)</code></pre>
 </details>
 </dd>
 </dl>
