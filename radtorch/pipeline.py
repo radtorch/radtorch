@@ -137,12 +137,12 @@ class Image_Classification():
         self.valid_data_set, self.train_data_set = torch.utils.data.random_split(self.data_set, [valid_size,len(self.data_set)-valid_size])
 
         self.train_data_loader = torch.utils.data.DataLoader(
-                                                    self.data_set,
+                                                    self.train_data_set,
                                                     batch_size=self.batch_size,
                                                     shuffle=True)
 
         self.valid_data_loader = torch.utils.data.DataLoader(
-                                                    self.data_set,
+                                                    self.valid_data_set,
                                                     batch_size=self.batch_size,
                                                     shuffle=True)
 
@@ -205,8 +205,6 @@ class Image_Classification():
                                                 optimizer = self.optimizer,
                                                 epochs = self.train_epochs,
                                                 device = self.device)
-
-        return self.trained_model, self.train_metrics
 
     def show_train_metrics(self):
         '''
