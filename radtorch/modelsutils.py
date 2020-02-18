@@ -96,7 +96,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         loss_criterion: [PyTorch nn object] Loss function to be used during training.
         optimizer: [PyTorch optimizer object] Optimizer to be used during training.
         epochs: [int] training epochs.
-        device: [str] device to be used for training (default='cpu'). This can be 'cpu' or 'gpu'.
+        device: [str] device to be used for training (default='cpu'). This can be 'cpu' or 'cuda'.
     Outputs:
         model: [PyTorch neural network object] trained model.
         train_metrics: [list] list of np arrays of training loss and accuracy.
@@ -127,7 +127,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         valid_acc = 0.0
 
         for i, (inputs, labels) in enumerate(train_data_loader):
-            inputs = inputs.float()
+            # inputs = inputs.float()
             inputs = inputs.to(device)
             labels = labels.to(device)
 
