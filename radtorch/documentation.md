@@ -31,6 +31,9 @@ pip3 uninstall radtorch
 ## RadTorch Sub-Modules
 RADTorch includes 5 sub-modules, each specialized in part of the machine learning pipeline:
 
+### **radtorch.pipeline**
+The most exciting feature of RADTorch tool kit. Contains full machine learning pipelines that can be executed through a single line of code.
+
 ### **radtorch.visutils**
 Contains functions/classes related to data visualization.
 

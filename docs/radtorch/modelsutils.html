@@ -40,7 +40,208 @@ from tqdm import tqdm_notebook as tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
-from pathlib import Path</code></pre>
+from pathlib import Path
+
+
+
+
+supported_models = [&#39;vgg16&#39;]
+supported_losses = {&#39;NLLLoss&#39;:torch.nn.NLLLoss(), &#39;CrossEntropyLoss&#39;:torch.nn.CrossEntropyLoss()}
+
+
+def supported_list():
+    &#39;&#39;&#39;
+    Returns a list of the currently supported network architectures and loss functions.
+    &#39;&#39;&#39;
+    print (&#39;Supported Network Architectures:&#39;)
+    for i in supported_models:
+        print (i)
+    print(&#39;&#39;)
+    print (&#39;Supported Loss Functions:&#39;)
+    for key, value in supported_losses.items():
+        print (key)
+
+
+def create_model(model_arch, input_channels, output_classes, pre_trained=True):
+    &#39;&#39;&#39;
+    Creates a PyTorch training neural network model with specified network architecture. Input channels and output classes can be specified.
+    Inputs:
+        model_arch: [str] The architecture of the model neural network. Examples include &#39;vgg16&#39;, &#39;resnet50&#39;, and &#39;resnet152&#39;.
+        pre_trained: [boolen] Load the pretrained weights of the neural network.(default=True)
+        input_channels: [int] Number of input image channels. Grayscale DICOM images usually have 1 channel. Colored images have 3.
+        output_classes: [int] Number of output classes for image classification problems.
+    Outputs:
+        Output: [PyTorch neural network object]
+    Examples:
+        ```
+        my_model = radtorch.model.create_model(model_arch=&#39;vgg16&#39;,input_channels=1, output_classes=2, pre_trained=True)
+        ```
+    &#39;&#39;&#39;
+
+    if model_arch not in supported_models:
+        print (&#39;Error! Provided model architecture is not supported yet. For complete list of supported models please type radtorch.modelsutils.model_list()&#39;)
+
+    else:
+
+        if model_arch == &#39;vgg16&#39;:
+           train_model = torchvision.models.vgg16(pretrained=pre_trained)
+           train_model.features[0] = nn.Conv2d(input_channels,64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+           train_model.classifier[6] = nn.Sequential(
+                    nn.Linear(in_features=4096, out_features=output_classes, bias=True))
+
+
+
+        return train_model
+
+def create_loss_function(type):
+    &#39;&#39;&#39;
+    Creates a PyTorch training loss function object.
+    Inputs:
+        type: [str] type of the loss functions required.
+    Outputs:
+        Output: [PyTorch loss function object]
+    &#39;&#39;&#39;
+
+    if type not in supported_losses:
+        print (&#39;Error! Provided loss function is not supported yet. For complete list of supported models please type radtorch.modelsutils.supported_list()&#39;)
+
+    else:
+        loss_function = supported_losses[type]
+
+        return loss_function
+
+def train_model(model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device):
+    &#39;&#39;&#39;
+    Trains a Neural Network Model
+    Inputs:
+        model: [PyTorch neural network object] Model to be trained.
+        train_data_loader: [PyTorch dataloader object] training data dataloader.
+        valid_data_loader: [PyTorch dataloader object] validation data dataloader.
+        train_data_loader: [PyTorch dataset object] training data dataset.
+        valid_data_loader: [PyTorch dataset object] validation data dataset.
+        loss_criterion: [PyTorch nn object] Loss function to be used during training.
+        optimizer: [PyTorch optimizer object] Optimizer to be used during training.
+        epochs: [int] training epochs.
+        device: [str] device to be used for training (default=&#39;cpu&#39;). This can be &#39;cpu&#39; or &#39;gpu&#39;.
+    Outputs:
+        model: [PyTorch neural network object] trained model.
+        train_metrics: [list] list of np arrays of training loss and accuracy.
+    Examples:
+    ```
+    ```
+    &#39;&#39;&#39;
+
+    start_time = datetime.datetime.now()
+    training_metrics = []
+
+    print (&#39;Starting training at &#39;+ str(start_time))
+
+
+    model = model.to(device)
+
+    for epoch in range(epochs):
+        epoch_start = time.time()
+
+        # Set to training mode
+        model.train()
+
+        # Loss and Accuracy within the epoch
+        train_loss = 0.0
+        train_acc = 0.0
+
+        valid_loss = 0.0
+        valid_acc = 0.0
+
+        for i, (inputs, labels) in enumerate(train_data_loader):
+            inputs = inputs.float()
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+
+            # Clean existing gradients
+            optimizer.zero_grad()
+
+            # Forward pass - compute outputs on input data using the model
+            outputs = model(inputs)
+
+            # Compute loss
+            loss = loss_criterion(outputs, labels)
+
+            # Backpropagate the gradients
+            loss.backward()
+
+            # Update the parameters
+            optimizer.step()
+
+            # Compute the total loss for the batch and add it to train_loss
+            train_loss += loss.item() * inputs.size(0)
+
+            # Compute the accuracy
+            ret, predictions = torch.max(outputs.data, 1)
+            correct_counts = predictions.eq(labels.data.view_as(predictions))
+
+            # Convert correct_counts to float and then compute the mean
+            acc = torch.mean(correct_counts.type(torch.FloatTensor))
+
+            # Compute total accuracy in the whole batch and add to train_acc
+            train_acc += acc.item() * inputs.size(0)
+
+            # print(&#34;Batch number: {:03d}, Training: Loss: {:.4f}, Accuracy: {:.4f}&#34;.format(i, loss.item(), acc.item()))
+
+
+        # Validation - No gradient tracking needed
+        with torch.no_grad():
+
+            # Set to evaluation mode
+            model.eval()
+
+            # Validation loop
+            for j, (inputs, labels) in enumerate(valid_data_loader):
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+
+                # Forward pass - compute outputs on input data using the model
+                outputs = model(inputs)
+
+                # Compute loss
+                loss = loss_criterion(outputs, labels)
+
+                # Compute the total loss for the batch and add it to valid_loss
+                valid_loss += loss.item() * inputs.size(0)
+
+                # Calculate validation accuracy
+                ret, predictions = torch.max(outputs.data, 1)
+                correct_counts = predictions.eq(labels.data.view_as(predictions))
+
+                # Convert correct_counts to float and then compute the mean
+                acc = torch.mean(correct_counts.type(torch.FloatTensor))
+
+                # Compute total accuracy in the whole batch and add to valid_acc
+                valid_acc += acc.item() * inputs.size(0)
+
+                #print(&#34;Validation Batch number: {:03d}, Validation: Loss: {:.4f}, Accuracy: {:.4f}&#34;.format(j, loss.item(), acc.item()))
+
+        # Find average training loss and training accuracy
+        avg_train_loss = train_loss/len(train_data_set)
+        avg_train_acc = train_acc/len(train_data_set)
+
+        # Find average validation loss and training accuracy
+        avg_valid_loss = valid_loss/len(valid_data_set)
+        avg_valid_acc = valid_acc/len(valid_data_set)
+
+        training_metrics.append([avg_train_loss, avg_valid_loss, avg_train_acc, avg_valid_acc])
+
+        epoch_end = time.time()
+
+        print(&#34;Epoch : {:03d}/{} : [Training: Loss: {:.4f}, Accuracy: {:.4f}%]  [Validation : Loss : {:.4f}, Accuracy: {:.4f}%] [Time: {:.4f}s]&#34;.format(epoch, epochs, avg_train_loss, avg_train_acc*100, avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_start))
+
+    end_time = datetime.datetime.now()
+    total_training_time = end_time-start_time
+
+    print (&#39;Total training time = &#39;+ str(total_training_time))
+
+    return model, training_metrics
+
+# def train_model()</code></pre>
 </details>
 </section>
 <section>
@@ -48,6 +249,299 @@ from pathlib import Path</code></pre>
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="radtorch.modelsutils.create_loss_function"><code class="name flex">
+<span>def <span class="ident">create_loss_function</span></span>(<span>type)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Creates a PyTorch training loss function object.</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>type</code></strong></dt>
+<dd>[str] type of the loss functions required.</dd>
+</dl>
+<h2 id="outputs">Outputs</h2>
+<dl>
+<dt><strong><code>Output</code></strong></dt>
+<dd>[PyTorch loss function object]</dd>
+</dl></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_loss_function(type):
+    &#39;&#39;&#39;
+    Creates a PyTorch training loss function object.
+    Inputs:
+        type: [str] type of the loss functions required.
+    Outputs:
+        Output: [PyTorch loss function object]
+    &#39;&#39;&#39;
+
+    if type not in supported_losses:
+        print (&#39;Error! Provided loss function is not supported yet. For complete list of supported models please type radtorch.modelsutils.supported_list()&#39;)
+
+    else:
+        loss_function = supported_losses[type]
+
+        return loss_function</code></pre>
+</details>
+</dd>
+<dt id="radtorch.modelsutils.create_model"><code class="name flex">
+<span>def <span class="ident">create_model</span></span>(<span>model_arch, input_channels, output_classes, pre_trained=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Creates a PyTorch training neural network model with specified network architecture. Input channels and output classes can be specified.</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>model_arch</code></strong></dt>
+<dd>[str] The architecture of the model neural network. Examples include 'vgg16', 'resnet50', and 'resnet152'.</dd>
+<dt><strong><code>pre_trained</code></strong></dt>
+<dd>[boolen] Load the pretrained weights of the neural network.(default=True)</dd>
+<dt><strong><code>input_channels</code></strong></dt>
+<dd>[int] Number of input image channels. Grayscale DICOM images usually have 1 channel. Colored images have 3.</dd>
+<dt><strong><code>output_classes</code></strong></dt>
+<dd>[int] Number of output classes for image classification problems.</dd>
+</dl>
+<h2 id="outputs">Outputs</h2>
+<dl>
+<dt><strong><code>Output</code></strong></dt>
+<dd>[PyTorch neural network object]</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code>my_model = radtorch.model.create_model(model_arch='vgg16',input_channels=1, output_classes=2, pre_trained=True)
+</code></pre></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_model(model_arch, input_channels, output_classes, pre_trained=True):
+    &#39;&#39;&#39;
+    Creates a PyTorch training neural network model with specified network architecture. Input channels and output classes can be specified.
+    Inputs:
+        model_arch: [str] The architecture of the model neural network. Examples include &#39;vgg16&#39;, &#39;resnet50&#39;, and &#39;resnet152&#39;.
+        pre_trained: [boolen] Load the pretrained weights of the neural network.(default=True)
+        input_channels: [int] Number of input image channels. Grayscale DICOM images usually have 1 channel. Colored images have 3.
+        output_classes: [int] Number of output classes for image classification problems.
+    Outputs:
+        Output: [PyTorch neural network object]
+    Examples:
+        ```
+        my_model = radtorch.model.create_model(model_arch=&#39;vgg16&#39;,input_channels=1, output_classes=2, pre_trained=True)
+        ```
+    &#39;&#39;&#39;
+
+    if model_arch not in supported_models:
+        print (&#39;Error! Provided model architecture is not supported yet. For complete list of supported models please type radtorch.modelsutils.model_list()&#39;)
+
+    else:
+
+        if model_arch == &#39;vgg16&#39;:
+           train_model = torchvision.models.vgg16(pretrained=pre_trained)
+           train_model.features[0] = nn.Conv2d(input_channels,64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+           train_model.classifier[6] = nn.Sequential(
+                    nn.Linear(in_features=4096, out_features=output_classes, bias=True))
+
+
+
+        return train_model</code></pre>
+</details>
+</dd>
+<dt id="radtorch.modelsutils.supported_list"><code class="name flex">
+<span>def <span class="ident">supported_list</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns a list of the currently supported network architectures and loss functions.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def supported_list():
+    &#39;&#39;&#39;
+    Returns a list of the currently supported network architectures and loss functions.
+    &#39;&#39;&#39;
+    print (&#39;Supported Network Architectures:&#39;)
+    for i in supported_models:
+        print (i)
+    print(&#39;&#39;)
+    print (&#39;Supported Loss Functions:&#39;)
+    for key, value in supported_losses.items():
+        print (key)</code></pre>
+</details>
+</dd>
+<dt id="radtorch.modelsutils.train_model"><code class="name flex">
+<span>def <span class="ident">train_model</span></span>(<span>model, train_data_loader, valid_data_loader, train_data_set, valid_data_set, loss_criterion, optimizer, epochs, device)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Trains a Neural Network Model</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>model</code></strong></dt>
+<dd>[PyTorch neural network object] Model to be trained.</dd>
+<dt><strong><code>train_data_loader</code></strong></dt>
+<dd>[PyTorch dataloader object] training data dataloader.</dd>
+<dt><strong><code>valid_data_loader</code></strong></dt>
+<dd>[PyTorch dataloader object] validation data dataloader.</dd>
+<dt><strong><code>train_data_loader</code></strong></dt>
+<dd>[PyTorch dataset object] training data dataset.</dd>
+<dt><strong><code>valid_data_loader</code></strong></dt>
+<dd>[PyTorch dataset object] validation data dataset.</dd>
+<dt><strong><code>loss_criterion</code></strong></dt>
+<dd>[PyTorch nn object] Loss function to be used during training.</dd>
+<dt><strong><code>optimizer</code></strong></dt>
+<dd>[PyTorch optimizer object] Optimizer to be used during training.</dd>
+<dt><strong><code>epochs</code></strong></dt>
+<dd>[int] training epochs.</dd>
+<dt><strong><code>device</code></strong></dt>
+<dd>[str] device to be used for training (default='cpu'). This can be 'cpu' or 'gpu'.</dd>
+</dl>
+<h2 id="outputs">Outputs</h2>
+<dl>
+<dt><strong><code>model</code></strong></dt>
+<dd>[PyTorch neural network object] trained model.</dd>
+<dt><strong><code>train_metrics</code></strong></dt>
+<dd>[list] list of np arrays of training loss and accuracy.</dd>
+</dl>
+<p>Examples:</p>
+<pre><code></code></pre></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def train_model(model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device):
+    &#39;&#39;&#39;
+    Trains a Neural Network Model
+    Inputs:
+        model: [PyTorch neural network object] Model to be trained.
+        train_data_loader: [PyTorch dataloader object] training data dataloader.
+        valid_data_loader: [PyTorch dataloader object] validation data dataloader.
+        train_data_loader: [PyTorch dataset object] training data dataset.
+        valid_data_loader: [PyTorch dataset object] validation data dataset.
+        loss_criterion: [PyTorch nn object] Loss function to be used during training.
+        optimizer: [PyTorch optimizer object] Optimizer to be used during training.
+        epochs: [int] training epochs.
+        device: [str] device to be used for training (default=&#39;cpu&#39;). This can be &#39;cpu&#39; or &#39;gpu&#39;.
+    Outputs:
+        model: [PyTorch neural network object] trained model.
+        train_metrics: [list] list of np arrays of training loss and accuracy.
+    Examples:
+    ```
+    ```
+    &#39;&#39;&#39;
+
+    start_time = datetime.datetime.now()
+    training_metrics = []
+
+    print (&#39;Starting training at &#39;+ str(start_time))
+
+
+    model = model.to(device)
+
+    for epoch in range(epochs):
+        epoch_start = time.time()
+
+        # Set to training mode
+        model.train()
+
+        # Loss and Accuracy within the epoch
+        train_loss = 0.0
+        train_acc = 0.0
+
+        valid_loss = 0.0
+        valid_acc = 0.0
+
+        for i, (inputs, labels) in enumerate(train_data_loader):
+            inputs = inputs.float()
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+
+            # Clean existing gradients
+            optimizer.zero_grad()
+
+            # Forward pass - compute outputs on input data using the model
+            outputs = model(inputs)
+
+            # Compute loss
+            loss = loss_criterion(outputs, labels)
+
+            # Backpropagate the gradients
+            loss.backward()
+
+            # Update the parameters
+            optimizer.step()
+
+            # Compute the total loss for the batch and add it to train_loss
+            train_loss += loss.item() * inputs.size(0)
+
+            # Compute the accuracy
+            ret, predictions = torch.max(outputs.data, 1)
+            correct_counts = predictions.eq(labels.data.view_as(predictions))
+
+            # Convert correct_counts to float and then compute the mean
+            acc = torch.mean(correct_counts.type(torch.FloatTensor))
+
+            # Compute total accuracy in the whole batch and add to train_acc
+            train_acc += acc.item() * inputs.size(0)
+
+            # print(&#34;Batch number: {:03d}, Training: Loss: {:.4f}, Accuracy: {:.4f}&#34;.format(i, loss.item(), acc.item()))
+
+
+        # Validation - No gradient tracking needed
+        with torch.no_grad():
+
+            # Set to evaluation mode
+            model.eval()
+
+            # Validation loop
+            for j, (inputs, labels) in enumerate(valid_data_loader):
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+
+                # Forward pass - compute outputs on input data using the model
+                outputs = model(inputs)
+
+                # Compute loss
+                loss = loss_criterion(outputs, labels)
+
+                # Compute the total loss for the batch and add it to valid_loss
+                valid_loss += loss.item() * inputs.size(0)
+
+                # Calculate validation accuracy
+                ret, predictions = torch.max(outputs.data, 1)
+                correct_counts = predictions.eq(labels.data.view_as(predictions))
+
+                # Convert correct_counts to float and then compute the mean
+                acc = torch.mean(correct_counts.type(torch.FloatTensor))
+
+                # Compute total accuracy in the whole batch and add to valid_acc
+                valid_acc += acc.item() * inputs.size(0)
+
+                #print(&#34;Validation Batch number: {:03d}, Validation: Loss: {:.4f}, Accuracy: {:.4f}&#34;.format(j, loss.item(), acc.item()))
+
+        # Find average training loss and training accuracy
+        avg_train_loss = train_loss/len(train_data_set)
+        avg_train_acc = train_acc/len(train_data_set)
+
+        # Find average validation loss and training accuracy
+        avg_valid_loss = valid_loss/len(valid_data_set)
+        avg_valid_acc = valid_acc/len(valid_data_set)
+
+        training_metrics.append([avg_train_loss, avg_valid_loss, avg_train_acc, avg_valid_acc])
+
+        epoch_end = time.time()
+
+        print(&#34;Epoch : {:03d}/{} : [Training: Loss: {:.4f}, Accuracy: {:.4f}%]  [Validation : Loss : {:.4f}, Accuracy: {:.4f}%] [Time: {:.4f}s]&#34;.format(epoch, epochs, avg_train_loss, avg_train_acc*100, avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_start))
+
+    end_time = datetime.datetime.now()
+    total_training_time = end_time-start_time
+
+    print (&#39;Total training time = &#39;+ str(total_training_time))
+
+    return model, training_metrics</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 </section>
@@ -61,6 +555,14 @@ from pathlib import Path</code></pre>
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="radtorch" href="index.html">radtorch</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="radtorch.modelsutils.create_loss_function" href="#radtorch.modelsutils.create_loss_function">create_loss_function</a></code></li>
+<li><code><a title="radtorch.modelsutils.create_model" href="#radtorch.modelsutils.create_model">create_model</a></code></li>
+<li><code><a title="radtorch.modelsutils.supported_list" href="#radtorch.modelsutils.supported_list">supported_list</a></code></li>
+<li><code><a title="radtorch.modelsutils.train_model" href="#radtorch.modelsutils.train_model">train_model</a></code></li>
 </ul>
 </li>
 </ul>
