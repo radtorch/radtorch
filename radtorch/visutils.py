@@ -89,6 +89,8 @@ def show_dataset_info(dataset):
 def show_metrics(source, fig_size=(15,5)):
     """
     Displays metrics created by the training loop
+
+    .. image:: pass.jpg    
     """
 
     metrics = np.array(source)

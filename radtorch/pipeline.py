@@ -66,7 +66,8 @@ class Image_Classification():
     Examples:
     ```
     ```
-
+    
+    .. image:: pass.jpg
     '''
     def __init__(
     self,

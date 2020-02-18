@@ -26,6 +26,8 @@ supported_losses = {'NLLLoss':torch.nn.NLLLoss(), 'CrossEntropyLoss':torch.nn.Cr
 def supported_list():
     '''
     Returns a list of the currently supported network architectures and loss functions.
+
+    .. image:: pass.jpg    
     '''
     print ('Supported Network Architectures:')
     for i in supported_models:
@@ -50,6 +52,8 @@ def create_model(model_arch, input_channels, output_classes, pre_trained=True):
         ```
         my_model = radtorch.model.create_model(model_arch='vgg16',input_channels=1, output_classes=2, pre_trained=True)
         ```
+
+    .. image:: pass.jpg
     '''
 
     if model_arch not in supported_models:
@@ -74,6 +78,8 @@ def create_loss_function(type):
         type: [str] type of the loss functions required.
     Outputs:
         Output: [PyTorch loss function object]
+
+    .. image:: pass.jpg
     '''
 
     if type not in supported_losses:
@@ -103,6 +109,8 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
     Examples:
     ```
     ```
+
+    .. image:: pass.jpg
     '''
 
     start_time = datetime.datetime.now()
