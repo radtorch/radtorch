@@ -213,6 +213,9 @@ class Image_Classification():
         show_metrics(self.train_metrics)
 
 
+    def export_classifier(self,output_path):
+        torch.save(self.trained_model, output_path)
+        print ('Trained classifier exported successfully.')
 
 
 
