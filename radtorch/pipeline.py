@@ -29,7 +29,7 @@ from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_me
 
 
 class Image_Classification():
-    '''
+    """
     Creates an Image Classification Pipeline.
 
     Inputs:
@@ -66,9 +66,10 @@ class Image_Classification():
     Examples:
     ```
     ```
-    
+
     .. image:: pass.jpg
-    '''
+    """
+    
     def __init__(
     self,
     data_directory,
