@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
 <title>radtorch API documentation</title>
-<meta name="description" content="RADTorch provides a package of higher level functions and classes that significantly decrease the coding time needed for implementation of different …" />
+<meta name="description" content="About RADTorch …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,52 +20,59 @@
 <h1 class="title"><code>RADTorch</code> <small>The Radiology Machine Learning Tool Kit</small></h1>
 </header>
 <section id="section-intro">
-<p>RADTorch provides a package of higher level functions and classes that significantly decrease the coding time needed for implementation of different machine and deep learning algorithms on DICOM medical images. The purpose of this tool kit is to provide users with a number of functions and classes that will save a lot of time which would have been otherwise spent converting DICOM images to other formats and modifying them to fit into modern machine learning and deep learning frameworks.</p>
-<p>RADTorch includes different functions and classes built upon pytorch, pydicom, matplotlib and sckikit-learn as seen in the stack chart below.</p>
+<h2 id="about-radtorch">About RADTorch</h2>
+<p style='text-align: justify;'>
+RADTorch provides a package of higher level functions and classes that significantly decrease the amount of time needed for implementation of different machine and deep learning algorithms on DICOM medical images. The most important feature of RADTorch tool kit is probably "piplines" which, for example, allows users to obtain a state of the art medical image classifier with as little as 2 lines of code. The different functions and classes included in RADTorch are built upon PyTorch, PyDICOM, Matplotlib and Scikit-learn.
+</p>
+<p style='text-align: justify;'>
+RADTorch was developed and is currently maintained by Mohamed Elbanan, MD: a Radiology Resident at Yale New Haven Health System, Clinical Research Affiliate at Yale School of Medicine and a Machine-learning enthusiast.
+</p>
 <p><img alt="" src="radtorch_stack.png"></p>
-<h2 id="who-created-radtorch">Who created RADTorch?</h2>
-<p>My name is Mohamed Elbanan. I am a Radiology Resident at Yale New Haven Health System, Clinical Research Affiliate at Yale School of Medicine and a Machine-learning enthusiast.</p>
-<h2 id="how-to-install-radtorch">How to install RADTorch?</h2>
+<h2 id="install-radtorch">Install RADTorch</h2>
 <p>RADTorch tool kit and its dependencies can be installed using the following terminal commands:</p>
-<pre><code>git clone &lt;https://github.com/radtorch/radtorch.git&gt;
+<pre><code>git clone github.com/radtorch/radtorch.git
 pip3 install radtorch/.
 </code></pre>
 <p>To uninstall simply use:</p>
 <pre><code>pip3 uninstall radtorch
 </code></pre>
-<h2 id="radtorch-sub-modules">RadTorch Sub-Modules</h2>
-<p>RADTorch includes 5 sub-modules, each specialized in part of the machine learning pipeline:</p>
-<h3 id="radtorchpipeline"><strong>radtorch.pipeline</strong></h3>
-<p>The most exciting feature of RADTorch tool kit. Contains full machine learning pipelines that can be executed through a single line of code.</p>
-<h3 id="radtorchvisutils"><strong>radtorch.visutils</strong></h3>
-<p>Contains functions/classes related to data visualization.</p>
-<h3 id="radtorchdatautils"><strong>radtorch.datautils</strong></h3>
-<p>Contains functions/classes related to data import and preprocessing.</p>
-<h3 id="radtorchdicomutils"><strong>radtorch.dicomutils</strong></h3>
-<p>Contains functions/classes related to handling DICOM image objects.</p>
-<h3 id="radtorchmodelsutils"><strong>radtorch.modelsutils</strong></h3>
-<p>Contains functions/classes related to creating and training machine learning models</p>
-<h3 id="radtorchgeneralutils"><strong>radtorch.generalutils</strong></h3>
-<p>Contains general purpose functions that do not belong to any sub-module</p>
-<h2 id="contributing">Contributing</h2>
-<p>RadTorch is on GitHub. Bug reports and pull requests are welcome.</p>
+<h2 id="quick-start-guide">Quick Start Guide</h2>
+<p>Running a state of the art DICOM image classifier can be run using the <a href="./pipeline.html#radtorch.pipeline.Image_Classification">Image Classification</a> Pipeline using the commands:</p>
+<pre><code>from radtorch import pipeline
+
+clf = pipeline.Image_Classification(data_directory='path to data directory')
+
+clf.train_classifier()
+
+</code></pre>
+<h2 id="contributing-to-radtorch">Contributing to RADTorch</h2>
+<p>RadTorch is on <a href="https://github.com/radtorch/radtorch">GitHub</a>. Bug reports and pull requests are welcome.</p>
 <h2 id="license">License</h2>
-<p><strong>MIT License, Copyright (c) 2020 Mohamed Elbanan, MD</strong></p>
-<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+<p>MIT License, Copyright
+&copy; 2020 Mohamed Elbanan, MD</p>
+<p style='text-align: justify;'>
+<small>
+Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:</p>
-<p>The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.</p>
-<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+</small>
+</p>
+<p style='text-align: justify;'>
+<small>
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.</p>
+SOFTWARE.
+</small>
+</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -96,7 +103,7 @@ SOFTWARE.</p>
 </dd>
 <dt><code class="name"><a title="radtorch.pipeline" href="pipeline.html">radtorch.pipeline</a></code></dt>
 <dd>
-<section class="desc"><p>Pipelines are probably the most exciting feature of RADTorch tool kit. Throught few lines of code, user can run a complete state-of-the-art image …</p></section>
+<section class="desc"></section>
 </dd>
 <dt><code class="name"><a title="radtorch.visutils" href="visutils.html">radtorch.visutils</a></code></dt>
 <dd>
@@ -115,18 +122,10 @@ SOFTWARE.</p>
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#who-created-radtorch">Who created RADTorch?</a></li>
-<li><a href="#how-to-install-radtorch">How to install RADTorch?</a></li>
-<li><a href="#radtorch-sub-modules">RadTorch Sub-Modules</a><ul>
-<li><a href="#radtorchpipeline">radtorch.pipeline</a></li>
-<li><a href="#radtorchvisutils">radtorch.visutils</a></li>
-<li><a href="#radtorchdatautils">radtorch.datautils</a></li>
-<li><a href="#radtorchdicomutils">radtorch.dicomutils</a></li>
-<li><a href="#radtorchmodelsutils">radtorch.modelsutils</a></li>
-<li><a href="#radtorchgeneralutils">radtorch.generalutils</a></li>
-</ul>
-</li>
-<li><a href="#contributing">Contributing</a></li>
+<li><a href="#about-radtorch">About RADTorch</a></li>
+<li><a href="#install-radtorch">Install RADTorch</a></li>
+<li><a href="#quick-start-guide">Quick Start Guide</a></li>
+<li><a href="#contributing-to-radtorch">Contributing to RADTorch</a></li>
 <li><a href="#license">License</a></li>
 </ul>
 </div>

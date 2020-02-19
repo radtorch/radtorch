@@ -1,8 +1,4 @@
 
-'''
-Pipelines are probably the most exciting feature of RADTorch tool kit. Throught few lines of code, user can run a complete state-of-the-art image classification neural network and display the findings beautifully.
-'''
-
 
 import torch, torchvision, datetime, time, pickle, pydicom, os
 import torchvision.models as models
@@ -69,7 +65,7 @@ class Image_Classification():
 
     .. image:: pass.jpg
     """
-    
+
     def __init__(
     self,
     data_directory,

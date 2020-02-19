@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.7.4" />
 <title>radtorch.pipeline API documentation</title>
-<meta name="description" content="Pipelines are probably the most exciting feature of RADTorch tool kit. Throught few lines of code, user can run a complete state-of-the-art image …" />
+<meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,17 +20,11 @@
 <h1 class="title">Module <code>radtorch.pipeline</code></h1>
 </header>
 <section id="section-intro">
-<p>Pipelines are probably the most exciting feature of RADTorch tool kit. Throught few lines of code, user can run a complete state-of-the-art image classification neural network and display the findings beautifully.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#39;&#39;&#39;
-Pipelines are probably the most exciting feature of RADTorch tool kit. Throught few lines of code, user can run a complete state-of-the-art image classification neural network and display the findings beautifully.
-&#39;&#39;&#39;
-
-
-import torch, torchvision, datetime, time, pickle, pydicom, os
+<pre><code class="python">import torch, torchvision, datetime, time, pickle, pydicom, os
 import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim
@@ -55,7 +49,7 @@ from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_me
 
 
 class Image_Classification():
-    &#39;&#39;&#39;
+    &#34;&#34;&#34;
     Creates an Image Classification Pipeline.
 
     Inputs:
@@ -93,7 +87,9 @@ class Image_Classification():
     ```
     ```
 
-    &#39;&#39;&#39;
+    .. image:: pass.jpg
+    &#34;&#34;&#34;
+
     def __init__(
     self,
     data_directory,
@@ -163,12 +159,12 @@ class Image_Classification():
         self.valid_data_set, self.train_data_set = torch.utils.data.random_split(self.data_set, [valid_size,len(self.data_set)-valid_size])
 
         self.train_data_loader = torch.utils.data.DataLoader(
-                                                    self.data_set,
+                                                    self.train_data_set,
                                                     batch_size=self.batch_size,
                                                     shuffle=True)
 
         self.valid_data_loader = torch.utils.data.DataLoader(
-                                                    self.data_set,
+                                                    self.valid_data_set,
                                                     batch_size=self.batch_size,
                                                     shuffle=True)
 
@@ -232,8 +228,6 @@ class Image_Classification():
                                                 epochs = self.train_epochs,
                                                 device = self.device)
 
-        return self.trained_model, self.train_metrics
-
     def show_train_metrics(self):
         &#39;&#39;&#39;
         Display the training metrics
@@ -241,6 +235,9 @@ class Image_Classification():
         show_metrics(self.train_metrics)
 
 
+    def export_classifier(self,output_path):
+        torch.save(self.trained_model, output_path)
+        print (&#39;Trained classifier exported successfully.&#39;)
 
 
 
@@ -449,13 +446,14 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 <dd>Image Classification Model</dd>
 </dl>
 <p>Examples:</p>
-<pre><code></code></pre></section>
+<pre><code></code></pre>
+<p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Image_Classification():
-    &#39;&#39;&#39;
+    &#34;&#34;&#34;
     Creates an Image Classification Pipeline.
 
     Inputs:
@@ -493,7 +491,9 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
     ```
     ```
 
-    &#39;&#39;&#39;
+    .. image:: pass.jpg
+    &#34;&#34;&#34;
+
     def __init__(
     self,
     data_directory,
@@ -563,12 +563,12 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
         self.valid_data_set, self.train_data_set = torch.utils.data.random_split(self.data_set, [valid_size,len(self.data_set)-valid_size])
 
         self.train_data_loader = torch.utils.data.DataLoader(
-                                                    self.data_set,
+                                                    self.train_data_set,
                                                     batch_size=self.batch_size,
                                                     shuffle=True)
 
         self.valid_data_loader = torch.utils.data.DataLoader(
-                                                    self.data_set,
+                                                    self.valid_data_set,
                                                     batch_size=self.batch_size,
                                                     shuffle=True)
 
@@ -632,16 +632,33 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
                                                 epochs = self.train_epochs,
                                                 device = self.device)
 
-        return self.trained_model, self.train_metrics
-
     def show_train_metrics(self):
         &#39;&#39;&#39;
         Display the training metrics
         &#39;&#39;&#39;
-        show_metrics(self.train_metrics)</code></pre>
+        show_metrics(self.train_metrics)
+
+
+    def export_classifier(self,output_path):
+        torch.save(self.trained_model, output_path)
+        print (&#39;Trained classifier exported successfully.&#39;)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="radtorch.pipeline.Image_Classification.export_classifier"><code class="name flex">
+<span>def <span class="ident">export_classifier</span></span>(<span>self, output_path)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_classifier(self,output_path):
+    torch.save(self.trained_model, output_path)
+    print (&#39;Trained classifier exported successfully.&#39;)</code></pre>
+</details>
+</dd>
 <dt id="radtorch.pipeline.Image_Classification.show_dataset_info"><code class="name flex">
 <span>def <span class="ident">show_dataset_info</span></span>(<span>self)</span>
 </code></dt>
@@ -735,9 +752,7 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
                                             loss_criterion = self.loss_function,
                                             optimizer = self.optimizer,
                                             epochs = self.train_epochs,
-                                            device = self.device)
-
-    return self.trained_model, self.train_metrics</code></pre>
+                                            device = self.device)</code></pre>
 </details>
 </dd>
 </dl>
@@ -760,7 +775,8 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 <ul>
 <li>
 <h4><code><a title="radtorch.pipeline.Image_Classification" href="#radtorch.pipeline.Image_Classification">Image_Classification</a></code></h4>
-<ul class="">
+<ul class="two-column">
+<li><code><a title="radtorch.pipeline.Image_Classification.export_classifier" href="#radtorch.pipeline.Image_Classification.export_classifier">export_classifier</a></code></li>
 <li><code><a title="radtorch.pipeline.Image_Classification.show_dataset_info" href="#radtorch.pipeline.Image_Classification.show_dataset_info">show_dataset_info</a></code></li>
 <li><code><a title="radtorch.pipeline.Image_Classification.show_info" href="#radtorch.pipeline.Image_Classification.show_info">show_info</a></code></li>
 <li><code><a title="radtorch.pipeline.Image_Classification.show_sample" href="#radtorch.pipeline.Image_Classification.show_sample">show_sample</a></code></li>

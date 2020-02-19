@@ -52,6 +52,8 @@ supported_losses = {&#39;NLLLoss&#39;:torch.nn.NLLLoss(), &#39;CrossEntropyLoss&
 def supported_list():
     &#39;&#39;&#39;
     Returns a list of the currently supported network architectures and loss functions.
+
+    .. image:: pass.jpg    
     &#39;&#39;&#39;
     print (&#39;Supported Network Architectures:&#39;)
     for i in supported_models:
@@ -76,6 +78,8 @@ def create_model(model_arch, input_channels, output_classes, pre_trained=True):
         ```
         my_model = radtorch.model.create_model(model_arch=&#39;vgg16&#39;,input_channels=1, output_classes=2, pre_trained=True)
         ```
+
+    .. image:: pass.jpg
     &#39;&#39;&#39;
 
     if model_arch not in supported_models:
@@ -100,6 +104,8 @@ def create_loss_function(type):
         type: [str] type of the loss functions required.
     Outputs:
         Output: [PyTorch loss function object]
+
+    .. image:: pass.jpg
     &#39;&#39;&#39;
 
     if type not in supported_losses:
@@ -122,13 +128,15 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         loss_criterion: [PyTorch nn object] Loss function to be used during training.
         optimizer: [PyTorch optimizer object] Optimizer to be used during training.
         epochs: [int] training epochs.
-        device: [str] device to be used for training (default=&#39;cpu&#39;). This can be &#39;cpu&#39; or &#39;gpu&#39;.
+        device: [str] device to be used for training (default=&#39;cpu&#39;). This can be &#39;cpu&#39; or &#39;cuda&#39;.
     Outputs:
         model: [PyTorch neural network object] trained model.
         train_metrics: [list] list of np arrays of training loss and accuracy.
     Examples:
     ```
     ```
+
+    .. image:: pass.jpg
     &#39;&#39;&#39;
 
     start_time = datetime.datetime.now()
@@ -153,7 +161,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         valid_acc = 0.0
 
         for i, (inputs, labels) in enumerate(train_data_loader):
-            inputs = inputs.float()
+            # inputs = inputs.float()
             inputs = inputs.to(device)
             labels = labels.to(device)
 
@@ -265,7 +273,8 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 <dl>
 <dt><strong><code>Output</code></strong></dt>
 <dd>[PyTorch loss function object]</dd>
-</dl></section>
+</dl>
+<p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -277,6 +286,8 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         type: [str] type of the loss functions required.
     Outputs:
         Output: [PyTorch loss function object]
+
+    .. image:: pass.jpg
     &#39;&#39;&#39;
 
     if type not in supported_losses:
@@ -311,7 +322,8 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 </dl>
 <h2 id="examples">Examples</h2>
 <pre><code>my_model = radtorch.model.create_model(model_arch='vgg16',input_channels=1, output_classes=2, pre_trained=True)
-</code></pre></section>
+</code></pre>
+<p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -330,6 +342,8 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         ```
         my_model = radtorch.model.create_model(model_arch=&#39;vgg16&#39;,input_channels=1, output_classes=2, pre_trained=True)
         ```
+
+    .. image:: pass.jpg
     &#39;&#39;&#39;
 
     if model_arch not in supported_models:
@@ -352,7 +366,8 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 <span>def <span class="ident">supported_list</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Returns a list of the currently supported network architectures and loss functions.</p></section>
+<section class="desc"><p>Returns a list of the currently supported network architectures and loss functions.</p>
+<p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -360,6 +375,8 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 <pre><code class="python">def supported_list():
     &#39;&#39;&#39;
     Returns a list of the currently supported network architectures and loss functions.
+
+    .. image:: pass.jpg    
     &#39;&#39;&#39;
     print (&#39;Supported Network Architectures:&#39;)
     for i in supported_models:
@@ -394,7 +411,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 <dt><strong><code>epochs</code></strong></dt>
 <dd>[int] training epochs.</dd>
 <dt><strong><code>device</code></strong></dt>
-<dd>[str] device to be used for training (default='cpu'). This can be 'cpu' or 'gpu'.</dd>
+<dd>[str] device to be used for training (default='cpu'). This can be 'cpu' or 'cuda'.</dd>
 </dl>
 <h2 id="outputs">Outputs</h2>
 <dl>
@@ -404,7 +421,8 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 <dd>[list] list of np arrays of training loss and accuracy.</dd>
 </dl>
 <p>Examples:</p>
-<pre><code></code></pre></section>
+<pre><code></code></pre>
+<p><img alt="" src="pass.jpg"></p></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -421,13 +439,15 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         loss_criterion: [PyTorch nn object] Loss function to be used during training.
         optimizer: [PyTorch optimizer object] Optimizer to be used during training.
         epochs: [int] training epochs.
-        device: [str] device to be used for training (default=&#39;cpu&#39;). This can be &#39;cpu&#39; or &#39;gpu&#39;.
+        device: [str] device to be used for training (default=&#39;cpu&#39;). This can be &#39;cpu&#39; or &#39;cuda&#39;.
     Outputs:
         model: [PyTorch neural network object] trained model.
         train_metrics: [list] list of np arrays of training loss and accuracy.
     Examples:
     ```
     ```
+
+    .. image:: pass.jpg
     &#39;&#39;&#39;
 
     start_time = datetime.datetime.now()
@@ -452,7 +472,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         valid_acc = 0.0
 
         for i, (inputs, labels) in enumerate(train_data_loader):
-            inputs = inputs.float()
+            # inputs = inputs.float()
             inputs = inputs.to(device)
             labels = labels.to(device)
 
