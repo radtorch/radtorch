@@ -12,7 +12,7 @@ RADTorch was developed and is currently maintained by Mohamed Elbanan, MD: a Rad
 
 ![](radtorch_stack.png)
 
-
+<br>
 ## Install RADTorch
 
 RADTorch tool kit and its dependencies can be installed using the following terminal commands:
@@ -30,7 +30,7 @@ pip3 uninstall radtorch
 
 
 
-
+<br>
 ## Quick Start Guide
 Running a state of the art DICOM image classifier can be run using the [Image Classification](./pipeline.html#radtorch.pipeline.Image_Classification) Pipeline using the commands:
 ```
@@ -44,7 +44,7 @@ clf.train_classifier()
 
 
 
-
+<br>
 ## Supported Neural Network Architectures
 
 <style type="text/css">
@@ -91,10 +91,12 @@ clf.train_classifier()
 </table>
 
 
+<br>
 ## Contributing to RADTorch
 RadTorch is on [GitHub](https://github.com/radtorch/radtorch). Bug reports and pull requests are welcome.
 
 
+<br>
 ## License
 MIT License, Copyright 	&copy; 2020 Mohamed Elbanan, MD
 
