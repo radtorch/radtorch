@@ -44,8 +44,16 @@ from pathlib import Path
 
 
 
+#models:
+# vgg16,224,4096
+# vgg19,224,4096
+# resnet50,224,2048
+# resnet101,224,2048
+# resnet152,224,2048
 
-supported_models = [&#39;vgg16&#39;]
+
+
+supported_models = [&#39;vgg16&#39;, &#39;vgg19&#39;, &#39;resnet50&#39;,&#39;resnet101&#39;,&#39;resnet152&#39;]
 supported_losses = {&#39;NLLLoss&#39;:torch.nn.NLLLoss(), &#39;CrossEntropyLoss&#39;:torch.nn.CrossEntropyLoss()}
 
 
@@ -53,7 +61,7 @@ def supported_list():
     &#39;&#39;&#39;
     Returns a list of the currently supported network architectures and loss functions.
 
-    .. image:: pass.jpg    
+    .. image:: pass.jpg
     &#39;&#39;&#39;
     print (&#39;Supported Network Architectures:&#39;)
     for i in supported_models:
@@ -62,6 +70,15 @@ def supported_list():
     print (&#39;Supported Loss Functions:&#39;)
     for key, value in supported_losses.items():
         print (key)
+
+
+
+class Identity(nn.Module):
+    def __init__(self):
+        super(Identity, self).__init__()
+
+    def forward(self, x):
+        return x
 
 
 def create_model(model_arch, input_channels, output_classes, pre_trained=True):
@@ -87,13 +104,29 @@ def create_model(model_arch, input_channels, output_classes, pre_trained=True):
 
     else:
 
-        if model_arch == &#39;vgg16&#39;:
-           train_model = torchvision.models.vgg16(pretrained=pre_trained)
-           train_model.features[0] = nn.Conv2d(input_channels,64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-           train_model.classifier[6] = nn.Sequential(
+        if model_arch == &#39;vgg16&#39; or model_arch == &#39;vgg19&#39;:
+            if model_arch == &#39;vgg16&#39;:
+                train_model = torchvision.models.vgg16(pretrained=pre_trained)
+            elif model_arch == &#39;vgg19&#39;:
+                train_model = torchvision.models.vgg19(pretrained=pre_trained)
+
+            train_model.features[0] = nn.Conv2d(input_channels,64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            train_model.classifier[6] = nn.Sequential(
                     nn.Linear(in_features=4096, out_features=output_classes, bias=True))
 
 
+        elif model_arch == &#39;resnet50&#39; or model_arch == &#39;resnet101&#39; or model_arch == &#39;resnet152&#39;:
+            if model_arch == &#39;resnet50&#39;:
+                train_model = torchvision.models.resnet50(pretrained=pre_trained)
+            elif model_arch == &#39;resnet101&#39;:
+                train_model = torchvision.models.resnet101(pretrained=pre_trained)
+            elif  model_arch == &#39;resnet152&#39;:
+                train_model = torchvision.models.resnet152(pretrained=pre_trained)
+
+            train_model.conv1 = nn.Conv2d(input_channels,64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+            fc_inputs = train_model.fc.in_features
+            train_model.fc = nn.Sequential(
+                  nn.Linear(fc_inputs, output_classes))
 
         return train_model
 
@@ -351,13 +384,29 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 
     else:
 
-        if model_arch == &#39;vgg16&#39;:
-           train_model = torchvision.models.vgg16(pretrained=pre_trained)
-           train_model.features[0] = nn.Conv2d(input_channels,64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-           train_model.classifier[6] = nn.Sequential(
+        if model_arch == &#39;vgg16&#39; or model_arch == &#39;vgg19&#39;:
+            if model_arch == &#39;vgg16&#39;:
+                train_model = torchvision.models.vgg16(pretrained=pre_trained)
+            elif model_arch == &#39;vgg19&#39;:
+                train_model = torchvision.models.vgg19(pretrained=pre_trained)
+
+            train_model.features[0] = nn.Conv2d(input_channels,64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            train_model.classifier[6] = nn.Sequential(
                     nn.Linear(in_features=4096, out_features=output_classes, bias=True))
 
 
+        elif model_arch == &#39;resnet50&#39; or model_arch == &#39;resnet101&#39; or model_arch == &#39;resnet152&#39;:
+            if model_arch == &#39;resnet50&#39;:
+                train_model = torchvision.models.resnet50(pretrained=pre_trained)
+            elif model_arch == &#39;resnet101&#39;:
+                train_model = torchvision.models.resnet101(pretrained=pre_trained)
+            elif  model_arch == &#39;resnet152&#39;:
+                train_model = torchvision.models.resnet152(pretrained=pre_trained)
+
+            train_model.conv1 = nn.Conv2d(input_channels,64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+            fc_inputs = train_model.fc.in_features
+            train_model.fc = nn.Sequential(
+                  nn.Linear(fc_inputs, output_classes))
 
         return train_model</code></pre>
 </details>
@@ -376,7 +425,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
     &#39;&#39;&#39;
     Returns a list of the currently supported network architectures and loss functions.
 
-    .. image:: pass.jpg    
+    .. image:: pass.jpg
     &#39;&#39;&#39;
     print (&#39;Supported Network Architectures:&#39;)
     for i in supported_models:
@@ -564,6 +613,73 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="radtorch.modelsutils.Identity"><code class="flex name class">
+<span>class <span class="ident">Identity</span></span>
+</code></dt>
+<dd>
+<section class="desc"><p>Base class for all neural network modules.</p>
+<p>Your models should also subclass this class.</p>
+<p>Modules can also contain other Modules, allowing to nest them in
+a tree structure. You can assign the submodules as regular attributes::</p>
+<pre><code>import torch.nn as nn
+import torch.nn.functional as F
+
+class Model(nn.Module):
+    def __init__(self):
+        super(Model, self).__init__()
+        self.conv1 = nn.Conv2d(1, 20, 5)
+        self.conv2 = nn.Conv2d(20, 20, 5)
+
+    def forward(self, x):
+        x = F.relu(self.conv1(x))
+        return F.relu(self.conv2(x))
+</code></pre>
+<p>Submodules assigned in this way will be registered, and will have their
+parameters converted too when you call :meth:<code>to</code>, etc.</p>
+<p>Initializes internal Module state, shared by both nn.Module and ScriptModule.</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Identity(nn.Module):
+    def __init__(self):
+        super(Identity, self).__init__()
+
+    def forward(self, x):
+        return x</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>torch.nn.modules.module.Module</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="radtorch.modelsutils.Identity.forward"><code class="name flex">
+<span>def <span class="ident">forward</span></span>(<span>self, x)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the :class:<code>Module</code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def forward(self, x):
+    return x</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -583,6 +699,16 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 <li><code><a title="radtorch.modelsutils.create_model" href="#radtorch.modelsutils.create_model">create_model</a></code></li>
 <li><code><a title="radtorch.modelsutils.supported_list" href="#radtorch.modelsutils.supported_list">supported_list</a></code></li>
 <li><code><a title="radtorch.modelsutils.train_model" href="#radtorch.modelsutils.train_model">train_model</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="radtorch.modelsutils.Identity" href="#radtorch.modelsutils.Identity">Identity</a></code></h4>
+<ul class="">
+<li><code><a title="radtorch.modelsutils.Identity.forward" href="#radtorch.modelsutils.Identity.forward">forward</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

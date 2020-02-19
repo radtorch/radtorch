@@ -18,8 +18,16 @@ from pathlib import Path
 
 
 
+#models:
+# vgg16,224,4096
+# vgg19,224,4096
+# resnet50,224,2048
+# resnet101,224,2048
+# resnet152,224,2048
 
-supported_models = ['vgg16']
+
+
+supported_models = ['vgg16', 'vgg19', 'resnet50','resnet101','resnet152']
 supported_losses = {'NLLLoss':torch.nn.NLLLoss(), 'CrossEntropyLoss':torch.nn.CrossEntropyLoss()}
 
 
@@ -27,7 +35,7 @@ def supported_list():
     '''
     Returns a list of the currently supported network architectures and loss functions.
 
-    .. image:: pass.jpg    
+    .. image:: pass.jpg
     '''
     print ('Supported Network Architectures:')
     for i in supported_models:
@@ -36,6 +44,15 @@ def supported_list():
     print ('Supported Loss Functions:')
     for key, value in supported_losses.items():
         print (key)
+
+
+
+class Identity(nn.Module):
+    def __init__(self):
+        super(Identity, self).__init__()
+
+    def forward(self, x):
+        return x
 
 
 def create_model(model_arch, input_channels, output_classes, pre_trained=True):
@@ -61,13 +78,29 @@ def create_model(model_arch, input_channels, output_classes, pre_trained=True):
 
     else:
 
-        if model_arch == 'vgg16':
-           train_model = torchvision.models.vgg16(pretrained=pre_trained)
-           train_model.features[0] = nn.Conv2d(input_channels,64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-           train_model.classifier[6] = nn.Sequential(
+        if model_arch == 'vgg16' or model_arch == 'vgg19':
+            if model_arch == 'vgg16':
+                train_model = torchvision.models.vgg16(pretrained=pre_trained)
+            elif model_arch == 'vgg19':
+                train_model = torchvision.models.vgg19(pretrained=pre_trained)
+
+            train_model.features[0] = nn.Conv2d(input_channels,64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            train_model.classifier[6] = nn.Sequential(
                     nn.Linear(in_features=4096, out_features=output_classes, bias=True))
 
 
+        elif model_arch == 'resnet50' or model_arch == 'resnet101' or model_arch == 'resnet152':
+            if model_arch == 'resnet50':
+                train_model = torchvision.models.resnet50(pretrained=pre_trained)
+            elif model_arch == 'resnet101':
+                train_model = torchvision.models.resnet101(pretrained=pre_trained)
+            elif  model_arch == 'resnet152':
+                train_model = torchvision.models.resnet152(pretrained=pre_trained)
+
+            train_model.conv1 = nn.Conv2d(input_channels,64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+            fc_inputs = train_model.fc.in_features
+            train_model.fc = nn.Sequential(
+                  nn.Linear(fc_inputs, output_classes))
 
         return train_model
 
