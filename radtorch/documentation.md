@@ -28,6 +28,9 @@ To uninstall simply use:
 pip3 uninstall radtorch
 ```
 
+
+
+
 ## Quick Start Guide
 Running a state of the art DICOM image classifier can be run using the [Image Classification](./pipeline.html#radtorch.pipeline.Image_Classification) Pipeline using the commands:
 ```
@@ -38,6 +41,55 @@ clf = pipeline.Image_Classification(data_directory='path to data directory')
 clf.train_classifier()
 
 ```
+
+
+
+
+## Supported Neural Network Architectures
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;border-color:#ccc;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:7px 16px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;border-top-width:1px;border-bottom-width:1px;border-color:#ccc;color:#333;background-color:#fff;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:7px 16px;border-style:solid;border-width:0px;overflow:hidden;word-break:normal;border-top-width:1px;border-bottom-width:1px;border-color:#ccc;color:#333;background-color:#f0f0f0;}
+.tg .tg-m5nv{border-color:#656565;text-align:center;vertical-align:top}
+.tg .tg-hkgo{font-weight:bold;border-color:#656565;text-align:left;vertical-align:top}
+.tg .tg-dfrc{background-color:#f9f9f9;border-color:#656565;text-align:left;vertical-align:top}
+.tg .tg-09jq{background-color:#f9f9f9;border-color:#656565;text-align:center;vertical-align:top}
+.tg .tg-2bev{border-color:#656565;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-hkgo">Architecture     </th>
+    <th class="tg-hkgo">Default Image Size</th>
+    <th class="tg-hkgo">Number of Features</th>
+  </tr>
+  <tr>
+    <td class="tg-dfrc">VGG16</td>
+    <td class="tg-09jq">224x224</td>
+    <td class="tg-09jq">4096</td>
+  </tr>
+  <tr>
+    <td class="tg-2bev">VGG18</td>
+    <td class="tg-m5nv">224x224</td>
+    <td class="tg-m5nv">4096</td>
+  </tr>
+  <tr>
+    <td class="tg-dfrc">ResNet50</td>
+    <td class="tg-09jq">224x224</td>
+    <td class="tg-09jq">2048</td>
+  </tr>
+  <tr>
+    <td class="tg-2bev">ResNet101</td>
+    <td class="tg-m5nv">224x224</td>
+    <td class="tg-m5nv">2048</td>
+  </tr>
+  <tr>
+    <td class="tg-dfrc">ResNet152</td>
+    <td class="tg-09jq">224x224</td>
+    <td class="tg-09jq">2048</td>
+  </tr>
+</table>
+
 
 ## Contributing to RADTorch
 RadTorch is on [GitHub](https://github.com/radtorch/radtorch). Bug reports and pull requests are welcome.
