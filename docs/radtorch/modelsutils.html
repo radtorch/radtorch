@@ -43,7 +43,7 @@ from PIL import Image
 from pathlib import Path
 
 
-
+from radtorch.dicomutils import dicom_to_pil
 #models:
 # vgg16,224,4096
 # vgg19,224,4096
@@ -281,7 +281,66 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 
     return model, training_metrics
 
-# def train_model()</code></pre>
+# def train_model()
+
+def model_inference(model, input_image_path, trans=transforms.Compose([transforms.ToTensor()])):
+    &#39;&#39;&#39;
+    Performs Inference on a selected image using a trained model.
+    Inputs:
+        Model: [PyTorch Model] Trained neural network.
+        input_image_path: [str] path to target DICOM image
+        trans: [pytorch transforms] pytroch transforms to be performed on the dataset.
+    Outputs:
+
+    &#39;&#39;&#39;
+    if input_image_path.endswith(&#39;dcm&#39;):
+        target_img = dicom_to_pil(input_image_path)
+    else:
+        target_img = Image.open(test_image_name).convert(&#39;RGB&#39;)
+
+    target_img_tensor = trans(target_img)
+    target_img_tensor = target_img_tensor.unsqueeze(1)
+
+    with torch.no_grad():
+        model.to(&#39;cpu&#39;)
+        target_img_tensor.to(&#39;cpu&#39;)
+
+        model.eval()
+        out = model(target_img_tensor)
+        ps = torch.exp(out)
+        prediction_percentages = ps.cpu().numpy()[0]
+
+        print (prediction_percentages)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##</code></pre>
 </details>
 </section>
 <section>
@@ -408,6 +467,57 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
                   nn.Linear(fc_inputs, output_classes))
 
         return train_model</code></pre>
+</details>
+</dd>
+<dt id="radtorch.modelsutils.model_inference"><code class="name flex">
+<span>def <span class="ident">model_inference</span></span>(<span>model, input_image_path, trans=Compose(
+ToTensor()
+))</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Performs Inference on a selected image using a trained model.</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>Model</code></strong></dt>
+<dd>[PyTorch Model] Trained neural network.</dd>
+<dt><strong><code>input_image_path</code></strong></dt>
+<dd>[str] path to target DICOM image</dd>
+<dt><strong><code>trans</code></strong></dt>
+<dd>[pytorch transforms] pytroch transforms to be performed on the dataset.</dd>
+</dl>
+<p>Outputs:</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def model_inference(model, input_image_path, trans=transforms.Compose([transforms.ToTensor()])):
+    &#39;&#39;&#39;
+    Performs Inference on a selected image using a trained model.
+    Inputs:
+        Model: [PyTorch Model] Trained neural network.
+        input_image_path: [str] path to target DICOM image
+        trans: [pytorch transforms] pytroch transforms to be performed on the dataset.
+    Outputs:
+
+    &#39;&#39;&#39;
+    if input_image_path.endswith(&#39;dcm&#39;):
+        target_img = dicom_to_pil(input_image_path)
+    else:
+        target_img = Image.open(test_image_name).convert(&#39;RGB&#39;)
+
+    target_img_tensor = trans(target_img)
+    target_img_tensor = target_img_tensor.unsqueeze(1)
+
+    with torch.no_grad():
+        model.to(&#39;cpu&#39;)
+        target_img_tensor.to(&#39;cpu&#39;)
+
+        model.eval()
+        out = model(target_img_tensor)
+        ps = torch.exp(out)
+        prediction_percentages = ps.cpu().numpy()[0]
+
+        print (prediction_percentages)</code></pre>
 </details>
 </dd>
 <dt id="radtorch.modelsutils.supported_list"><code class="name flex">
@@ -696,6 +806,7 @@ registered hooks while the latter silently ignores them.</p>
 <ul class="">
 <li><code><a title="radtorch.modelsutils.create_loss_function" href="#radtorch.modelsutils.create_loss_function">create_loss_function</a></code></li>
 <li><code><a title="radtorch.modelsutils.create_model" href="#radtorch.modelsutils.create_model">create_model</a></code></li>
+<li><code><a title="radtorch.modelsutils.model_inference" href="#radtorch.modelsutils.model_inference">model_inference</a></code></li>
 <li><code><a title="radtorch.modelsutils.supported_list" href="#radtorch.modelsutils.supported_list">supported_list</a></code></li>
 <li><code><a title="radtorch.modelsutils.train_model" href="#radtorch.modelsutils.train_model">train_model</a></code></li>
 </ul>
