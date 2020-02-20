@@ -234,7 +234,8 @@ class Image_Classification():
         '''
         Performs inference on target DICOM image using a trained classifier.
         '''
-        model_inference(model=self.trained_model,input_image_path=test_img_path, trans=self.trans)
+        pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, trans=self.trans)
+        print (pred)
 
     def confusion_matrix(self):
         show_confusion_matrix(model=self.trained_model, target_data_set=self.valid_data_set)

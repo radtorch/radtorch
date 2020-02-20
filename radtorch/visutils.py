@@ -236,7 +236,7 @@ def show_confusion_matrix(model, target_data_set):
             model.eval()
             out = model(target_img_tensor)
             ps = torch.exp(out)
-            prediction_percentages = ps.cpu().numpy()[0]
+            prediction_percentages = (ps.cpu().numpy()[0]).tolist()
             pred = prediction_percentages.index(max(prediction_percentages))
             pred_labels.append(pred)
 
