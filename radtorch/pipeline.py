@@ -21,7 +21,7 @@ from pathlib import Path
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference
 from radtorch.datautils import dataset_from_folder, dataset_from_table
-from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics
+from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc
 
 
 class Image_Classification():
@@ -236,13 +236,12 @@ class Image_Classification():
         '''
         model_inference(model=self.trained_model,input_image_path=test_img_path, trans=self.trans)
 
-    # def confusion_matrix(self):
-    #     true_label = []
-    #     for i, x in self.valid_data_set:
-    #         true_label.apend(x)
-    #         model_inference(model=self.trained_model,input_image_path=test_img_path, trans=self.trans)
+    def confusion_matrix(self):
+        show_confusion_matrix(model=self.trained_model, target_data_set=self.valid_data_set)
+
 
     # def roc(self):
+
 
 
 
