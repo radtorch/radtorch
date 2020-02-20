@@ -24,10 +24,12 @@ from radtorch.dicomutils import dicom_to_pil
 # resnet50,224,2048
 # resnet101,224,2048
 # resnet152,224,2048
+# wide_resnet101_2, 224, 2048
+# wide_resnet50_2, 224, 2048
 
 
 
-supported_models = ['vgg16', 'vgg19', 'resnet50','resnet101','resnet152']
+supported_models = ['vgg16', 'vgg19', 'resnet50','resnet101','resnet152', 'wide_resnet50_2', 'wide_resnet101_2']
 supported_losses = {'NLLLoss':torch.nn.NLLLoss(), 'CrossEntropyLoss':torch.nn.CrossEntropyLoss()}
 
 
@@ -95,6 +97,10 @@ def create_model(model_arch, input_channels, output_classes, pre_trained=True):
                 train_model = torchvision.models.resnet101(pretrained=pre_trained)
             elif  model_arch == 'resnet152':
                 train_model = torchvision.models.resnet152(pretrained=pre_trained)
+            elif  model_arch == 'wide_resnet50_2':
+                train_model = torchvision.models.wide_resnet50_2(pretrained=pre_trained)
+            elif  model_arch == 'wide_resnet101_2':
+                train_model = torchvision.models.wide_resnet101_2(pretrained=pre_trained)
 
             train_model.conv1 = nn.Conv2d(input_channels,64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
             fc_inputs = train_model.fc.in_features
