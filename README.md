@@ -9,4 +9,4 @@ Documentation: https://radtorch.github.io/radtorch/
 
 
 
-![](/radtorch/radtorch_stack.png)
+![](/docs/radtorch_stack.png)
