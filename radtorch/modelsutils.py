@@ -17,7 +17,7 @@ from PIL import Image
 from pathlib import Path
 
 
-
+from radtorch.dicomutils import dicom_to_pil
 #models:
 # vgg16,224,4096
 # vgg19,224,4096
@@ -256,3 +256,62 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
     return model, training_metrics
 
 # def train_model()
+
+def model_inference(model, input_image_path, trans=transforms.Compose([transforms.ToTensor()])):
+    '''
+    Performs Inference on a selected image using a trained model.
+    Inputs:
+        Model: [PyTorch Model] Trained neural network.
+        input_image_path: [str] path to target DICOM image
+        trans: [pytorch transforms] pytroch transforms to be performed on the dataset.
+    Outputs:
+
+    '''
+    if input_image_path.endswith('dcm'):
+        target_img = dicom_to_pil(input_image_path)
+    else:
+        target_img = Image.open(test_image_name).convert('RGB')
+
+    target_img_tensor = trans(target_img)
+    target_img_tensor = target_img_tensor.unsqueeze(1)
+
+    with torch.no_grad():
+        model.to('cpu')
+        target_img_tensor.to('cpu')
+
+        model.eval()
+        out = model(target_img_tensor)
+        ps = torch.exp(out)
+        prediction_percentages = ps.cpu().numpy()[0]
+
+        print (prediction_percentages)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##

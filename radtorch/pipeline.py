@@ -19,7 +19,7 @@ from PIL import Image
 from pathlib import Path
 
 
-from radtorch.modelsutils import create_model, create_loss_function, train_model
+from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference
 from radtorch.datautils import dataset_from_folder, dataset_from_table
 from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics
 
@@ -206,16 +206,38 @@ class Image_Classification():
 
     def show_train_metrics(self):
         '''
-        Display the training metrics
+        Display the training metrics.
         '''
         show_metrics(self.train_metrics)
 
 
     def export_classifier(self,output_path):
+        '''
+        Exports the trained model into a target file.
+        '''
         torch.save(self.trained_model, output_path)
         print ('Trained classifier exported successfully.')
 
 
+    def set_trained_model(self, model_path, mode):
+        '''
+        Loads a previously trained model into pipeline
+        Inputs:
+            model_path: [str] Path to target model
+            mode: [str] either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.
+        '''
+        if mode == 'train':
+            self.train_model = torch.load(model_path)
+        elif mode == 'infer':
+            self.trained_model = torch.load(model_path)
+        print ('Model Loaded Successfully.')
+
+
+    def classifier_inference(self, test_img_path):
+        '''
+        Performs inference on target DICOM image using a trained classifier.
+        '''
+        model_inference(model=self.trained_model,input_image_path=test_img_path, trans=self.trans)
 
 #
 # class Pipeline():

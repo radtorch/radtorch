@@ -61,7 +61,7 @@ clf.train_classifier()
   <tr>
     <th class="tg-hkgo">Architecture     </th>
     <th class="tg-hkgo">Default Image Size</th>
-    <th class="tg-hkgo">Number of Features</th>
+    <th class="tg-hkgo">Number of Output Features</th>
   </tr>
   <tr>
     <td class="tg-dfrc">VGG16</td>
