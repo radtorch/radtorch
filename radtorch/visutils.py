@@ -151,6 +151,25 @@ def show_roc(true_labels, predictions, auc=True, fig_size=(10,10)):
 
 
 
+
+def show_nn_roc(model, target_data_set, auc=True, fig_size=(10,10)):
+    true_labels = []
+    pred_labels = []
+    for i, l in target_data_set:
+        true_labels.append(l)
+        target_img_tensor = i.unsqueeze(1)
+        with torch.no_grad():
+            model.to('cpu')
+            target_img_tensor.to('cpu')
+            model.eval()
+            out = model(target_img_tensor)
+            ps = torch.exp(out)
+            prediction_percentages = (ps.cpu().numpy()[0]).tolist()
+            pred = prediction_percentages.index(max(prediction_percentages))
+            pred_labels.append(pred)
+    show_roc(true_labels, pred_labels, auc=auc, fig_size=fig_size)
+
+
 def plot_confusion_matrix(cm,
                           target_names,
                           title='Confusion Matrix',

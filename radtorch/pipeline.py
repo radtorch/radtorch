@@ -21,7 +21,7 @@ from pathlib import Path
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference
 from radtorch.datautils import dataset_from_folder, dataset_from_table
-from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc
+from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc, show_nn_roc
 
 
 class Image_Classification():
@@ -241,7 +241,8 @@ class Image_Classification():
         show_confusion_matrix(model=self.trained_model, target_data_set=self.valid_data_set, target_classes=self.data_set.classes)
 
 
-    # def roc(self):
+    def roc(self):
+        show_nn_roc(model=self.trained_model, target_data_set=self.valid_data_set, auc=True, fig_size=(10,10))
 
 
 
