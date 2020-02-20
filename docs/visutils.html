@@ -116,7 +116,7 @@ def show_metrics(source, fig_size=(15,5)):
     &#34;&#34;&#34;
     Displays metrics created by the training loop
 
-    .. image:: pass.jpg    
+    .. image:: pass.jpg
     &#34;&#34;&#34;
 
     metrics = np.array(source)
@@ -160,7 +160,118 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
         ax3.axis(&#39;off&#39;);
     else:
         plt.imshow(i[0][0], cmap=&#39;gray&#39;);
-        plt.title(l[0]);</code></pre>
+        plt.title(l[0]);
+
+
+def show_roc(true_labels, predictions, auc=True, fig_size=(10,10)):
+    fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
+    plt.figure(figsize=(5,5))
+    plt.plot(fpr, tpr)
+    plt.title(&#39;ROC Curve&#39;);
+    plt.xlabel(&#39;FPR (1-specficity)&#39;);
+    plt.ylabel(&#39;TPR (Sensitivity)&#39;);
+    plt.grid(True)
+    if auc == True:
+        print (metrics.roc_auc_score(true_labels, predictions))
+        return metrics.roc_auc_score(true_labels, predictions)
+
+
+
+def plot_confusion_matrix(cm,
+                          target_names,
+                          title=&#39;Confusion Matrix&#39;,
+                          cmap=None,
+                          normalize=False):
+    &#34;&#34;&#34;
+    given a sklearn confusion matrix (cm), make a nice plot
+
+    Inputs:
+    cm: confusion matrix from sklearn.metrics.confusion_matrix
+
+    target_names: given classification classes such as [0, 1, 2]
+                  the class names, for example: [&#39;high&#39;, &#39;medium&#39;, &#39;low&#39;]
+
+    title:        the text to display at the top of the matrix
+
+    cmap:         the gradient of the values displayed from matplotlib.pyplot.cm
+                  see http://matplotlib.org/examples/color/colormaps_reference.html
+                  plt.get_cmap(&#39;jet&#39;) or plt.cm.Blues
+
+    normalize:    If False, plot the raw numbers
+                  If True, plot the proportions
+
+    Source:
+    https://www.kaggle.com/grfiv4/plot-a-confusion-matrix
+
+    &#34;&#34;&#34;
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import itertools
+
+    accuracy = np.trace(cm) / float(np.sum(cm))
+    misclass = 1 - accuracy
+
+    if cmap is None:
+        cmap = plt.get_cmap(&#39;Blues&#39;)
+
+    plt.figure(figsize=(8, 6))
+    plt.imshow(cm, interpolation=&#39;nearest&#39;, cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+
+    if target_names is not None:
+        tick_marks = np.arange(len(target_names))
+        plt.xticks(tick_marks, target_names, rotation=45)
+        plt.yticks(tick_marks, target_names)
+
+    if normalize:
+        cm = cm.astype(&#39;float&#39;) / cm.sum(axis=1)[:, np.newaxis]
+
+
+    thresh = cm.max() / 1.5 if normalize else cm.max() / 2
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        if normalize:
+            plt.text(j, i, &#34;{:0.4f}&#34;.format(cm[i, j]),
+                     horizontalalignment=&#34;center&#34;,
+                     color=&#34;white&#34; if cm[i, j] &gt; thresh else &#34;black&#34;)
+        else:
+            plt.text(j, i, &#34;{:,}&#34;.format(cm[i, j]),
+                     horizontalalignment=&#34;center&#34;,
+                     color=&#34;white&#34; if cm[i, j] &gt; thresh else &#34;black&#34;)
+
+    plt.tight_layout()
+    plt.ylabel(&#39;True label&#39;)
+    plt.xlabel(&#39;Predicted label\naccuracy={:0.4f}; misclass={:0.4f}&#39;.format(accuracy, misclass))
+    plt.show()
+
+
+
+def show_confusion_matrix(model, target_data_set):
+    &#39;&#39;&#39;
+    Returns Confusion Matrix for Neural Network Image Classifier
+    &#39;&#39;&#39;
+    true_labels = []
+    pred_labels = []
+    for i, l in target_data_set:
+        true_labels.append(l)
+
+        target_img_tensor = i.unsqueeze(1)
+        with torch.no_grad():
+            model.to(&#39;cpu&#39;)
+            target_img_tensor.to(&#39;cpu&#39;)
+            model.eval()
+            out = model(target_img_tensor)
+            ps = torch.exp(out)
+            prediction_percentages = ps.cpu().numpy()[0]
+            pred = prediction_percentages.index(max(prediction_percentages))
+            pred_labels.append(pred)
+
+    cm = metrics.confusion_matrix(true_labels, pred_labels)
+    plot_confusion_matrix(cm=cm,
+                          target_names=target_data_set.classes(),
+                          title=&#39;Confusion Matrix&#39;,
+                          cmap=None,
+                          normalize=False)</code></pre>
 </details>
 </section>
 <section>
@@ -170,6 +281,135 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="radtorch.visutils.plot_confusion_matrix"><code class="name flex">
+<span>def <span class="ident">plot_confusion_matrix</span></span>(<span>cm, target_names, title='Confusion Matrix', cmap=None, normalize=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>given a sklearn confusion matrix (cm), make a nice plot</p>
+<p>Inputs:
+cm: confusion matrix from sklearn.metrics.confusion_matrix</p>
+<p>target_names: given classification classes such as [0, 1, 2]
+the class names, for example: ['high', 'medium', 'low']</p>
+<p>title:
+the text to display at the top of the matrix</p>
+<p>cmap:
+the gradient of the values displayed from matplotlib.pyplot.cm
+see <a href="http://matplotlib.org/examples/color/colormaps_reference.html">http://matplotlib.org/examples/color/colormaps_reference.html</a>
+plt.get_cmap('jet') or plt.cm.Blues</p>
+<p>normalize:
+If False, plot the raw numbers
+If True, plot the proportions</p>
+<p>Source:
+<a href="https://www.kaggle.com/grfiv4/plot-a-confusion-matrix">https://www.kaggle.com/grfiv4/plot-a-confusion-matrix</a></p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_confusion_matrix(cm,
+                          target_names,
+                          title=&#39;Confusion Matrix&#39;,
+                          cmap=None,
+                          normalize=False):
+    &#34;&#34;&#34;
+    given a sklearn confusion matrix (cm), make a nice plot
+
+    Inputs:
+    cm: confusion matrix from sklearn.metrics.confusion_matrix
+
+    target_names: given classification classes such as [0, 1, 2]
+                  the class names, for example: [&#39;high&#39;, &#39;medium&#39;, &#39;low&#39;]
+
+    title:        the text to display at the top of the matrix
+
+    cmap:         the gradient of the values displayed from matplotlib.pyplot.cm
+                  see http://matplotlib.org/examples/color/colormaps_reference.html
+                  plt.get_cmap(&#39;jet&#39;) or plt.cm.Blues
+
+    normalize:    If False, plot the raw numbers
+                  If True, plot the proportions
+
+    Source:
+    https://www.kaggle.com/grfiv4/plot-a-confusion-matrix
+
+    &#34;&#34;&#34;
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import itertools
+
+    accuracy = np.trace(cm) / float(np.sum(cm))
+    misclass = 1 - accuracy
+
+    if cmap is None:
+        cmap = plt.get_cmap(&#39;Blues&#39;)
+
+    plt.figure(figsize=(8, 6))
+    plt.imshow(cm, interpolation=&#39;nearest&#39;, cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+
+    if target_names is not None:
+        tick_marks = np.arange(len(target_names))
+        plt.xticks(tick_marks, target_names, rotation=45)
+        plt.yticks(tick_marks, target_names)
+
+    if normalize:
+        cm = cm.astype(&#39;float&#39;) / cm.sum(axis=1)[:, np.newaxis]
+
+
+    thresh = cm.max() / 1.5 if normalize else cm.max() / 2
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        if normalize:
+            plt.text(j, i, &#34;{:0.4f}&#34;.format(cm[i, j]),
+                     horizontalalignment=&#34;center&#34;,
+                     color=&#34;white&#34; if cm[i, j] &gt; thresh else &#34;black&#34;)
+        else:
+            plt.text(j, i, &#34;{:,}&#34;.format(cm[i, j]),
+                     horizontalalignment=&#34;center&#34;,
+                     color=&#34;white&#34; if cm[i, j] &gt; thresh else &#34;black&#34;)
+
+    plt.tight_layout()
+    plt.ylabel(&#39;True label&#39;)
+    plt.xlabel(&#39;Predicted label\naccuracy={:0.4f}; misclass={:0.4f}&#39;.format(accuracy, misclass))
+    plt.show()</code></pre>
+</details>
+</dd>
+<dt id="radtorch.visutils.show_confusion_matrix"><code class="name flex">
+<span>def <span class="ident">show_confusion_matrix</span></span>(<span>model, target_data_set)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Returns Confusion Matrix for Neural Network Image Classifier</p></section>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show_confusion_matrix(model, target_data_set):
+    &#39;&#39;&#39;
+    Returns Confusion Matrix for Neural Network Image Classifier
+    &#39;&#39;&#39;
+    true_labels = []
+    pred_labels = []
+    for i, l in target_data_set:
+        true_labels.append(l)
+
+        target_img_tensor = i.unsqueeze(1)
+        with torch.no_grad():
+            model.to(&#39;cpu&#39;)
+            target_img_tensor.to(&#39;cpu&#39;)
+            model.eval()
+            out = model(target_img_tensor)
+            ps = torch.exp(out)
+            prediction_percentages = ps.cpu().numpy()[0]
+            pred = prediction_percentages.index(max(prediction_percentages))
+            pred_labels.append(pred)
+
+    cm = metrics.confusion_matrix(true_labels, pred_labels)
+    plot_confusion_matrix(cm=cm,
+                          target_names=target_data_set.classes(),
+                          title=&#39;Confusion Matrix&#39;,
+                          cmap=None,
+                          normalize=False)</code></pre>
+</details>
+</dd>
 <dt id="radtorch.visutils.show_dataloader_sample"><code class="name flex">
 <span>def <span class="ident">show_dataloader_sample</span></span>(<span>dataloader, num_of_images_per_row=10, figsize=(10, 10), show_labels=True)</span>
 </code></dt>
@@ -310,7 +550,7 @@ Returns a single image in case of one window and 3 images in case of mutiple win
     &#34;&#34;&#34;
     Displays metrics created by the training loop
 
-    .. image:: pass.jpg    
+    .. image:: pass.jpg
     &#34;&#34;&#34;
 
     metrics = np.array(source)
@@ -330,50 +570,25 @@ Returns a single image in case of one window and 3 images in case of mutiple win
 </details>
 </dd>
 <dt id="radtorch.visutils.show_roc"><code class="name flex">
-<span>def <span class="ident">show_roc</span></span>(<span>true_labels, predicted_labels, auc=True, figsize=(10, 10), title='ROC Curve')</span>
+<span>def <span class="ident">show_roc</span></span>(<span>true_labels, predictions, auc=True, fig_size=(10, 10))</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Displays ROC curve of a certain model and the AUC</p>
-<h2 id="inputs">Inputs</h2>
-<dl>
-<dt><strong><code>true_labels</code></strong></dt>
-<dd>[list] true labels of test set</dd>
-<dt><strong><code>predicted_labels</code></strong></dt>
-<dd>[list] predicted labels of test set using target model</dd>
-<dt><strong><code>auc</code></strong></dt>
-<dd>[boolen] displays area under curve for ROC (default=True)</dd>
-<dt><strong><code>figsize</code></strong></dt>
-<dd>[tuple] size of displayed figure (default = (10,10))</dd>
-<dt><strong><code>title</code></strong></dt>
-<dd>[str] title of the displayed curve (default = 'ROC Curve')</dd>
-</dl>
-<p><img alt="" src="pass.jpg"></p></section>
+<section class="desc"></section>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def show_roc(true_labels, predicted_labels, auc = True, figsize=(10,10), title=&#39;ROC Curve&#39;):
-    &#34;&#34;&#34;
-    Displays ROC curve of a certain model and the AUC
-    Inputs:
-        true_labels: [list] true labels of test set
-        predicted_labels: [list] predicted labels of test set using target model
-        auc: [boolen] displays area under curve for ROC (default=True)
-        figsize: [tuple] size of displayed figure (default = (10,10))
-        title: [str] title of the displayed curve (default = &#39;ROC Curve&#39;)
-
-    .. image:: pass.jpg
-    &#34;&#34;&#34;
-
-    fpr, tpr, thresholds = metrics.roc_curve(true_labels, predicted_labels)
-    plt.figure(figsize=figsize)
+<pre><code class="python">def show_roc(true_labels, predictions, auc=True, fig_size=(10,10)):
+    fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
+    plt.figure(figsize=(5,5))
     plt.plot(fpr, tpr)
-    plt.title(title);
+    plt.title(&#39;ROC Curve&#39;);
     plt.xlabel(&#39;FPR (1-specficity)&#39;);
     plt.ylabel(&#39;TPR (Sensitivity)&#39;);
     plt.grid(True)
-    if auc:
-        print (metrics.roc_auc_score(true_labels, predicted_labels))</code></pre>
+    if auc == True:
+        print (metrics.roc_auc_score(true_labels, predictions))
+        return metrics.roc_auc_score(true_labels, predictions)</code></pre>
 </details>
 </dd>
 </dl>
@@ -394,6 +609,8 @@ Returns a single image in case of one window and 3 images in case of mutiple win
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="radtorch.visutils.plot_confusion_matrix" href="#radtorch.visutils.plot_confusion_matrix">plot_confusion_matrix</a></code></li>
+<li><code><a title="radtorch.visutils.show_confusion_matrix" href="#radtorch.visutils.show_confusion_matrix">show_confusion_matrix</a></code></li>
 <li><code><a title="radtorch.visutils.show_dataloader_sample" href="#radtorch.visutils.show_dataloader_sample">show_dataloader_sample</a></code></li>
 <li><code><a title="radtorch.visutils.show_dataset_info" href="#radtorch.visutils.show_dataset_info">show_dataset_info</a></code></li>
 <li><code><a title="radtorch.visutils.show_dicom_sample" href="#radtorch.visutils.show_dicom_sample">show_dicom_sample</a></code></li>

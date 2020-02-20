@@ -210,14 +210,12 @@ class Image_Classification():
         '''
         show_metrics(self.train_metrics)
 
-
     def export_classifier(self,output_path):
         '''
         Exports the trained model into a target file.
         '''
         torch.save(self.trained_model, output_path)
         print ('Trained classifier exported successfully.')
-
 
     def set_trained_model(self, model_path, mode):
         '''
@@ -232,12 +230,23 @@ class Image_Classification():
             self.trained_model = torch.load(model_path)
         print ('Model Loaded Successfully.')
 
-
     def classifier_inference(self, test_img_path):
         '''
         Performs inference on target DICOM image using a trained classifier.
         '''
         model_inference(model=self.trained_model,input_image_path=test_img_path, trans=self.trans)
+
+    # def confusion_matrix(self):
+    #     true_label = []
+    #     for i, x in self.valid_data_set:
+    #         true_label.apend(x)
+    #         model_inference(model=self.trained_model,input_image_path=test_img_path, trans=self.trans)
+
+    # def roc(self):
+
+
+
+
 
 #
 # class Pipeline():

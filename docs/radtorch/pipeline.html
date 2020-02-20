@@ -234,14 +234,12 @@ class Image_Classification():
         &#39;&#39;&#39;
         show_metrics(self.train_metrics)
 
-
     def export_classifier(self,output_path):
         &#39;&#39;&#39;
         Exports the trained model into a target file.
         &#39;&#39;&#39;
         torch.save(self.trained_model, output_path)
         print (&#39;Trained classifier exported successfully.&#39;)
-
 
     def set_trained_model(self, model_path, mode):
         &#39;&#39;&#39;
@@ -256,12 +254,23 @@ class Image_Classification():
             self.trained_model = torch.load(model_path)
         print (&#39;Model Loaded Successfully.&#39;)
 
-
     def classifier_inference(self, test_img_path):
         &#39;&#39;&#39;
         Performs inference on target DICOM image using a trained classifier.
         &#39;&#39;&#39;
         model_inference(model=self.trained_model,input_image_path=test_img_path, trans=self.trans)
+
+    # def confusion_matrix(self):
+    #     true_label = []
+    #     for i, x in self.valid_data_set:
+    #         true_label.apend(x)
+    #         model_inference(model=self.trained_model,input_image_path=test_img_path, trans=self.trans)
+
+    # def roc(self):
+
+
+
+
 
 #
 # class Pipeline():
@@ -660,14 +669,12 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
         &#39;&#39;&#39;
         show_metrics(self.train_metrics)
 
-
     def export_classifier(self,output_path):
         &#39;&#39;&#39;
         Exports the trained model into a target file.
         &#39;&#39;&#39;
         torch.save(self.trained_model, output_path)
         print (&#39;Trained classifier exported successfully.&#39;)
-
 
     def set_trained_model(self, model_path, mode):
         &#39;&#39;&#39;
@@ -681,7 +688,6 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
         elif mode == &#39;infer&#39;:
             self.trained_model = torch.load(model_path)
         print (&#39;Model Loaded Successfully.&#39;)
-
 
     def classifier_inference(self, test_img_path):
         &#39;&#39;&#39;

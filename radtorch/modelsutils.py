@@ -283,8 +283,8 @@ def model_inference(model, input_image_path, trans=transforms.Compose([transform
         out = model(target_img_tensor)
         ps = torch.exp(out)
         prediction_percentages = ps.cpu().numpy()[0]
-
-        print (prediction_percentages)
+        pred = prediction_percentages.index(max(prediction_percentages))
+        print (pred, max(prediction_percentages))
 
 
 

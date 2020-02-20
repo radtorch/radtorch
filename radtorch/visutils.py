@@ -90,7 +90,7 @@ def show_metrics(source, fig_size=(15,5)):
     """
     Displays metrics created by the training loop
 
-    .. image:: pass.jpg    
+    .. image:: pass.jpg
     """
 
     metrics = np.array(source)
@@ -135,3 +135,114 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
     else:
         plt.imshow(i[0][0], cmap='gray');
         plt.title(l[0]);
+
+
+def show_roc(true_labels, predictions, auc=True, fig_size=(10,10)):
+    fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
+    plt.figure(figsize=(5,5))
+    plt.plot(fpr, tpr)
+    plt.title('ROC Curve');
+    plt.xlabel('FPR (1-specficity)');
+    plt.ylabel('TPR (Sensitivity)');
+    plt.grid(True)
+    if auc == True:
+        print (metrics.roc_auc_score(true_labels, predictions))
+        return metrics.roc_auc_score(true_labels, predictions)
+
+
+
+def plot_confusion_matrix(cm,
+                          target_names,
+                          title='Confusion Matrix',
+                          cmap=None,
+                          normalize=False):
+    """
+    given a sklearn confusion matrix (cm), make a nice plot
+
+    Inputs:
+    cm: confusion matrix from sklearn.metrics.confusion_matrix
+
+    target_names: given classification classes such as [0, 1, 2]
+                  the class names, for example: ['high', 'medium', 'low']
+
+    title:        the text to display at the top of the matrix
+
+    cmap:         the gradient of the values displayed from matplotlib.pyplot.cm
+                  see http://matplotlib.org/examples/color/colormaps_reference.html
+                  plt.get_cmap('jet') or plt.cm.Blues
+
+    normalize:    If False, plot the raw numbers
+                  If True, plot the proportions
+
+    Source:
+    https://www.kaggle.com/grfiv4/plot-a-confusion-matrix
+
+    """
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import itertools
+
+    accuracy = np.trace(cm) / float(np.sum(cm))
+    misclass = 1 - accuracy
+
+    if cmap is None:
+        cmap = plt.get_cmap('Blues')
+
+    plt.figure(figsize=(8, 6))
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+
+    if target_names is not None:
+        tick_marks = np.arange(len(target_names))
+        plt.xticks(tick_marks, target_names, rotation=45)
+        plt.yticks(tick_marks, target_names)
+
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+
+
+    thresh = cm.max() / 1.5 if normalize else cm.max() / 2
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        if normalize:
+            plt.text(j, i, "{:0.4f}".format(cm[i, j]),
+                     horizontalalignment="center",
+                     color="white" if cm[i, j] > thresh else "black")
+        else:
+            plt.text(j, i, "{:,}".format(cm[i, j]),
+                     horizontalalignment="center",
+                     color="white" if cm[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
+    plt.show()
+
+
+
+def show_confusion_matrix(model, target_data_set):
+    '''
+    Returns Confusion Matrix for Neural Network Image Classifier
+    '''
+    true_labels = []
+    pred_labels = []
+    for i, l in target_data_set:
+        true_labels.append(l)
+
+        target_img_tensor = i.unsqueeze(1)
+        with torch.no_grad():
+            model.to('cpu')
+            target_img_tensor.to('cpu')
+            model.eval()
+            out = model(target_img_tensor)
+            ps = torch.exp(out)
+            prediction_percentages = ps.cpu().numpy()[0]
+            pred = prediction_percentages.index(max(prediction_percentages))
+            pred_labels.append(pred)
+
+    cm = metrics.confusion_matrix(true_labels, pred_labels)
+    plot_confusion_matrix(cm=cm,
+                          target_names=target_data_set.classes(),
+                          title='Confusion Matrix',
+                          cmap=None,
+                          normalize=False)
