@@ -164,6 +164,7 @@ def show_nn_roc(model, target_data_set, auc=True, fig_size=(10,10)):
             model.eval()
             out = model(target_img_tensor)
             # ps = torch.exp(out)
+            ps = out
             prediction_percentages = (ps.cpu().numpy()[0]).tolist()
             pred = prediction_percentages.index(max(prediction_percentages))
             pred_labels.append(pred)
