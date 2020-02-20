@@ -238,7 +238,7 @@ class Image_Classification():
         print (pred)
 
     def confusion_matrix(self):
-        show_confusion_matrix(model=self.trained_model, target_data_set=self.valid_data_set)
+        show_confusion_matrix(model=self.trained_model, target_data_set=self.valid_data_set, target_classes=self.data_set.classes())
 
 
     # def roc(self):

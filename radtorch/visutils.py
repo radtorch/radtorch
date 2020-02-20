@@ -220,7 +220,7 @@ def plot_confusion_matrix(cm,
 
 
 
-def show_confusion_matrix(model, target_data_set):
+def show_confusion_matrix(model, target_data_set, target_classes):
     '''
     Returns Confusion Matrix for Neural Network Image Classifier
     '''
@@ -242,7 +242,7 @@ def show_confusion_matrix(model, target_data_set):
 
     cm = metrics.confusion_matrix(true_labels, pred_labels)
     plot_confusion_matrix(cm=cm,
-                          target_names=target_data_set.classes(),
+                          target_names=target_classes,
                           title='Confusion Matrix',
                           cmap=None,
                           normalize=False)
