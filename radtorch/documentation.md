@@ -88,6 +88,16 @@ clf.train_classifier()
     <td class="tg-09jq">224x224</td>
     <td class="tg-09jq">2048</td>
   </tr>
+    <tr>
+    <td class="tg-dfrc">wide_resnet50_2</td>
+    <td class="tg-09jq">224x224</td>
+    <td class="tg-09jq">2048</td>
+  </tr>
+  <tr>
+    <td class="tg-dfrc">wide_resnet101_</td>
+    <td class="tg-09jq">224x224</td>
+    <td class="tg-09jq">2048</td>
+  </tr>  
 </table>
 
 
