@@ -198,7 +198,7 @@ class dataset_from_table(Dataset):
             image = Image.fromarray(image)
 
         else:
-            image = Image.open(img_path).convert('RGB')
+            image = Image.open(image_path).convert('RGB')
 
         image = self.trans(image)
 
@@ -276,7 +276,7 @@ class dataset_from_folder(Dataset):
             image = Image.fromarray(image)
 
         else:
-            image = Image.open(img_path).convert('RGB')
+            image = Image.open(image_path).convert('RGB')
 
         image = self.trans(image)
 
