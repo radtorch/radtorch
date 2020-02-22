@@ -72,7 +72,7 @@ class Image_Classification():
     def __init__(
     self,
     data_directory,
-    trans='default',
+    transformations='default',
     device='default',
     optimizer='Adam',
     is_dicom=True,
@@ -96,10 +96,10 @@ class Image_Classification():
         self.table_source = table_source
         self.mode = mode
         self.wl = wl
-        if trans == 'default':
-            self.trans = transforms.Compose([transforms.ToTensor()])
+        if transformations == 'default':
+            self.transformations = transforms.Compose([transforms.ToTensor()])
         else:
-            self.trans = trans
+            self.transformations = transformations
         self.trans = trans
         self.batch_size = batch_size
         self.test_split = test_split
@@ -128,7 +128,7 @@ class Image_Classification():
                     img_label_column=self.label_col,
                     mode=self.mode,
                     wl=self.wl,
-                    trans=self.trans)
+                    trans=self.transformations)
 
         else:
             self.data_set = dataset_from_folder(
@@ -136,7 +136,7 @@ class Image_Classification():
                         is_dicom=self.is_dicom,
                         mode=self.mode,
                         wl=self.wl,
-                        trans=self.trans)
+                        trans=self.transformations)
 
         # Create DataLoader
 
@@ -245,9 +245,9 @@ class Image_Classification():
         Performs inference on target DICOM image using a trained classifier.
         '''
         if transforms:
-            transforms = set_transforms
+            transforms = transforms
         else:
-            transforms = self.trans
+            transforms = self.transformations
         pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, trans=transforms)
         print (pred)
 
