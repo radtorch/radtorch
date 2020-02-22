@@ -20,122 +20,6 @@
 <h1 class="title">Module <code>radtorch.dicomutils</code></h1>
 </header>
 <section id="section-intro">
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">import torch, torchvision, datetime, time, pickle, pydicom, os
-import torchvision.models as models
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import torchvision.datasets as datasets
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-
-
-from sklearn import metrics
-from tqdm import tqdm_notebook as tqdm
-from torch.utils.data.dataset import Dataset
-from torchvision import transforms
-from PIL import Image
-from pathlib import Path
-
-
-
-def window_dicom(filepath, level, width):
-    &#34;&#34;&#34;
-    :white_check_mark:
-    Converts DICOM image to numpy array with certain width and level
-    Inputs:
-        filepath: [str] input DICOM image path.
-        level: [int] requested window level.
-        width: [int] requested window width.
-    Outputs:
-        output: [array] windowed image numpy array.
-
-    .. image:: pass.jpg
-    &#34;&#34;&#34;
-
-    ds = pydicom.read_file(filepath)
-    pixels = ds.pixel_array
-    if ds.Modality == &#39;CT&#39;:
-        img_hu = pixels*ds.RescaleSlope + ds.RescaleIntercept
-        lower = level - (width / 2)
-        upper = level + (width / 2)
-        img_hu[img_hu&lt;=lower] = lower
-        img_hu[img_hu&gt;=upper] = upper
-        return img_hu
-    else:
-        return (pixels)
-
-def dicom_to_narray(filepath, mode=&#39;RAW&#39;, wl=None):
-    &#34;&#34;&#34;
-    Converts DICOM image to a numpy array with target changes as below.
-    Inputs:
-        filepath: [str] input dicom image path.
-        mode: [str] output mode. (default=&#39;RAW&#39;)
-            options: RAW= Raw pixels,
-            HU= Image converted to Hounsefield Units,
-            WIN= &#39;window&#39; image windowed to certain W and L,
-            MWIN = &#39;multi-window&#39; converts image to 3 windowed images of different W and L (specifiied in wl argument) stacked together].
-        wl: [list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
-            In the form of : [[Level,Width], [Level,Width],...].
-            Only 3 combinations are allowed for MWIN (for now).
-    Outputs:
-        output: [array] of same shape as input DICOM image with 1 channel. In case of MWIN mode, output has same size by 3 channels.
-
-    .. image:: pass.jpg
-    &#34;&#34;&#34;
-
-    if mode == &#39;RAW&#39;:
-        ds = pydicom.read_file(filepath)
-        img = ds.pixel_array
-        return img
-    elif mode == &#39;HU&#39;:
-        ds = pydicom.read_file(filepath)
-        pixels = ds.pixel_array
-        if ds.Modality == &#39;CT&#39;:
-            hu_img = pixels*ds.RescaleSlope + ds.RescaleIntercept
-        else:
-            hu_img = pixels
-        return hu_img
-    elif mode == &#39;WIN&#39;:
-        if wl==None:
-            print (&#39;Error! argument &#34;wl&#34; cannot be empty when &#34;WIN&#34; mode is selected&#39;)
-        elif len(wl) != 1:
-            print (&#39;Error! argument &#34;wl&#34; can only accept 1 combination of W and L when &#34;WIN&#34; mode is selected&#39;)
-        else:
-            win_img = window_dicom(filepath, wl[0][0], wl[0][1])
-            return win_img
-    elif mode == &#39;MWIN&#39;:
-        if wl==None:
-            print (&#39;Error! argument &#34;wl&#34; cannot be empty when &#34;MWIN&#34; mode is selected&#39;)
-        elif len(wl)!=3:
-            print (&#39;Error! argument &#34;wl&#34; must contain 3 combinations of W and L when &#34;MWIN&#34; mode is selected&#39;)
-        else:
-            img0 = window_dicom(filepath, wl[0][0], wl[0][1]).astype(&#39;int16&#39;)
-            img1 = window_dicom(filepath, wl[1][0], wl[1][1]).astype(&#39;int16&#39;)
-            img2 = window_dicom(filepath, wl[2][0], wl[2][1]).astype(&#39;int16&#39;)
-            mwin_img = np.stack((img0,img1,img2), axis=-1)
-            return mwin_img
-
-def dicom_to_pil(filepath):
-  &#39;&#39;&#39;
-    Converts DICOM image to PIL image object.
-    Inputs:
-        filepath: [str] path to target DICOM file.
-    Outputs:
-        Output: [pil image object]
-
-    .. image:: pass.jpg
-  &#39;&#39;&#39;
-  ds = pydicom.read_file(filepath)
-  pixels = ds.pixel_array
-  pil_image = Image.fromarray(np.rollaxis(pixels, 0,1))
-  return pil_image</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -170,61 +54,6 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 <dd>[array] of same shape as input DICOM image with 1 channel. In case of MWIN mode, output has same size by 3 channels.</dd>
 </dl>
 <p><img alt="" src="pass.jpg"></p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def dicom_to_narray(filepath, mode=&#39;RAW&#39;, wl=None):
-    &#34;&#34;&#34;
-    Converts DICOM image to a numpy array with target changes as below.
-    Inputs:
-        filepath: [str] input dicom image path.
-        mode: [str] output mode. (default=&#39;RAW&#39;)
-            options: RAW= Raw pixels,
-            HU= Image converted to Hounsefield Units,
-            WIN= &#39;window&#39; image windowed to certain W and L,
-            MWIN = &#39;multi-window&#39; converts image to 3 windowed images of different W and L (specifiied in wl argument) stacked together].
-        wl: [list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
-            In the form of : [[Level,Width], [Level,Width],...].
-            Only 3 combinations are allowed for MWIN (for now).
-    Outputs:
-        output: [array] of same shape as input DICOM image with 1 channel. In case of MWIN mode, output has same size by 3 channels.
-
-    .. image:: pass.jpg
-    &#34;&#34;&#34;
-
-    if mode == &#39;RAW&#39;:
-        ds = pydicom.read_file(filepath)
-        img = ds.pixel_array
-        return img
-    elif mode == &#39;HU&#39;:
-        ds = pydicom.read_file(filepath)
-        pixels = ds.pixel_array
-        if ds.Modality == &#39;CT&#39;:
-            hu_img = pixels*ds.RescaleSlope + ds.RescaleIntercept
-        else:
-            hu_img = pixels
-        return hu_img
-    elif mode == &#39;WIN&#39;:
-        if wl==None:
-            print (&#39;Error! argument &#34;wl&#34; cannot be empty when &#34;WIN&#34; mode is selected&#39;)
-        elif len(wl) != 1:
-            print (&#39;Error! argument &#34;wl&#34; can only accept 1 combination of W and L when &#34;WIN&#34; mode is selected&#39;)
-        else:
-            win_img = window_dicom(filepath, wl[0][0], wl[0][1])
-            return win_img
-    elif mode == &#39;MWIN&#39;:
-        if wl==None:
-            print (&#39;Error! argument &#34;wl&#34; cannot be empty when &#34;MWIN&#34; mode is selected&#39;)
-        elif len(wl)!=3:
-            print (&#39;Error! argument &#34;wl&#34; must contain 3 combinations of W and L when &#34;MWIN&#34; mode is selected&#39;)
-        else:
-            img0 = window_dicom(filepath, wl[0][0], wl[0][1]).astype(&#39;int16&#39;)
-            img1 = window_dicom(filepath, wl[1][0], wl[1][1]).astype(&#39;int16&#39;)
-            img2 = window_dicom(filepath, wl[2][0], wl[2][1]).astype(&#39;int16&#39;)
-            mwin_img = np.stack((img0,img1,img2), axis=-1)
-            return mwin_img</code></pre>
-</details>
 </dd>
 <dt id="radtorch.dicomutils.dicom_to_pil"><code class="name flex">
 <span>def <span class="ident">dicom_to_pil</span></span>(<span>filepath)</span>
@@ -242,25 +71,6 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 <dd>[pil image object]</dd>
 </dl>
 <p><img alt="" src="pass.jpg"></p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def dicom_to_pil(filepath):
-  &#39;&#39;&#39;
-    Converts DICOM image to PIL image object.
-    Inputs:
-        filepath: [str] path to target DICOM file.
-    Outputs:
-        Output: [pil image object]
-
-    .. image:: pass.jpg
-  &#39;&#39;&#39;
-  ds = pydicom.read_file(filepath)
-  pixels = ds.pixel_array
-  pil_image = Image.fromarray(np.rollaxis(pixels, 0,1))
-  return pil_image</code></pre>
-</details>
 </dd>
 <dt id="radtorch.dicomutils.window_dicom"><code class="name flex">
 <span>def <span class="ident">window_dicom</span></span>(<span>filepath, level, width)</span>
@@ -283,36 +93,6 @@ Converts DICOM image to numpy array with certain width and level</p>
 <dd>[array] windowed image numpy array.</dd>
 </dl>
 <p><img alt="" src="pass.jpg"></p></section>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def window_dicom(filepath, level, width):
-    &#34;&#34;&#34;
-    :white_check_mark:
-    Converts DICOM image to numpy array with certain width and level
-    Inputs:
-        filepath: [str] input DICOM image path.
-        level: [int] requested window level.
-        width: [int] requested window width.
-    Outputs:
-        output: [array] windowed image numpy array.
-
-    .. image:: pass.jpg
-    &#34;&#34;&#34;
-
-    ds = pydicom.read_file(filepath)
-    pixels = ds.pixel_array
-    if ds.Modality == &#39;CT&#39;:
-        img_hu = pixels*ds.RescaleSlope + ds.RescaleIntercept
-        lower = level - (width / 2)
-        upper = level + (width / 2)
-        img_hu[img_hu&lt;=lower] = lower
-        img_hu[img_hu&gt;=upper] = upper
-        return img_hu
-    else:
-        return (pixels)</code></pre>
-</details>
 </dd>
 </dl>
 </section>

@@ -24,6 +24,8 @@ from radtorch.datautils import dataset_from_folder, dataset_from_table
 from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc, show_nn_roc
 
 
+
+
 class Image_Classification():
     """
     Creates an Image Classification Pipeline.
@@ -52,15 +54,16 @@ class Image_Classification():
         num_input_channels: [int] Number of input image channels. Grayscale DICOM images usually have 1 channel. Colored images have 3. (default=1)
         train_epochs: [int] Number of training epochs. (default=20)
         learning_rate: [float] training learning rate. (default = 0.001)
-        loss_function: [str] training loss function. (default='NLLLoss')
+        loss_function: [str] training loss function. (default='CrossEntropyLoss')
         optimizer: [str] Optimizer to be used during training. (default='Adam')
-        device: [str] device to be used for training (default='cpu'). This can be 'cpu' or 'gpu'. (default='cpu')
+        device: [str] device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
 
     Outputs:
         Output: Image Classification Model
 
     Examples:
     ```
+
     ```
 
     .. image:: pass.jpg
@@ -70,7 +73,7 @@ class Image_Classification():
     self,
     data_directory,
     optimizer='Adam',
-    trans=transforms.Compose([transforms.ToTensor()]),
+    trans=None,
     is_dicom=True,
     label_from_table=False,
     is_csv=None,
@@ -84,8 +87,8 @@ class Image_Classification():
     num_input_channels=1,
     train_epochs=20,
     learning_rate=0.001,
-    loss_function='NLLLoss',
-    device='cpu'):
+    loss_function='CrossEntropyLoss',
+    device=None):
         self.data_directory = data_directory
         self.label_from_table = label_from_table
         self.is_csv = is_csv
@@ -93,6 +96,10 @@ class Image_Classification():
         self.table_source = table_source
         self.mode = mode
         self.wl = wl
+        if trans:
+            self.trans = trans
+        else:
+            self.trans = transforms.Compose([transforms.ToTensor()])
         self.trans = trans
         self.batch_size = batch_size
         self.test_split = test_split
@@ -103,9 +110,12 @@ class Image_Classification():
         self.learning_rate = learning_rate
         self.loss_function = loss_function
         self.optimizer = optimizer
-        self.device = device
         self.path_col = 'IMAGE_PATH'
         self.label_col = 'IMAGE_LABEL'
+        if device:
+            self.device == device
+        else:
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # Create DataSet
         if self.label_from_table == True:
@@ -164,7 +174,7 @@ class Image_Classification():
 
 
 
-    def show_info(self):
+    def info(self):
         '''
         Displays Image Classification Pipeline Parameters.
         '''
@@ -175,7 +185,7 @@ class Image_Classification():
         print ('Train Dataset Size =', len(self.train_data_set))
         print ('Valid Dataset Size =', len(self.valid_data_set))
 
-    def show_dataset_info(self,):
+    def dataset_info(self):
         '''
         Displays Dataset Information.
         '''
@@ -183,13 +193,13 @@ class Image_Classification():
         print ('Train Dataset Size ', len(self.train_data_set))
         print ('Valid Dataset Size ', len(self.valid_data_set))
 
-    def show_sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):
+    def sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):
         '''
         Displays sample of the training dataset.
         '''
         return show_dataloader_sample(dataloader=self.train_data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
 
-    def train_classifier(self):
+    def train(self):
         '''
         Train the created image classifier.
         '''
@@ -204,13 +214,13 @@ class Image_Classification():
                                                 epochs = self.train_epochs,
                                                 device = self.device)
 
-    def show_train_metrics(self):
+    def train_metrics(self):
         '''
         Display the training metrics.
         '''
         show_metrics(self.train_metrics)
 
-    def export_classifier(self,output_path):
+    def export_model(self,output_path):
         '''
         Exports the trained model into a target file.
         '''
@@ -230,19 +240,38 @@ class Image_Classification():
             self.trained_model = torch.load(model_path)
         print ('Model Loaded Successfully.')
 
-    def classifier_inference(self, test_img_path):
+    def inference(self, test_img_path, transforms=False):
         '''
         Performs inference on target DICOM image using a trained classifier.
         '''
-        pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, trans=self.trans)
+        if transforms:
+            transforms = set_transforms
+        else:
+            transforms = self.trans
+        pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, trans=transforms)
         print (pred)
 
-    def confusion_matrix(self):
-        show_confusion_matrix(model=self.trained_model, target_data_set=self.valid_data_set, target_classes=self.data_set.classes)
+    def confusion_matrix(self, target_data_set=False, target_classes=False):
+        if target_data_set:
+            target_data_set = target_data_set
+        else:
+            target_data_set = self.valid_data_set
+
+        if target_classes:
+            target_classes = target_classes
+        else:
+            target_classes = self.data_set.classes
+
+        show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes)
 
 
-    def roc(self):
-        show_nn_roc(model=self.trained_model, target_data_set=self.valid_data_set, auc=True, fig_size=(10,10))
+    def roc(self, target_data_set=False, auc=True, fig_size=(10,10)):
+        if target_data_set:
+            target_data_set = target_data_set
+        else:
+            target_data_set = self.valid_data_set
+
+        show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, fig_size=fig_size)
 
 
 
