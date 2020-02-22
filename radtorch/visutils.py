@@ -42,29 +42,6 @@ def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10)
   if show_labels:
       print ('labels:', labels)
 
-def show_roc(true_labels, predicted_labels, auc = True, figsize=(10,10), title='ROC Curve'):
-    """
-    Displays ROC curve of a certain model and the AUC
-    Inputs:
-        true_labels: [list] true labels of test set
-        predicted_labels: [list] predicted labels of test set using target model
-        auc: [boolen] displays area under curve for ROC (default=True)
-        figsize: [tuple] size of displayed figure (default = (10,10))
-        title: [str] title of the displayed curve (default = 'ROC Curve')
-
-    .. image:: pass.jpg
-    """
-
-    fpr, tpr, thresholds = metrics.roc_curve(true_labels, predicted_labels)
-    plt.figure(figsize=figsize)
-    plt.plot(fpr, tpr)
-    plt.title(title);
-    plt.xlabel('FPR (1-specficity)');
-    plt.ylabel('TPR (Sensitivity)');
-    plt.grid(True)
-    if auc:
-        print (metrics.roc_auc_score(true_labels, predicted_labels))
-
 def show_dataset_info(dataset):
     """
     Displays a summary of the pytorch dataset information
@@ -137,20 +114,28 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
         plt.title(l[0]);
 
 
-def show_roc(true_labels, predictions, auc=True, fig_size=(10,10)):
+def show_roc(true_labels, predictions, auc=True, fig_size=(10,10), title='ROC Curve'):
+    """
+    Displays ROC curve of a certain model and the AUC
+    Inputs:
+        true_labels: [list] true labels of test set
+        predicted_labels: [list] predicted labels of test set using target model
+        auc: [boolen] displays area under curve for ROC (default=True)
+        figsize: [tuple] size of displayed figure (default = (10,10))
+        title: [str] title of the displayed curve (default = 'ROC Curve')
+
+    .. image:: pass.jpg
+    """
     fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
     plt.figure(figsize=(5,5))
     plt.plot(fpr, tpr)
-    plt.title('ROC Curve');
+    plt.title(title);
     plt.xlabel('FPR (1-specficity)');
     plt.ylabel('TPR (Sensitivity)');
     plt.grid(True)
     if auc == True:
-        print (metrics.roc_auc_score(true_labels, predictions))
+        print ('AUC =',metrics.roc_auc_score(true_labels, predictions))
         return metrics.roc_auc_score(true_labels, predictions)
-
-
-
 
 def show_nn_roc(model, target_data_set, auc=True, fig_size=(10,10)):
     true_labels = []
@@ -237,8 +222,6 @@ def plot_confusion_matrix(cm,
     plt.ylabel('True label')
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
     plt.show()
-
-
 
 def show_confusion_matrix(model, target_data_set, target_classes):
     '''

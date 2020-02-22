@@ -54,7 +54,7 @@ class Image_Classification():
         pre_trained: [boolen] Load the pretrained weights of the neural network.(default=True)
         num_input_channels: [int] Number of input image channels. Grayscale DICOM images usually have 1 channel. Colored images have 3. (default=1)
         train_epochs: [int] Number of training epochs. (default=20)
-        learning_rate: [float] training learning rate. (default = 0.001)
+        learning_rate: [float] training learning rate. (default = 0.0001)
         loss_function: [str] training loss function. (default='CrossEntropyLoss')
         optimizer: [str] Optimizer to be used during training. (default='Adam')
         device: [str] device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
@@ -94,7 +94,7 @@ class Image_Classification():
     pre_trained=True,
     num_input_channels=1,
     train_epochs=20,
-    learning_rate=0.001,
+    learning_rate=0.0001,
     loss_function='CrossEntropyLoss'):
         self.data_directory = data_directory
         self.label_from_table = label_from_table
