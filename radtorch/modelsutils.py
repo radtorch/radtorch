@@ -18,18 +18,21 @@ from pathlib import Path
 
 
 from radtorch.dicomutils import dicom_to_pil
-#models:
-# vgg16,224,4096
-# vgg19,224,4096
-# resnet50,224,2048
-# resnet101,224,2048
-# resnet152,224,2048
-# wide_resnet101_2, 224, 2048
-# wide_resnet50_2, 224, 2048
 
 
 
-supported_models = ['vgg16', 'vgg19', 'resnet50','resnet101','resnet152', 'wide_resnet50_2', 'wide_resnet101_2']
+model_dict = {'vgg16':{'name':'vgg16','input_size':244, 'output_features':4096},
+              'vgg19':{'name':'vgg19','input_size':244, 'output_features':4096},
+              'resnet50':{'name':'resnet50','input_size':244, 'output_features':2048},
+              'resnet101':{'name':'resnet101','input_size':244, 'output_features':2048},
+              'resnet152':{'name':'resnet152','input_size':244, 'output_features':2048},
+              'wide_resnet50_2':{'name':'wide_resnet50_2','input_size':244, 'output_features':2048},
+              'wide_resnet101_2':{'name':'wide_resnet101_2','input_size':244, 'output_features':2048},
+              }
+
+
+supported_models = [x for x in model_dict.keys()]
+
 supported_losses = {'NLLLoss':torch.nn.NLLLoss(), 'CrossEntropyLoss':torch.nn.CrossEntropyLoss()}
 
 

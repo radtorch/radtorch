@@ -19,7 +19,7 @@ from PIL import Image
 from pathlib import Path
 
 
-from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference
+from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict
 from radtorch.datautils import dataset_from_folder, dataset_from_table
 from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc, show_nn_roc
 
@@ -47,6 +47,7 @@ class Image_Classification():
                     In the form of : [[Level,Width], [Level,Width],...].
                     Only 3 combinations are allowed for MWIN (for now).
         transformations:[pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+        custom_resize: [int] by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
         batch_size: [int] batch size of the dataset (default=16)
         test_split: [float] percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
         model_arch: [str] PyTorch neural network architecture (default='vgg16')
@@ -73,6 +74,7 @@ class Image_Classification():
     self,
     data_directory,
     transformations='default',
+    custom_resize = False,
     device='default',
     optimizer='Adam',
     is_dicom=True,
@@ -96,8 +98,12 @@ class Image_Classification():
         self.table_source = table_source
         self.mode = mode
         self.wl = wl
+        if custom_resize=False:
+            self.input_resize = model_dict[model_arch]['input_size']
+        else:
+            self.input_resize = custom_resize
         if transformations == 'default':
-            self.transformations = transforms.Compose([transforms.ToTensor()])
+            self.transformations = transforms.Compose([transforms.Resize((self.input_resize, self.input_resize)),transforms.ToTensor()])
         else:
             self.transformations = transformations
         self.batch_size = batch_size
@@ -136,6 +142,8 @@ class Image_Classification():
                         mode=self.mode,
                         wl=self.wl,
                         trans=self.transformations)
+
+
 
         # Create DataLoader
 
@@ -264,7 +272,7 @@ class Image_Classification():
         show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes)
 
 
-    def roc(self, target_data_set=True, auc=True, fig_size=(10,10)):
+    def roc(self, target_data_set='default', auc=True, fig_size=(10,10)):
         if target_data_set=='default':
             target_data_set = self.valid_data_set
         else:
