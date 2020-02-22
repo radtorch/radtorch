@@ -213,7 +213,7 @@ class Image_Classification():
                                                 epochs = self.train_epochs,
                                                 device = self.device)
 
-    def train_metrics(self):
+    def metrics(self):
         '''
         Display the training metrics.
         '''
