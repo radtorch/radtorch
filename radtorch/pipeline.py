@@ -74,7 +74,7 @@ class Image_Classification():
     self,
     data_directory,
     transformations='default',
-    custom_resize = False,
+    custom_resize = 'default',
     device='default',
     optimizer='Adam',
     is_dicom=True,
@@ -98,7 +98,7 @@ class Image_Classification():
         self.table_source = table_source
         self.mode = mode
         self.wl = wl
-        if custom_resize=False:
+        if custom_resize=='default':
             self.input_resize = model_dict[model_arch]['input_size']
         else:
             self.input_resize = custom_resize
