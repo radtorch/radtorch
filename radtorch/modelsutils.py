@@ -54,7 +54,6 @@ def supported_list():
 class Identity(nn.Module):
     def __init__(self):
         super(Identity, self).__init__()
-
     def forward(self, x):
         return x
 
@@ -295,27 +294,6 @@ def model_inference(model, input_image_path, trans=transforms.Compose([transform
         prediction_percentages = (ps.cpu().numpy()[0]).tolist()
         pred = prediction_percentages.index(max(prediction_percentages))
         return (pred, max(prediction_percentages))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
