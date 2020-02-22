@@ -46,7 +46,7 @@ class Image_Classification():
         wl: [list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
                     In the form of : [[Level,Width], [Level,Width],...].
                     Only 3 combinations are allowed for MWIN (for now).
-        trans:[pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+        transformations:[pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
         batch_size: [int] batch size of the dataset (default=16)
         test_split: [float] percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
         model_arch: [str] PyTorch neural network architecture (default='vgg16')
@@ -100,7 +100,6 @@ class Image_Classification():
             self.transformations = transforms.Compose([transforms.ToTensor()])
         else:
             self.transformations = transformations
-        self.trans = trans
         self.batch_size = batch_size
         self.test_split = test_split
         self.model_arch = model_arch
