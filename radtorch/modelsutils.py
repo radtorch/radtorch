@@ -92,7 +92,7 @@ def create_model(model_arch, input_channels, output_classes, pre_trained=True):
                     nn.Linear(in_features=4096, out_features=output_classes, bias=True))
 
 
-        elif model_arch == 'resnet50' or model_arch == 'resnet101' or model_arch == 'resnet152':
+        elif model_arch == 'resnet50' or model_arch == 'resnet101' or model_arch == 'resnet152' or model_arch == 'wide_resnet50_2' or  model_arch == 'wide_resnet101_2':
             if model_arch == 'resnet50':
                 train_model = torchvision.models.resnet50(pretrained=pre_trained)
             elif model_arch == 'resnet101':
