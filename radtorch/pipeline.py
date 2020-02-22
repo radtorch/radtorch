@@ -72,6 +72,8 @@ class Image_Classification():
     def __init__(
     self,
     data_directory,
+    trans,
+    device,
     optimizer='Adam',
     is_dicom=True,
     label_from_table=False,
@@ -86,9 +88,7 @@ class Image_Classification():
     num_input_channels=1,
     train_epochs=20,
     learning_rate=0.001,
-    loss_function='CrossEntropyLoss',
-    device=False,
-    trans):
+    loss_function='CrossEntropyLoss'):
         self.data_directory = data_directory
         self.label_from_table = label_from_table
         self.is_csv = is_csv
