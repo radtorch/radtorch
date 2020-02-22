@@ -73,7 +73,7 @@ class Image_Classification():
     self,
     data_directory,
     optimizer='Adam',
-    trans=None,
+    trans=False,
     is_dicom=True,
     label_from_table=False,
     is_csv=None,
@@ -88,7 +88,7 @@ class Image_Classification():
     train_epochs=20,
     learning_rate=0.001,
     loss_function='CrossEntropyLoss',
-    device=None):
+    device=False):
         self.data_directory = data_directory
         self.label_from_table = label_from_table
         self.is_csv = is_csv
