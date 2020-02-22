@@ -29,19 +29,18 @@ pip3 uninstall radtorch
 ```
 
 
-
 <br>
 ## Quick Start Guide
 Running a state of the art DICOM image classifier can be run using the [Image Classification](./pipeline.html#radtorch.pipeline.Image_Classification) Pipeline using the commands:
 ```
 from radtorch import pipeline
 
-clf = pipeline.Image_Classification(data_directory='path to data directory')
-
-clf.train_classifier()
-
+classifier = pipeline.Image_Classification(data_directory='path to data directory')
+classifier.train()
 ```
-
+<small>
+The above 3 lines of code will run an image classifier using VGG16 with pre-trained weights.
+</small>
 
 
 <br>
@@ -59,7 +58,7 @@ clf.train_classifier()
 </style>
 <table class="tg">
   <tr>
-    <th class="tg-hkgo">Architecture     </th>
+    <th class="tg-hkgo">Model Architecture     </th>
     <th class="tg-hkgo">Default Image Size</th>
     <th class="tg-hkgo">Number of Output Features</th>
   </tr>
@@ -94,7 +93,7 @@ clf.train_classifier()
     <td class="tg-09jq">2048</td>
   </tr>
   <tr>
-    <td class="tg-dfrc">wide_resnet101_</td>
+    <td class="tg-dfrc">wide_resnet101_2</td>
     <td class="tg-09jq">224x224</td>
     <td class="tg-09jq">2048</td>
   </tr>  

@@ -32,7 +32,7 @@
 <dl>
 <dt id="radtorch.pipeline.Image_Classification"><code class="flex name class">
 <span>class <span class="ident">Image_Classification</span></span>
-<span>(</span><span>data_directory, optimizer='Adam', trans=None, is_dicom=True, label_from_table=False, is_csv=None, table_source=None, mode='RAW', wl=None, batch_size=16, test_split=0.2, model_arch='vgg16', pre_trained=True, num_input_channels=1, train_epochs=20, learning_rate=0.001, loss_function='CrossEntropyLoss', device=None)</span>
+<span>(</span><span>data_directory, transformations='default', custom_resize='default', device='default', optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None, table_source=None, mode='RAW', wl=None, batch_size=16, test_split=0.2, model_arch='vgg16', pre_trained=True, num_input_channels=1, train_epochs=20, learning_rate=0.001, loss_function='CrossEntropyLoss')</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Creates an Image Classification Pipeline.</p>
@@ -59,7 +59,9 @@ MWIN = 'multi-window' converts image to 3 windowed images of different W and L (
 <dd>[list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
 In the form of : [[Level,Width], [Level,Width],&hellip;].
 Only 3 combinations are allowed for MWIN (for now).</dd>
-<dt>trans:[pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)</dt>
+<dt>transformations:[pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)</dt>
+<dt><strong><code>custom_resize</code></strong></dt>
+<dd>[int] by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.</dd>
 <dt><strong><code>batch_size</code></strong></dt>
 <dd>[int] batch size of the dataset (default=16)</dd>
 <dt><strong><code>test_split</code></strong></dt>
@@ -87,13 +89,18 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 <dd>Image Classification Model</dd>
 </dl>
 <p>Examples:</p>
-<pre><code>
+<pre><code>from radtorch import pipeline
+
+classifier = pipeline.Image_Classification(data_directory='path to data')
+classifier.train()
+classifier.metrics()
+
 </code></pre>
 <p><img alt="" src="pass.jpg"></p></section>
 <h3>Methods</h3>
 <dl>
 <dt id="radtorch.pipeline.Image_Classification.confusion_matrix"><code class="name flex">
-<span>def <span class="ident">confusion_matrix</span></span>(<span>self, target_data_set=False, target_classes=False)</span>
+<span>def <span class="ident">confusion_matrix</span></span>(<span>self, target_data_set='default', target_classes='default')</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -122,8 +129,14 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 <dd>
 <section class="desc"><p>Displays Image Classification Pipeline Parameters.</p></section>
 </dd>
+<dt id="radtorch.pipeline.Image_Classification.metrics"><code class="name flex">
+<span>def <span class="ident">metrics</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Display the training metrics.</p></section>
+</dd>
 <dt id="radtorch.pipeline.Image_Classification.roc"><code class="name flex">
-<span>def <span class="ident">roc</span></span>(<span>self, target_data_set=False, auc=True, fig_size=(10, 10))</span>
+<span>def <span class="ident">roc</span></span>(<span>self, target_data_set='default', auc=True, fig_size=(10, 10))</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -153,12 +166,6 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 <dd>
 <section class="desc"><p>Train the created image classifier.</p></section>
 </dd>
-<dt id="radtorch.pipeline.Image_Classification.train_metrics"><code class="name flex">
-<span>def <span class="ident">train_metrics</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<section class="desc"><p>Display the training metrics.</p></section>
-</dd>
 </dl>
 </dd>
 </dl>
@@ -185,11 +192,11 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 <li><code><a title="radtorch.pipeline.Image_Classification.export_model" href="#radtorch.pipeline.Image_Classification.export_model">export_model</a></code></li>
 <li><code><a title="radtorch.pipeline.Image_Classification.inference" href="#radtorch.pipeline.Image_Classification.inference">inference</a></code></li>
 <li><code><a title="radtorch.pipeline.Image_Classification.info" href="#radtorch.pipeline.Image_Classification.info">info</a></code></li>
+<li><code><a title="radtorch.pipeline.Image_Classification.metrics" href="#radtorch.pipeline.Image_Classification.metrics">metrics</a></code></li>
 <li><code><a title="radtorch.pipeline.Image_Classification.roc" href="#radtorch.pipeline.Image_Classification.roc">roc</a></code></li>
 <li><code><a title="radtorch.pipeline.Image_Classification.sample" href="#radtorch.pipeline.Image_Classification.sample">sample</a></code></li>
 <li><code><a title="radtorch.pipeline.Image_Classification.set_trained_model" href="#radtorch.pipeline.Image_Classification.set_trained_model">set_trained_model</a></code></li>
 <li><code><a title="radtorch.pipeline.Image_Classification.train" href="#radtorch.pipeline.Image_Classification.train">train</a></code></li>
-<li><code><a title="radtorch.pipeline.Image_Classification.train_metrics" href="#radtorch.pipeline.Image_Classification.train_metrics">train_metrics</a></code></li>
 </ul>
 </li>
 </ul>

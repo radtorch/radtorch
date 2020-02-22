@@ -39,10 +39,10 @@ class Image_Classification():
                       This is path to csv file or name of pandas dataframe if pandas to be used.
         mode: [str] output mode for DICOM images only. (default='RAW')
                     options:
-                        RAW= Raw pixels,
-                        HU= Image converted to Hounsefield Units,
-                        WIN= 'window' image windowed to certain W and L,
-                        MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].
+                         RAW= Raw pixels,
+                         HU= Image converted to Hounsefield Units,
+                         WIN= 'window' image windowed to certain W and L,
+                         MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].
         wl: [list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
                     In the form of : [[Level,Width], [Level,Width],...].
                     Only 3 combinations are allowed for MWIN (for now).
@@ -64,6 +64,11 @@ class Image_Classification():
 
     Examples:
     ```
+    from radtorch import pipeline
+
+    classifier = pipeline.Image_Classification(data_directory='path to data')
+    classifier.train()
+    classifier.metrics()
 
     ```
 
