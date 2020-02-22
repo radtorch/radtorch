@@ -96,7 +96,7 @@ class Image_Classification():
         self.table_source = table_source
         self.mode = mode
         self.wl = wl
-        if trans == None:
+        if trans == 'default':
             self.trans = transforms.Compose([transforms.ToTensor()])
         else:
             self.trans = trans
