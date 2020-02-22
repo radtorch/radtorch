@@ -161,7 +161,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 
     model = model.to(device)
 
-    for epoch in range(epochs):
+    for epoch in tqdm(range(epochs)):
         epoch_start = time.time()
 
         # Set to training mode
