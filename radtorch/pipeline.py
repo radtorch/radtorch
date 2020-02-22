@@ -19,9 +19,11 @@ from PIL import Image
 from pathlib import Path
 
 
-from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference
+from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict
 from radtorch.datautils import dataset_from_folder, dataset_from_table
 from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc, show_nn_roc
+
+
 
 
 class Image_Classification():
@@ -37,14 +39,15 @@ class Image_Classification():
                       This is path to csv file or name of pandas dataframe if pandas to be used.
         mode: [str] output mode for DICOM images only. (default='RAW')
                     options:
-                        RAW= Raw pixels,
-                        HU= Image converted to Hounsefield Units,
-                        WIN= 'window' image windowed to certain W and L,
-                        MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].
+                         RAW= Raw pixels,
+                         HU= Image converted to Hounsefield Units,
+                         WIN= 'window' image windowed to certain W and L,
+                         MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].
         wl: [list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
                     In the form of : [[Level,Width], [Level,Width],...].
                     Only 3 combinations are allowed for MWIN (for now).
-        trans:[pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+        transformations:[pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+        custom_resize: [int] by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
         batch_size: [int] batch size of the dataset (default=16)
         test_split: [float] percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
         model_arch: [str] PyTorch neural network architecture (default='vgg16')
@@ -52,15 +55,21 @@ class Image_Classification():
         num_input_channels: [int] Number of input image channels. Grayscale DICOM images usually have 1 channel. Colored images have 3. (default=1)
         train_epochs: [int] Number of training epochs. (default=20)
         learning_rate: [float] training learning rate. (default = 0.001)
-        loss_function: [str] training loss function. (default='NLLLoss')
+        loss_function: [str] training loss function. (default='CrossEntropyLoss')
         optimizer: [str] Optimizer to be used during training. (default='Adam')
-        device: [str] device to be used for training (default='cpu'). This can be 'cpu' or 'gpu'. (default='cpu')
+        device: [str] device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
 
     Outputs:
         Output: Image Classification Model
 
     Examples:
     ```
+    from radtorch import pipeline
+
+    classifier = pipeline.Image_Classification(data_directory='path to data')
+    classifier.train()
+    classifier.metrics()
+
     ```
 
     .. image:: pass.jpg
@@ -69,8 +78,10 @@ class Image_Classification():
     def __init__(
     self,
     data_directory,
+    transformations='default',
+    custom_resize = 'default',
+    device='default',
     optimizer='Adam',
-    trans=transforms.Compose([transforms.ToTensor()]),
     is_dicom=True,
     label_from_table=False,
     is_csv=None,
@@ -84,8 +95,7 @@ class Image_Classification():
     num_input_channels=1,
     train_epochs=20,
     learning_rate=0.001,
-    loss_function='NLLLoss',
-    device='cpu'):
+    loss_function='CrossEntropyLoss'):
         self.data_directory = data_directory
         self.label_from_table = label_from_table
         self.is_csv = is_csv
@@ -93,7 +103,14 @@ class Image_Classification():
         self.table_source = table_source
         self.mode = mode
         self.wl = wl
-        self.trans = trans
+        if custom_resize=='default':
+            self.input_resize = model_dict[model_arch]['input_size']
+        else:
+            self.input_resize = custom_resize
+        if transformations == 'default':
+            self.transformations = transforms.Compose([transforms.Resize((self.input_resize, self.input_resize)),transforms.ToTensor()])
+        else:
+            self.transformations = transformations
         self.batch_size = batch_size
         self.test_split = test_split
         self.model_arch = model_arch
@@ -103,9 +120,12 @@ class Image_Classification():
         self.learning_rate = learning_rate
         self.loss_function = loss_function
         self.optimizer = optimizer
-        self.device = device
         self.path_col = 'IMAGE_PATH'
         self.label_col = 'IMAGE_LABEL'
+        if device == 'default':
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        else:
+            self.device == device
 
         # Create DataSet
         if self.label_from_table == True:
@@ -118,7 +138,7 @@ class Image_Classification():
                     img_label_column=self.label_col,
                     mode=self.mode,
                     wl=self.wl,
-                    trans=self.trans)
+                    trans=self.transformations)
 
         else:
             self.data_set = dataset_from_folder(
@@ -126,7 +146,9 @@ class Image_Classification():
                         is_dicom=self.is_dicom,
                         mode=self.mode,
                         wl=self.wl,
-                        trans=self.trans)
+                        trans=self.transformations)
+
+
 
         # Create DataLoader
 
@@ -164,7 +186,7 @@ class Image_Classification():
 
 
 
-    def show_info(self):
+    def info(self):
         '''
         Displays Image Classification Pipeline Parameters.
         '''
@@ -175,7 +197,7 @@ class Image_Classification():
         print ('Train Dataset Size =', len(self.train_data_set))
         print ('Valid Dataset Size =', len(self.valid_data_set))
 
-    def show_dataset_info(self,):
+    def dataset_info(self):
         '''
         Displays Dataset Information.
         '''
@@ -183,13 +205,13 @@ class Image_Classification():
         print ('Train Dataset Size ', len(self.train_data_set))
         print ('Valid Dataset Size ', len(self.valid_data_set))
 
-    def show_sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):
+    def sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):
         '''
         Displays sample of the training dataset.
         '''
         return show_dataloader_sample(dataloader=self.train_data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
 
-    def train_classifier(self):
+    def train(self):
         '''
         Train the created image classifier.
         '''
@@ -204,13 +226,13 @@ class Image_Classification():
                                                 epochs = self.train_epochs,
                                                 device = self.device)
 
-    def show_train_metrics(self):
+    def metrics(self):
         '''
         Display the training metrics.
         '''
         show_metrics(self.train_metrics)
 
-    def export_classifier(self,output_path):
+    def export_model(self,output_path):
         '''
         Exports the trained model into a target file.
         '''
@@ -230,19 +252,38 @@ class Image_Classification():
             self.trained_model = torch.load(model_path)
         print ('Model Loaded Successfully.')
 
-    def classifier_inference(self, test_img_path):
+    def inference(self, test_img_path, transforms=False):
         '''
         Performs inference on target DICOM image using a trained classifier.
         '''
-        pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, trans=self.trans)
+        if transforms:
+            transforms = transforms
+        else:
+            transforms = self.transformations
+        pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, trans=transforms)
         print (pred)
 
-    def confusion_matrix(self):
-        show_confusion_matrix(model=self.trained_model, target_data_set=self.valid_data_set, target_classes=self.data_set.classes)
+    def confusion_matrix(self, target_data_set='default', target_classes='default'):
+        if target_data_set=='default':
+            target_data_set = self.valid_data_set
+        else:
+            target_data_set = target_data_set
+
+        if target_classes == 'default':
+            target_classes = self.data_set.classes
+        else:
+            target_classes = target_classes
+
+        show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes)
 
 
-    def roc(self):
-        show_nn_roc(model=self.trained_model, target_data_set=self.valid_data_set, auc=True, fig_size=(10,10))
+    def roc(self, target_data_set='default', auc=True, fig_size=(10,10)):
+        if target_data_set=='default':
+            target_data_set = self.valid_data_set
+        else:
+            target_data_set = target_data_set
+
+        show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, fig_size=fig_size)
 
 
 

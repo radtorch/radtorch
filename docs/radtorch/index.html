@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title"><code>RADTorch</code> <small>The Radiology Machine Learning Tool Kit</small></h1>
+  <h1 class="title"><code>RADTorch</code> <small>The Radiology Machine Learning Tool Kit</small></h1>
 </header>
 <section id="section-intro">
 <h2 id="about-radtorch">About RADTorch</h2>
@@ -42,11 +42,12 @@ pip3 install radtorch/.
 <p>Running a state of the art DICOM image classifier can be run using the <a href="./pipeline.html#radtorch.pipeline.Image_Classification">Image Classification</a> Pipeline using the commands:</p>
 <pre><code>from radtorch import pipeline
 
-clf = pipeline.Image_Classification(data_directory='path to data directory')
-
-clf.train_classifier()
-
+classifier = pipeline.Image_Classification(data_directory='path to data directory')
+classifier.train()
 </code></pre>
+<p><small>
+The above 3 lines of code will run an image classifier using VGG16 with pre-trained weights.
+</small></p>
 <p><br></p>
 <h2 id="supported-neural-network-architectures">Supported Neural Network Architectures</h2>
 <style type="text/css">
@@ -62,7 +63,7 @@ clf.train_classifier()
 </style>
 <table class="tg">
 <tr>
-<th class="tg-hkgo">Architecture
+<th class="tg-hkgo">Model Architecture
 </th>
 <th class="tg-hkgo">Default Image Size</th>
 <th class="tg-hkgo">Number of Output Features</th>
@@ -89,6 +90,16 @@ clf.train_classifier()
 </tr>
 <tr>
 <td class="tg-dfrc">ResNet152</td>
+<td class="tg-09jq">224x224</td>
+<td class="tg-09jq">2048</td>
+</tr>
+<tr>
+<td class="tg-dfrc">wide_resnet50_2</td>
+<td class="tg-09jq">224x224</td>
+<td class="tg-09jq">2048</td>
+</tr>
+<tr>
+<td class="tg-dfrc">wide_resnet101_2</td>
 <td class="tg-09jq">224x224</td>
 <td class="tg-09jq">2048</td>
 </tr>
@@ -123,14 +134,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 </small>
 </p>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">&#39;&#39;&#39;
-.. include:: ./documentation.md
-&#39;&#39;&#39;</code></pre>
-</details>
 </section>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>

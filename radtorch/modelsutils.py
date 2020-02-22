@@ -18,16 +18,21 @@ from pathlib import Path
 
 
 from radtorch.dicomutils import dicom_to_pil
-#models:
-# vgg16,224,4096
-# vgg19,224,4096
-# resnet50,224,2048
-# resnet101,224,2048
-# resnet152,224,2048
 
 
 
-supported_models = ['vgg16', 'vgg19', 'resnet50','resnet101','resnet152']
+model_dict = {'vgg16':{'name':'vgg16','input_size':244, 'output_features':4096},
+              'vgg19':{'name':'vgg19','input_size':244, 'output_features':4096},
+              'resnet50':{'name':'resnet50','input_size':244, 'output_features':2048},
+              'resnet101':{'name':'resnet101','input_size':244, 'output_features':2048},
+              'resnet152':{'name':'resnet152','input_size':244, 'output_features':2048},
+              'wide_resnet50_2':{'name':'wide_resnet50_2','input_size':244, 'output_features':2048},
+              'wide_resnet101_2':{'name':'wide_resnet101_2','input_size':244, 'output_features':2048},
+              }
+
+
+supported_models = [x for x in model_dict.keys()]
+
 supported_losses = {'NLLLoss':torch.nn.NLLLoss(), 'CrossEntropyLoss':torch.nn.CrossEntropyLoss()}
 
 
@@ -49,7 +54,6 @@ def supported_list():
 class Identity(nn.Module):
     def __init__(self):
         super(Identity, self).__init__()
-
     def forward(self, x):
         return x
 
@@ -95,6 +99,10 @@ def create_model(model_arch, input_channels, output_classes, pre_trained=True):
                 train_model = torchvision.models.resnet101(pretrained=pre_trained)
             elif  model_arch == 'resnet152':
                 train_model = torchvision.models.resnet152(pretrained=pre_trained)
+            elif  model_arch == 'wide_resnet50_2':
+                train_model = torchvision.models.wide_resnet50_2(pretrained=pre_trained)
+            elif  model_arch == 'wide_resnet101_2':
+                train_model = torchvision.models.wide_resnet101_2(pretrained=pre_trained)
 
             train_model.conv1 = nn.Conv2d(input_channels,64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
             fc_inputs = train_model.fc.in_features
@@ -282,30 +290,10 @@ def model_inference(model, input_image_path, trans=transforms.Compose([transform
         model.eval()
         out = model(target_img_tensor)
         # ps = torch.exp(out)
+        ps=out
         prediction_percentages = (ps.cpu().numpy()[0]).tolist()
         pred = prediction_percentages.index(max(prediction_percentages))
         return (pred, max(prediction_percentages))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
