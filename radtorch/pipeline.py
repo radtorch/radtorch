@@ -73,7 +73,6 @@ class Image_Classification():
     self,
     data_directory,
     optimizer='Adam',
-    trans=False,
     is_dicom=True,
     label_from_table=False,
     is_csv=None,
@@ -88,7 +87,8 @@ class Image_Classification():
     train_epochs=20,
     learning_rate=0.001,
     loss_function='CrossEntropyLoss',
-    device=False):
+    device=False,
+    trans):
         self.data_directory = data_directory
         self.label_from_table = label_from_table
         self.is_csv = is_csv
@@ -252,7 +252,7 @@ class Image_Classification():
         print (pred)
 
     def confusion_matrix(self, target_data_set=False, target_classes=False):
-        if target_data_set:
+        if target_data_set==False:
             target_data_set = target_data_set
         else:
             target_data_set = self.valid_data_set
@@ -265,7 +265,7 @@ class Image_Classification():
         show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes)
 
 
-    def roc(self, target_data_set=False, auc=True, fig_size=(10,10)):
+    def roc(self, target_data_set=True, auc=True, fig_size=(10,10)):
         if target_data_set:
             target_data_set = target_data_set
         else:
