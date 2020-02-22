@@ -72,7 +72,7 @@ class Image_Classification():
     def __init__(
     self,
     data_directory,
-    trans=None,
+    trans='default',
     device='default',
     optimizer='Adam',
     is_dicom=True,
