@@ -72,8 +72,8 @@ class Image_Classification():
     def __init__(
     self,
     data_directory,
-    trans,
-    device,
+    trans=None,
+    device='default',
     optimizer='Adam',
     is_dicom=True,
     label_from_table=False,
@@ -96,10 +96,10 @@ class Image_Classification():
         self.table_source = table_source
         self.mode = mode
         self.wl = wl
-        if trans:
-            self.trans = trans
-        else:
+        if trans == None:
             self.trans = transforms.Compose([transforms.ToTensor()])
+        else:
+            self.trans = trans
         self.trans = trans
         self.batch_size = batch_size
         self.test_split = test_split
@@ -112,10 +112,10 @@ class Image_Classification():
         self.optimizer = optimizer
         self.path_col = 'IMAGE_PATH'
         self.label_col = 'IMAGE_LABEL'
-        if device:
-            self.device == device
-        else:
+        if device == 'default':
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        else:
+            self.device == device
 
         # Create DataSet
         if self.label_from_table == True:
@@ -251,25 +251,25 @@ class Image_Classification():
         pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, trans=transforms)
         print (pred)
 
-    def confusion_matrix(self, target_data_set=False, target_classes=False):
-        if target_data_set==False:
-            target_data_set = target_data_set
-        else:
+    def confusion_matrix(self, target_data_set='default', target_classes='default'):
+        if target_data_set=='default':
             target_data_set = self.valid_data_set
-
-        if target_classes:
-            target_classes = target_classes
         else:
+            target_data_set = target_data_set
+
+        if target_classes == 'default':
             target_classes = self.data_set.classes
+        else:
+            target_classes = target_classes
 
         show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes)
 
 
     def roc(self, target_data_set=True, auc=True, fig_size=(10,10)):
-        if target_data_set:
-            target_data_set = target_data_set
-        else:
+        if target_data_set=='default':
             target_data_set = self.valid_data_set
+        else:
+            target_data_set = target_data_set
 
         show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, fig_size=fig_size)
 
