@@ -145,7 +145,7 @@ def create_loss_function(type):
         print ('Error! Provided loss function is not supported yet. For complete list of supported models please type radtorch.modelsutils.supported_list()')
 
     else:
-        loss_function = supported_losses[type]
+        loss_function = loss_dict[type]
 
         return loss_function
 
