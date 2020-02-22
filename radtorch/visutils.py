@@ -155,7 +155,7 @@ def show_roc(true_labels, predictions, auc=True, fig_size=(10,10)):
 def show_nn_roc(model, target_data_set, auc=True, fig_size=(10,10)):
     true_labels = []
     pred_labels = []
-    for i, l in target_data_set:
+    for i, l in tqdm(target_data_set, total=len(target_data_set)):
         true_labels.append(l)
         target_img_tensor = i.unsqueeze(1)
         with torch.no_grad():
@@ -246,7 +246,7 @@ def show_confusion_matrix(model, target_data_set, target_classes):
     '''
     true_labels = []
     pred_labels = []
-    for i, l in target_data_set:
+    for i, l in tqdm(target_data_set, total=len(target_data_set)):
         true_labels.append(l)
 
         target_img_tensor = i.unsqueeze(1)
