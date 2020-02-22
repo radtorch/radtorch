@@ -30,10 +30,28 @@ model_dict = {'vgg16':{'name':'vgg16','input_size':244, 'output_features':4096},
               'wide_resnet101_2':{'name':'wide_resnet101_2','input_size':244, 'output_features':2048},
               }
 
+loss_dict = {
+            'NLLLoss':torch.nn.NLLLoss(),
+            'CrossEntropyLoss':torch.nn.CrossEntropyLoss(),
+            'MSELoss':torch.nn.MSELoss(),
+            'PoissonNLLLoss': torch.nn.PoissonNLLLoss(),
+            'BCELoss': torch.nn.BCELoss(),
+            'BCEWithLogitsLoss': torch.nn.BCEWithLogitsLoss(),
+            'MultiLabelMarginLoss':torch.nn.MultiLabelMarginLoss(),
+            'SoftMarginLoss':torch.nn.SoftMarginLoss(),
+            'MultiLabelSoftMarginLoss':torch.nn.MultiLabelSoftMarginLoss(),
+            }
+
 
 supported_models = [x for x in model_dict.keys()]
 
-supported_losses = {'NLLLoss':torch.nn.NLLLoss(), 'CrossEntropyLoss':torch.nn.CrossEntropyLoss()}
+supported_losses = [x for x in loss_dict.keys()]
+
+
+
+
+
+
 
 
 def supported_list():
@@ -47,8 +65,8 @@ def supported_list():
         print (i)
     print('')
     print ('Supported Loss Functions:')
-    for key, value in supported_losses.items():
-        print (key)
+    for i in supported_losses:
+        print (i)
 
 
 class Identity(nn.Module):
@@ -111,6 +129,7 @@ def create_model(model_arch, input_channels, output_classes, pre_trained=True):
 
         return train_model
 
+
 def create_loss_function(type):
     '''
     Creates a PyTorch training loss function object.
@@ -129,6 +148,7 @@ def create_loss_function(type):
         loss_function = supported_losses[type]
 
         return loss_function
+
 
 def train_model(model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device):
     '''
@@ -263,7 +283,6 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 
     return model, training_metrics
 
-# def train_model()
 
 def model_inference(model, input_image_path, trans=transforms.Compose([transforms.ToTensor()])):
     '''
