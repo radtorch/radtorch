@@ -134,7 +134,7 @@ def show_roc(true_labels, predictions, auc=True, fig_size=(10,10), title='ROC Cu
     plt.ylabel('TPR (Sensitivity)');
     plt.grid(True)
     if auc == True:
-        plt.xlabel('FPR (1-specficity) ,', 'AUC =',metrics.roc_auc_score(true_labels, predictions));
+        plt.xlabel('FPR (1-specficity)', '\n','AUC =',metrics.roc_auc_score(true_labels, predictions));
         # print ('AUC =',metrics.roc_auc_score(true_labels, predictions))
         return metrics.roc_auc_score(true_labels, predictions)
 
