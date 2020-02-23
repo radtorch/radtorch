@@ -252,15 +252,16 @@ class Image_Classification():
             self.trained_model = torch.load(model_path)
         print ('Model Loaded Successfully.')
 
-    def inference(self, test_img_path, transforms=False):
+    def inference(self, test_img_path, transformations='default'):
         '''
         Performs inference on target DICOM image using a trained classifier.
         '''
-        if transforms:
-            transforms = transforms
+        if transforms=='default':
+            transformations = self.transformations
         else:
-            transforms = self.transformations
-        pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, trans=transforms)
+            transformations = transformations
+
+        pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, trans=transformations)
         print (pred)
 
     def confusion_matrix(self, target_data_set='default', target_classes='default'):
