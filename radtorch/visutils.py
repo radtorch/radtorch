@@ -128,8 +128,7 @@ def show_roc(true_labels, predictions, auc=True, fig_size=(10,10), title='ROC Cu
     """
     fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
     plt.figure(figsize=(5,5))
-    plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='orange',
-        , alpha=.8)
+    plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='orange', alpha=.8)
     plt.plot(fpr, tpr)
     plt.title(title);
     plt.xlabel('FPR (1-specficity)');
