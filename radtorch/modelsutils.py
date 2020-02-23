@@ -70,7 +70,7 @@ def supported():
     print ('Supported Loss Functions:')
     for i in supported_losses:
         print (i)
-    print('')        
+    print('')
     print ('Supported Optimizers:')
     for i in supported_optimizer:
         print (i)
@@ -178,7 +178,7 @@ def create_optimizer(traning_model, optimizer_type, learning_rate):
     return optimizer
 
 
-def train_model(model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device):
+def train_model(model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device,verbose):
     '''
     Trains a Neural Network Model
     Inputs:
@@ -191,6 +191,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         optimizer: [PyTorch optimizer object] Optimizer to be used during training.
         epochs: [int] training epochs.
         device: [str] device to be used for training (default='cpu'). This can be 'cpu' or 'cuda'.
+        verbose: [boolen] True to display training messages.
     Outputs:
         model: [PyTorch neural network object] trained model.
         train_metrics: [list] list of np arrays of training loss and accuracy.
@@ -203,8 +204,8 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 
     start_time = datetime.datetime.now()
     training_metrics = []
-
-    print ('Starting training at '+ str(start_time))
+    if verbose:
+        print ('Starting training at '+ str(start_time))
 
 
     model = model.to(device)
@@ -301,13 +302,13 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         training_metrics.append([avg_train_loss, avg_valid_loss, avg_train_acc, avg_valid_acc])
 
         epoch_end = time.time()
-
-        print("Epoch : {:03d}/{} : [Training: Loss: {:.4f}, Accuracy: {:.4f}%]  [Validation : Loss : {:.4f}, Accuracy: {:.4f}%] [Time: {:.4f}s]".format(epoch, epochs, avg_train_loss, avg_train_acc*100, avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_start))
+        if verbose:
+            print("Epoch : {:03d}/{} : [Training: Loss: {:.4f}, Accuracy: {:.4f}%]  [Validation : Loss : {:.4f}, Accuracy: {:.4f}%] [Time: {:.4f}s]".format(epoch, epochs, avg_train_loss, avg_train_acc*100, avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_start))
 
     end_time = datetime.datetime.now()
     total_training_time = end_time-start_time
-
-    print ('Total training time = '+ str(total_training_time))
+    if verbose:
+        print ('Total training time = '+ str(total_training_time))
 
     return model, training_metrics
 

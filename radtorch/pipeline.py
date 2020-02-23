@@ -216,7 +216,7 @@ class Image_Classification():
         '''
         return show_dataloader_sample(dataloader=self.train_data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
 
-    def train(self):
+    def train(self, verbose=True):
         '''
         Train the created image classifier.
         '''
@@ -229,7 +229,8 @@ class Image_Classification():
                                                 loss_criterion = self.loss_function,
                                                 optimizer = self.optimizer,
                                                 epochs = self.train_epochs,
-                                                device = self.device)
+                                                device = self.device,
+                                                verbose=verbose)
 
     def metrics(self):
         '''
