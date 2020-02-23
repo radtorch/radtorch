@@ -156,7 +156,7 @@ def create_loss_function(type):
     .. image:: pass.jpg
     '''
 
-    if type not in supported_losses:
+    if type not in supported_image_classification_losses:
         print ('Error! Provided loss function is not supported yet. For complete list of supported models please type radtorch.modelsutils.supported_list()')
 
     else:
