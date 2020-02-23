@@ -32,22 +32,25 @@
 <span>def <span class="ident">plot_confusion_matrix</span></span>(<span>cm, target_names, title='Confusion Matrix', cmap=None, normalize=False, figure_size=(8, 6))</span>
 </code></dt>
 <dd>
-<section class="desc"><p>given a sklearn confusion matrix (cm), make a nice plot</p>
-<p>Inputs:
-cm: confusion matrix from sklearn.metrics.confusion_matrix</p>
-<p>target_names: given classification classes such as [0, 1, 2]
-the class names, for example: ['high', 'medium', 'low']</p>
-<p>title:
-the text to display at the top of the matrix</p>
-<p>cmap:
-the gradient of the values displayed from matplotlib.pyplot.cm
-see <a href="http://matplotlib.org/examples/color/colormaps_reference.html">http://matplotlib.org/examples/color/colormaps_reference.html</a>
-plt.get_cmap('jet') or plt.cm.Blues</p>
-<p>normalize:
-If False, plot the raw numbers
-If True, plot the proportions</p>
-<p>Source:
-<a href="https://www.kaggle.com/grfiv4/plot-a-confusion-matrix">https://www.kaggle.com/grfiv4/plot-a-confusion-matrix</a></p></section>
+<section class="desc"><p>Given a sklearn confusion matrix (cm), make a nice plot</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>cm</code></strong></dt>
+<dd>[np array] confusion matrix from sklearn.metrics.confusion_matrix</dd>
+<dt><strong><code>target_names</code></strong></dt>
+<dd>[list] given classification classes such as [0, 1, 2]
+the class names, for example: ['high', 'medium', 'low']</dd>
+<dt><strong><code>title</code></strong></dt>
+<dd>[str] the text to display at the top of the matrix</dd>
+<dt><strong><code>cmap</code></strong></dt>
+<dd>[str] the gradient of the values displayed from matplotlib.pyplot.cm . See <a href="http://matplotlib.org/examples/color/colormaps_reference.html">http://matplotlib.org/examples/color/colormaps_reference.html</a>
+plt.get_cmap('jet') or plt.cm.Blues</dd>
+<dt><strong><code>normalize</code></strong></dt>
+<dd>[boolean]
+If False, plot the raw numbers. If True, plot the proportions</dd>
+</dl>
+<h2 id="source">Source</h2>
+<p><a href="https://www.kaggle.com/grfiv4/plot-a-confusion-matrix">https://www.kaggle.com/grfiv4/plot-a-confusion-matrix</a></p></section>
 </dd>
 <dt id="radtorch.visutils.show_confusion_matrix"><code class="name flex">
 <span>def <span class="ident">show_confusion_matrix</span></span>(<span>model, target_data_set, target_classes, figure_size=(8, 6))</span>

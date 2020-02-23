@@ -165,25 +165,23 @@ def plot_confusion_matrix(cm,
                           normalize=False,
                           figure_size=(8,6)):
     """
-    given a sklearn confusion matrix (cm), make a nice plot
+    Given a sklearn confusion matrix (cm), make a nice plot
 
     Inputs:
-    cm: confusion matrix from sklearn.metrics.confusion_matrix
+        cm: [np array] confusion matrix from sklearn.metrics.confusion_matrix
 
-    target_names: given classification classes such as [0, 1, 2]
+        target_names: [list] given classification classes such as [0, 1, 2]
                   the class names, for example: ['high', 'medium', 'low']
 
-    title:        the text to display at the top of the matrix
+        title: [str] the text to display at the top of the matrix
 
-    cmap:         the gradient of the values displayed from matplotlib.pyplot.cm
-                  see http://matplotlib.org/examples/color/colormaps_reference.html
+        cmap: [str] the gradient of the values displayed from matplotlib.pyplot.cm . See http://matplotlib.org/examples/color/colormaps_reference.html
                   plt.get_cmap('jet') or plt.cm.Blues
 
-    normalize:    If False, plot the raw numbers
-                  If True, plot the proportions
+        normalize: [boolean]  If False, plot the raw numbers. If True, plot the proportions
 
     Source:
-    https://www.kaggle.com/grfiv4/plot-a-confusion-matrix
+        https://www.kaggle.com/grfiv4/plot-a-confusion-matrix
 
     """
     import matplotlib.pyplot as plt
