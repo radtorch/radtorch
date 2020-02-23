@@ -33,10 +33,12 @@ class Image_Classification():
     Inputs:
         data_directory: **[REQUIRED]** [str] target data directory.
         is_dicom: [boolean] True for DICOM images, False for regular images.(default=True)
-        label_from_table:[boolean] True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)
+        label_from_table: [boolean] True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)
         is_csv: [boolean] True for csv, False for pandas dataframe.
         table_source: [str or pandas dataframe object] source for labelling data. (default=None)
                       This is path to csv file or name of pandas dataframe if pandas to be used.
+        path_col: [str] name of the column with the image path. (default='IMAGE_PATH')
+        label_col: [str] name of the label/class column. (default='IMAGE_LABEL')
         mode: [str] output mode for DICOM images only. (default='RAW')
                     options:
                          RAW= Raw pixels,
@@ -86,6 +88,8 @@ class Image_Classification():
     label_from_table=False,
     is_csv=None,
     table_source=None,
+    path_col = 'IMAGE_PATH',
+    label_col = 'IMAGE_LABEL' ,
     mode='RAW',
     wl=None,
     batch_size=16,

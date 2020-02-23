@@ -40,7 +40,7 @@ gtag('config', 'UA-116382803-2');
 <dl>
 <dt id="radtorch.pipeline.Image_Classification"><code class="flex name class">
 <span>class <span class="ident">Image_Classification</span></span>
-<span>(</span><span>data_directory, transformations='default', custom_resize='default', device='default', optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None, table_source=None, mode='RAW', wl=None, batch_size=16, test_split=0.2, model_arch='vgg16', pre_trained=True, unfreeze_weights=False, train_epochs=20, learning_rate=0.0001, loss_function='CrossEntropyLoss')</span>
+<span>(</span><span>data_directory, transformations='default', custom_resize='default', device='default', optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None, table_source=None, path_col='IMAGE_PATH', label_col='IMAGE_LABEL', mode='RAW', wl=None, batch_size=16, test_split=0.2, model_arch='vgg16', pre_trained=True, unfreeze_weights=False, train_epochs=20, learning_rate=0.0001, loss_function='CrossEntropyLoss')</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Creates an Image Classification Pipeline.</p>
@@ -50,12 +50,17 @@ gtag('config', 'UA-116382803-2');
 <dd><strong>[REQUIRED]</strong> [str] target data directory.</dd>
 <dt><strong><code>is_dicom</code></strong></dt>
 <dd>[boolean] True for DICOM images, False for regular images.(default=True)</dd>
-<dt>label_from_table:[boolean] True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)</dt>
+<dt><strong><code>label_from_table</code></strong></dt>
+<dd>[boolean] True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)</dd>
 <dt><strong><code>is_csv</code></strong></dt>
 <dd>[boolean] True for csv, False for pandas dataframe.</dd>
 <dt><strong><code>table_source</code></strong></dt>
 <dd>[str or pandas dataframe object] source for labelling data. (default=None)
 This is path to csv file or name of pandas dataframe if pandas to be used.</dd>
+<dt><strong><code>path_col</code></strong></dt>
+<dd>[str] name of the column with the image path. (default='IMAGE_PATH')</dd>
+<dt><strong><code>label_col</code></strong></dt>
+<dd>[str] name of the label/class column. (default='IMAGE_LABEL')</dd>
 <dt><strong><code>mode</code></strong></dt>
 <dd>[str] output mode for DICOM images only. (default='RAW')
 options:
