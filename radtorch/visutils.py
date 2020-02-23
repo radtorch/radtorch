@@ -143,7 +143,9 @@ def show_nn_roc(model, target_data_set, auc=True, fig_size=(10,10)):
     pred_labels = []
     for i, l in tqdm(target_data_set, total=len(target_data_set)):
         true_labels.append(l)
-        target_img_tensor = i.unsqueeze(1)
+        # target_img_tensor = i.unsqueeze(1)
+        target_img_tensor = i.unsqueeze(0)
+        
         with torch.no_grad():
             model.to('cpu')
             target_img_tensor.to('cpu')
@@ -233,7 +235,8 @@ def show_confusion_matrix(model, target_data_set, target_classes):
     for i, l in tqdm(target_data_set, total=len(target_data_set)):
         true_labels.append(l)
 
-        target_img_tensor = i.unsqueeze(1)
+        target_img_tensor = i.unsqueeze(0)
+        # target_img_tensor = i.unsqueeze(1)
         with torch.no_grad():
             model.to('cpu')
             target_img_tensor.to('cpu')
