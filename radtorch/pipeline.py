@@ -269,7 +269,7 @@ class Image_Classification():
         pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, inference_transformations=transformations)
         print (pred)
 
-    def confusion_matrix(self, target_data_set='default', target_classes='default'):
+    def confusion_matrix(self, target_data_set='default', target_classes='default', figure_size=(8,6)):
         if target_data_set=='default':
             target_data_set = self.valid_data_set
         else:
@@ -280,7 +280,7 @@ class Image_Classification():
         else:
             target_classes = target_classes
 
-        show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes)
+        show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size)
 
     def roc(self, target_data_set='default', auc=True, figure_size=(10,10)):
         if target_data_set=='default':
@@ -288,7 +288,7 @@ class Image_Classification():
         else:
             target_data_set = target_data_set
 
-        show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, fig_size=figure_size)
+        show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, figure_size=figure_size)
 
 
 

@@ -113,7 +113,7 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
         plt.imshow(i[0][0], cmap='gray');
         plt.title(l[0]);
 
-def show_roc(true_labels, predictions, auc=True, fig_size=(10,10), title='ROC Curve'):
+def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC Curve'):
     """
     Displays ROC curve of a certain model and the AUC
     Inputs:
@@ -126,7 +126,7 @@ def show_roc(true_labels, predictions, auc=True, fig_size=(10,10), title='ROC Cu
     .. image:: pass.jpg
     """
     fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
-    plt.figure(figsize=(5,5))
+    plt.figure(figsize=figure_size)
     plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='orange', alpha=.8)
     plt.plot(fpr, tpr)
     plt.title(title);
@@ -138,7 +138,7 @@ def show_roc(true_labels, predictions, auc=True, fig_size=(10,10), title='ROC Cu
         # print ('AUC =',metrics.roc_auc_score(true_labels, predictions))
         return metrics.roc_auc_score(true_labels, predictions)
 
-def show_nn_roc(model, target_data_set, auc=True, fig_size=(10,10)):
+def show_nn_roc(model, target_data_set, auc=True, figure_size=(10,10)):
     true_labels = []
     pred_labels = []
     for i, l in tqdm(target_data_set, total=len(target_data_set)):
@@ -156,7 +156,7 @@ def show_nn_roc(model, target_data_set, auc=True, fig_size=(10,10)):
             prediction_percentages = (ps.cpu().numpy()[0]).tolist()
             pred = prediction_percentages.index(max(prediction_percentages))
             pred_labels.append(pred)
-    show_roc(true_labels, pred_labels, auc=auc, fig_size=fig_size)
+    show_roc(true_labels, pred_labels, auc=auc, figure_size=figure_size)
 
 def plot_confusion_matrix(cm,
                           target_names,

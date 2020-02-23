@@ -70,6 +70,7 @@ def supported():
     print ('Supported Loss Functions:')
     for i in supported_losses:
         print (i)
+    print('')        
     print ('Supported Optimizers:')
     for i in supported_optimizer:
         print (i)
@@ -79,7 +80,6 @@ class Identity(nn.Module):
         super(Identity, self).__init__()
     def forward(self, x):
         return x
-
 
 def create_model(model_arch, output_classes, pre_trained=True, unfreeze_weights=False):
     '''
