@@ -32,7 +32,7 @@
 <dl>
 <dt id="radtorch.pipeline.Image_Classification"><code class="flex name class">
 <span>class <span class="ident">Image_Classification</span></span>
-<span>(</span><span>data_directory, transformations='default', custom_resize='default', device='default', optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None, table_source=None, mode='RAW', wl=None, batch_size=16, test_split=0.2, model_arch='vgg16', pre_trained=True, num_input_channels=1, train_epochs=20, learning_rate=0.0001, loss_function='CrossEntropyLoss')</span>
+<span>(</span><span>data_directory, transformations='default', custom_resize='default', device='default', optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None, table_source=None, mode='RAW', wl=None, batch_size=16, test_split=0.2, model_arch='vgg16', pre_trained=True, unfreeze_weights=False, train_epochs=20, learning_rate=0.0001, loss_function='CrossEntropyLoss')</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Creates an Image Classification Pipeline.</p>
@@ -69,9 +69,9 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 <dt><strong><code>model_arch</code></strong></dt>
 <dd>[str] PyTorch neural network architecture (default='vgg16')</dd>
 <dt><strong><code>pre_trained</code></strong></dt>
-<dd>[boolen] Load the pretrained weights of the neural network.(default=True)</dd>
-<dt><strong><code>num_input_channels</code></strong></dt>
-<dd>[int] Number of input image channels. Grayscale DICOM images usually have 1 channel. Colored images have 3. (default=1)</dd>
+<dd>[boolen] Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)</dd>
+<dt><strong><code>unfreeze_weights</code></strong></dt>
+<dd>[boolen] if True, all model weights, not just final layer, will be retrained. (default=False)</dd>
 <dt><strong><code>train_epochs</code></strong></dt>
 <dd>[int] Number of training epochs. (default=20)</dd>
 <dt><strong><code>learning_rate</code></strong></dt>
@@ -100,7 +100,7 @@ classifier.metrics()
 <h3>Methods</h3>
 <dl>
 <dt id="radtorch.pipeline.Image_Classification.confusion_matrix"><code class="name flex">
-<span>def <span class="ident">confusion_matrix</span></span>(<span>self, target_data_set='default', target_classes='default')</span>
+<span>def <span class="ident">confusion_matrix</span></span>(<span>self, target_data_set='default', target_classes='default', figure_size=(8, 6))</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -118,7 +118,7 @@ classifier.metrics()
 <section class="desc"><p>Exports the trained model into a target file.</p></section>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification.inference"><code class="name flex">
-<span>def <span class="ident">inference</span></span>(<span>self, test_img_path, transforms=False)</span>
+<span>def <span class="ident">inference</span></span>(<span>self, test_img_path, transformations='default')</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Performs inference on target DICOM image using a trained classifier.</p></section>
@@ -136,7 +136,7 @@ classifier.metrics()
 <section class="desc"><p>Display the training metrics.</p></section>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification.roc"><code class="name flex">
-<span>def <span class="ident">roc</span></span>(<span>self, target_data_set='default', auc=True, fig_size=(10, 10))</span>
+<span>def <span class="ident">roc</span></span>(<span>self, target_data_set='default', auc=True, figure_size=(10, 10))</span>
 </code></dt>
 <dd>
 <section class="desc"></section>
@@ -161,7 +161,7 @@ classifier.metrics()
 </dl></section>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification.train"><code class="name flex">
-<span>def <span class="ident">train</span></span>(<span>self)</span>
+<span>def <span class="ident">train</span></span>(<span>self, verbose=True)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Train the created image classifier.</p></section>

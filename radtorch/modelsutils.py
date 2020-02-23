@@ -48,7 +48,7 @@ loss_dict = {
 
 supported_models = [x for x in model_dict.keys()]
 
-supported_losses = [x for x in loss_dict.keys()]
+supported_image_classification_losses = ['NLLLoss', 'CrossEntropyLoss']
 
 supported_optimizer = ['Adam', 'ASGD', 'RMSprop', 'SGD']
 
@@ -67,8 +67,8 @@ def supported():
     for i in supported_models:
         print (i)
     print('')
-    print ('Supported Loss Functions:')
-    for i in supported_losses:
+    print ('Supported Image Classification Loss Functions:')
+    for i in supported_image_classification_losses:
         print (i)
     print('')
     print ('Supported Optimizers:')
