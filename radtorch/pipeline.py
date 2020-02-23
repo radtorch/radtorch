@@ -273,7 +273,7 @@ class Image_Classification():
         else:
             transformations = transformations
 
-        pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, trans=transformations)
+        pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, inference_transformations=transformations)
         print (pred)
 
     def confusion_matrix(self, target_data_set='default', target_classes='default'):
