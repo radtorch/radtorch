@@ -295,7 +295,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
     return model, training_metrics
 
 
-def model_inference(model, input_image_path, trans=transforms.Compose([transforms.ToTensor()])):
+def model_inference(model, input_image_path, inference_transformations=transforms.Compose([transforms.ToTensor()])):
     '''
     Performs Inference on a selected image using a trained model.
     Inputs:
@@ -310,7 +310,7 @@ def model_inference(model, input_image_path, trans=transforms.Compose([transform
     else:
         target_img = Image.open(test_image_name).convert('RGB')
 
-    target_img_tensor = trans(target_img)
+    target_img_tensor = inference_transformations(target_img)
     # target_img_tensor = target_img_tensor.unsqueeze(1)
     target_img_tensor = target_img_tensor.unsqueeze(0)
 
