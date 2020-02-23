@@ -51,8 +51,8 @@ class Image_Classification():
         batch_size: [int] batch size of the dataset (default=16)
         test_split: [float] percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
         model_arch: [str] PyTorch neural network architecture (default='vgg16')
-        pre_trained: [boolen] Load the pretrained weights of the neural network.(default=True)
-        num_input_channels: [int] Number of input image channels. Grayscale DICOM images usually have 1 channel. Colored images have 3. (default=1)
+        pre_trained: [boolen] Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
+        unfreeze_weights: [boolen] if True, all model weights, not just final layer, will be retrained. (default=False)
         train_epochs: [int] Number of training epochs. (default=20)
         learning_rate: [float] training learning rate. (default = 0.0001)
         loss_function: [str] training loss function. (default='CrossEntropyLoss')
@@ -92,7 +92,7 @@ class Image_Classification():
     test_split = 0.2,
     model_arch='vgg16',
     pre_trained=True,
-    num_input_channels=1,
+    unfreeze_weights=False,
     train_epochs=20,
     learning_rate=0.0001,
     loss_function='CrossEntropyLoss'):
@@ -103,19 +103,29 @@ class Image_Classification():
         self.table_source = table_source
         self.mode = mode
         self.wl = wl
+
         if custom_resize=='default':
             self.input_resize = model_dict[model_arch]['input_size']
         else:
             self.input_resize = custom_resize
+
         if transformations == 'default':
-            self.transformations = transforms.Compose([transforms.Resize((self.input_resize, self.input_resize)),transforms.ToTensor()])
+            if self.is_dicom == True:
+                self.transformations = transforms.Compose([
+                        transforms.Resize((self.input_resize, self.input_resize)),
+                        transforms.transforms.Grayscale(3),
+                        transforms.ToTensor()])
+            else:
+                self.transformations = transforms.Compose([
+                        transforms.Resize((self.input_resize, self.input_resize)),
+                        transforms.ToTensor()])
         else:
             self.transformations = transformations
+
         self.batch_size = batch_size
         self.test_split = test_split
         self.model_arch = model_arch
         self.pre_trained = pre_trained
-        self.num_input_channels = num_input_channels
         self.train_epochs = train_epochs
         self.learning_rate = learning_rate
         self.loss_function = loss_function
@@ -173,9 +183,10 @@ class Image_Classification():
         # Create Model
         self.train_model = create_model(
                                     model_arch=self.model_arch,
-                                    input_channels=self.num_input_channels,
                                     output_classes=self.num_output_classes,
-                                    pre_trained=self.pre_trained)
+                                    pre_trained=self.pre_trained,
+                                    unfreeze_weights = self.unfreeze_weights
+                                    )
 
 
         self.loss_function = create_loss_function(self.loss_function)

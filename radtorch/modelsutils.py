@@ -77,14 +77,15 @@ class Identity(nn.Module):
         return x
 
 
-def create_model(model_arch, input_channels, output_classes, pre_trained=True):
+def create_model(model_arch, output_classes, pre_trained=True, unfreeze_weights=False):
     '''
     Creates a PyTorch training neural network model with specified network architecture. Input channels and output classes can be specified.
     Inputs:
         model_arch: [str] The architecture of the model neural network. Examples include 'vgg16', 'resnet50', and 'resnet152'.
-        pre_trained: [boolen] Load the pretrained weights of the neural network.(default=True)
-        input_channels: [int] Number of input image channels. Grayscale DICOM images usually have 1 channel. Colored images have 3.
+        pre_trained: [boolen] Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
+        unfreeze_weights: [boolen] if True, all model weights, not just final layer, will be retrained. (default=False)
         output_classes: [int] Number of output classes for image classification problems.
+
     Outputs:
         Output: [PyTorch neural network object]
     Examples:
@@ -106,7 +107,7 @@ def create_model(model_arch, input_channels, output_classes, pre_trained=True):
             elif model_arch == 'vgg19':
                 train_model = torchvision.models.vgg19(pretrained=pre_trained)
 
-            train_model.features[0] = nn.Conv2d(input_channels,64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+            # train_model.features[0] = nn.Conv2d(input_channels,64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
             train_model.classifier[6] = nn.Sequential(
                     nn.Linear(in_features=4096, out_features=output_classes, bias=True))
 
@@ -123,15 +124,19 @@ def create_model(model_arch, input_channels, output_classes, pre_trained=True):
             elif  model_arch == 'wide_resnet101_2':
                 train_model = torchvision.models.wide_resnet101_2(pretrained=pre_trained)
 
-            train_model.conv1 = nn.Conv2d(input_channels,64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
+            # train_model.conv1 = nn.Conv2d(input_channels,64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False)
             fc_inputs = train_model.fc.in_features
             train_model.fc = nn.Sequential(
                   nn.Linear(fc_inputs, output_classes))
 
         elif model_arch == 'inception_v3':
             train_model = torchvision.models.inception_v3(pretrained=pre_trained)
-            train_model.Conv2d_1a_3x3.conv  = nn.Conv2d(input_channels, 32, kernel_size=(3, 3), stride=(2, 2), bias=False)
+            # train_model.Conv2d_1a_3x3.conv  = nn.Conv2d(input_channels, 32, kernel_size=(3, 3), stride=(2, 2), bias=False)
             train_model.fc = nn.Linear(in_features=2048, out_features=output_classes, bias=True)
+
+
+        for param in train_model.parameters():
+            param.requires_grad = unfreeze_weights
 
         return train_model
 
@@ -306,7 +311,9 @@ def model_inference(model, input_image_path, trans=transforms.Compose([transform
         target_img = Image.open(test_image_name).convert('RGB')
 
     target_img_tensor = trans(target_img)
-    target_img_tensor = target_img_tensor.unsqueeze(1)
+    # target_img_tensor = target_img_tensor.unsqueeze(1)
+    target_img_tensor = target_img_tensor.unsqueeze(0)
+
 
     with torch.no_grad():
         model.to('cpu')
