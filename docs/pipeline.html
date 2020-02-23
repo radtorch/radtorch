@@ -32,7 +32,7 @@
 <dl>
 <dt id="radtorch.pipeline.Image_Classification"><code class="flex name class">
 <span>class <span class="ident">Image_Classification</span></span>
-<span>(</span><span>data_directory, transformations='default', custom_resize='default', device='default', optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None, table_source=None, mode='RAW', wl=None, batch_size=16, test_split=0.2, model_arch='vgg16', pre_trained=True, num_input_channels=1, train_epochs=20, learning_rate=0.001, loss_function='CrossEntropyLoss')</span>
+<span>(</span><span>data_directory, transformations='default', custom_resize='default', device='default', optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None, table_source=None, mode='RAW', wl=None, batch_size=16, test_split=0.2, model_arch='vgg16', pre_trained=True, num_input_channels=1, train_epochs=20, learning_rate=0.0001, loss_function='CrossEntropyLoss')</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Creates an Image Classification Pipeline.</p>
@@ -75,7 +75,7 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 <dt><strong><code>train_epochs</code></strong></dt>
 <dd>[int] Number of training epochs. (default=20)</dd>
 <dt><strong><code>learning_rate</code></strong></dt>
-<dd>[float] training learning rate. (default = 0.001)</dd>
+<dd>[float] training learning rate. (default = 0.0001)</dd>
 <dt><strong><code>loss_function</code></strong></dt>
 <dd>[str] training loss function. (default='CrossEntropyLoss')</dd>
 <dt><strong><code>optimizer</code></strong></dt>

@@ -114,10 +114,24 @@ Returns a single image in case of one window and 3 images in case of mutiple win
 <section class="desc"></section>
 </dd>
 <dt id="radtorch.visutils.show_roc"><code class="name flex">
-<span>def <span class="ident">show_roc</span></span>(<span>true_labels, predictions, auc=True, fig_size=(10, 10))</span>
+<span>def <span class="ident">show_roc</span></span>(<span>true_labels, predictions, auc=True, fig_size=(10, 10), title='ROC Curve')</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Displays ROC curve of a certain model and the AUC</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>true_labels</code></strong></dt>
+<dd>[list] true labels of test set</dd>
+<dt><strong><code>predicted_labels</code></strong></dt>
+<dd>[list] predicted labels of test set using target model</dd>
+<dt><strong><code>auc</code></strong></dt>
+<dd>[boolen] displays area under curve for ROC (default=True)</dd>
+<dt><strong><code>figsize</code></strong></dt>
+<dd>[tuple] size of displayed figure (default = (10,10))</dd>
+<dt><strong><code>title</code></strong></dt>
+<dd>[str] title of the displayed curve (default = 'ROC Curve')</dd>
+</dl>
+<p><img alt="" src="pass.jpg"></p></section>
 </dd>
 </dl>
 </section>

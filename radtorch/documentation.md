@@ -96,7 +96,12 @@ The above 3 lines of code will run an image classifier using VGG16 with pre-trai
     <td class="tg-dfrc">wide_resnet101_2</td>
     <td class="tg-09jq">224x224</td>
     <td class="tg-09jq">2048</td>
-  </tr>  
+  </tr>
+  <tr>
+    <td class="tg-dfrc">Inception v3</td>
+    <td class="tg-09jq">299x299</td>
+    <td class="tg-09jq">2048</td>
+  </tr>     
 </table>
 
 

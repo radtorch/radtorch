@@ -28,6 +28,7 @@ model_dict = {'vgg16':{'name':'vgg16','input_size':244, 'output_features':4096},
               'resnet152':{'name':'resnet152','input_size':244, 'output_features':2048},
               'wide_resnet50_2':{'name':'wide_resnet50_2','input_size':244, 'output_features':2048},
               'wide_resnet101_2':{'name':'wide_resnet101_2','input_size':244, 'output_features':2048},
+              'inception_v3':{'name':'inception_v3','input_size':299, 'output_features':2048},
               }
 
 loss_dict = {
@@ -126,6 +127,11 @@ def create_model(model_arch, input_channels, output_classes, pre_trained=True):
             fc_inputs = train_model.fc.in_features
             train_model.fc = nn.Sequential(
                   nn.Linear(fc_inputs, output_classes))
+
+        elif model_arch == 'inception_v3':
+            train_model = torchvision.models.inception_v3(pretrained=pre_trained)
+            train_model.Conv2d_1a_3x3.conv  = nn.Conv2d(input_channels, 32, kernel_size=(3, 3), stride=(2, 2), bias=False)
+            train_model.fc = nn.Linear(in_features=2048, out_features=output_classes, bias=True)
 
         return train_model
 
