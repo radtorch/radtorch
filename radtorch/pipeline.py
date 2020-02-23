@@ -282,13 +282,13 @@ class Image_Classification():
 
         show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes)
 
-    def roc(self, target_data_set='default', auc=True, fig_size=(10,10)):
+    def roc(self, target_data_set='default', auc=True, figure_size=(10,10)):
         if target_data_set=='default':
             target_data_set = self.valid_data_set
         else:
             target_data_set = target_data_set
 
-        show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, fig_size=fig_size)
+        show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, fig_size=figure_size)
 
 
 

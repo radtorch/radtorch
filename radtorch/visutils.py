@@ -113,7 +113,6 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
         plt.imshow(i[0][0], cmap='gray');
         plt.title(l[0]);
 
-
 def show_roc(true_labels, predictions, auc=True, fig_size=(10,10), title='ROC Curve'):
     """
     Displays ROC curve of a certain model and the AUC
@@ -159,12 +158,12 @@ def show_nn_roc(model, target_data_set, auc=True, fig_size=(10,10)):
             pred_labels.append(pred)
     show_roc(true_labels, pred_labels, auc=auc, fig_size=fig_size)
 
-
 def plot_confusion_matrix(cm,
                           target_names,
                           title='Confusion Matrix',
                           cmap=None,
-                          normalize=False):
+                          normalize=False,
+                          figure_size=(8,6)):
     """
     given a sklearn confusion matrix (cm), make a nice plot
 
@@ -197,7 +196,7 @@ def plot_confusion_matrix(cm,
     if cmap is None:
         cmap = plt.get_cmap('Blues')
 
-    plt.figure(figsize=(8, 6))
+    plt.figure(figsize=figure_size)
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
     plt.colorbar()
@@ -227,7 +226,7 @@ def plot_confusion_matrix(cm,
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
     plt.show()
 
-def show_confusion_matrix(model, target_data_set, target_classes):
+def show_confusion_matrix(model, target_data_set, target_classes, figure_size=(8,6)):
     '''
     Returns Confusion Matrix for Neural Network Image Classifier
     '''
@@ -253,4 +252,6 @@ def show_confusion_matrix(model, target_data_set, target_classes):
                           target_names=target_classes,
                           title='Confusion Matrix',
                           cmap=None,
-                          normalize=False)
+                          normalize=False,
+                          figure_size=figure_size
+                          )
