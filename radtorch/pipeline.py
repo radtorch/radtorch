@@ -268,7 +268,7 @@ class Image_Classification():
         '''
         Performs inference on target DICOM image using a trained classifier.
         '''
-        if transforms=='default':
+        if transformations=='default':
             transformations = self.transformations
         else:
             transformations = transformations
@@ -288,7 +288,6 @@ class Image_Classification():
             target_classes = target_classes
 
         show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes)
-
 
     def roc(self, target_data_set='default', auc=True, fig_size=(10,10)):
         if target_data_set=='default':
