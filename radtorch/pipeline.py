@@ -19,7 +19,7 @@ from PIL import Image
 from pathlib import Path
 
 
-from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict
+from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table
 from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc, show_nn_roc
 
@@ -161,8 +161,6 @@ class Image_Classification():
 
 
 
-        # Create DataLoader
-
         valid_size = int(self.test_split*len(self.data_set))
 
         self.valid_data_set, self.train_data_set = torch.utils.data.random_split(self.data_set, [valid_size,len(self.data_set)-valid_size])
@@ -177,11 +175,8 @@ class Image_Classification():
                                                     batch_size=self.batch_size,
                                                     shuffle=True)
 
-
         self.num_output_classes = len(self.data_set.classes)
 
-
-        # Create Model
         self.train_model = create_model(
                                     model_arch=self.model_arch,
                                     output_classes=self.num_output_classes,
@@ -189,13 +184,11 @@ class Image_Classification():
                                     unfreeze_weights = self.unfreeze_weights
                                     )
 
+        self.train_model = self.train_model.to(self.device)
 
         self.loss_function = create_loss_function(self.loss_function)
 
-
-        if self.optimizer == 'Adam':
-            self.optimizer = torch.optim.Adam(self.train_model.parameters(), lr=self.learning_rate)
-
+        self.optimizer = create_optimizer(traning_model=self.train_model, optimizer_type=optimizer, learning_rate=self.learning_rate)
 
 
     def info(self):

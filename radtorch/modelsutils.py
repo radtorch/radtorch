@@ -44,18 +44,20 @@ loss_dict = {
             }
 
 
+
+
 supported_models = [x for x in model_dict.keys()]
 
 supported_losses = [x for x in loss_dict.keys()]
 
+supported_optimizer = ['Adam', 'ASGD', 'RMSprop', 'SGD']
 
 
 
 
 
 
-
-def supported_list():
+def supported():
     '''
     Returns a list of the currently supported network architectures and loss functions.
 
@@ -68,7 +70,9 @@ def supported_list():
     print ('Supported Loss Functions:')
     for i in supported_losses:
         print (i)
-
+    print ('Supported Optimizers:')
+    for i in supported_optimizer:
+        print (i)
 
 class Identity(nn.Module):
     def __init__(self):
@@ -159,6 +163,19 @@ def create_loss_function(type):
         loss_function = loss_dict[type]
 
         return loss_function
+
+
+def create_optimizer(traning_model, optimizer_type, learning_rate):
+    if optimizer_type=='Adam':
+        optimizer = torch.optim.Adam(traning_model.parameters(), lr=learning_rate)
+    elif optimizer_type == 'ASGD':
+        optimizer = torch.optim.ASGD(traning_model.parameters(), lr=learning_rate)
+    elif optimizer_type == 'RMSprop':
+        optimizer = torch.optim.RMSprop(traning_model.parameters(), lr=learning_rate)
+    elif optimizer_type == 'SGD':
+        optimizer = torch.optim.SGD(traning_model.parameters(), lr=learning_rate)
+
+    return optimizer
 
 
 def train_model(model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device):
