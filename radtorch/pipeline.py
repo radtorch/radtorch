@@ -126,6 +126,7 @@ class Image_Classification():
         self.test_split = test_split
         self.model_arch = model_arch
         self.pre_trained = pre_trained
+        self.unfreeze_weights = unfreeze_weights
         self.train_epochs = train_epochs
         self.learning_rate = learning_rate
         self.loss_function = loss_function
