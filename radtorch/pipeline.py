@@ -48,7 +48,7 @@ class Image_Classification():
         wl: [list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
                     In the form of : [[Level,Width], [Level,Width],...].
                     Only 3 combinations are allowed for MWIN (for now).
-        transformations:[pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+        transformations: [pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
         custom_resize: [int] by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
         batch_size: [int] batch size of the dataset (default=16)
         test_split: [float] percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
@@ -135,8 +135,8 @@ class Image_Classification():
         self.learning_rate = learning_rate
         self.loss_function = loss_function
         self.optimizer = optimizer
-        self.path_col = 'IMAGE_PATH'
-        self.label_col = 'IMAGE_LABEL'
+        self.path_col = path_col
+        self.label_col = label_col
         if device == 'default':
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         else:
