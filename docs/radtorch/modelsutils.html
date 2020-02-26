@@ -54,7 +54,7 @@ gtag('config', 'UA-116382803-2');
 <p><img alt="" src="pass.jpg"></p></section>
 </dd>
 <dt id="radtorch.modelsutils.create_model"><code class="name flex">
-<span>def <span class="ident">create_model</span></span>(<span>model_arch, output_classes, pre_trained=True, unfreeze_weights=False)</span>
+<span>def <span class="ident">create_model</span></span>(<span>model_arch, output_classes, mode, pre_trained=True, unfreeze_weights=False)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Creates a PyTorch training neural network model with specified network architecture. Input channels and output classes can be specified.</p>
@@ -68,6 +68,8 @@ gtag('config', 'UA-116382803-2');
 <dd>[boolen] if True, all model weights, not just final layer, will be retrained. (default=False)</dd>
 <dt><strong><code>output_classes</code></strong></dt>
 <dd>[int] Number of output classes for image classification problems.</dd>
+<dt><strong><code>mode</code></strong></dt>
+<dd>[str] 'train' for training model. 'feature_extraction' for feature extraction model</dd>
 </dl>
 <h2 id="outputs">Outputs</h2>
 <dl>

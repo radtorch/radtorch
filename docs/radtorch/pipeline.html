@@ -38,6 +38,117 @@ gtag('config', 'UA-116382803-2');
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="radtorch.pipeline.Feature_Extraction"><code class="flex name class">
+<span>class <span class="ident">Feature_Extraction</span></span>
+<span>(</span><span>data_directory, transformations='default', custom_resize='default', device='default', is_dicom=True, label_from_table=False, is_csv=None, table_source=None, path_col='IMAGE_PATH', label_col='IMAGE_LABEL', mode='RAW', wl=None, model_arch='vgg16', pre_trained=True, unfreeze_weights=False)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Utilizes a trained model to extract features from images as table.</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>data_directory</code></strong></dt>
+<dd><strong>[REQUIRED]</strong> [str] target data directory.</dd>
+<dt><strong><code>is_dicom</code></strong></dt>
+<dd>[boolean] True for DICOM images, False for regular images.(default=True)</dd>
+<dt><strong><code>label_from_table</code></strong></dt>
+<dd>[boolean] True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)</dd>
+<dt><strong><code>is_csv</code></strong></dt>
+<dd>[boolean] True for csv, False for pandas dataframe.</dd>
+<dt><strong><code>table_source</code></strong></dt>
+<dd>[str or pandas dataframe object] source for labelling data. (default=None)
+This is path to csv file or name of pandas dataframe if pandas to be used.</dd>
+<dt><strong><code>path_col</code></strong></dt>
+<dd>[str] name of the column with the image path. (default='IMAGE_PATH')</dd>
+<dt><strong><code>label_col</code></strong></dt>
+<dd>[str] name of the label/class column. (default='IMAGE_LABEL')</dd>
+<dt><strong><code>mode</code></strong></dt>
+<dd>[str] output mode for DICOM images only. (default='RAW')
+options:
+RAW= Raw pixels,
+HU= Image converted to Hounsefield Units,
+WIN= 'window' image windowed to certain W and L,
+MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].</dd>
+<dt><strong><code>wl</code></strong></dt>
+<dd>[list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
+In the form of : [[Level,Width], [Level,Width],&hellip;].
+Only 3 combinations are allowed for MWIN (for now).</dd>
+<dt><strong><code>transformations</code></strong></dt>
+<dd>[pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)</dd>
+<dt><strong><code>custom_resize</code></strong></dt>
+<dd>[int] by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.</dd>
+<dt><strong><code>model_arch</code></strong></dt>
+<dd>[str] PyTorch neural network architecture (default='vgg16')</dd>
+<dt><strong><code>pre_trained</code></strong></dt>
+<dd>[boolen] Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)</dd>
+<dt><strong><code>unfreeze_weights</code></strong></dt>
+<dd>[boolen] if True, all model weights, not just final layer, will be retrained. (default=False)</dd>
+<dt><strong><code>device</code></strong></dt>
+<dd>[str] device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.</dd>
+</dl>
+<h2 id="outputs">Outputs</h2>
+<dl>
+<dt><strong><code>Output</code></strong></dt>
+<dd>Image Classification Model</dd>
+</dl>
+<p>Examples:</p>
+<pre><code>
+
+
+</code></pre>
+<p><img alt="" src="pass.jpg"></p></section>
+<h3>Methods</h3>
+<dl>
+<dt id="radtorch.pipeline.Feature_Extraction.dataset_info"><code class="name flex">
+<span>def <span class="ident">dataset_info</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Displays Dataset Information.</p></section>
+</dd>
+<dt id="radtorch.pipeline.Feature_Extraction.export_features"><code class="name flex">
+<span>def <span class="ident">export_features</span></span>(<span>self, csv_path)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="radtorch.pipeline.Feature_Extraction.extract"><code class="name flex">
+<span>def <span class="ident">extract</span></span>(<span>self, verbose=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Extract features from the dataset</p></section>
+</dd>
+<dt id="radtorch.pipeline.Feature_Extraction.info"><code class="name flex">
+<span>def <span class="ident">info</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Displays Feature Extraction Pipeline Parameters.</p></section>
+</dd>
+<dt id="radtorch.pipeline.Feature_Extraction.num_features"><code class="name flex">
+<span>def <span class="ident">num_features</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<section class="desc"></section>
+</dd>
+<dt id="radtorch.pipeline.Feature_Extraction.sample"><code class="name flex">
+<span>def <span class="ident">sample</span></span>(<span>self, num_of_images_per_row=5, fig_size=(10, 10), show_labels=True)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Displays sample of the dataset.</p></section>
+</dd>
+<dt id="radtorch.pipeline.Feature_Extraction.set_trained_model"><code class="name flex">
+<span>def <span class="ident">set_trained_model</span></span>(<span>self, model_path, mode)</span>
+</code></dt>
+<dd>
+<section class="desc"><p>Loads a previously trained model into pipeline</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>model_path</code></strong></dt>
+<dd>[str] Path to target model</dd>
+<dt><strong><code>mode</code></strong></dt>
+<dd>[str] either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.</dd>
+</dl></section>
+</dd>
+</dl>
+</dd>
 <dt id="radtorch.pipeline.Image_Classification"><code class="flex name class">
 <span>class <span class="ident">Image_Classification</span></span>
 <span>(</span><span>data_directory, transformations='default', custom_resize='default', device='default', optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None, table_source=None, path_col='IMAGE_PATH', label_col='IMAGE_LABEL', mode='RAW', wl=None, batch_size=16, test_split=0.2, model_arch='vgg16', pre_trained=True, unfreeze_weights=False, train_epochs=20, learning_rate=0.0001, loss_function='CrossEntropyLoss')</span>
@@ -72,7 +183,8 @@ MWIN = 'multi-window' converts image to 3 windowed images of different W and L (
 <dd>[list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
 In the form of : [[Level,Width], [Level,Width],&hellip;].
 Only 3 combinations are allowed for MWIN (for now).</dd>
-<dt>transformations:[pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)</dt>
+<dt><strong><code>transformations</code></strong></dt>
+<dd>[pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)</dd>
 <dt><strong><code>custom_resize</code></strong></dt>
 <dd>[int] by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.</dd>
 <dt><strong><code>batch_size</code></strong></dt>
@@ -197,6 +309,18 @@ classifier.metrics()
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="radtorch.pipeline.Feature_Extraction" href="#radtorch.pipeline.Feature_Extraction">Feature_Extraction</a></code></h4>
+<ul class="two-column">
+<li><code><a title="radtorch.pipeline.Feature_Extraction.dataset_info" href="#radtorch.pipeline.Feature_Extraction.dataset_info">dataset_info</a></code></li>
+<li><code><a title="radtorch.pipeline.Feature_Extraction.export_features" href="#radtorch.pipeline.Feature_Extraction.export_features">export_features</a></code></li>
+<li><code><a title="radtorch.pipeline.Feature_Extraction.extract" href="#radtorch.pipeline.Feature_Extraction.extract">extract</a></code></li>
+<li><code><a title="radtorch.pipeline.Feature_Extraction.info" href="#radtorch.pipeline.Feature_Extraction.info">info</a></code></li>
+<li><code><a title="radtorch.pipeline.Feature_Extraction.num_features" href="#radtorch.pipeline.Feature_Extraction.num_features">num_features</a></code></li>
+<li><code><a title="radtorch.pipeline.Feature_Extraction.sample" href="#radtorch.pipeline.Feature_Extraction.sample">sample</a></code></li>
+<li><code><a title="radtorch.pipeline.Feature_Extraction.set_trained_model" href="#radtorch.pipeline.Feature_Extraction.set_trained_model">set_trained_model</a></code></li>
+</ul>
+</li>
 <li>
 <h4><code><a title="radtorch.pipeline.Image_Classification" href="#radtorch.pipeline.Image_Classification">Image_Classification</a></code></h4>
 <ul class="two-column">
