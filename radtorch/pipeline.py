@@ -514,11 +514,11 @@ class Feature_Extraction():
                 self.features.append(output)
                 self.labels_idx.append(label)
 
-        self.feature_names = ['f_'+str(i) for i in range(1,(model_dict[self.model_arch]['output_features']))]
+        self.feature_names = ['f_'+str(i) for i in range(1,(model_dict[self.model_arch]['output_features'])+1)]
 
         feature_df = pd.DataFrame(list(zip(self.labels_idx, self.features)), columns=['label_idx', 'features'])
 
-        # feature_df[self.feature_names] = pd.DataFrame(feature_df.features.values.tolist(), index= feature_df.index)
+        feature_df[self.feature_names] = pd.DataFrame(feature_df.features.values.tolist(), index= feature_df.index)
 
         self.feature_df = feature_df
 
