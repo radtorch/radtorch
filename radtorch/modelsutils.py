@@ -133,7 +133,7 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
 
             fc_inputs = train_model.fc.in_features
             if mode == 'feature_extraction':
-                train_model.fc == Identity()
+                train_model.fc = Identity()
             else:
                 train_model.fc = nn.Sequential(
                   nn.Linear(in_features=2048, out_features=output_classes, bias=True))
@@ -141,7 +141,7 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
         elif model_arch == 'inception_v3':
             train_model = torchvision.models.inception_v3(pretrained=pre_trained)
             if mode == 'feature_extraction':
-                train_model.fc == Identity()
+                train_model.fc = Identity()
             else:
                 train_model.fc = nn.Linear(in_features=2048, out_features=output_classes, bias=True)
 
