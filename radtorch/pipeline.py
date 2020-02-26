@@ -491,6 +491,13 @@ class Feature_Extraction():
         '''
         return show_dataloader_sample(dataloader=self.data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
 
+
+    def num_features(self):
+        output = model_dict[self.model_arch]['output_features']
+        print (output)
+        return output
+
+
     def extract(self, verbose=True):
         '''
         Extract features from the dataset
@@ -504,9 +511,9 @@ class Feature_Extraction():
                 output = (self.model(input))[0].tolist()
                 features.append(output)
 
-        feature_names = ['f_'+str(i) for i in range(1,model_dict[self.model_arch]['output_features'])]
+        feature_names = ['f_'+str(i) for i in range(1,(model_dict[self.model_arch]['output_features']))]
 
-        feature_df = pd.DataFrame(features, columns='features')
+        feature_df = pd.DataFrame(features, columns=['features'])
 
         feature_df[feature_names] = pd.DataFrame(feature_df.features.values.tolist(), index= feature_df.index)
 
