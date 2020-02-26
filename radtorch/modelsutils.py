@@ -136,7 +136,7 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
                 train_model.fc == Identity()
             else:
                 train_model.fc = nn.Sequential(
-                  nn.Linear(in_features=2048, out_features=output_classes, bias=True)))
+                  nn.Linear(in_features=2048, out_features=output_classes, bias=True))
 
         elif model_arch == 'inception_v3':
             train_model = torchvision.models.inception_v3(pretrained=pre_trained)
