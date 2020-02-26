@@ -518,7 +518,7 @@ class Feature_Extraction():
 
         feature_df = pd.DataFrame(list(zip(self.labels_idx, self.features)), columns=['label_idx', 'features'])
 
-        feature_df[self.feature_names] = pd.DataFrame(feature_df.features.values.tolist(), index= feature_df.index)
+        # feature_df[self.feature_names] = pd.DataFrame(feature_df.features.values.tolist(), index= feature_df.index)
 
         self.feature_df = feature_df
 
