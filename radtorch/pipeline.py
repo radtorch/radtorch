@@ -491,7 +491,7 @@ class Feature_Extraction():
 
     def export_features(self,csv_path):
         try:
-            self.feature_d.to_csv(csv_path)
+            self.feature_df.to_csv(csv_path)
             print ('Features exported to CSV successfully.')
         except:
             print ('Error! No features found. Please check again or re-run the extracion pipeline.')
