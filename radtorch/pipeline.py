@@ -502,7 +502,7 @@ class Feature_Extraction():
                 input = input.unsqueeze(0)
                 input = input.to(self.device)
                 output = (self.model(input))[0].tolist()
-                feature.append(output)
+                features.append(output)
 
         feature_names = ['f_'+str(i) for i in range(1,model_dict[self.model_arch]['output_features'])]
 
