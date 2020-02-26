@@ -321,7 +321,6 @@ class Feature_Extraction():
                     Only 3 combinations are allowed for MWIN (for now).
         transformations: [pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
         custom_resize: [int] by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
-        batch_size: [int] batch size of the dataset (default=16)
         model_arch: [str] PyTorch neural network architecture (default='vgg16')
         pre_trained: [boolen] Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
         unfreeze_weights: [boolen] if True, all model weights, not just final layer, will be retrained. (default=False)
@@ -332,11 +331,8 @@ class Feature_Extraction():
 
     Examples:
     ```
-    from radtorch import pipeline
 
-    classifier = pipeline.Image_Classification(data_directory='path to data')
-    classifier.train()
-    classifier.metrics()
+
 
     ```
 
@@ -349,7 +345,6 @@ class Feature_Extraction():
     transformations='default',
     custom_resize = 'default',
     device='default',
-    # optimizer='Adam',
     is_dicom=True,
     label_from_table=False,
     is_csv=None,
@@ -358,14 +353,9 @@ class Feature_Extraction():
     label_col = 'IMAGE_LABEL' ,
     mode='RAW',
     wl=None,
-    batch_size=16,
-    # test_split = 0.2,
     model_arch='vgg16',
     pre_trained=True,
     unfreeze_weights=False,
-    # train_epochs=20,
-    # learning_rate=0.0001,
-    # loss_function='CrossEntropyLoss'
     ):
         self.data_directory = data_directory
         self.label_from_table = label_from_table
@@ -393,15 +383,10 @@ class Feature_Extraction():
         else:
             self.transformations = transformations
 
-        self.batch_size = batch_size
-        # self.test_split = test_split
+
         self.model_arch = model_arch
         self.pre_trained = pre_trained
         self.unfreeze_weights = unfreeze_weights
-        # self.train_epochs = train_epochs
-        # self.learning_rate = learning_rate
-        # self.loss_function = loss_function
-        # self.optimizer = optimizer
         self.path_col = path_col
         self.label_col = label_col
         if device == 'default':
@@ -430,26 +415,11 @@ class Feature_Extraction():
                         wl=self.wl,
                         trans=self.transformations)
 
-
-
-        # valid_size = int(self.test_split*len(self.data_set))
-
-        # self.valid_data_set, self.train_data_set = torch.utils.data.random_split(self.data_set, [valid_size,len(self.data_set)-valid_size])
-
         self.data_loader = torch.utils.data.DataLoader(
                                                     self.data_set,
                                                     batch_size=self.batch_size,
                                                     shuffle=False)
 
-        # self.train_data_loader = torch.utils.data.DataLoader(
-        #                                             self.train_data_set,
-        #                                             batch_size=self.batch_size,
-        #                                             shuffle=True)
-        #
-        # self.valid_data_loader = torch.utils.data.DataLoader(
-        #                                             self.valid_data_set,
-        #                                             batch_size=self.batch_size,
-        #                                             shuffle=True)
 
         self.num_output_classes = len(self.data_set.classes)
 
@@ -462,10 +432,6 @@ class Feature_Extraction():
                                     )
 
         self.model = self.model.to(self.device)
-
-        # self.loss_function = create_loss_function(self.loss_function)
-        #
-        # self.optimizer = create_optimizer(traning_model=self.train_model, optimizer_type=optimizer, learning_rate=self.learning_rate)
 
 
     def info(self):
@@ -521,6 +487,15 @@ class Feature_Extraction():
         self.feature_df = feature_df
 
         return self.feature_df
+
+
+    def export_features(self,csv_path):
+        if self.feature_df:
+            self.feature_d.to_csv(csv_path)
+            print ('Features exported to CSV successfully.')
+        else:
+            print ('Error! No features found. Please check again or re-run the extracion pipeline.')
+
 
 
     def set_trained_model(self, model_path, mode):
