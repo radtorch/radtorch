@@ -499,6 +499,7 @@ class Feature_Extraction():
         with torch.no_grad():
             self.model.eval()
             for input, label in tqdm(self.data_set, total=len(self.data_set)):
+                input = input.unsqueeze(0)
                 input = input.to(self.device)
                 output = (self.model(input))[0].tolist()
                 feature.append(output)
