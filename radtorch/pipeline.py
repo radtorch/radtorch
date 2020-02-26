@@ -494,7 +494,6 @@ class Feature_Extraction():
 
     def num_features(self):
         output = model_dict[self.model_arch]['output_features']
-        print (output)
         return output
 
 
@@ -507,9 +506,11 @@ class Feature_Extraction():
         with torch.no_grad():
             self.model.eval()
             for input, label in tqdm(self.data_set, total=len(self.data_set)):
-                input = input.unsqueeze(0)
                 input = input.to(self.device)
+                input = input.unsqueeze(0)
+                print (input.shape)
                 output = (self.model(input))[0].tolist()
+                print (len(output)
                 features.append(output)
                 labels.append(label)
 
@@ -518,8 +519,6 @@ class Feature_Extraction():
         feature_df = pd.DataFrame(list(zip(labels, features)), columns=['label', 'features'])
 
         feature_df[feature_names] = pd.DataFrame(feature_df.features.values.tolist(), index= feature_df.index)
-
-        feature_df
 
         return feature_df
 
