@@ -322,14 +322,9 @@ class Feature_Extraction():
         transformations: [pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
         custom_resize: [int] by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
         batch_size: [int] batch size of the dataset (default=16)
-        test_split: [float] percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
         model_arch: [str] PyTorch neural network architecture (default='vgg16')
         pre_trained: [boolen] Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
         unfreeze_weights: [boolen] if True, all model weights, not just final layer, will be retrained. (default=False)
-        train_epochs: [int] Number of training epochs. (default=20)
-        learning_rate: [float] training learning rate. (default = 0.0001)
-        loss_function: [str] training loss function. (default='CrossEntropyLoss')
-        optimizer: [str] Optimizer to be used during training. (default='Adam')
         device: [str] device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
 
     Outputs:
@@ -503,7 +498,7 @@ class Feature_Extraction():
         features = []
         with torch.no_grad():
             self.model.eval()
-            for input, label in tqdm(self.data_set), total=len(self.data_set)):
+            for input, label in tqdm(self.data_set, total=len(self.data_set)):
                 input = input.to(self.device)
                 output = (self.model(input))[0].tolist()
                 feature.append(output)
