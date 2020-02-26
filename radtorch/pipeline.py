@@ -510,7 +510,7 @@ class Feature_Extraction():
                 input = input.unsqueeze(0)
                 print (input.shape)
                 output = (self.model(input))[0].tolist()
-                print (len(output)
+                print (len(output))
                 features.append(output)
                 labels.append(label)
 
