@@ -506,7 +506,7 @@ class Feature_Extraction():
 
         feature_names = ['f_'+str(i) for i in range(1,model_dict[self.model_arch]['output_features'])]
 
-        feature_df = pd.DataFrame(features)
+        feature_df = pd.DataFrame(features, columns='features')
 
         feature_df[feature_names] = pd.DataFrame(feature_df.features.values.tolist(), index= feature_df.index)
 
