@@ -508,9 +508,7 @@ class Feature_Extraction():
             for input, label in tqdm(self.data_set, total=len(self.data_set)):
                 input = input.to(self.device)
                 input = input.unsqueeze(0)
-                print (input.shape)
                 output = (self.model(input))[0].tolist()
-                print (len(output))
                 self.features.append(output)
                 self.labels_idx.append(label)
 
