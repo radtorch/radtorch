@@ -501,8 +501,8 @@ class Feature_Extraction():
         '''
         Extract features from the dataset
         '''
-        features = []
-        labels = []
+        self.features = []
+        self.labels_idx = []
         with torch.no_grad():
             self.model.eval()
             for input, label in tqdm(self.data_set, total=len(self.data_set)):
@@ -514,13 +514,15 @@ class Feature_Extraction():
                 features.append(output)
                 labels.append(label)
 
-        feature_names = ['f_'+str(i) for i in range(1,(model_dict[self.model_arch]['output_features']))]
+        self.feature_names = ['f_'+str(i) for i in range(1,(model_dict[self.model_arch]['output_features']))]
 
-        feature_df = pd.DataFrame(list(zip(labels, features)), columns=['label', 'features'])
+        feature_df = pd.DataFrame(list(zip(labels_idx, features)), columns=['label_idx', 'features'])
 
         feature_df[feature_names] = pd.DataFrame(feature_df.features.values.tolist(), index= feature_df.index)
 
-        return feature_df
+        self.feature_df = feature_df
+
+        return self.feature_df
 
 
     def set_trained_model(self, model_path, mode):
