@@ -88,14 +88,15 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 <h2 id="outputs">Outputs</h2>
 <dl>
 <dt><strong><code>Output</code></strong></dt>
-<dd>Image Classification Model</dd>
+<dd>[Pandas dataframe] table with image path, label and extracted features.</dd>
 </dl>
 <p>Examples:</p>
-<pre><code>
+<pre><code>from radtorch import pipeline
 
+extractor = pipeline.Feature_Extraction(data_directory='path to data')
+feature_table = extractor.extract()
 
-</code></pre>
-<p><img alt="" src="pass.jpg"></p></section>
+</code></pre></section>
 <h3>Methods</h3>
 <dl>
 <dt id="radtorch.pipeline.Feature_Extraction.dataset_info"><code class="name flex">
@@ -151,62 +152,84 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification"><code class="flex name class">
 <span>class <span class="ident">Image_Classification</span></span>
-<span>(</span><span>data_directory, transformations='default', custom_resize='default', device='default', optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None, table_source=None, path_col='IMAGE_PATH', label_col='IMAGE_LABEL', mode='RAW', wl=None, batch_size=16, test_split=0.2, model_arch='vgg16', pre_trained=True, unfreeze_weights=False, train_epochs=20, learning_rate=0.0001, loss_function='CrossEntropyLoss')</span>
+<span>(</span><span>data_directory, transformations='default', custom_resize='default', device='default', optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None, table_source=None, path_col='IMAGE_PATH', label_col='IMAGE_LABEL', mode='RAW', wl=None, batch_size=16, test_percent=0.2, valid_percent=0.2, model_arch='vgg16', pre_trained=True, unfreeze_weights=False, train_epochs=20, learning_rate=0.0001, loss_function='CrossEntropyLoss')</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Creates an Image Classification Pipeline.</p>
+<section class="desc"><h2 id="guide">Guide</h2>
+<p>The Image Classification pipeline simplifies the process of binary and multi-class image classification into a single line of code.
+Under the hood, the following happens:</p>
+<ol>
+<li>
+<p>The pipeline creates a master dataset from the provided data directory and source of labels/classes either from <a href="https://pytorch.org/docs/stable/torchvision/datasets.html#datasetfolder">folder structre</a> or pandas/csv table.</p>
+</li>
+<li>
+<p>Master dataset is subdivided into train, valid and test subsets using the percentages defined by user.</p>
+</li>
+<li>
+<p>Selected Model architecture, optimizer, and loss function are downloaded/created.</p>
+</li>
+<li>
+<p>Model is trained.</p>
+</li>
+<li>
+<p>Training metrics are saved as training progresses and can be displayed after training is done.</p>
+</li>
+<li>
+<p>Confusion Matrix and ROC(for binary classification) can be displayed as well (by default, the test subset is used to calculate the confusion matrix and the ROC)</p>
+</li>
+<li>
+<p>Trained model can be exported to outside file for future use.</p>
+</li>
+</ol>
 <h2 id="inputs">Inputs</h2>
 <dl>
 <dt><strong><code>data_directory</code></strong></dt>
-<dd><strong>[REQUIRED]</strong> [str] target data directory.</dd>
+<dd><em>(str)</em> target data directory. <strong><em>(Required)</em></strong></dd>
 <dt><strong><code>is_dicom</code></strong></dt>
-<dd>[boolean] True for DICOM images, False for regular images.(default=True)</dd>
+<dd><em>(boolean)</em> True for DICOM images, False for regular images.(default=True)</dd>
 <dt><strong><code>label_from_table</code></strong></dt>
-<dd>[boolean] True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)</dd>
+<dd><em>(boolean)</em> True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)</dd>
 <dt><strong><code>is_csv</code></strong></dt>
-<dd>[boolean] True for csv, False for pandas dataframe.</dd>
+<dd><em>(boolean)</em> True for csv, False for pandas dataframe.</dd>
 <dt><strong><code>table_source</code></strong></dt>
-<dd>[str or pandas dataframe object] source for labelling data. (default=None)
-This is path to csv file or name of pandas dataframe if pandas to be used.</dd>
+<dd><em>(str or pandas dataframe object)</em> source for labelling data.This is path to csv file or name of pandas dataframe if pandas to be used. (default=None).</dd>
 <dt><strong><code>path_col</code></strong></dt>
-<dd>[str] name of the column with the image path. (default='IMAGE_PATH')</dd>
+<dd><em>(str)</em>
+name of the column with the image path. (default='IMAGE_PATH')</dd>
 <dt><strong><code>label_col</code></strong></dt>
-<dd>[str] name of the label/class column. (default='IMAGE_LABEL')</dd>
+<dd><em>(str)</em>
+name of the label/class column. (default='IMAGE_LABEL')</dd>
 <dt><strong><code>mode</code></strong></dt>
-<dd>[str] output mode for DICOM images only. (default='RAW')
-options:
-RAW= Raw pixels,
-HU= Image converted to Hounsefield Units,
-WIN= 'window' image windowed to certain W and L,
-MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].</dd>
+<dd><em>(str)</em>
+output mode for DICOM images only where RAW= Raw pixels, HU= Image converted to Hounsefield Units, WIN= 'window' image windowed to certain W and L, MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together. (default='RAW')</dd>
 <dt><strong><code>wl</code></strong></dt>
-<dd>[list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
-In the form of : [[Level,Width], [Level,Width],&hellip;].
-Only 3 combinations are allowed for MWIN (for now).</dd>
+<dd><em>(list)</em> list of lists of combinations of window level and widths to be used with WIN and MWIN.In the form of : [[Level,Width], [Level,Width],&hellip;]. Only 3 combinations are allowed for MWIN (for now). (default=None)</dd>
 <dt><strong><code>transformations</code></strong></dt>
-<dd>[pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)</dd>
+<dd><em>(pytorch transforms list)</em> pytroch transforms to be performed on the dataset. (default=Convert to tensor)</dd>
 <dt><strong><code>custom_resize</code></strong></dt>
-<dd>[int] by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.</dd>
+<dd><em>(int)</em> by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.</dd>
 <dt><strong><code>batch_size</code></strong></dt>
-<dd>[int] batch size of the dataset (default=16)</dd>
-<dt><strong><code>test_split</code></strong></dt>
-<dd>[float] percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)</dd>
+<dd><em>(int)</em> batch size of the dataset (default=16)</dd>
+<dt><strong><code>test_percent</code></strong></dt>
+<dd><em>(float)</em> percentage of dataset to use for testing. Float value between 0 and 1.0. (default=0.2)</dd>
+<dt><strong><code>valid_percent</code></strong></dt>
+<dd><em>(float)</em> percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)</dd>
 <dt><strong><code>model_arch</code></strong></dt>
-<dd>[str] PyTorch neural network architecture (default='vgg16')</dd>
+<dd><em>(str)</em> PyTorch neural network architecture (default='vgg16')</dd>
 <dt><strong><code>pre_trained</code></strong></dt>
-<dd>[boolen] Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)</dd>
+<dd><em>(boolean)</em> Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)</dd>
 <dt><strong><code>unfreeze_weights</code></strong></dt>
-<dd>[boolen] if True, all model weights, not just final layer, will be retrained. (default=False)</dd>
+<dd><em>(boolean)</em> if True, all model weights, not just final layer, will be retrained. (default=False)</dd>
 <dt><strong><code>train_epochs</code></strong></dt>
-<dd>[int] Number of training epochs. (default=20)</dd>
+<dd><em>(int)</em> Number of training epochs. (default=20)</dd>
 <dt><strong><code>learning_rate</code></strong></dt>
-<dd>[float] training learning rate. (default = 0.0001)</dd>
+<dd><em>(str)</em> training learning rate. (default = 0.0001)</dd>
 <dt><strong><code>loss_function</code></strong></dt>
-<dd>[str] training loss function. (default='CrossEntropyLoss')</dd>
+<dd><em>(str)</em> training loss function. (default='CrossEntropyLoss')</dd>
 <dt><strong><code>optimizer</code></strong></dt>
-<dd>[str] Optimizer to be used during training. (default='Adam')</dd>
+<dd><em>(str)</em> Optimizer to be used during training. (default='Adam')</dd>
 <dt><strong><code>device</code></strong></dt>
-<dd>[str] device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.</dd>
+<dd><em>(str)</em> device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.</dd>
 </dl>
 <h2 id="outputs">Outputs</h2>
 <dl>
@@ -218,41 +241,65 @@ Only 3 combinations are allowed for MWIN (for now).</dd>
 
 classifier = pipeline.Image_Classification(data_directory='path to data')
 classifier.train()
-classifier.metrics()
 
-</code></pre>
-<p><img alt="" src="pass.jpg"></p></section>
+</code></pre></section>
 <h3>Methods</h3>
 <dl>
 <dt id="radtorch.pipeline.Image_Classification.confusion_matrix"><code class="name flex">
-<span>def <span class="ident">confusion_matrix</span></span>(<span>self, target_data_set='default', target_classes='default', figure_size=(8, 6))</span>
+<span>def <span class="ident">confusion_matrix</span></span>(<span>self, target_data_set='default', target_classes='default', figure_size=(7, 7))</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Display Confusion Matrix</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>target_data_set</code></strong></dt>
+<dd><em>(pytorch dataset object)</em> dataset used for predictions to create the confusion matrix. By default, the image classification pipeline uses the test dataset created to calculate the matrix.</dd>
+<dt><strong><code>target_classes</code></strong></dt>
+<dd><em>(list)</em> list of classes. By default, the image classification pipeline uses the training classes.</dd>
+<dt><strong><code>figure_size</code></strong></dt>
+<dd>_(tuple)_figure size. (default=(7,7))</dd>
+</dl></section>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification.dataset_info"><code class="name flex">
 <span>def <span class="ident">dataset_info</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Displays Dataset Information.</p></section>
+<section class="desc"><p>Display Dataset Information.</p></section>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification.export_model"><code class="name flex">
 <span>def <span class="ident">export_model</span></span>(<span>self, output_path)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Exports the trained model into a target file.</p></section>
+<section class="desc"><p>Export the trained model into a target file.</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>output_path</code></strong></dt>
+<dd><em>(str)</em> path to output file. For example 'foler/folder/model.pth'</dd>
+</dl></section>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification.inference"><code class="name flex">
 <span>def <span class="ident">inference</span></span>(<span>self, test_img_path, transformations='default')</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Performs inference on target DICOM image using a trained classifier.</p></section>
+<section class="desc"><p>Performs inference on target DICOM image using a trained classifier.</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>test_img_path</code></strong></dt>
+<dd><em>(str)</em> path to target image.</dd>
+<dt><strong><code>transformations</code></strong></dt>
+<dd><em>(pytorch transforms list)</em> pytroch transforms to be performed on the target image. (default='default')</dd>
+</dl>
+<h2 id="outputs">Outputs</h2>
+<dl>
+<dt><strong><code>Output</code></strong></dt>
+<dd><em>(tuple)</em> tuple of prediction class idx and accuracy percentage.</dd>
+</dl></section>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification.info"><code class="name flex">
 <span>def <span class="ident">info</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Displays Image Classification Pipeline Parameters.</p></section>
+<section class="desc"><p>Display Parameters of the Image Classification Pipeline.</p></section>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification.metrics"><code class="name flex">
 <span>def <span class="ident">metrics</span></span>(<span>self)</span>
@@ -261,16 +308,34 @@ classifier.metrics()
 <section class="desc"><p>Display the training metrics.</p></section>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification.roc"><code class="name flex">
-<span>def <span class="ident">roc</span></span>(<span>self, target_data_set='default', auc=True, figure_size=(10, 10))</span>
+<span>def <span class="ident">roc</span></span>(<span>self, target_data_set='default', auc=True, figure_size=(7, 7))</span>
 </code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Display Confusion Matrix</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>target_data_set</code></strong></dt>
+<dd><em>(pytorch dataset object)</em> dataset used for predictions to create the ROC. By default, the image classification pipeline uses the test dataset created to calculate the ROC.</dd>
+<dt><strong><code>auc</code></strong></dt>
+<dd><em>(boolen)</em> Display area under curve. (default=True)</dd>
+<dt><strong><code>figure_size</code></strong></dt>
+<dd>_(tuple)_figure size. (default=(7,7))</dd>
+</dl></section>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification.sample"><code class="name flex">
 <span>def <span class="ident">sample</span></span>(<span>self, num_of_images_per_row=5, fig_size=(10, 10), show_labels=True)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Displays sample of the training dataset.</p></section>
+<section class="desc"><p>Display sample of the training dataset.</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>num_of_images_per_row</code></strong></dt>
+<dd><em>(int)</em> number of images per column. (default=5)</dd>
+<dt><strong><code>fig_size</code></strong></dt>
+<dd>_(tuple)_figure size. (default=(10,10))</dd>
+<dt><strong><code>show_labels</code></strong></dt>
+<dd><em>(boolean)</em> show the image label idx. (default=True)</dd>
+</dl></section>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification.set_trained_model"><code class="name flex">
 <span>def <span class="ident">set_trained_model</span></span>(<span>self, model_path, mode)</span>
@@ -280,16 +345,21 @@ classifier.metrics()
 <h2 id="inputs">Inputs</h2>
 <dl>
 <dt><strong><code>model_path</code></strong></dt>
-<dd>[str] Path to target model</dd>
+<dd><em>(str)</em> path to target model</dd>
 <dt><strong><code>mode</code></strong></dt>
-<dd>[str] either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.</dd>
+<dd><em>(str)</em> either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.</dd>
 </dl></section>
 </dd>
 <dt id="radtorch.pipeline.Image_Classification.train"><code class="name flex">
 <span>def <span class="ident">train</span></span>(<span>self, verbose=True)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>Train the created image classifier.</p></section>
+<section class="desc"><p>Train the image classification pipeline.</p>
+<h2 id="inputs">Inputs</h2>
+<dl>
+<dt><strong><code>verbose</code></strong></dt>
+<dd><em>(boolean)</em> Show display progress after each epoch. (default=True)</dd>
+</dl></section>
 </dd>
 </dl>
 </dd>
