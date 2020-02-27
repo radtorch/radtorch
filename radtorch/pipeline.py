@@ -415,6 +415,10 @@ class Feature_Extraction():
                         wl=self.wl,
                         trans=self.transformations)
 
+        self.data_loader = torch.utils.data.DataLoader(
+                                                    self.data_set,
+                                                    batch_size=10,
+                                                    shuffle=True)
 
 
         self.num_output_classes = len(self.data_set.classes)
