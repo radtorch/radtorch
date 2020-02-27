@@ -62,8 +62,8 @@ class Image_Classification():
         test_percent: _(float)_ percentage of dataset to use for testing. Float value between 0 and 1.0. (default=0.2)
         valid_percent: _(float)_ percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
         model_arch: _(str)_ PyTorch neural network architecture (default='vgg16')
-        pre_trained: _(boolean)_ Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
-        unfreeze_weights: _(boolean)_ if True, all model weights, not just final layer, will be retrained. (default=False)
+        pre_trained: _(boolean)_ Load the pretrained weights of the neural network. (default=True)
+        unfreeze_weights: _(boolean)_ if True, all model weights will be retrained. (default=True)
         train_epochs: _(int)_ Number of training epochs. (default=20)
         learning_rate: _(str)_ training learning rate. (default = 0.0001)
         loss_function: _(str)_ training loss function. (default='CrossEntropyLoss')
@@ -103,7 +103,7 @@ class Image_Classification():
     valid_percent = 0.2,
     model_arch='vgg16',
     pre_trained=True,
-    unfreeze_weights=False,
+    unfreeze_weights=True,
     train_epochs=20,
     learning_rate=0.0001,
     loss_function='CrossEntropyLoss'):
@@ -355,8 +355,27 @@ class Image_Classification():
 class Feature_Extraction():
     """
     Utilizes a trained model to extract features from images as table.
+    Guide:
+        The Image Classification pipeline simplifies the process of binary and multi-class image classification into a single line of code.
+        Under the hood, the following happens:
 
-    Inputs:
+        1. The pipeline creates a master dataset from the provided data directory and source of labels/classes either from [folder structre](https://pytorch.org/docs/stable/torchvision/datasets.html#datasetfolder) or pandas/csv table.
+
+        2. Master dataset is subdivided into train, valid and test subsets using the percentages defined by user.
+
+        3. Selected Model architecture, optimizer, and loss function are downloaded/created.
+
+        4. Model is trained.
+
+        5. Training metrics are saved as training progresses and can be displayed after training is done.
+
+        6. Confusion Matrix and ROC(for binary classification) can be displayed as well (by default, the test subset is used to calculate the confusion matrix and the ROC)
+
+        7. Trained model can be exported to outside file for future use.
+
+
+    Attributes
+    ----------
         data_directory: **[REQUIRED]** [str] target data directory.
         is_dicom: [boolean] True for DICOM images, False for regular images.(default=True)
         label_from_table: [boolean] True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)
@@ -382,6 +401,7 @@ class Feature_Extraction():
         device: [str] device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
 
     Outputs:
+    ---------
         Output: [Pandas dataframe] table with image path, label and extracted features.
 
     Examples:
