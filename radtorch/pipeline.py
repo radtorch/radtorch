@@ -51,7 +51,8 @@ class Image_Classification():
         transformations: [pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
         custom_resize: [int] by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
         batch_size: [int] batch size of the dataset (default=16)
-        test_split: [float] percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
+        test_percent: [float] percentage of dataset to use for testing. Float value between 0 and 1.0. (default=0.2)
+        valid_percent: [float] percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
         model_arch: [str] PyTorch neural network architecture (default='vgg16')
         pre_trained: [boolen] Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
         unfreeze_weights: [boolen] if True, all model weights, not just final layer, will be retrained. (default=False)
@@ -93,7 +94,8 @@ class Image_Classification():
     mode='RAW',
     wl=None,
     batch_size=16,
-    test_split = 0.2,
+    test_percent = 0.2,
+    valid_percent = 0.2,
     model_arch='vgg16',
     pre_trained=True,
     unfreeze_weights=False,
@@ -127,7 +129,8 @@ class Image_Classification():
             self.transformations = transformations
 
         self.batch_size = batch_size
-        self.test_split = test_split
+        self.test_percent = test_percent
+        self.valid_percent = valid_percent
         self.model_arch = model_arch
         self.pre_trained = pre_trained
         self.unfreeze_weights = unfreeze_weights
@@ -137,6 +140,7 @@ class Image_Classification():
         self.optimizer = optimizer
         self.path_col = path_col
         self.label_col = label_col
+
         if device == 'default':
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         else:
@@ -165,9 +169,11 @@ class Image_Classification():
 
 
 
-        valid_size = int(self.test_split*len(self.data_set))
+        valid_size = int(self.valid_percent*len(self.data_set))
+        test_size = int(self.test_percent*len(self.data_set))
+        train_size = len(self.data_set) - (valid_size+test_size)
 
-        self.valid_data_set, self.train_data_set = torch.utils.data.random_split(self.data_set, [valid_size,len(self.data_set)-valid_size])
+        self.train_data_set, self.valid_data_set, self.test_data_set = torch.utils.data.random_split(self.data_set, [train_size, valid_size, test_size])
 
         self.train_data_loader = torch.utils.data.DataLoader(
                                                     self.train_data_set,
@@ -176,6 +182,11 @@ class Image_Classification():
 
         self.valid_data_loader = torch.utils.data.DataLoader(
                                                     self.valid_data_set,
+                                                    batch_size=self.batch_size,
+                                                    shuffle=True)
+
+        self.test_data_loader = torch.utils.data.DataLoader(
+                                                    self.test_data_set,
                                                     batch_size=self.batch_size,
                                                     shuffle=True)
 
@@ -277,7 +288,7 @@ class Image_Classification():
 
     def confusion_matrix(self, target_data_set='default', target_classes='default', figure_size=(8,6)):
         if target_data_set=='default':
-            target_data_set = self.valid_data_set
+            target_data_set = self.test_data_set
         else:
             target_data_set = target_data_set
 
@@ -290,7 +301,7 @@ class Image_Classification():
 
     def roc(self, target_data_set='default', auc=True, figure_size=(10,10)):
         if target_data_set=='default':
-            target_data_set = self.valid_data_set
+            target_data_set = self.test_data_set
         else:
             target_data_set = target_data_set
 
