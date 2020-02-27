@@ -205,7 +205,7 @@ class dataset_from_table(Dataset):
         label = self.input_data.iloc[index][self.image_label_col]
         label_idx = [v for k, v in self.class_to_idx.items() if k == label][0]
 
-        return image, label_idx
+        return image, label_idx, image_path
 
     def __len__(self):
         return len(self.dataset_files)
@@ -283,7 +283,7 @@ class dataset_from_folder(Dataset):
         label = path_to_class(image_path)
         label_idx = [v for k, v in self.class_to_idx.items() if k == label][0]
 
-        return image, label_idx
+        return image, label_idx, image_path
 
     def __len__(self):
         return len(self.dataset_files)

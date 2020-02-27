@@ -230,7 +230,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         valid_loss = 0.0
         valid_acc = 0.0
 
-        for i, (inputs, labels) in enumerate(train_data_loader):
+        for i, (inputs, labels, image_paths) in enumerate(train_data_loader):
             # inputs = inputs.float()
             inputs = inputs.to(device)
             labels = labels.to(device)
@@ -273,7 +273,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
             model.eval()
 
             # Validation loop
-            for j, (inputs, labels) in enumerate(valid_data_loader):
+            for j, (inputs, labels, image_paths) in enumerate(valid_data_loader):
                 inputs = inputs.to(device)
                 labels = labels.to(device)
 

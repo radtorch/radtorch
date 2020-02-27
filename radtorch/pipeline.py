@@ -415,10 +415,6 @@ class Feature_Extraction():
                         wl=self.wl,
                         trans=self.transformations)
 
-        # self.data_loader = torch.utils.data.DataLoader(
-        #                                             self.data_set,
-        #                                             batch_size=self.batch_size,
-        #                                             shuffle=False)
 
 
         self.num_output_classes = len(self.data_set.classes)
@@ -469,18 +465,20 @@ class Feature_Extraction():
         '''
         self.features = []
         self.labels_idx = []
+        self.img_path_list = []
         with torch.no_grad():
             self.model.eval()
-            for input, label in tqdm(self.data_set, total=len(self.data_set)):
+            for input, label, img_path in tqdm(self.data_set, total=len(self.data_set)):
                 input = input.to(self.device)
                 input = input.unsqueeze(0)
                 output = (self.model(input))[0].tolist()
                 self.features.append(output)
                 self.labels_idx.append(label)
+                self.img_path_list.append(img_path)
 
         self.feature_names = ['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
 
-        feature_df = pd.DataFrame(list(zip(self.labels_idx, self.features)), columns=['label_idx', 'features'])
+        feature_df = pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['img_path','label_idx', 'features'])
 
         feature_df[self.feature_names] = pd.DataFrame(feature_df.features.values.tolist(), index= feature_df.index)
 
