@@ -313,7 +313,7 @@ class Image_Classification():
         return (pred, percent)
 
 
-    def confusion_matrix(self, target_data_set='default', target_classes='default', figure_size=(7,7), cmap='inferno'):
+    def confusion_matrix(self, target_data_set='default', target_classes='default', figure_size=(7,7), cmap=None):
         '''
         Display Confusion Matrix
         Inputs:
