@@ -48,7 +48,6 @@ def show_dataset_info(dataset):
     Inputs:
         dataset: [pytorch dataset object] target dataset.
 
-    .. image:: pass.jpg
     """
 
     label_list = [i[1] for i in dataset]
@@ -66,8 +65,6 @@ def show_dataset_info(dataset):
 def show_metrics(source, fig_size=(15,5)):
     """
     Displays metrics created by the training loop
-
-    .. image:: pass.jpg
     """
 
     metrics = np.array(source)
@@ -127,8 +124,8 @@ def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC
     """
     fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
     plt.figure(figsize=figure_size)
-    plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='orange', alpha=.8)
-    plt.plot(fpr, tpr)
+    plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='#051e3e', alpha=.8)
+    plt.plot(fpr, tpr, color='#851e3e')
     plt.title(title);
     plt.xlabel('FPR (1-specficity)');
     plt.ylabel('TPR (Sensitivity)');
@@ -224,7 +221,7 @@ def plot_confusion_matrix(cm,
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
     plt.show()
 
-def show_confusion_matrix(model, target_data_set, target_classes, figure_size=(8,6)):
+def show_confusion_matrix(model, target_data_set, target_classes, figure_size=(8,6), cmap=None):
     '''
     Returns Confusion Matrix for Neural Network Image Classifier
     '''
@@ -249,7 +246,7 @@ def show_confusion_matrix(model, target_data_set, target_classes, figure_size=(8
     plot_confusion_matrix(cm=cm,
                           target_names=target_classes,
                           title='Confusion Matrix',
-                          cmap=None,
+                          cmap=cmap,
                           normalize=False,
                           figure_size=figure_size
                           )

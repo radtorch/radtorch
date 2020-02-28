@@ -313,7 +313,7 @@ class Image_Classification():
         return (pred, percent)
 
 
-    def confusion_matrix(self, target_data_set='default', target_classes='default', figure_size=(7,7)):
+    def confusion_matrix(self, target_data_set='default', target_classes='default', figure_size=(7,7), cmap='inferno'):
         '''
         Display Confusion Matrix
         Inputs:
@@ -332,7 +332,7 @@ class Image_Classification():
         else:
             target_classes = target_classes
 
-        show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size)
+        show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap)
 
 
     def roc(self, target_data_set='default', auc=True, figure_size=(7,7)):
@@ -561,7 +561,12 @@ class Feature_Extraction():
 
         feature_df[self.feature_names] = pd.DataFrame(feature_df.features.values.tolist(), index= feature_df.index)
 
+        print (' Features extracted successfully.')
+
         self.feature_df = feature_df
+
+        if verbose:
+            self.feature_df
 
         return self.feature_df
 
