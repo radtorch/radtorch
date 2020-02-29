@@ -190,7 +190,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
         clf.sample()
 
-    ![](/img/sample.png)
+    ![](img/sample.png)
 
     **Train the classifier**
 
@@ -218,21 +218,21 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
         clf.metrics()
 
-    ![](/img/metrics.png)
+    ![](img/metrics.png)
 
 
     **Display Confusion Matrix**
 
         clf.confusion_matrix()
 
-    ![](/img/cm.png)
+    ![](img/cm.png)
 
 
     **Display ROC**
 
         clf.roc()
 
-    ![](/img/roc.png)
+    ![](img/roc.png)
 
     **Export Trained Model**
 
@@ -409,7 +409,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     ```
     extractor.sample()
     ```
-    ![](/img/sample.png)
+    ![](img/sample.png)
 
     **Run pipeline to extract features**
     ```
