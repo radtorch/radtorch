@@ -538,7 +538,7 @@ class Feature_Extraction():
         return output
 
 
-    def extract(self, verbose=True):
+    def run(self, verbose=True):
         '''
         Extract features from the dataset
         '''

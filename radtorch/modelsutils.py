@@ -81,13 +81,13 @@ class Identity(nn.Module):
     def forward(self, x):
         return x
 
-def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_weights=False):
+def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_weights=True):
     '''
     Creates a PyTorch training neural network model with specified network architecture. Input channels and output classes can be specified.
     Inputs:
         model_arch: [str] The architecture of the model neural network. Examples include 'vgg16', 'resnet50', and 'resnet152'.
         pre_trained: [boolen] Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
-        unfreeze_weights: [boolen] if True, all model weights, not just final layer, will be retrained. (default=False)
+        unfreeze_weights: [boolen] Unfreeze model weights for training.(default=True)
         output_classes: [int] Number of output classes for image classification problems.
         mode: [str] 'train' for training model. 'feature_extraction' for feature extraction model
 
@@ -197,7 +197,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         loss_criterion: [PyTorch nn object] Loss function to be used during training.
         optimizer: [PyTorch optimizer object] Optimizer to be used during training.
         epochs: [int] training epochs.
-        device: [str] device to be used for training (default='cpu'). This can be 'cpu' or 'cuda'.
+        device: [str] device to be used for training. This can be 'cpu' or 'cuda'.
         verbose: [boolen] True to display training messages.
     Outputs:
         model: [PyTorch neural network object] trained model.
@@ -325,8 +325,8 @@ def model_inference(model, input_image_path, inference_transformations=transform
     Performs Inference on a selected image using a trained model.
     Inputs:
         Model: [PyTorch Model] Trained neural network.
-        input_image_path: [str] path to target DICOM image
-        trans: [pytorch transforms] pytroch transforms to be performed on the dataset.
+        input_image_path: [str] path to target image
+        inference_transformations: [pytorch transforms list] pytroch transforms to be performed on the dataset.
     Outputs:
 
     '''

@@ -24,21 +24,27 @@ from radtorch.visutils import show_dataset_info
 
 def list_of_files(root):
     """
-      Create a list of file paths from a root folder and its sub directories.
-      Inputs:
-        root: [str] path of target folder.
+    !!! quote ""
 
-      Outputs:
-        [list] list of file paths.
+        Create a list of file paths from a root folder and its sub directories.
 
-      Examples:
-        This examples assumes a root directory with subdirectories (folder1 and folder2) which contain images correpsonding to each class.
-        ```
-        root_path = 'root/'
-        list_of_files(root_path)
-        ['root/folder1/0000.dcm', 'root/folder1/0001.dcm', 'root/folder2/0000.dcm', ...]
+          **Arguments**
 
-        ```
+          - root: _(str)_ path of target folder.
+
+          **Output**
+
+          - list of file paths.
+
+
+          **Example**
+
+            root_path = 'root/'
+            list_of_files(root_path)
+
+          <!-- **** -->
+
+            ['root/folder1/0000.dcm', 'root/folder1/0001.dcm', 'root/folder2/0000.dcm', ...]
 
     """
 
