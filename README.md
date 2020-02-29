@@ -1,7 +1,7 @@
 
 # RADTorch
 
-This is the repository for RadTorch - The Radiology Machine Learning Tool Kit
+This is the repository for RADTorch - The Radiology Machine Learning Tool Kit
 
 Work is still in progress.
 
