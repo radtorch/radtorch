@@ -8,7 +8,7 @@
 
 | **Module**      | **Function**         | **Module**     | **Functions**          |
 |-----------------|----------------------|----------------|------------------------|
-| **PipeLine**    |                      | **Dicomutils** |                        |
+| **Pipeline**    |                      | **Dicomutils** |                        |
 |                 | Image_Classification |                | window_dicom           |
 |                 | Feature_Extraction   |                | dicom_to_narray        |
 | **Datautils**   |                      |                | dicom_to_pil           |

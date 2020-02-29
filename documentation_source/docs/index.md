@@ -1,3 +1,17 @@
+<head>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-116382803-2"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-116382803-2');
+</script>
+
+</head>
+
+
 # RADTorch  <small> The Radiology Machine Learning Tool Kit </small>
 
 ## About
@@ -16,7 +30,7 @@ RADTorch was developed and is currently maintained by Mohamed Elbanan, MD: a Rad
 
 ## Getting Started
 
-Running a state-of-the-art DICOM image classifier can be run using the [Image Classification](/pipeline/#image_classification) Pipeline using the commands:
+Running a state-of-the-art DICOM image classifier can be run using the [Image Classification](pipeline/#image_classification) Pipeline using the commands:
 ```
 from radtorch import pipeline
 
