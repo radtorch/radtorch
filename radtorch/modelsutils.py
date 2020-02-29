@@ -61,7 +61,6 @@ def supported():
     '''
     Returns a list of the currently supported network architectures and loss functions.
 
-    .. image:: pass.jpg
     '''
     print ('Supported Network Architectures:')
     for i in supported_models:
@@ -83,22 +82,24 @@ class Identity(nn.Module):
 
 def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_weights=True):
     '''
-    Creates a PyTorch training neural network model with specified network architecture. Input channels and output classes can be specified.
-    Inputs:
-        model_arch: [str] The architecture of the model neural network. Examples include 'vgg16', 'resnet50', and 'resnet152'.
-        pre_trained: [boolen] Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
-        unfreeze_weights: [boolen] Unfreeze model weights for training.(default=True)
-        output_classes: [int] Number of output classes for image classification problems.
-        mode: [str] 'train' for training model. 'feature_extraction' for feature extraction model
+      Creates a PyTorch training neural network model with specified network architecture. Input channels and output classes can be specified.
 
-    Outputs:
-        Output: [PyTorch neural network object]
-    Examples:
-        ```
-        my_model = radtorch.model.create_model(model_arch='vgg16',input_channels=1, output_classes=2, pre_trained=True)
-        ```
+      **Arguments**
 
-    .. image:: pass.jpg
+      - model_arch: _(str)_ The architecture of the model neural network. Examples include 'vgg16', 'resnet50', and 'resnet152'.
+      - pre_trained: _(boolen)_ Load the pretrained weights of the neural network. (default=True)
+      - unfreeze_weights: _(boolen)_ Unfreeze model weights for training.(default=True)
+      - output_classes: _(int)_ Number of output classes for image classification problems.
+      - mode: _(str)_ 'train' for training model. 'feature_extraction' for feature extraction model
+
+      **Output**
+
+      - Output: _(PyTorch neural network object)_
+
+      **Example**
+
+          my_model = modelsutils.create_model(model_arch='resnet50', output_classes=2)
+
     '''
 
     if model_arch not in supported_models:
@@ -154,13 +155,20 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
 
 def create_loss_function(type):
     '''
-    Creates a PyTorch training loss function object.
-    Inputs:
-        type: [str] type of the loss functions required.
-    Outputs:
-        Output: [PyTorch loss function object]
+      Creates a PyTorch training loss function object.
 
-    .. image:: pass.jpg
+    **Arguments**
+
+    - type: _(str)_  type of the loss functions required.
+
+    **Output**
+
+    - Output: _(PyTorch loss function object)_
+
+    **Example**
+
+        loss = modelsutils.create_loss_function(type='NLLLoss')
+
     '''
 
     if type not in supported_image_classification_losses:
@@ -173,6 +181,23 @@ def create_loss_function(type):
 
 
 def create_optimizer(traning_model, optimizer_type, learning_rate):
+    '''
+
+    Creates a PyTorch optimizer object.
+
+    **Arguments**
+
+    - training_model: _(pytorch Model object)_ target training model.
+
+    - optimizer_type: _(str)_ type of optimizer e.g.'Adam' or 'SGD'.
+
+    - learning_rate: _(float)_ learning rate.
+
+    **Output**
+
+    - Output: _(PyTorch optimizer object)_
+    '''
+
     if optimizer_type=='Adam':
         optimizer = torch.optim.Adam(traning_model.parameters(), lr=learning_rate)
     elif optimizer_type == 'ASGD':
@@ -187,26 +212,44 @@ def create_optimizer(traning_model, optimizer_type, learning_rate):
 
 def train_model(model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device,verbose):
     '''
-    Trains a Neural Network Model
-    Inputs:
-        model: [PyTorch neural network object] Model to be trained.
-        train_data_loader: [PyTorch dataloader object] training data dataloader.
-        valid_data_loader: [PyTorch dataloader object] validation data dataloader.
-        train_data_loader: [PyTorch dataset object] training data dataset.
-        valid_data_loader: [PyTorch dataset object] validation data dataset.
-        loss_criterion: [PyTorch nn object] Loss function to be used during training.
-        optimizer: [PyTorch optimizer object] Optimizer to be used during training.
-        epochs: [int] training epochs.
-        device: [str] device to be used for training. This can be 'cpu' or 'cuda'.
-        verbose: [boolen] True to display training messages.
-    Outputs:
-        model: [PyTorch neural network object] trained model.
-        train_metrics: [list] list of np arrays of training loss and accuracy.
-    Examples:
-    ```
-    ```
+    Training loop for pytorch model object.
 
-    .. image:: pass.jpg
+
+    **Arguments**
+
+      - model: _(PyTorch neural network object)_ Model to be trained.
+
+      - train_data_loader: _(PyTorch dataloader object)_ training data dataloader.
+
+      - valid_data_loader: _(PyTorch dataloader object)_ validation data dataloader.
+
+      - train_data_loader: _(PyTorch dataset object)_ training data dataset.
+
+      - valid_data_loader: _(PyTorch dataset object)_ validation data dataset.
+
+      - loss_criterion: _(PyTorch nn object)_ Loss function to be used during training.
+
+      - optimizer: _(PyTorch optimizer object)_ Optimizer to be used during training.
+
+      - epochs: _(int)_ training epochs.
+
+      - device: _(str)_ device to be used for training. This can be 'cpu' or 'cuda'.
+
+      - verbose: _(boolen)_ True to display training messages.
+
+    **Output**
+
+      - model: _(PyTorch neural network object)_ trained model.
+
+      - train_metrics: _(list)_ list of np arrays of training loss and accuracy.
+
+    **Example**
+
+            trained_model, training_metrics = modelsutils.train_model(model=my_model,
+                train_data_loader=train_dl, valid_data_loader=valid_dl,
+                train_data_set=train_ds, valid_data_set=valid_ds,
+                loss_criterion=my_loss, optimizer=my_optim,
+                epochs=100, device='cuda', verbose=True)
     '''
 
     start_time = datetime.datetime.now()
@@ -322,12 +365,19 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 
 def model_inference(model, input_image_path, inference_transformations=transforms.Compose([transforms.ToTensor()])):
     '''
-    Performs Inference on a selected image using a trained model.
-    Inputs:
-        Model: [PyTorch Model] Trained neural network.
-        input_image_path: [str] path to target image
-        inference_transformations: [pytorch transforms list] pytroch transforms to be performed on the dataset.
-    Outputs:
+      Performs Inference/Predictions on a target image using a trained model.
+
+      **Arguments**
+
+      - model: _(PyTorch Model)_ Trained neural network.
+
+      - input_image_path: _(str)_ path to target image
+
+      - inference_transformations: _(pytorch transforms list)_ pytroch transforms to be performed on the dataset.
+
+      **Output**
+
+      - Output: _(tupe)_ tuple of prediction class id and prediction accuracy percentage.
 
     '''
     if input_image_path.endswith('dcm'):

@@ -25,13 +25,20 @@ from radtorch.generalutils import getDuplicatesWithCount
 def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=True):
   """
     Displays sample of certain dataloader with corresponding class idx
-    Inputs:
-        dataloader: [dataloader object] selected pytorch dataloader
-        num_of_images_per_row: [int] number of images per row (default=)
-        figsize: [tuple] size of displayed figure (default = (10,10))
-        show_labels: [boolen] display class idx of the sample displayed (default=True)
 
-    .. image:: pass.jpg
+    **Arguments**
+
+    - dataloader: _(dataloader object)_ selected pytorch dataloader.
+
+    - num_of_images_per_row: _(int)_ number of images per row. (default=10)
+
+    - figsize: _(tuple)_ size of displayed figure. (default = (10,10))
+
+    - show_labels: _(boolen)_ display class idx of the sample displayed .(default=True)
+
+    **Output**
+
+    -  Output: _(figure)_
   """
 
   batch = next(iter(dataloader))
@@ -44,10 +51,19 @@ def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10)
 
 def show_dataset_info(dataset):
     """
-    Displays a summary of the pytorch dataset information
-    Inputs:
-        dataset: [pytorch dataset object] target dataset.
+    Displays a summary of the pytorch dataset information.
 
+    **Arguments**
+
+    - dataset: _(pytorch dataset object)_ target dataset to inspect.
+
+    **Output**
+
+    -  Output: _(str)_ Dataset information including:
+        - Number of instances
+        - Number of classes
+        - Dictionary of class and class_id
+        - Class frequency breakdown.
     """
 
     label_list = [i[1] for i in dataset]
@@ -64,7 +80,17 @@ def show_dataset_info(dataset):
 
 def show_metrics(source, fig_size=(15,5)):
     """
-    Displays metrics created by the training loop
+    Displays metrics created by the training loop.
+
+    **Arguments**
+
+    - source: _(list)_ the metrics generated during the training process as by modelsutils.train_model()
+
+    - fig_size: _(tuple)_ size of the displayed figure. (default=15,5)
+
+    **Output**
+
+    -  Output: _(figure)_ Matplotlib graphs of accuracy and error for training and validation.
     """
 
     metrics = np.array(source)
@@ -84,13 +110,17 @@ def show_metrics(source, fig_size=(15,5)):
 
 def show_dicom_sample(dataloader, figsize=(30,10)):
     """
-    Displays an sample image from a dataloader.
-    Returns a single image in case of one window and 3 images in case of mutiple window.
-    Inputs:
-        dataloader: [pytorch dataloader object] target dataloader
-        figsize: [tuple] size of displayed figure when 3 images are displayed (default = (30,10))
+    Displays a sample image from a DICOM dataloader. Returns a single image in case of one window and 3 images in case of multiple window.
 
-    .. image:: pass.jpg
+    **Arguments**
+
+    - dataloader: _(dataloader object)_ selected pytorch dataloader.
+
+    - figsize: _(tuple)_ size of the displayed figure. (default=30,10)
+
+    **Output**
+
+    -  Output: _(figure)_ single image in case of one window and 3 images in case of multiple window.
     """
 
     i, l = next(iter(dataloader))
@@ -112,15 +142,23 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
 
 def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC Curve'):
     """
-    Displays ROC curve of a certain model and the AUC
-    Inputs:
-        true_labels: [list] true labels of test set
-        predicted_labels: [list] predicted labels of test set using target model
-        auc: [boolen] displays area under curve for ROC (default=True)
-        figsize: [tuple] size of displayed figure (default = (10,10))
-        title: [str] title of the displayed curve (default = 'ROC Curve')
+    Displays ROC curve and AUC using true and predicted label lists.
 
-    .. image:: pass.jpg
+    **Arguments**
+
+    - true_labels: _(list)_ list of true labels.
+
+    - predictions: _(list)_ list of predicted labels.
+
+    - auc: _(boolen)_ True to display AUC. (default=True)
+
+    - figure_size: _(tuple)_ size of the displayed figure. (default=10,10)
+
+    - title: _(str)_ title displayed on top of the output figure. (default='ROC Curve')
+
+    **Output**
+
+    -  Output: _(figure)_
     """
     fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
     plt.figure(figsize=figure_size)
@@ -136,6 +174,25 @@ def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC
         return metrics.roc_auc_score(true_labels, predictions)
 
 def show_nn_roc(model, target_data_set, auc=True, figure_size=(10,10)):
+    """
+    Displays the ROC and AUC of a certain trained model on a target(for example test) dataset.
+
+    **Arguments**
+
+    - model: _(pytorch model object)_ target model.
+
+    - target_data_set: _(pytorch dataset object)_ target dataset.
+
+    - auc: _(boolen)_ True to display AUC. (default=True)
+
+    - figure_size: _(tuple)_ size of the displayed figure. (default=10,10)
+
+    **Output**
+
+    -  Output: _(figure)_
+
+    """
+
     true_labels = []
     pred_labels = []
     for i, l, p in tqdm(target_data_set, total=len(target_data_set)):
@@ -162,23 +219,25 @@ def plot_confusion_matrix(cm,
                           normalize=False,
                           figure_size=(8,6)):
     """
-    Given a sklearn confusion matrix (cm), make a nice plot
+    Given a sklearn confusion matrix (cm), make a nice plot. Code adapted from : https://www.kaggle.com/grfiv4/plot-a-confusion-matrix.
 
-    Inputs:
-        cm: [np array] confusion matrix from sklearn.metrics.confusion_matrix
+    **Arguments**
 
-        target_names: [list] given classification classes such as [0, 1, 2]
-                  the class names, for example: ['high', 'medium', 'low']
+    - cm: _(numpy array)_ confusion matrix from sklearn.metrics.confusion_matrix.
 
-        title: [str] the text to display at the top of the matrix
+    - target_names: _(list)_ list of class names.
 
-        cmap: [str] the gradient of the values displayed from matplotlib.pyplot.cm . See http://matplotlib.org/examples/color/colormaps_reference.html
-                  plt.get_cmap('jet') or plt.cm.Blues
+    - title: _(str)_ title displayed on top of the output figure. (default='Confusion Matrix')
 
-        normalize: [boolean]  If False, plot the raw numbers. If True, plot the proportions
+    - cmap: _(str)_ The gradient of the values displayed from matplotlib.pyplot.cm . See http://matplotlib.org/examples/color/colormaps_reference.html. (default=None which is plt.get_cmap('jet') or plt.cm.Blues)
 
-    Source:
-        https://www.kaggle.com/grfiv4/plot-a-confusion-matrix
+    - normalize: _(boolean)_  If False, plot the raw numbers. If True, plot the proportions. (default=False)
+
+    - figure_size: _(tuple)_ size of the displayed figure. (default=8,6)
+
+    **Output**
+
+    -  Output: _(figure)_
 
     """
     import matplotlib.pyplot as plt
@@ -223,7 +282,23 @@ def plot_confusion_matrix(cm,
 
 def show_confusion_matrix(model, target_data_set, target_classes, figure_size=(8,6), cmap=None):
     '''
-    Returns Confusion Matrix for Neural Network Image Classifier
+    Displays Confusion Matrix for Image Classifier Model.
+
+    **Arguments**
+
+    - model: _(pytorch model object)_ target model.
+
+    - target_data_set: _(pytorch dataset object)_ target dataset.
+
+    - target_classes: _(list)_ list of class names.
+
+    - figure_size: _(tuple)_ size of the displayed figure. (default=8,6)
+
+    - cmap: _(str)_ the colormap of the generated figure (default=None, which is Blues)
+
+    **Output**
+
+    -  Output: _(figure)_
     '''
     true_labels = []
     pred_labels = []

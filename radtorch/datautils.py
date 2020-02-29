@@ -24,8 +24,6 @@ from radtorch.visutils import show_dataset_info
 
 def list_of_files(root):
     """
-    !!! quote ""
-
         Create a list of file paths from a root folder and its sub directories.
 
           **Arguments**
@@ -60,19 +58,25 @@ def list_of_files(root):
 
 def path_to_class(filepath):
     """
-    Creates a class name from the immediate parent folder of a target file
-    Inputs:
-        filepath: [str] path to target file
-    Outputs:
-        output: [str] folder name / class name
-    Examples:
-        ```
+    Creates a class name from the immediate parent folder of a target file.
+
+      **Arguments**
+
+      - filepath: _(str)_ path to target file.
+
+      **Output**
+
+      - _(str)_ folder name / class name.
+
+
+      **Example**
+
         file_path = 'root/folder1/folder2/0000.dcm'
         path_to_class(file_path)
-        'folder2'
-        ```
 
-    .. image:: pass.jpg
+      <!-- **** -->
+
+        'folder2'
     """
 
     item_class = (Path(filepath)).parts
@@ -81,21 +85,31 @@ def path_to_class(filepath):
 def root_to_class(root):
 
     """
-    Creates list of classes and dictionary of classes and idx in a given data root.
-    All first level subfolders within the root are converted into classes and given class id.
-    Inputs:
-        root: [str] path of the desired root.
-    Outputs:
-        output: [tuple] classes: [list] of generated classes, class_to_idx: [dictionary] of classes and class id numbers
-    Examples:
-        This example assumes that root folder contains 3 folders (folder1, folder2 and folder3) each contains images of 1 class.
-        ```
+    Creates list of classes and dictionary of classes and idx in a given data root. All first level subfolders within the root are converted into classes and given class id.
+
+
+      **Arguments**
+
+      - root: _(str)_ path of target root.
+
+      **Output**
+
+      - _(tuple)_ of
+        - classes: _(list)_ of generated classes,
+        - class_to_idx: _(dictionary)_ of classes and class id numbers
+
+
+      **Example**
+
+      This example assumes that root folder contains 3 folders (folder1, folder2 and folder3) each contains images of 1 class.
+
         root_folder = 'root/'
         root_to_class(root_folder)
-        ['folder1', 'folder2', 'folder3'], {'folder1':0, 'folder2':1, 'folder3':2}
-        ```
 
-    .. image:: pass.jpg
+      <!-- **** -->
+
+        ['folder1', 'folder2', 'folder3'], {'folder1':0, 'folder2':1, 'folder3':2}
+
     """
 
     classes = [d.name for d in os.scandir(root) if d.is_dir()]
@@ -105,22 +119,25 @@ def root_to_class(root):
 
 def class_to_idx(classes):
     """
-    Creates a dictionary of classes to classes idx from provided list of classes
-    Inputs:
-        classes: [list] list of target classes.
+      Creates a dictionary of classes to classes idx from provided list of classes
 
-    Outputs:
-        output: [dictionary] of classes and class id numbers.
-    Examples:
-        ```
+      **Arguments**
+
+      - classes: _(list)_ list of classes
+
+      **Output**
+
+      - Output: _(dictionary)_ dictionary of classes to class idx
+
+
+      **Example**
+
         class_list = ['class1','class4', 'class2', 'class3']
         class_to_idx(class_list)
+
+      <!-- **** -->
+
         {'class1':0, 'class2':1, 'class3':2, 'class4':3}
-
-        ```
-
-
-    .. image:: pass.jpg
     """
 
     classes.sort()
@@ -129,29 +146,35 @@ def class_to_idx(classes):
 
 class dataset_from_table(Dataset):
     """
-    Creates a dataset using labels and filepaths from a table which can be either a excel sheet or pandas dataframe.
-    Inputs:
-        data_directory: [str] target data directory.
-        is_csv: [boolean] True for csv, False for pandas dataframe. (default=True)
-        is_dicom: [boolean] True for DICOM images, False for regular images.(default=True)
-        input_source: [str or pandas dataframe object] source for labelling data.
-                      This is path to csv file or name of pandas dataframe if pandas to be used.
-        img_path_column: [list] name of the image path column in data input. (default = "IMAGE_PATH")
-        img_label_column: [str] name of label column in the data input (default = "IMAGE_LABEL")
-        mode: [str] output mode for DICOM images only.
-                    options: RAW= Raw pixels,
-                    HU= Image converted to Hounsefield Units,
-                    WIN= 'window' image windowed to certain W and L,
-                    MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].
-        wl: [list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
-                    In the form of : [[Level,Width], [Level,Width],...].
-                    Only 3 combinations are allowed for MWIN (for now).
-        transforms: [pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+    Creates a dataset from a root directory using subdirectories as classes/labels.
 
-    Outputs:
-        output: [pytorch dataset object]
+    **Parameters**
 
-    .. image:: pass.jpg
+    - data_director: _(str)_ target data root directory.
+
+    - is_dicom: _(boolean)_ True for DICOM images, False for regular images.(default=True)
+
+    - mode: _(str)_ output mode for DICOM images only. options: RAW= Raw pixels, HU= Image converted to Hounsefield Units, WIN= 'window' image windowed to certain W and L, MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].
+
+    - wl: _(list)_ list of lists of combinations of window level and widths to be used with WIN and MWIN. In the form of : [[Level,Width], [Level,Width],…]. Only 3 combinations are allowed for MWIN (for now). (default=None)
+
+    - trans: _(pytorch transforms)_ pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+
+
+    **Methods**
+
+    - **class_to_idx**
+
+          Returns dictionary of dataset classes and corresponding class id.
+
+    - **classes**
+
+          Returns list of dataset classes
+
+    - **info**
+
+          Returns detailed information of the dataset.
+
     """
 
     def __init__(self,
@@ -227,25 +250,43 @@ class dataset_from_table(Dataset):
 
 class dataset_from_folder(Dataset):
     """
-    Creates a dataset from a root directory using subdirectories as classes/labels.
-    Inputs:
-        data_directory: [str] target data root directory.
-        is_dicom: [boolean] True for DICOM images, False for regular images.(default=True)
-        mode: [str] output mode for DICOM images only.
-                    options: RAW= Raw pixels,
-                    HU= Image converted to Hounsefield Units,
-                    WIN= 'window' image windowed to certain W and L,
-                    MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].
-        wl: [list] list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
-                    In the form of : [[Level,Width], [Level,Width],...].
-                    Only 3 combinations are allowed for MWIN (for now).
-        trans: [pytorch transforms] pytroch transforms to be performed on the dataset. (default=Convert to tensor)
-
-    Outputs:
-        output: [pytorch dataset object]
+    Creates a dataset using labels and filepaths from a table which can be either a excel sheet or pandas dataframe.
 
 
-    .. image:: pass.jpg
+    **Parameters**
+
+    - data_directory: _(str)_ target data directory.
+
+    - is_csv: _(boolean)_ True for csv, False for pandas dataframe. (default=True)
+
+    - is_dicom: _(boolean)_ True for DICOM images, False for regular images.(default=True)
+
+    - input_source: _(str or pandas dataframe object)_ source for labelling data. This is path to csv file or name of pandas dataframe if pandas to be used.
+
+    - img_path_column: _(str)_  name of the image path column in data input. (default = "IMAGE_PATH")
+
+    - img_label_column: _(str)_  name of label column in the data input (default = "IMAGE_LABEL")
+
+    - mode: _(str)_  output mode for DICOM images only. options: RAW= Raw pixels, HU= Image converted to Hounsefield Units, WIN= 'window' image windowed to certain W and L, MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].
+
+    - wl: _(list)_  list of lists of combinations of window level and widths to be used with WIN and MWIN.In the form of : [[Level,Width], [Level,Width],…]. Only 3 combinations are allowed for MWIN (for now).  (default=None)
+
+    - transforms: _(pytorch transforms)_ pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+
+
+    **Methods**
+
+    - **class_to_idx**
+
+          Returns dictionary of dataset classes and corresponding class id.
+
+    - **classes**
+
+          Returns list of dataset classes
+
+    - **info**
+
+          Returns detailed information of the dataset.
     """
 
     def __init__(self,
