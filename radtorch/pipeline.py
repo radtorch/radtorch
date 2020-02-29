@@ -450,7 +450,10 @@ class Image_Classification():
         else:
             target_data_set = target_data_set
 
-        show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, figure_size=figure_size)
+        if len(target_data_set.classes) <= 2:
+            show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, figure_size=figure_size)
+        else:
+            raise TypeError('ROC cannot support more than 2 classes at the current time. This will be fixed in the upcoming update.')
 
 
 class Feature_Extraction():
