@@ -288,10 +288,10 @@ class Image_Classification():
                                     )
 
         self.train_model = self.train_model.to(self.device)
-        try:
-            if self.loss_function in supported_image_classification_losses:
-                self.loss_function = create_loss_function(self.loss_function)
-        except:
+
+        if self.loss_function in supported_image_classification_losses:
+            self.loss_function = create_loss_function(self.loss_function)
+        else:
             raise TypeError('Selected loss function is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported loss functions.')
             pass
 
