@@ -447,10 +447,12 @@ class Image_Classification():
 
         if target_data_set=='default':
             target_data_set = self.test_data_set
+            num_classes = len(self.data_set.classes)
         else:
             target_data_set = target_data_set
+            num_classes = len(target_data_set.classes)
 
-        if len(target_data_set.classes) <= 2:
+        if num_classes <= 2:
             show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, figure_size=figure_size)
         else:
             raise TypeError('ROC cannot support more than 2 classes at the current time. This will be fixed in the upcoming update.')
@@ -749,142 +751,3 @@ class Feature_Extraction():
         elif mode == 'infer':
             self.trained_model = torch.load(model_path)
         print ('Model Loaded Successfully.')
-
-
-
-
-
-# class Pipeline():
-#     def __init__(
-#     self,
-#     data_directory,
-#     label_from_table,
-#     is_csv,
-#     is_dicom,
-#     table_source,
-#     mode,
-#     wl,
-#     trans,
-#     batch_size,
-#     model_arch,
-#     pre_trained,
-#     num_input_channels,
-#     train_epochs,
-#     learning_rate,
-#     loss_function,
-#     optimizer,):
-#         self.data_directory = data_directory
-#         self.label_from_table = label_from_table
-#         self.is_csv = is_csv
-#         self.is_dicom = is_dicom
-#         elf.table_source = table_source
-#         self.mode = mode
-#         self.wl = wl
-#         self.trans = trans
-#         self.batch_size = batch_size
-#         self.model_arch = model_arch
-#         self.pre_trained = pre_trained
-#         self.num_input_channels = num_input_channels
-#         self.train_epochs = train_epochs
-#         self.learning_rate = learning_rate
-#         self.loss_function = loss_function
-#         self.optimizer = optimizer
-#         self.path_col = 'IMAGE_PATH'
-#         self.label_col = 'IMAGE_LABEL'
-#
-#         # Create DataSet
-#         if self.label_from_table == True:
-#             self.data_set = dataset_from_table(
-#                     data_directory=self.data_directory,
-#                     is_csv=self.is_csv,
-#                     is_dicom=self.is_dicom,
-#                     input_source=self.table_source,
-#                     img_path_column=self.path_col,
-#                     img_label_column=self.label_col,
-#                     mode=self.mode,
-#                     wl=self.wl,
-#                     trans=self.trans)
-#
-#         else:
-#             self.data_set = dataset_from_folder(
-#                         data_directory=self.data_directory,
-#                         is_dicom=self.is_dicom,
-#                         mode=self.mode,
-#                         wl=self.wl,
-#                         trans=self.trans)
-#
-#         # Create DataLoader
-#         self.data_loader = torch.utils.data.DataLoader(
-#                                                     self.data_set,
-#                                                     batch_size=self.batch_size,
-#                                                     shuffle=True)
-#
-#
-#         self.num_output_classes = len(self.data_set.classes)
-#
-#
-#         # Create Model
-#         self.train_model = create_model(
-#                                     model_arch=self.model_arch,
-#                                     input_channels=elf.num_input_channels,
-#                                     output_classes=self.num_output_classes,
-#                                     pre_trained=self.pre_trained)
-#
-#
-#         self.loss_function = create_loss_function(self.loss_function)
-#
-#
-#         if self.optimizer == 'Adam':
-#             self.optimizer = torch.nn.Adam(self.train_model.parameters(), lr=self.learning_rate)
-#
-#
-#
-#
-#     def info(self):
-#         print ('''RADTorch Pipeline Attributes
-#         ''')
-#         for key, value in self.__dict__.items():
-#             if key != 'trans':
-#                 print('>', key,'=',value)
-#
-#     def dataset_info(self,):
-#         return show_dataset_info(self.data_set)
-#
-#     def sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):
-#         return show_dataloader_sample(dataloader=self.data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
-#
-#
-# ##
-## Components of Pipeline
-
-##Data
-# data directory
-# is csv
-# is dicom
-# csv/table location
-# columns
-# mode
-# wl
-# transforms
-# batch size
-
-
-## Model
-# input channels
-# output classes
-
-## Training
-# epochs
-# learning rate
-# optimizer
-# loss function
-
-
-#### Pipeline functions
-# info
-# dataset_info
-# sample
-# set_dataset
-# set_model
-# set_learning_rate
-# set_transforms
