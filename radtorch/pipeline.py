@@ -19,7 +19,7 @@ from PIL import Image
 from pathlib import Path
 
 
-from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses
+from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table
 from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc, show_nn_roc
 
@@ -224,7 +224,6 @@ class Image_Classification():
         self.train_epochs = train_epochs
         self.learning_rate = learning_rate
         self.loss_function = loss_function
-        self.optimizer = optimizer
         self.path_col = path_col
         self.label_col = label_col
 
@@ -235,25 +234,32 @@ class Image_Classification():
 
         # Create DataSet
         if self.label_from_table == True:
-            self.data_set = dataset_from_table(
-                    data_directory=self.data_directory,
-                    is_csv=self.is_csv,
-                    is_dicom=self.is_dicom,
-                    input_source=self.table_source,
-                    img_path_column=self.path_col,
-                    img_label_column=self.label_col,
-                    mode=self.mode,
-                    wl=self.wl,
-                    trans=self.transformations)
-
-        else:
-            self.data_set = dataset_from_folder(
+            try:
+                self.data_set = dataset_from_table(
                         data_directory=self.data_directory,
+                        is_csv=self.is_csv,
                         is_dicom=self.is_dicom,
+                        input_source=self.table_source,
+                        img_path_column=self.path_col,
+                        img_label_column=self.label_col,
                         mode=self.mode,
                         wl=self.wl,
                         trans=self.transformations)
+            except:
+                raise TypeError('Dataset could not be created.')
+                pass
 
+        else:
+            try:
+                self.data_set = dataset_from_folder(
+                            data_directory=self.data_directory,
+                            is_dicom=self.is_dicom,
+                            mode=self.mode,
+                            wl=self.wl,
+                            trans=self.transformations)
+            except:
+                raise TypeError('Dataset could not be created.')
+                pass
 
 
         valid_size = int(self.valid_percent*len(self.data_set))
@@ -295,7 +301,13 @@ class Image_Classification():
             raise TypeError('Selected loss function is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported loss functions.')
             pass
 
-        self.optimizer = create_optimizer(traning_model=self.train_model, optimizer_type=optimizer, learning_rate=self.learning_rate)
+        if optimizer in supported_optimizer:
+            self.optimizer = create_optimizer(traning_model=self.train_model, optimizer_type=optimizer, learning_rate=self.learning_rate)
+        else:
+            raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
+            pass
+
+
 
 
     def info(self):
@@ -337,18 +349,21 @@ class Image_Classification():
         Inputs:
             verbose: _(boolean)_ Show display progress after each epoch. (default=True)
         '''
-
-        self.trained_model, self.train_metrics = train_model(
-                                                model = self.train_model,
-                                                train_data_loader = self.train_data_loader,
-                                                valid_data_loader = self.valid_data_loader,
-                                                train_data_set = self.train_data_set,
-                                                valid_data_set = self.valid_data_set,
-                                                loss_criterion = self.loss_function,
-                                                optimizer = self.optimizer,
-                                                epochs = self.train_epochs,
-                                                device = self.device,
-                                                verbose=verbose)
+        try:
+            self.trained_model, self.train_metrics = train_model(
+                                                    model = self.train_model,
+                                                    train_data_loader = self.train_data_loader,
+                                                    valid_data_loader = self.valid_data_loader,
+                                                    train_data_set = self.train_data_set,
+                                                    valid_data_set = self.valid_data_set,
+                                                    loss_criterion = self.loss_function,
+                                                    optimizer = self.optimizer,
+                                                    epochs = self.train_epochs,
+                                                    device = self.device,
+                                                    verbose=verbose)
+        except:
+            raise TypeError('Could not train image classification pipeline. Please check rpovided parameters.')
+            pass
 
     def metrics(self):
         '''
