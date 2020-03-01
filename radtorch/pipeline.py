@@ -791,7 +791,7 @@ class Feature_Extraction():
             mode: [str] either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.
         '''
         if mode == 'train':
-            self.train_model = torch.load(model_path)
+            self.model = torch.load(model_path)
         elif mode == 'infer':
-            self.trained_model = torch.load(model_path)
+            self.model = torch.load(model_path)
         print ('Model Loaded Successfully.')
