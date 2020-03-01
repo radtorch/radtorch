@@ -198,22 +198,42 @@ def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
 
     true_labels = []
     pred_labels = []
-    for i, l, p in tqdm(target_data_set, total=len(target_data_set)):
-        true_labels.append(l)
-        # target_img_tensor = i.unsqueeze(1)
-        target_img_tensor = i.unsqueeze(0)
+    model.to(device)
+    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=10,shuffle=False)
+
+    for i, (imgs, labels) in enumerate(target_data_loader):
+        imgs = imgs.to(device)
+        labels = labels.to(device)
+        true_labels.append(labels.tolist())
 
         with torch.no_grad():
-            model.to(device)
-            target_img_tensor.to(device)
             model.eval()
-            out = model(target_img_tensor)
+            out = model(imgs)
             # ps = torch.exp(out)
             ps = out
-            prediction_percentages = (ps.cpu().numpy()[0]).tolist()
-            pred = prediction_percentages.index(max(prediction_percentages))
-            pred_labels.append(pred)
-    show_roc(true_labels, pred_labels, auc=auc, figure_size=figure_size)
+            print(ps.shape)
+            print (ps)
+            # prediction_percentages = (ps.cpu().numpy()[0]).tolist()
+            # pred = prediction_percentages.index(max(prediction_percentages))
+            # pred_labels.append(pred)
+
+
+    # for i, l, p in tqdm(target_data_set, total=len(target_data_set)):
+    #     true_labels.append(l)
+    #     # target_img_tensor = i.unsqueeze(1)
+    #     target_img_tensor = i.unsqueeze(0)
+    #
+    #     with torch.no_grad():
+    #         model.to(device)
+    #         target_img_tensor.to(device)
+    #         model.eval()
+    #         out = model(target_img_tensor)
+    #         # ps = torch.exp(out)
+    #         ps = out
+    #         prediction_percentages = (ps.cpu().numpy()[0]).tolist()
+    #         pred = prediction_percentages.index(max(prediction_percentages))
+    #         pred_labels.append(pred)
+    # show_roc(true_labels, pred_labels, auc=auc, figure_size=figure_size)
 
 def plot_confusion_matrix(cm,
                           target_names,
