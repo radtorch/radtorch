@@ -8,8 +8,8 @@ Official repository for RADTorch - The Radiology Machine Learning Tool Kit
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen)
 ![](https://img.shields.io/badge/license-MIT-green)
 
-Documentation: https://radtorch.github.io/radtorch/
+Documentation: https:docs.radtorch.com
 
-Feature Requests: https://github.com/radtorch/radtorch/issues/4#issue-573590182
+Feature Requests: https://requests.radtorch.com
 
-Playground: https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i
+Playground: https://playground.radtorch.com
