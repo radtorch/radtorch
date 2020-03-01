@@ -199,7 +199,7 @@ def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
     true_labels = []
     pred_labels = []
     model.to(device)
-    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=10,shuffle=False)
+    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
 
     for i, (imgs, labels) in enumerate(target_data_loader):
         imgs = imgs.to(device)
