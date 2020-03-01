@@ -439,6 +439,7 @@ class Image_Classification():
                 target_data_set = self.test_data_set
         else:
             target_data_set = target_data_set
+            target_data_set.trans = self.transformations
 
         if target_classes == 'default':
             target_classes = self.data_set.classes
@@ -466,6 +467,7 @@ class Image_Classification():
         else:
             target_data_set = target_data_set
             num_classes = len(target_data_set.classes)
+            target_data_set.trans = self.transformations
 
         if num_classes <= 2:
             show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, figure_size=figure_size, device=self.device)

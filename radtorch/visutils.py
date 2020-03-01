@@ -311,20 +311,22 @@ def show_confusion_matrix(model, target_data_set, target_classes, device, figure
     '''
     true_labels = []
     pred_labels = []
-    for i, l, p in tqdm(target_data_set, total=len(target_data_set)):
-        true_labels.append(l)
+    model.to(device)
+    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
 
-        target_img_tensor = i.unsqueeze(0)
-        # target_img_tensor = i.unsqueeze(1)
+    for i, (imgs, labels, path) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
+        imgs = imgs.to(device)
+        labels = labels.to(device)
+        true_labels = true_labels+labels.tolist()
+        # print (imgs.shape)
         with torch.no_grad():
-            model.to(device)
-            target_img_tensor.to(device)
             model.eval()
-            out = model(target_img_tensor)
-            ps = torch.exp(out)
-            prediction_percentages = (ps.cpu().numpy()[0]).tolist()
-            pred = prediction_percentages.index(max(prediction_percentages))
-            pred_labels.append(pred)
+            out = model(imgs)
+            # ps = torch.exp(out)
+            ps = out
+            pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
+            pred_labels = pred_labels+pr
+
 
     cm = metrics.confusion_matrix(true_labels, pred_labels)
     plot_confusion_matrix(cm=cm,
