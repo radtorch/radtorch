@@ -766,9 +766,9 @@ class Feature_Extraction():
             self.img_path_list = self.img_path_list+img_path.tolist()
             with torch.no_grad():
                 self.model.eval()
-                    input = input.to(self.device)
-                    output = (self.model(input))[0].tolist()
-                    self.features.append(output)
+                input = input.to(self.device)
+                output = (self.model(input))[0].tolist()
+                self.features.append(output)
 
 
         self.feature_names = ['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
