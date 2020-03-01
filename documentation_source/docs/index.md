@@ -32,7 +32,7 @@ The above 3 lines of code will run an image classifier using VGG16 with pre-trai
 
 
 
-<p><img alt="" height="35" src="/img/colab.png" align="right" hspace="0" vspace="0px"></p> RADTorch playground for testing is provided on [Google Colab](https://colab.research.google.com/drive/1goZoM0I9FRvq95W_G3pCxUVTpM5OIu2x).
+<p><img alt="" height="35" src="/img/colab.png" align="right" hspace="0" vspace="0px"></p> RADTorch playground for testing is provided on [Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
 
 
 
