@@ -763,7 +763,7 @@ class Feature_Extraction():
 
         for i, (imgs, labels, paths) in tqdm(enumerate(self.data_loader), total=len(self.data_loader)):
             self.labels_idx = self.labels_idx+labels.tolist()
-            self.img_path_list = self.img_path_list+paths.tolist()
+            self.img_path_list = self.img_path_list+paths
             with torch.no_grad():
                 self.model.eval()
                 imgs = imgs.to(self.device)
