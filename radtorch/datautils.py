@@ -21,6 +21,8 @@ from radtorch.dicomutils import  dicom_to_narray, window_dicom, dicom_to_pil
 from radtorch.visutils import show_dataset_info
 
 
+IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
+
 
 def list_of_files(root):
     """
@@ -209,7 +211,7 @@ class dataset_from_table(Dataset):
         if self.is_dicom:
             self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x[-3:] == 'dcm'] # Returns only DICOM files from folder
         else:
-            self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist())]
+            self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x[-3:] in IMG_EXTENSIONS]
         # self.classes = self.input_data.self.image_label_col.unique()
         self.classes = np.unique(list(self.input_data[self.image_label_col]))
         self.class_to_idx = class_to_idx(self.classes)

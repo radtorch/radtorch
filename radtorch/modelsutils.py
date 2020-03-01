@@ -18,6 +18,7 @@ from pathlib import Path
 
 
 from radtorch.dicomutils import dicom_to_pil
+from radtorch.datautils import IMG_EXTENSIONS
 
 
 
@@ -72,6 +73,10 @@ def supported():
     print('')
     print ('Supported Optimizers:')
     for i in supported_optimizer:
+        print (i)
+    print ('')
+    print ('Supported non DICOM image file types:')
+    for i in IMG_EXTENSIONS:
         print (i)
 
 class Identity(nn.Module):

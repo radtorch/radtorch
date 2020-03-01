@@ -413,7 +413,6 @@ class Image_Classification():
         print (pred)
         return (pred, percent)
 
-
     def confusion_matrix(self, target_data_set='default', target_classes='default', figure_size=(7,7), cmap=None):
         '''
         Display Confusion Matrix
@@ -435,7 +434,6 @@ class Image_Classification():
 
         show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap)
 
-
     def roc(self, target_data_set='default', auc=True, figure_size=(7,7)):
         '''
         Display Confusion Matrix
@@ -455,7 +453,7 @@ class Image_Classification():
         if num_classes <= 2:
             show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, figure_size=figure_size)
         else:
-            raise TypeError('ROC cannot support more than 2 classes at the current time. This will be fixed in the upcoming update.')
+            raise TypeError('ROC cannot support more than 2 classes at the current time. This will be fixed in an upcoming update.')
 
 
 class Feature_Extraction():
