@@ -767,8 +767,8 @@ class Feature_Extraction():
                 # input = input.unsqueeze(0)
                 output = (self.model(input))[0].tolist()
                 self.features.append(output)
-                self.labels_idx.append(label)
-                self.img_path_list.append(img_path)
+                self.labels_idx = self.labels_idx+label.tolist()
+                self.img_path_list = self.img_path_list+img_path.tolist()
 
 
         self.feature_names = ['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
