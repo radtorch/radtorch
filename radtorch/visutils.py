@@ -214,30 +214,10 @@ def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
             pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
             pred_labels = pred_labels+pr
 
-    print (len(true_labels))
-    print (len(pred_labels))
+
     show_roc(true_labels, pred_labels, auc=auc, figure_size=figure_size)
-            # prediction_percentages = (ps.cpu().numpy()[0]).tolist()
-            # pred = prediction_percentages.index(max(prediction_percentages))
-            # pred_labels.append(pred)
 
 
-    # for i, l, p in tqdm(target_data_set, total=len(target_data_set)):
-    #     true_labels.append(l)
-    #     # target_img_tensor = i.unsqueeze(1)
-    #     target_img_tensor = i.unsqueeze(0)
-    #
-    #     with torch.no_grad():
-    #         model.to(device)
-    #         target_img_tensor.to(device)
-    #         model.eval()
-    #         out = model(target_img_tensor)
-    #         # ps = torch.exp(out)
-    #         ps = out
-    #         prediction_percentages = (ps.cpu().numpy()[0]).tolist()
-    #         pred = prediction_percentages.index(max(prediction_percentages))
-    #         pred_labels.append(pred)
-    # show_roc(true_labels, pred_labels, auc=auc, figure_size=figure_size)
 
 def plot_confusion_matrix(cm,
                           target_names,
