@@ -216,7 +216,7 @@ def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
 
     print (len(true_labels))
     print (len(pred_labels))
-    visutils.show_roc(true_labels, pred_labels, auc=auc, figure_size=figure_size)
+    show_roc(true_labels, pred_labels, auc=auc, figure_size=figure_size)
             # prediction_percentages = (ps.cpu().numpy()[0]).tolist()
             # pred = prediction_percentages.index(max(prediction_percentages))
             # pred_labels.append(pred)
