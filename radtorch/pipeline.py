@@ -266,7 +266,11 @@ class Image_Classification():
         test_size = int(self.test_percent*len(self.data_set))
         train_size = len(self.data_set) - (valid_size+test_size)
 
-        self.train_data_set, self.valid_data_set, self.test_data_set = torch.utils.data.random_split(self.data_set, [train_size, valid_size, test_size])
+        if self.test_percent == 0:
+            self.train_data_set, self.valid_data_set = torch.utils.data.random_split(self.data_set, [train_size, valid_size])
+            self.test_data_set = 0
+        else:
+            self.train_data_set, self.valid_data_set, self.test_data_set = torch.utils.data.random_split(self.data_set, [train_size, valid_size, test_size])
 
         self.train_data_loader = torch.utils.data.DataLoader(
                                                     self.train_data_set,
@@ -278,7 +282,10 @@ class Image_Classification():
                                                     batch_size=self.batch_size,
                                                     shuffle=True)
 
-        self.test_data_loader = torch.utils.data.DataLoader(
+        if self.test_percent == 0:
+            self.test_data_loader = 0
+        else:
+            self.test_data_loader = torch.utils.data.DataLoader(
                                                     self.test_data_set,
                                                     batch_size=self.batch_size,
                                                     shuffle=True)
@@ -423,7 +430,11 @@ class Image_Classification():
         '''
 
         if target_data_set=='default':
-            target_data_set = self.test_data_set
+            if self.test_data_set == 0:
+                raise TypeError('Error. Test Percent set to Zero in image classification pipeline. Please change or set another target testing dataset.')
+                pass
+            else:
+                target_data_set = self.test_data_set
         else:
             target_data_set = target_data_set
 
@@ -444,8 +455,12 @@ class Image_Classification():
         '''
 
         if target_data_set=='default':
-            target_data_set = self.test_data_set
-            num_classes = len(self.data_set.classes)
+            if self.test_data_set == 0:
+                raise TypeError('Error. Test Percent set to Zero in image classification pipeline. Please change or set another target testing dataset.')
+                pass
+            else:
+                target_data_set = self.test_data_set
+                num_classes = len(self.data_set.classes)
         else:
             target_data_set = target_data_set
             num_classes = len(target_data_set.classes)
