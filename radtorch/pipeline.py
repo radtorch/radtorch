@@ -328,7 +328,8 @@ class Image_Classification():
                 print('>', key,'=',value)
         print ('Train Dataset Size =', len(self.train_data_set))
         print ('Valid Dataset Size =', len(self.valid_data_set))
-        print ('Test Dataset Size =', len(self.test_data_set))
+        if self.test_percent > 0
+            print ('Test Dataset Size =', len(self.test_data_set))
 
     def dataset_info(self):
         '''
@@ -338,7 +339,8 @@ class Image_Classification():
         print (show_dataset_info(self.data_set))
         print ('Train Dataset Size ', len(self.train_data_set))
         print ('Valid Dataset Size ', len(self.valid_data_set))
-        print ('Test Dataset Size ', len(self.test_data_set))
+        if self.test_percent > 0
+            print ('Test Dataset Size ', len(self.test_data_set))
 
     def sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):
         '''
