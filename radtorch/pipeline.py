@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-
 from sklearn import metrics
 from tqdm import tqdm_notebook as tqdm
 from torch.utils.data.dataset import Dataset
@@ -22,6 +21,25 @@ from pathlib import Path
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table
 from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc, show_nn_roc
+
+
+
+def load_pipeline(target_path):
+    '''
+    Loads a previously saved pipeline for future use.
+
+    **Arguments**
+
+    - target_path: _(str)_ target path of the target pipeline.
+
+    **Example**
+    my_classifier = load_pipeline('/path/to/pipeline.dump')
+    '''
+    infile = open(target_path,'rb')
+    pipeline = pickle.load(infile)
+    infile.close()
+
+    return pipeline
 
 
 
@@ -315,8 +333,6 @@ class Image_Classification():
             pass
 
 
-
-
     def info(self):
         '''
         Display Parameters of the Image Classification Pipeline.
@@ -473,6 +489,17 @@ class Image_Classification():
             show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, figure_size=figure_size, device=self.device)
         else:
             raise TypeError('ROC cannot support more than 2 classes at the current time. This will be fixed in an upcoming update.')
+
+    def export(self, target_path):
+        '''
+        Exports the whole image classification pipelie for future use
+
+        ***Arguments**
+        - target_path: _(str)_ target location for export.
+        '''
+        outfile = open(target_path,'wb')
+        pickle.dump(self,outfile)
+        outfile.close()
 
 
 class Feature_Extraction():

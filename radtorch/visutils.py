@@ -217,8 +217,6 @@ def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
 
     show_roc(true_labels, pred_labels, auc=auc, figure_size=figure_size)
 
-
-
 def plot_confusion_matrix(cm,
                           target_names,
                           title='Confusion Matrix',
