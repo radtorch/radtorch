@@ -173,7 +173,7 @@ def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC
         # print ('AUC =',metrics.roc_auc_score(true_labels, predictions))
         return metrics.roc_auc_score(true_labels, predictions)
 
-def show_nn_roc(model, target_data_set, auc=True, figure_size=(10,10)):
+def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
     """
     Displays the ROC and AUC of a certain trained model on a target(for example test) dataset.
 
@@ -186,6 +186,9 @@ def show_nn_roc(model, target_data_set, auc=True, figure_size=(10,10)):
     - auc: _(boolen)_ True to display AUC. (default=True)
 
     - figure_size: _(tuple)_ size of the displayed figure. (default=10,10)
+
+    - device: _(str)_ device for inference. 'cpu' or 'cuda'
+
 
     **Output**
 
@@ -201,8 +204,8 @@ def show_nn_roc(model, target_data_set, auc=True, figure_size=(10,10)):
         target_img_tensor = i.unsqueeze(0)
 
         with torch.no_grad():
-            model.to('cpu')
-            target_img_tensor.to('cpu')
+            model.to(device)
+            target_img_tensor.to(device)
             model.eval()
             out = model(target_img_tensor)
             # ps = torch.exp(out)
@@ -280,7 +283,7 @@ def plot_confusion_matrix(cm,
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
     plt.show()
 
-def show_confusion_matrix(model, target_data_set, target_classes, figure_size=(8,6), cmap=None):
+def show_confusion_matrix(model, target_data_set, target_classes, device, figure_size=(8,6), cmap=None):
     '''
     Displays Confusion Matrix for Image Classifier Model.
 
@@ -296,6 +299,8 @@ def show_confusion_matrix(model, target_data_set, target_classes, figure_size=(8
 
     - cmap: _(str)_ the colormap of the generated figure (default=None, which is Blues)
 
+    - device: _(str)_ device for inference. 'cpu' or 'cuda'
+
     **Output**
 
     -  Output: _(figure)_
@@ -308,8 +313,8 @@ def show_confusion_matrix(model, target_data_set, target_classes, figure_size=(8
         target_img_tensor = i.unsqueeze(0)
         # target_img_tensor = i.unsqueeze(1)
         with torch.no_grad():
-            model.to('cpu')
-            target_img_tensor.to('cpu')
+            model.to(device)
+            target_img_tensor.to(device)
             model.eval()
             out = model(target_img_tensor)
             ps = torch.exp(out)

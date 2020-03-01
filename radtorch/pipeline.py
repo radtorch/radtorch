@@ -445,7 +445,7 @@ class Image_Classification():
         else:
             target_classes = target_classes
 
-        show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap)
+        show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
 
     def roc(self, target_data_set='default', auc=True, figure_size=(7,7)):
         '''
@@ -468,7 +468,7 @@ class Image_Classification():
             num_classes = len(target_data_set.classes)
 
         if num_classes <= 2:
-            show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, figure_size=figure_size)
+            show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, figure_size=figure_size, device=self.device)
         else:
             raise TypeError('ROC cannot support more than 2 classes at the current time. This will be fixed in an upcoming update.')
 
