@@ -559,6 +559,8 @@ class Feature_Extraction():
 
     **transformations:** _(pytorch transforms)_ pytroch transforms to be performed on the dataset. (default=Convert to tensor)
 
+    **batch_size:** _(int)_ batch size of the dataset (default=16)
+
     **custom_resize:** _(int)_ by default, a radtorch pipeline will resize the input images into the default training model input image
     size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
     model_arch: [str] PyTorch neural network architecture (default='vgg16')
@@ -632,6 +634,7 @@ class Feature_Extraction():
     wl=None,
     model_arch='vgg16',
     pre_trained=True,
+    batch_size=16,
     unfreeze_weights=False,
     ):
         self.data_directory = data_directory
@@ -641,6 +644,7 @@ class Feature_Extraction():
         self.table_source = table_source
         self.mode = mode
         self.wl = wl
+        self.batch_size=batch_size
 
         if custom_resize=='default':
             self.input_resize = model_dict[model_arch]['input_size']
@@ -694,7 +698,7 @@ class Feature_Extraction():
 
         self.data_loader = torch.utils.data.DataLoader(
                                                     self.data_set,
-                                                    batch_size=16,
+                                                    batch_size=self.batch_size,
                                                     shuffle=False)
 
 
