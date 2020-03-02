@@ -763,15 +763,15 @@ class Feature_Extraction():
 
         for i, (imgs, labels, paths) in tqdm(enumerate(self.data_loader), total=len(self.data_loader)):
             self.labels_idx = self.labels_idx+labels.tolist()
-            print (len(labels.tolist()))
+            # print (len(labels.tolist()))
             self.img_path_list = self.img_path_list+list(paths)
-            print (len(list(paths)))
+            # print (len(list(paths)))
             with torch.no_grad():
                 self.model.eval()
                 imgs = imgs.to(self.device)
                 output = (self.model(imgs)).tolist()
-                print (len(output))
-                self.features.append(output)
+                # print (len(output))
+                self.features = self.features+(output)
 
 
         self.feature_names = ['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
