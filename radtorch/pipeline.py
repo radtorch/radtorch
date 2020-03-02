@@ -812,5 +812,4 @@ class Feature_Extraction():
         elif mode == 'infer':
             self.model = torch.load(model_path)
 
-        self.model.fc =
         print ('Model Loaded Successfully.')
