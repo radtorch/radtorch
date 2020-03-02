@@ -767,14 +767,11 @@ class Feature_Extraction():
 
         for i, (imgs, labels, paths) in tqdm(enumerate(self.data_loader), total=len(self.data_loader)):
             self.labels_idx = self.labels_idx+labels.tolist()
-            # print (len(labels.tolist()))
             self.img_path_list = self.img_path_list+list(paths)
-            # print (len(list(paths)))
             with torch.no_grad():
                 self.model.eval()
                 imgs = imgs.to(self.device)
                 output = (self.model(imgs)).tolist()
-                # print (len(output))
                 self.features = self.features+(output)
 
 
@@ -783,6 +780,8 @@ class Feature_Extraction():
         feature_df = pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['img_path','label_idx', 'features'])
 
         feature_df[self.feature_names] = pd.DataFrame(feature_df.features.values.tolist(), index= feature_df.index)
+
+        feature_df = feature_df.drop(['features'], axis=1)
 
         print (' Features extracted successfully.')
 
