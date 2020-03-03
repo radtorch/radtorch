@@ -40,7 +40,7 @@ def dicom_to_narray(filepath, mode='RAW', wl=None):
     """
     .. include:: ./documentation/docs/dicomutils.md##dicom_to_narray
     """
-
+    
     if mode == 'RAW':
         ds = pydicom.read_file(filepath)
         img = ds.pixel_array
@@ -74,11 +74,12 @@ def dicom_to_narray(filepath, mode='RAW', wl=None):
             return mwin_img
 
 def dicom_to_pil(filepath):
+
     """
     .. include:: ./documentation/docs/dicomutils.md##dicom_to_pil
     """
 
-  ds = pydicom.read_file(filepath)
-  pixels = ds.pixel_array
-  pil_image = Image.fromarray(np.rollaxis(pixels, 0,1))
-  return pil_image
+    ds = pydicom.read_file(filepath)
+    pixels = ds.pixel_array
+    pil_image = Image.fromarray(np.rollaxis(pixels, 0,1))
+    return pil_image
