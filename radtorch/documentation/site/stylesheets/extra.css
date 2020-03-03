@@ -4,3 +4,14 @@
     background: linear-gradient(270deg, #651e3e 0%, #251e3e 80%);
     /* background: linear-gradient(270deg, #4b6cb7 0%, #182848 100%); */
 }
+
+
+
+@media only screen and (max-width: 76.1875em)
+{
+[data-md-color-primary=indigo] .md-nav--primary,  [data-md-color-primary=indigo] .md-nav__title--site {
+    background: linear-gradient(270deg, #651e3e 0%, #251e3e 80%) !important;
+    background-color: linear-gradient(270deg, #651e3e 0%, #251e3e 80%) !important;
+
+  }
+}
