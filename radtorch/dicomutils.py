@@ -20,9 +20,9 @@ from pathlib import Path
 
 
 def window_dicom(filepath, level, width):
-    """
+    '''
     .. include:: ./documentation/docs/dicomutils.md##window_dicom
-    """
+    '''
 
     ds = pydicom.read_file(filepath)
     pixels = ds.pixel_array
