@@ -321,7 +321,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     custom_resize = 'default', is_dicom=True,label_from_table=False,
     is_csv=None,table_source=None, device='default', path_col = 'IMAGE_PATH',
     label_col = 'IMAGE_LABEL', mode='RAW', wl=None, model_arch='vgg16',
-    pre_trained=True, unfreeze_weights=False)
+    pre_trained=True, unfreeze_weights=False, shuffle=True)
 
 !!! quote ""
 
@@ -378,6 +378,10 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     **label_col:**
 
     - _(str)_ name of the label/class column. (default='IMAGE_LABEL')
+
+
+    **shuffle**
+    - _(boolean)_ shuffles items in dataset.(default=True)
 
     **mode:**
 
