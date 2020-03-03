@@ -106,7 +106,7 @@
 
 
       **Example**
-      
+
         class_list = ['class1','class4', 'class2', 'class3']
         class_to_idx(class_list)
 
@@ -137,18 +137,21 @@
 
     **Methods**
 
-    - **class_to_idx**
+    - **dataset.class_to_idx()**
 
           Returns dictionary of dataset classes and corresponding class id.
 
-    - **classes**
+    - **dataset.classes()**
 
           Returns list of dataset classes
 
-    - **info**
+    - **dataset.info()**
 
           Returns detailed information of the dataset.
 
+    - **len(dataset)**
+
+        Returns number of items in the dataset.
 
 
 
@@ -188,14 +191,19 @@
 
     **Methods**
 
-    - **class_to_idx**
+
+    - **dataset.class_to_idx()**
 
           Returns dictionary of dataset classes and corresponding class id.
 
-    - **classes**
+    - **dataset.classes()**
 
           Returns list of dataset classes
 
-    - **info**
+    - **dataset.info()**
 
-          Returns detailed information of the dataset.    
+          Returns detailed information of the dataset.
+
+    - **len(dataset)**
+
+        Returns number of items in the dataset.

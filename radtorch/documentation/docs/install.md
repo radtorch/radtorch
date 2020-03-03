@@ -3,8 +3,8 @@
 RADTorch tool kit and its dependencies can be installed using the following terminal commands:
 
 ```
-git clone github.com/radtorch/radtorch.git
-pip3 install radtorch/.
+pip3 install https://repo.radtorch.com/archive/v0.1.0.zip
+
 ```
 
 To uninstall simply use:
