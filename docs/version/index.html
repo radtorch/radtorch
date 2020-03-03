@@ -291,6 +291,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#v011-_-3-3-2020" title="v.0.1.1 _ 3-3-2020" class="md-nav__link">
+    v.0.1.1 _ 3-3-2020
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#v010-_-3-1-2020" title="v.0.1.0 _ 3-1-2020" class="md-nav__link">
     v.0.1.0 _ 3-1-2020
   </a>
@@ -353,6 +360,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#v011-_-3-3-2020" title="v.0.1.1 _ 3-3-2020" class="md-nav__link">
+    v.0.1.1 _ 3-3-2020
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#v010-_-3-1-2020" title="v.0.1.0 _ 3-1-2020" class="md-nav__link">
     v.0.1.0 _ 3-1-2020
   </a>
@@ -378,122 +392,22 @@
                 
                 <h1 id="version-log">Version Log</h1>
 <p><small></p>
+<h4 id="v011-_-3-3-2020"><em>v.0.1.1 _ 3-3-2020</em></h4>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Feature Extraction Pipeline now uses batches not single images into GPU = improved speed.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Inference done during confusion matrix and roc creation for Image Classification Pipeline now uses batches not single images into GPU = improved speed.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Fix error with Image Classification Pipeline when using external test dataset.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Allow omitting creating an internal test subset for the Image Classification Pipeline by setting test_percent = 0.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Change line color in roc to default blue.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Allow export and import of pipeline structures.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Add shuffle parameter to Feature Extraction Pipeline.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> updated documentation.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> restructure exported csv file with feature extraction pipeline.</li>
+</ul>
 <h4 id="v010-_-3-1-2020"><em>v.0.1.0 _ 3-1-2020</em></h4>
-<p><strong>Features</strong></p>
-<table>
-<thead>
-<tr>
-<th><strong>Module</strong></th>
-<th><strong>Function</strong></th>
-<th><strong>Module</strong></th>
-<th><strong>Functions</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>PipeLine</strong></td>
-<td></td>
-<td><strong>Dicomutils</strong></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td>Image_Classification</td>
-<td></td>
-<td>window_dicom</td>
-</tr>
-<tr>
-<td></td>
-<td>Feature_Extraction</td>
-<td></td>
-<td>dicom_to_narray</td>
-</tr>
-<tr>
-<td><strong>Datautils</strong></td>
-<td></td>
-<td></td>
-<td>dicom_to_pil</td>
-</tr>
-<tr>
-<td></td>
-<td>list_of_files</td>
-<td><strong>Visutils</strong></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td>path_to_class</td>
-<td></td>
-<td>show_dataloader_sample</td>
-</tr>
-<tr>
-<td></td>
-<td>root_to_class</td>
-<td></td>
-<td>show_dataset_info</td>
-</tr>
-<tr>
-<td></td>
-<td>class_to_idx</td>
-<td></td>
-<td>show_metrics</td>
-</tr>
-<tr>
-<td></td>
-<td>dataset_from_folder</td>
-<td></td>
-<td>show_dicom_sample</td>
-</tr>
-<tr>
-<td></td>
-<td>dataset_from_table</td>
-<td></td>
-<td>show_roc</td>
-</tr>
-<tr>
-<td><strong>Modelsutils</strong></td>
-<td></td>
-<td></td>
-<td>show_nn_roc</td>
-</tr>
-<tr>
-<td></td>
-<td>create_model</td>
-<td></td>
-<td>show_confusion_matrix</td>
-</tr>
-<tr>
-<td></td>
-<td>create_loss_function</td>
-<td></td>
-<td>plot_confusion_matrix</td>
-</tr>
-<tr>
-<td></td>
-<td>create_optimizer</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td>train_model</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td>model_inference</td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td></td>
-<td>supported</td>
-<td></td>
-<td></td>
-</tr>
-</tbody>
-</table>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> First BETA release.</li>
+</ul>
 <p></small></p>
                 
                   

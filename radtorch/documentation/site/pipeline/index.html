@@ -298,6 +298,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#load_pipeline" title="load_pipeline" class="md-nav__link">
+    load_pipeline
+  </a>
+  
+</li>
+      
       
       
       
@@ -481,6 +488,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#load_pipeline" title="load_pipeline" class="md-nav__link">
+    load_pipeline
+  </a>
+  
+</li>
+      
       
       
       
@@ -563,7 +577,10 @@ Under the hood, the following happens:</p>
 <ul>
 <li><em>(boolean)</em> True for csv, False for pandas dataframe.</li>
 </ul>
-<p><strong>table_source:</strong> <em>(str or pandas dataframe object)</em> source for labelling data.This is path to csv file or name of pandas dataframe if pandas to be used. (default=None).</p>
+<p><strong>table_source:</strong></p>
+<ul>
+<li><em>(str or pandas dataframe object)</em> source for labelling data.This is path to csv file or name of pandas dataframe if pandas to be used. (default=None).</li>
+</ul>
 <p><strong>path_col:</strong></p>
 <ul>
 <li><em>(str)</em>  name of the column with the image path. (default='IMAGE_PATH')</li>
@@ -572,33 +589,77 @@ Under the hood, the following happens:</p>
 <ul>
 <li><em>(str)</em>  name of the label/class column. (default='IMAGE_LABEL')</li>
 </ul>
-<p><strong>mode:</strong> <em>(str)</em>  output mode for DICOM images only where RAW= Raw pixels, HU= Image converted to Hounsefield Units, WIN= 'window' image windowed to certain W and L, MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together. (default='RAW')</p>
-<p><strong>wl:</strong> <em>(list)</em> list of lists of combinations of window level and widths to be used with WIN and MWIN.In the form of : [[Level,Width], [Level,Width],...].  Only 3 combinations are allowed for MWIN (for now). (default=None)</p>
-<p><strong>transformations:</strong> <em>(pytorch transforms list)</em> pytroch transforms to be performed on the dataset. (default=Convert to tensor)</p>
-<p><strong>custom_resize:</strong> <em>(int)</em> by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.</p>
-<p><strong>batch_size:</strong> <em>(int)</em> batch size of the dataset (default=16)</p>
-<p><strong>test_percent:</strong> <em>(float)</em> percentage of dataset to use for testing. Float value between 0 and 1.0. (default=0.2)</p>
-<p><strong>valid_percent:</strong> <em>(float)</em> percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)</p>
-<p><strong>model_arch:</strong> <em>(str)</em> PyTorch neural network architecture (default='vgg16')</p>
-<p><strong>pre_trained:</strong> <em>(boolean)</em> Load the pretrained weights of the neural network. (default=True)</p>
-<p><strong>unfreeze_weights:</strong> <em>(boolean)</em> if True, all model weights will be retrained. (default=True)</p>
-<p><strong>train_epochs:</strong> <em>(int)</em> Number of training epochs. (default=20)</p>
-<p><strong>learning_rate:</strong> <em>(str)</em> training learning rate. (default = 0.0001)</p>
-<p><strong>loss_function:</strong> <em>(str)</em> training loss function. (default='CrossEntropyLoss')</p>
-<p><strong>optimizer:</strong> <em>(str)</em> Optimizer to be used during training. (default='Adam')</p>
-<p><strong>device:</strong> <em>(str)</em> device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.</p>
+<p><strong>mode:</strong></p>
+<ul>
+<li><em>(str)</em>  output mode for DICOM images only where RAW= Raw pixels, HU= Image converted to Hounsefield Units, WIN= 'window' image windowed to certain W and L, MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together. (default='RAW')</li>
+</ul>
+<p><strong>wl:</strong></p>
+<ul>
+<li><em>(list)</em> list of lists of combinations of window level and widths to be used with WIN and MWIN.In the form of : [[Level,Width], [Level,Width],...].  </li>
+<li>Only 3 combinations are allowed for MWIN (for now). (default=None)</li>
+</ul>
+<p><strong>transformations:</strong></p>
+<ul>
+<li><em>(pytorch transforms list)</em> pytroch transforms to be performed on the dataset. (default=Convert to tensor)</li>
+</ul>
+<p><strong>custom_resize:</strong>
+- <em>(int)</em> by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.</p>
+<p><strong>batch_size:</strong></p>
+<ul>
+<li><em>(int)</em> batch size of the dataset (default=16)</li>
+</ul>
+<p><strong>test_percent:</strong></p>
+<ul>
+<li><em>(float)</em> percentage of dataset to use for testing. Float value between 0 and 1.0. (default=0.2)</li>
+</ul>
+<p><strong>valid_percent:</strong></p>
+<ul>
+<li><em>(float)</em> percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)</li>
+</ul>
+<p><strong>model_arch:</strong></p>
+<ul>
+<li><em>(str)</em> PyTorch neural network architecture (default='vgg16')</li>
+</ul>
+<p><strong>pre_trained:</strong></p>
+<ul>
+<li><em>(boolean)</em> Load the pretrained weights of the neural network. (default=True)</li>
+</ul>
+<p><strong>unfreeze_weights:</strong></p>
+<ul>
+<li><em>(boolean)</em> if True, all model weights will be retrained. (default=True)</li>
+</ul>
+<p><strong>train_epochs:</strong></p>
+<ul>
+<li><em>(int)</em> Number of training epochs. (default=20)</li>
+</ul>
+<p><strong>learning_rate:</strong></p>
+<ul>
+<li><em>(str)</em> training learning rate. (default = 0.0001)</li>
+</ul>
+<p><strong>loss_function:</strong></p>
+<ul>
+<li><em>(str)</em> training loss function. (default='CrossEntropyLoss')</li>
+</ul>
+<p><strong>optimizer:</strong></p>
+<ul>
+<li><em>(str)</em> Optimizer to be used during training. (default='Adam')</li>
+</ul>
+<p><strong>device:</strong></p>
+<ul>
+<li><em>(str)</em> device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.</li>
+</ul>
 </div>
 <h4 id="methods">Methods</h4>
 <div class="admonition quote">
-<p><strong>info</strong></p>
+<p><strong>.info()</strong></p>
 <ul>
 <li>Display Parameters of the Image Classification Pipeline.</li>
 </ul>
-<p><strong>dataset_info</strong></p>
+<p><strong>.dataset_info()</strong></p>
 <ul>
 <li>Display Dataset Information.</li>
 </ul>
-<p><strong>sample</strong></p>
+<p><strong>.sample()</strong></p>
 <ul>
 <li>
 <p>Display sample of the training dataset.</p>
@@ -612,7 +673,7 @@ Under the hood, the following happens:</p>
 </ul>
 </li>
 </ul>
-<p><strong>train</strong></p>
+<p><strong>.train()</strong></p>
 <ul>
 <li>
 <p>Train the image classification pipeline.</p>
@@ -624,11 +685,11 @@ Under the hood, the following happens:</p>
 </ul>
 </li>
 </ul>
-<p><strong>metrics</strong></p>
+<p><strong>.metrics()</strong></p>
 <ul>
 <li>Display the training metrics.</li>
 </ul>
-<p><strong>export_model</strong></p>
+<p><strong>.export_model()</strong></p>
 <ul>
 <li>
 <p>Export the trained model into a target file.</p>
@@ -640,7 +701,19 @@ Under the hood, the following happens:</p>
 </ul>
 </li>
 </ul>
-<p><strong>set_trained_model</strong></p>
+<p><strong>.export()</strong></p>
+<ul>
+<li>
+<p>Exports the whole image classification pipeline for future use</p>
+</li>
+<li>
+<p>Arguments:</p>
+<ul>
+<li>target_path: <em>(str)</em> target location for export.</li>
+</ul>
+</li>
+</ul>
+<p><strong>.set_trained_model()</strong></p>
 <ul>
 <li>
 <p>Loads a previously trained model into pipeline</p>
@@ -650,6 +723,53 @@ Under the hood, the following happens:</p>
 <ul>
 <li>model_path: <em>(str)</em> path to target model</li>
 <li>mode: <em>(str)</em> either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.</li>
+</ul>
+</li>
+</ul>
+<p><strong>.inference()</strong></p>
+<ul>
+<li>
+<p>Performs inference using the trained model on a target image.</p>
+</li>
+<li>
+<p>Arguments:</p>
+<ul>
+<li>test_img_path: <em>(str)</em> path to target image.</li>
+<li>transformations: <em>(pytorch transforms list)</em> list of transforms to be performed on the target image. (default='default' which is the same transforms using for training the pipeline)</li>
+</ul>
+</li>
+<li>
+<p>Outputs:</p>
+<ul>
+<li>Output: <em>(tuple)</em> tuple of prediction (class idx , accuracy percentage).</li>
+</ul>
+</li>
+</ul>
+<p><strong>.roc()</strong></p>
+<ul>
+<li>
+<p>Display ROC and AUC.</p>
+</li>
+<li>
+<p>Arguments:</p>
+<ul>
+<li>target_data_set: <em>(pytorch dataset object)</em> dataset used for predictions to create the ROC. By default, the image classification pipeline uses the test dataset created to calculate the ROC. If no test dataset was created in the pipeline (e.g. test_percent=0), then an external test dataset is required. (default=default')</li>
+<li>auc: <em>(boolen)</em> Display area under curve. (default=True)</li>
+<li>figure_size: <em>(tuple)</em> figure size. (default=(7,7))</li>
+</ul>
+</li>
+</ul>
+<p><strong>.confusion_matrix()</strong></p>
+<ul>
+<li>
+<p>Display Confusion Matrix</p>
+</li>
+<li>
+<p>Arguments:</p>
+<ul>
+<li>target_data_set: <em>(pytorch dataset object)</em> dataset used for predictions to create the confusion matrix. By default, the image classification - pipeline uses the test dataset created to calculate the matrix.</li>
+<li>target_classes: <em>(list)</em> list of classes. By default, the image classification pipeline uses the training classes.</li>
+<li>figure_size: <em>(tuple)</em> figure size. (default=(7,7))</li>
 </ul>
 </li>
 </ul>
@@ -729,7 +849,7 @@ Total training time = 0:00:40.758802
 custom_resize = 'default', is_dicom=True,label_from_table=False,
 is_csv=None,table_source=None, device='default', path_col = 'IMAGE_PATH',
 label_col = 'IMAGE_LABEL', mode='RAW', wl=None, model_arch='vgg16',
-pre_trained=True, unfreeze_weights=False)
+pre_trained=True, unfreeze_weights=False, shuffle=True)
 </code></pre>
 <div class="admonition quote">
 <p>The feature extraction pipeline utilizes a pre-trained model to extract a set of features that can be used in another machine learning algorithms e.g. XGBoost. The trained model by default can one of the supported model architectures trained with default weights trained on the ImageNet dataset or a model that has been trained and exported using the image classification pipeline.</p>
@@ -794,49 +914,90 @@ pre_trained=True, unfreeze_weights=False)
 </div>
 <h4 id="parameters_1">Parameters</h4>
 <div class="admonition quote">
-<p><strong>is_dicom:</strong> <em>(boolean)</em>  True for DICOM images, False for regular images.(default=True)</p>
+<p><strong>data_directory:</strong></p>
+<ul>
+<li><em>(str)</em> target data directory. <strong><em>(Required)</em></strong></li>
+</ul>
+<p><strong>is_dicom:</strong></p>
+<ul>
+<li><em>(boolean)</em>  True for DICOM images, False for regular images.(default=True)</li>
+</ul>
 <p><strong>label_from_table:</strong> [boolean] True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)</p>
-<p><strong>is_csv:</strong> <em>(boolean)</em>  True for csv, False for pandas dataframe.</p>
-<p><strong>table_source:</strong> <em>(str or pandas dataframe object)</em> source for labelling data. (default=None)
-            This is path to csv file or name of pandas dataframe if pandas to be used.</p>
-<p><strong>path_col:</strong> <em>(str)</em> name of the column with the image path. (default='IMAGE_PATH')</p>
-<p><strong>label_col:</strong> <em>(str)</em> name of the label/class column. (default='IMAGE_LABEL')</p>
-<p><strong>mode:</strong> <em>(str)</em> output mode for DICOM images only.
-          .Options:
+<p><strong>is_csv:</strong></p>
+<ul>
+<li><em>(boolean)</em>  True for csv, False for pandas dataframe.</li>
+</ul>
+<p><strong>table_source:</strong></p>
+<ul>
+<li><em>(str or pandas dataframe object)</em> source for labelling data. (default=None). This is path to csv file or name of pandas dataframe if pandas to be used.</li>
+</ul>
+<p><strong>path_col:</strong></p>
+<ul>
+<li><em>(str)</em> name of the column with the image path. (default='IMAGE_PATH')</li>
+</ul>
+<p><strong>label_col:</strong></p>
+<ul>
+<li><em>(str)</em> name of the label/class column. (default='IMAGE_LABEL')</li>
+</ul>
+<p><strong>shuffle</strong>
+- <em>(boolean)</em> shuffles items in dataset.(default=True)</p>
+<p><strong>mode:</strong></p>
+<ul>
+<li><em>(str)</em> output mode for DICOM images only.</li>
+<li>Options:
                RAW= Raw pixels,
                HU= Image converted to Hounsefield Units,
                WIN= 'window' image windowed to certain W and L,
-               MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together]. (default='RAW')</p>
-<p><strong>wl:</strong> <em>(list)</em> list of lists of combinations of window level and widths to be used with WIN and MWIN.
+               MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together]. (default='RAW')</li>
+</ul>
+<p><strong>wl:</strong></p>
+<ul>
+<li><em>(list)</em> list of lists of combinations of window level and widths to be used with WIN and MWIN.
           In the form of : [[Level,Width], [Level,Width],...].
-          Only 3 combinations are allowed for MWIN (for now).(default=None)</p>
-<p><strong>transformations:</strong> <em>(pytorch transforms)</em> pytroch transforms to be performed on the dataset. (default=Convert to tensor)</p>
-<p><strong>custom_resize:</strong> <em>(int)</em> by default, a radtorch pipeline will resize the input images into the default training model input image
+          Only 3 combinations are allowed for MWIN (for now).(default=None)</li>
+</ul>
+<p><strong>transformations:</strong></p>
+<ul>
+<li><em>(pytorch transforms)</em> pytroch transforms to be performed on the dataset. (default=Convert to tensor)</li>
+</ul>
+<p><strong>custom_resize:</strong></p>
+<ul>
+<li><em>(int)</em> by default, a radtorch pipeline will resize the input images into the default training model input image
 size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
-model_arch: [str] PyTorch neural network architecture (default='vgg16')</p>
-<p><strong>pre_trained:</strong> <em>(boolean)</em>  Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)</p>
-<p><strong>unfreeze_weights:</strong> <em>(boolean)</em>  if True, all model weights, not just final layer, will be retrained. (default=False)</p>
-<p><strong>device:</strong> <em>(str)</em> device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.</p>
+model_arch: [str] PyTorch neural network architecture (default='vgg16')</li>
+</ul>
+<p><strong>pre_trained:</strong></p>
+<ul>
+<li><em>(boolean)</em>  Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)</li>
+</ul>
+<p><strong>unfreeze_weights:</strong></p>
+<ul>
+<li><em>(boolean)</em>  if True, all model weights, not just final layer, will be retrained. (default=False)</li>
+</ul>
+<p><strong>device:</strong></p>
+<ul>
+<li><em>(str)</em> device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.</li>
+</ul>
 </div>
 <h4 id="methods_1">Methods</h4>
 <div class="admonition quote">
-<p><strong>info</strong></p>
+<p><strong>.info()</strong></p>
 <ul>
 <li>Displays Feature Extraction Pipeline Parameters.</li>
 </ul>
-<p><strong>dataset_info</strong></p>
+<p><strong>.dataset_info()</strong></p>
 <ul>
 <li>Display Dataset Information.</li>
 </ul>
-<p><strong>sample</strong></p>
+<p><strong>.sample()</strong></p>
 <ul>
 <li>Display sample of the training dataset.</li>
 </ul>
-<p><strong>num_features</strong></p>
+<p><strong>.num_features()</strong></p>
 <ul>
 <li>Displays number of features to be extracted.</li>
 </ul>
-<p><strong>run</strong></p>
+<p><strong>.run()</strong></p>
 <ul>
 <li>
 <p>Extracts features from dataset.</p>
@@ -848,7 +1009,7 @@ model_arch: [str] PyTorch neural network architecture (default='vgg16')</p>
 </ul>
 </li>
 </ul>
-<p><strong>export_features</strong></p>
+<p><strong>.export_features()</strong></p>
 <ul>
 <li>
 <p>Exports the features to csv.</p>
@@ -860,19 +1021,19 @@ model_arch: [str] PyTorch neural network architecture (default='vgg16')</p>
 </ul>
 </li>
 </ul>
-<p><strong>set_trained_model</strong></p>
+<p><strong>.export()</strong></p>
 <ul>
 <li>
-<p>Loads a previously trained model into pipeline</p>
+<p>Exports the whole image classification pipeline for future use</p>
 </li>
 <li>
 <p>Arguments:</p>
 <ul>
-<li>model_path: <em>(str)</em> path to target model</li>
-<li>mode: <em>(str)</em> either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.</li>
+<li>target_path: <em>(str)</em> target location for export.</li>
 </ul>
 </li>
 </ul>
+<p><strong>.set_trained_model()</strong> : <strong><em>Temporarily Disabled for future update.</em></strong></p>
 </div>
 <h4 id="examples_1">Examples</h4>
 <div class="admonition quote">
@@ -923,6 +1084,19 @@ Class Number of instances
 </pre></div>
 <div class="highlight"><pre><span></span>[&#39;f_0&#39;,&#39;f_1&#39;,&#39;f_2&#39;,&#39;f_3&#39;,&#39;f_4&#39;, &#39;f_5&#39;, ... ]
 </pre></div></p>
+</div>
+<h2 id="load_pipeline">load_pipeline</h2>
+<pre><code>  pipeline.load_pipeline(target_path)
+</code></pre>
+<div class="admonition quote">
+<p>Loads a previously saved pipeline for future use.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>target_path: <em>(str)</em> target path of the target pipeline.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code>my_classifier = load_pipeline('/path/to/pipeline.dump')
+</code></pre>
 </div>
                 
                   

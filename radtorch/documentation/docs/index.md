@@ -46,9 +46,13 @@ The above 3 lines of code will run an image classifier using VGG16 with pre-trai
 
 
 
-<p><img alt="" height="35" src="/img/colab.png" align="right" hspace="0" vspace="0px"></p> RADTorch playground for testing is provided on [Google Colab](https://colab.research.google.com/drive/1goZoM0I9FRvq95W_G3pCxUVTpM5OIu2x).
+<p><img alt="" height="35" src="img/colab.png" align="right" hspace="0" vspace="0px"></p> RADTorch playground for testing is provided on [Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
 
+
+## Feature Requests
+
+Feature requests are more than welcomed on our discussion board [HERE](https://github.com/radtorch/radtorch/issues/4#issue-573590182)
 
 
 ## Contributing
- <p><img alt="" height="15px" src="/img/github.png" align="right" hspace="10px" vspace="0px"></p>  RadTorch is on [GitHub](https://github.com/radtorch/radtorch). Bug reports and pull requests are welcome.
+ <p><img alt="" height="15px" src="img/github.png" align="right" hspace="10px" vspace="0px"></p>  RadTorch is on [GitHub](https://github.com/radtorch/radtorch). Bug reports and pull requests are welcome.

@@ -20,21 +20,9 @@ from pathlib import Path
 
 
 def window_dicom(filepath, level, width):
-    """
-      Converts DICOM image to numpy array with certain width and level.
-
-      **Arguments**
-
-      - filepath: _(str)_ input DICOM image path.
-
-      - level: _(int)_ target window level.
-
-      - width: _(int)_ target window width.
-
-      **Output**
-
-      - Output: _(array)_ windowed image as numpy array.
-    """
+    '''
+    .. include:: ./documentation/docs/dicomutils.md##window_dicom
+    '''
 
     ds = pydicom.read_file(filepath)
     pixels = ds.pixel_array
@@ -50,32 +38,9 @@ def window_dicom(filepath, level, width):
 
 def dicom_to_narray(filepath, mode='RAW', wl=None):
     """
-      Converts DICOM image to a numpy array with target changes as below.
-
-      **Arguments**
-
-      - filepath: _(str)_ input DICOM image path.
-
-      - mode: _(str)_ output mode. (default='RAW')
-          - Options:
-
-              - 'RAW' = Raw pixels,
-
-              - 'HU' = Image converted to Hounsefield Units.
-
-              - 'WIN' = 'window' image windowed to certain W and L,
-
-              - 'MWIN' = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].
-
-      - wl: _(list)_ list of lists of combinations of window level and widths to be used with WIN and MWIN. (default=None)
-          In the form of : [[Level,Width], [Level,Width],...].
-          Only 3 combinations are allowed for MWIN (for now).
-
-      **Output**
-
-      - Output: _(array)_ array of same shape as input DICOM image with 1 channel. In case of MWIN mode, output has same size by 3 channels.
+    .. include:: ./documentation/docs/dicomutils.md##dicom_to_narray
     """
-
+    
     if mode == 'RAW':
         ds = pydicom.read_file(filepath)
         img = ds.pixel_array
@@ -109,19 +74,12 @@ def dicom_to_narray(filepath, mode='RAW', wl=None):
             return mwin_img
 
 def dicom_to_pil(filepath):
-  '''
-      Converts DICOM image to PIL image object.
 
-      **Arguments**
+    """
+    .. include:: ./documentation/docs/dicomutils.md##dicom_to_pil
+    """
 
-      - filepath: _(str)_ input DICOM image path.
-
-
-      **Output**
-
-      - Output: _(pillow image object)_.
-  '''
-  ds = pydicom.read_file(filepath)
-  pixels = ds.pixel_array
-  pil_image = Image.fromarray(np.rollaxis(pixels, 0,1))
-  return pil_image
+    ds = pydicom.read_file(filepath)
+    pixels = ds.pixel_array
+    pil_image = Image.fromarray(np.rollaxis(pixels, 0,1))
+    return pil_image

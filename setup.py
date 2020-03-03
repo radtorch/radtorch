@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
       name='radtorch',
-      version='0.1.0',
+      version='0.1.1',
       description='RADTorch, The Radiology Machine Learning Tool Kit',
       url='https://radtorch.github.io/radtorch/',
       author='Mohamed Elbanan, MD',
