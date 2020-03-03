@@ -26,15 +26,9 @@ from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_me
 
 def load_pipeline(target_path):
     '''
-    Loads a previously saved pipeline for future use.
-
-    **Arguments**
-
-    - target_path: _(str)_ target path of the target pipeline.
-
-    **Example**
-    my_classifier = load_pipeline('/path/to/pipeline.dump')
+    .. include:: ./documentation/docs/pipeline.md##load_pipeline
     '''
+
     infile = open(target_path,'rb')
     pipeline = pickle.load(infile)
     infile.close()
@@ -42,146 +36,11 @@ def load_pipeline(target_path):
     return pipeline
 
 
-
-
 class Image_Classification():
-    """
 
-    The Image Classification pipeline simplifies the process of binary and multi-class image classification into a single line of code.
-    Under the hood, the following happens:
-
-    1. The pipeline creates a master dataset from the provided data directory and source of labels/classes either from [folder structre](https://pytorch.org/docs/stable/torchvision/datasets.html#datasetfolder) or pandas/csv table.
-
-    2. Master dataset is subdivided into train, valid and test subsets using the percentages defined by user.
-
-    3. The following transformations are applied on the dataset images:
-        1. Resize to the default image size allowed by the model architecture.
-        2. Window/Level adjustment according to values specified by user.
-        3. Single channel grayscale DICOM images are converted into 3 channel grayscale images to fit into the model.
-
-    3. Selected Model architecture, optimizer, and loss function are downloaded/created.
-
-    4. Model is trained.
-
-    5. Training metrics are saved as training progresses and can be displayed after training is done.
-
-    6. Confusion Matrix and ROC (for binary classification) can be displayed as well (by default, the test subset is used to calculate the confusion matrix and the ROC)
-
-    7. Trained model can be exported to outside file for future use.
-
-
-####Parameters
-
-!!! quote ""
-
-    **data_directory:**
-
-    - _(str)_ target data directory. ***(Required)***
-
-    **is_dicom:**
-
-    - _(boolean)_ True for DICOM images, False for regular images.(default=True)
-
-    **label_from_table:**
-
-    - _(boolean)_ True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)
-
-    **is_csv:**
-
-    - _(boolean)_ True for csv, False for pandas dataframe.
-
-    **table_source:** _(str or pandas dataframe object)_ source for labelling data.This is path to csv file or name of pandas dataframe if pandas to be used. (default=None).
-
-    **path_col:**
-
-    - _(str)_  name of the column with the image path. (default='IMAGE_PATH')
-
-    **label_col:**
-
-    - _(str)_  name of the label/class column. (default='IMAGE_LABEL')
-
-    **mode:** _(str)_  output mode for DICOM images only where RAW= Raw pixels, HU= Image converted to Hounsefield Units, WIN= 'window' image windowed to certain W and L, MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together. (default='RAW')
-
-    **wl:** _(list)_ list of lists of combinations of window level and widths to be used with WIN and MWIN.In the form of : [[Level,Width], [Level,Width],...].  Only 3 combinations are allowed for MWIN (for now). (default=None)
-
-    **transformations:** _(pytorch transforms list)_ pytroch transforms to be performed on the dataset. (default=Convert to tensor)
-
-    **custom_resize:** _(int)_ by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
-
-    **batch_size:** _(int)_ batch size of the dataset (default=16)
-
-    **test_percent:** _(float)_ percentage of dataset to use for testing. Float value between 0 and 1.0. (default=0.2)
-
-    **valid_percent:** _(float)_ percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
-
-    **model_arch:** _(str)_ PyTorch neural network architecture (default='vgg16')
-
-    **pre_trained:** _(boolean)_ Load the pretrained weights of the neural network. (default=True)
-
-    **unfreeze_weights:** _(boolean)_ if True, all model weights will be retrained. (default=True)
-
-    **train_epochs:** _(int)_ Number of training epochs. (default=20)
-
-    **learning_rate:** _(str)_ training learning rate. (default = 0.0001)
-
-    **loss_function:** _(str)_ training loss function. (default='CrossEntropyLoss')
-
-    **optimizer:** _(str)_ Optimizer to be used during training. (default='Adam')
-
-    **device:** _(str)_ device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
-
-
-####Methods
-
-!!! quote ""
-
-
-    **info**
-
-    - Display Parameters of the Image Classification Pipeline.
-
-    **dataset_info**
-
-    - Display Dataset Information.
-
-    **sample**
-
-    - Display sample of the training dataset.
-
-    - Arguments:
-        - num_of_images_per_row: _(int)_ number of images per column. (default=5)
-        - fig_size: _(tuple)_ figure size. (default=(10,10))
-        - show_labels: _(boolean)_ show the image label idx. (default=True)
-
-    **train**
-
-    - Train the image classification pipeline.
-
-    - Arguments:
-        - verbose: _(boolean)_ Show display progress after each epoch. (default=True)
-
-    **metrics**
-
-    - Display the training metrics.
-
-    **export_model**
-
-    - Export the trained model into a target file.
-
-    - Arguments:
-        - output_path: _(str)_ path to output file. For example 'foler/folder/model.pth'
-
-
-    **set_trained_model**
-
-    - Loads a previously trained model into pipeline
-
-    - Arguments:
-        - model_path: _(str)_ path to target model
-        - mode: _(str)_ either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.
-
-
-    """
+    '''
+    .. include:: ./documentation/docs/pipeline.md##Image_Classification
+    '''
 
     def __init__(
     self,
@@ -466,7 +325,7 @@ class Image_Classification():
 
     def roc(self, target_data_set='default', auc=True, figure_size=(7,7)):
         '''
-        Display Confusion Matrix
+        Display ROC and AUC
         Inputs:
             target_data_set: _(pytorch dataset object)_ dataset used for predictions to create the ROC. By default, the image classification pipeline uses the test dataset created to calculate the ROC.
             auc: _(boolen)_ Display area under curve. (default=True)
@@ -503,120 +362,10 @@ class Image_Classification():
 
 
 class Feature_Extraction():
-    """
 
-    The feature extraction pipeline utilizes a pre-trained model to extract a set of features that can be used in another machine learning algorithms e.g. XGBoost. The trained model by default can one of the supported model architectures trained with default weights trained on the ImageNet dataset or a model that has been trained and exported using the image classification pipeline.
-
-    The output is a pandas dataframe that has feature columns, label column and file path column.
-
-    Under the hood, the pipeline removes the last FC layer of the pretrained models to output the features.
-
-    The number of extracted features depends on the model architecture selected:
-
-    <div align='center'>
-
-    | Model Architecture | Default Input Image Size | Output Features |
-    |--------------------|:------------------------:|:---------------:|
-    | VGG16              |         244 x 244        |       4096      |
-    | VGG19              |         244 x 244        |       4096      |
-    | resnet50           |         244 x 244        |       2048      |
-    | resnet152          |         244 x 244        |       2048      |
-    | resnet101          |         244 x 244        |       2048      |
-    | wide_resnet50_2    |         244 x 244        |       2048      |
-    | wide_resnet101_2   |         244 x 244        |       2048      |
-    | inception_v3       |         299 x 299        |       2048      |
-
-    </div>
-
-
-####Parameters
-
-!!! quote ""
-
-    **is_dicom:** _(boolean)_  True for DICOM images, False for regular images.(default=True)
-
-    **label_from_table:** [boolean] True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)
-
-    **is_csv:** _(boolean)_  True for csv, False for pandas dataframe.
-
-    **table_source:** _(str or pandas dataframe object)_ source for labelling data. (default=None)
-                This is path to csv file or name of pandas dataframe if pandas to be used.
-
-    **path_col:** _(str)_ name of the column with the image path. (default='IMAGE_PATH')
-
-    **label_col:** _(str)_ name of the label/class column. (default='IMAGE_LABEL')
-
-    **mode:** _(str)_ output mode for DICOM images only.
-              .Options:
-                   RAW= Raw pixels,
-                   HU= Image converted to Hounsefield Units,
-                   WIN= 'window' image windowed to certain W and L,
-                   MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together]. (default='RAW')
-
-    **wl:** _(list)_ list of lists of combinations of window level and widths to be used with WIN and MWIN.
-              In the form of : [[Level,Width], [Level,Width],...].
-              Only 3 combinations are allowed for MWIN (for now).(default=None)
-
-    **transformations:** _(pytorch transforms)_ pytroch transforms to be performed on the dataset. (default=Convert to tensor)
-
-    **batch_size:** _(int)_ batch size of the dataset (default=16)
-
-    **custom_resize:** _(int)_ by default, a radtorch pipeline will resize the input images into the default training model input image
-    size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
-    model_arch: [str] PyTorch neural network architecture (default='vgg16')
-
-    **pre_trained:** _(boolean)_  Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
-
-    **unfreeze_weights:** _(boolean)_  if True, all model weights, not just final layer, will be retrained. (default=False)
-
-    **device:** _(str)_ device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
-
-
-####Methods
-
-!!! quote ""
-
-
-    **info**
-
-    - Displays Feature Extraction Pipeline Parameters.
-
-    **dataset_info**
-
-    - Display Dataset Information.
-
-    **sample**
-
-    - Display sample of the training dataset.
-
-    **num_features**
-
-    - Displays number of features to be extracted.
-
-    **run**
-
-    - Extracts features from dataset.
-
-    - Arguments:
-        - verbose: _(boolean)_ Show the feature table. (default=True)
-
-    **export_features**
-
-    - Exports the features to csv.
-
-    - Arguments:
-        - csv_path: _(str)_ Path to output csv file.
-
-
-    **set_trained_model**
-
-    - Loads a previously trained model into pipeline
-
-    - Arguments:
-        - model_path: _(str)_ path to target model
-        - mode: _(str)_ either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.
-
-    """
+    '''
+    .. include:: ./documentation/docs/pipeline.md##Feature_Extraction
+    '''
 
     def __init__(
     self,
@@ -636,6 +385,7 @@ class Feature_Extraction():
     pre_trained=True,
     batch_size=16,
     unfreeze_weights=False,
+    shuffle=True)
     ):
         self.data_directory = data_directory
         self.label_from_table = label_from_table
@@ -645,6 +395,7 @@ class Feature_Extraction():
         self.mode = mode
         self.wl = wl
         self.batch_size=batch_size
+        self.shuffle=shuffle
 
         if custom_resize=='default':
             self.input_resize = model_dict[model_arch]['input_size']
@@ -699,7 +450,7 @@ class Feature_Extraction():
         self.data_loader = torch.utils.data.DataLoader(
                                                     self.data_set,
                                                     batch_size=self.batch_size,
-                                                    shuffle=False)
+                                                    shuffle=self.shuffle)
 
 
         self.num_output_classes = len(self.data_set.classes)
@@ -777,25 +528,27 @@ class Feature_Extraction():
 
         self.feature_names = ['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
 
-        feature_df = pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['img_path','label_idx', 'features'])
+        feature_table = pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['img_path','label_idx', 'features'])
 
-        feature_df[self.feature_names] = pd.DataFrame(feature_df.features.values.tolist(), index= feature_df.index)
+        feature_table[self.feature_names] = pd.DataFrame(feature_table.features.values.tolist(), index= feature_table.index)
 
-        feature_df = feature_df.drop(['features'], axis=1)
+        feature_table = feature_table.drop(['features'], axis=1)
 
         print (' Features extracted successfully.')
 
-        self.feature_df = feature_df
+        self.feature_table = feature_table
 
         if verbose:
-            self.feature_df
+            self.feature_table
 
-        return self.feature_df
+        self.features = self.feature_table[self.feature_names]
+
+        return self.feature_table
 
 
     def export_features(self,csv_path):
         try:
-            self.feature_df.to_csv(csv_path, index=False)
+            self.feature_table.to_csv(csv_path, index=False)
             print ('Features exported to CSV successfully.')
         except:
             print ('Error! No features found. Please check again or re-run the extracion pipeline.')

@@ -137,15 +137,15 @@
 
     **Methods**
 
-    - **dataset.class_to_idx()**
+    - **.class_to_idx()**
 
           Returns dictionary of dataset classes and corresponding class id.
 
-    - **dataset.classes()**
+    - **.classes()**
 
           Returns list of dataset classes
 
-    - **dataset.info()**
+    - **.info()**
 
           Returns detailed information of the dataset.
 
@@ -192,15 +192,15 @@
     **Methods**
 
 
-    - **dataset.class_to_idx()**
+    - **.class_to_idx()**
 
           Returns dictionary of dataset classes and corresponding class id.
 
-    - **dataset.classes()**
+    - **.classes()**
 
           Returns list of dataset classes
 
-    - **dataset.info()**
+    - **.info()**
 
           Returns detailed information of the dataset.
 

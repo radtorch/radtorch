@@ -4,6 +4,8 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 </p>
 
 
+
+
 ## Image_Classification
 
       pipeline.Image_Classification(data_directory, transformations='default',
@@ -58,7 +60,9 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
     - _(boolean)_ True for csv, False for pandas dataframe.
 
-    **table_source:** _(str or pandas dataframe object)_ source for labelling data.This is path to csv file or name of pandas dataframe if pandas to be used. (default=None).
+    **table_source:**
+
+    - _(str or pandas dataframe object)_ source for labelling data.This is path to csv file or name of pandas dataframe if pandas to be used. (default=None).
 
     **path_col:**
 
@@ -68,35 +72,65 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
     - _(str)_  name of the label/class column. (default='IMAGE_LABEL')
 
-    **mode:** _(str)_  output mode for DICOM images only where RAW= Raw pixels, HU= Image converted to Hounsefield Units, WIN= 'window' image windowed to certain W and L, MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together. (default='RAW')
+    **mode:**
 
-    **wl:** _(list)_ list of lists of combinations of window level and widths to be used with WIN and MWIN.In the form of : [[Level,Width], [Level,Width],...].  Only 3 combinations are allowed for MWIN (for now). (default=None)
+    - _(str)_  output mode for DICOM images only where RAW= Raw pixels, HU= Image converted to Hounsefield Units, WIN= 'window' image windowed to certain W and L, MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together. (default='RAW')
 
-    **transformations:** _(pytorch transforms list)_ pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+    **wl:**
 
-    **custom_resize:** _(int)_ by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
+    - _(list)_ list of lists of combinations of window level and widths to be used with WIN and MWIN.In the form of : [[Level,Width], [Level,Width],...].  
+    - Only 3 combinations are allowed for MWIN (for now). (default=None)
 
-    **batch_size:** _(int)_ batch size of the dataset (default=16)
+    **transformations:**
 
-    **test_percent:** _(float)_ percentage of dataset to use for testing. Float value between 0 and 1.0. (default=0.2)
+    - _(pytorch transforms list)_ pytroch transforms to be performed on the dataset. (default=Convert to tensor)
 
-    **valid_percent:** _(float)_ percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
+    **custom_resize:**
+    - _(int)_ by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
 
-    **model_arch:** _(str)_ PyTorch neural network architecture (default='vgg16')
+    **batch_size:**
 
-    **pre_trained:** _(boolean)_ Load the pretrained weights of the neural network. (default=True)
+    - _(int)_ batch size of the dataset (default=16)
 
-    **unfreeze_weights:** _(boolean)_ if True, all model weights will be retrained. (default=True)
+    **test_percent:**
 
-    **train_epochs:** _(int)_ Number of training epochs. (default=20)
+    - _(float)_ percentage of dataset to use for testing. Float value between 0 and 1.0. (default=0.2)
 
-    **learning_rate:** _(str)_ training learning rate. (default = 0.0001)
+    **valid_percent:**
 
-    **loss_function:** _(str)_ training loss function. (default='CrossEntropyLoss')
+    - _(float)_ percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
 
-    **optimizer:** _(str)_ Optimizer to be used during training. (default='Adam')
+    **model_arch:**
 
-    **device:** _(str)_ device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
+    - _(str)_ PyTorch neural network architecture (default='vgg16')
+
+    **pre_trained:**
+
+    - _(boolean)_ Load the pretrained weights of the neural network. (default=True)
+
+    **unfreeze_weights:**
+
+    - _(boolean)_ if True, all model weights will be retrained. (default=True)
+
+    **train_epochs:**
+
+    - _(int)_ Number of training epochs. (default=20)
+
+    **learning_rate:**
+
+    - _(str)_ training learning rate. (default = 0.0001)
+
+    **loss_function:**
+
+    - _(str)_ training loss function. (default='CrossEntropyLoss')
+
+    **optimizer:**
+
+    - _(str)_ Optimizer to be used during training. (default='Adam')
+
+    **device:**
+
+    - _(str)_ device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
 
 
 ####Methods
@@ -104,15 +138,15 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 !!! quote ""
 
 
-    **info**
+    **.info()**
 
     - Display Parameters of the Image Classification Pipeline.
 
-    **dataset_info**
+    **.dataset_info()**
 
     - Display Dataset Information.
 
-    **sample**
+    **.sample()**
 
     - Display sample of the training dataset.
 
@@ -121,26 +155,33 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
         - fig_size: _(tuple)_ figure size. (default=(10,10))
         - show_labels: _(boolean)_ show the image label idx. (default=True)
 
-    **train**
+    **.train()**
 
     - Train the image classification pipeline.
 
     - Arguments:
         - verbose: _(boolean)_ Show display progress after each epoch. (default=True)
 
-    **metrics**
+    **.metrics()**
 
     - Display the training metrics.
 
-    **export_model**
+    **.export_model()**
 
     - Export the trained model into a target file.
 
     - Arguments:
         - output_path: _(str)_ path to output file. For example 'foler/folder/model.pth'
 
+    **.export()**
 
-    **set_trained_model**
+    - Exports the whole image classification pipeline for future use
+
+    - Arguments:
+        - target_path: _(str)_ target location for export.
+
+
+    **.set_trained_model()**
 
     - Loads a previously trained model into pipeline
 
@@ -148,6 +189,37 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
         - model_path: _(str)_ path to target model
         - mode: _(str)_ either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.
 
+
+    **.inference()**
+
+    - Performs inference using the trained model on a target image.
+
+    - Arguments:
+        - test_img_path: _(str)_ path to target image.
+        - transformations: _(pytorch transforms list)_ list of transforms to be performed on the target image. (default='default' which is the same transforms using for training the pipeline)
+
+    - Outputs:
+        - Output: _(tuple)_ tuple of prediction (class idx , accuracy percentage).
+
+
+    **.roc()**
+
+    - Display ROC and AUC.
+
+    - Arguments:
+        - target_data_set: _(pytorch dataset object)_ dataset used for predictions to create the ROC. By default, the image classification pipeline uses the test dataset created to calculate the ROC. If no test dataset was created in the pipeline (e.g. test_percent=0), then an external test dataset is required. (default=default')
+        - auc: _(boolen)_ Display area under curve. (default=True)
+        - figure_size: _(tuple)_ figure size. (default=(7,7))
+
+
+    **.confusion_matrix()**
+
+    - Display Confusion Matrix
+
+    - Arguments:
+        - target_data_set: _(pytorch dataset object)_ dataset used for predictions to create the confusion matrix. By default, the image classification - pipeline uses the test dataset created to calculate the matrix.
+        - target_classes: _(list)_ list of classes. By default, the image classification pipeline uses the training classes.
+        - figure_size: _(tuple)_ figure size. (default=(7,7))
 
 ####Examples
 
@@ -281,41 +353,68 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
 !!! quote ""
 
-    **is_dicom:** _(boolean)_  True for DICOM images, False for regular images.(default=True)
+    **data_directory:**
+
+    - _(str)_ target data directory. ***(Required)***
+
+    **is_dicom:**
+
+    - _(boolean)_  True for DICOM images, False for regular images.(default=True)
 
     **label_from_table:** [boolean] True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)
 
-    **is_csv:** _(boolean)_  True for csv, False for pandas dataframe.
+    **is_csv:**
 
-    **table_source:** _(str or pandas dataframe object)_ source for labelling data. (default=None)
-                This is path to csv file or name of pandas dataframe if pandas to be used.
+    - _(boolean)_  True for csv, False for pandas dataframe.
 
-    **path_col:** _(str)_ name of the column with the image path. (default='IMAGE_PATH')
+    **table_source:**
 
-    **label_col:** _(str)_ name of the label/class column. (default='IMAGE_LABEL')
+    - _(str or pandas dataframe object)_ source for labelling data. (default=None). This is path to csv file or name of pandas dataframe if pandas to be used.
 
-    **mode:** _(str)_ output mode for DICOM images only.
-              .Options:
+    **path_col:**
+
+    - _(str)_ name of the column with the image path. (default='IMAGE_PATH')
+
+    **label_col:**
+
+    - _(str)_ name of the label/class column. (default='IMAGE_LABEL')
+
+    **mode:**
+
+    - _(str)_ output mode for DICOM images only.
+    - Options:
                    RAW= Raw pixels,
                    HU= Image converted to Hounsefield Units,
                    WIN= 'window' image windowed to certain W and L,
                    MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together]. (default='RAW')
 
-    **wl:** _(list)_ list of lists of combinations of window level and widths to be used with WIN and MWIN.
+    **wl:**
+
+    - _(list)_ list of lists of combinations of window level and widths to be used with WIN and MWIN.
               In the form of : [[Level,Width], [Level,Width],...].
               Only 3 combinations are allowed for MWIN (for now).(default=None)
 
-    **transformations:** _(pytorch transforms)_ pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+    **transformations:**
 
-    **custom_resize:** _(int)_ by default, a radtorch pipeline will resize the input images into the default training model input image
+    - _(pytorch transforms)_ pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+
+    **custom_resize:**
+
+    - _(int)_ by default, a radtorch pipeline will resize the input images into the default training model input image
     size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
     model_arch: [str] PyTorch neural network architecture (default='vgg16')
 
-    **pre_trained:** _(boolean)_  Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
+    **pre_trained:**
 
-    **unfreeze_weights:** _(boolean)_  if True, all model weights, not just final layer, will be retrained. (default=False)
+    - _(boolean)_  Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
 
-    **device:** _(str)_ device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
+    **unfreeze_weights:**
+
+    - _(boolean)_  if True, all model weights, not just final layer, will be retrained. (default=False)
+
+    **device:**
+
+    - _(str)_ device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
 
 
 ####Methods
@@ -323,30 +422,30 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 !!! quote ""
 
 
-    **info**
+    **.info()**
 
     - Displays Feature Extraction Pipeline Parameters.
 
-    **dataset_info**
+    **.dataset_info()**
 
     - Display Dataset Information.
 
-    **sample**
+    **.sample()**
 
     - Display sample of the training dataset.
 
-    **num_features**
+    **.num_features()**
 
     - Displays number of features to be extracted.
 
-    **run**
+    **.run()**
 
     - Extracts features from dataset.
 
     - Arguments:
         - verbose: _(boolean)_ Show the feature table. (default=True)
 
-    **export_features**
+    **.export_features()**
 
     - Exports the features to csv.
 
@@ -434,3 +533,19 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     ```
     ['f_0','f_1','f_2','f_3','f_4', 'f_5', ... ]
     ```
+
+
+
+## load_pipeline
+      pipeline.load_pipeline(target_path)
+
+!!! quote ""
+    Loads a previously saved pipeline for future use.
+
+    **Arguments**
+
+    - target_path: _(str)_ target path of the target pipeline.
+
+    **Example**
+
+        my_classifier = load_pipeline('/path/to/pipeline.dump')
