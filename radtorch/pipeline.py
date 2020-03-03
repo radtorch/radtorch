@@ -385,7 +385,7 @@ class Feature_Extraction():
     pre_trained=True,
     batch_size=16,
     unfreeze_weights=False,
-    shuffle=True)
+    shuffle=True
     ):
         self.data_directory = data_directory
         self.label_from_table = label_from_table
