@@ -2,28 +2,19 @@
 
 <small>
 
+
+#### *v.0.1.1 _ 3-3-2020*
+- [x] Feature Extraction Pipeline now uses batches not single images into GPU = improved speed.
+- [x] Inference done during confusion matrix and roc creation for Image Classification Pipeline now uses batches not single images into GPU = improved speed.
+- [x] Fix error with Image Classification Pipeline when using external test dataset.
+- [x] Allow omitting creating an internal test subset for the Image Classification Pipeline by setting test_percent = 0.
+- [x] Change line color in roc to default blue.
+- [x] Allow export and import of pipeline structures.
+- [x] Add shuffle parameter to Feature Extraction Pipeline.
+- [x] updated documentation.
+- [x] restructure exported csv file with feature extraction pipeline.
+
 #### *v.0.1.0 _ 3-1-2020*
-
-**Features**
-
-| **Module**      | **Function**         | **Module**     | **Functions**          |
-|-----------------|----------------------|----------------|------------------------|
-| **PipeLine**    |                      | **Dicomutils** |                        |
-|                 | Image_Classification |                | window_dicom           |
-|                 | Feature_Extraction   |                | dicom_to_narray        |
-| **Datautils**   |                      |                | dicom_to_pil           |
-|                 | list_of_files        | **Visutils**   |                        |
-|                 | path_to_class        |                | show_dataloader_sample |
-|                 | root_to_class        |                | show_dataset_info      |
-|                 | class_to_idx         |                | show_metrics           |
-|                 | dataset_from_folder  |                | show_dicom_sample      |
-|                 | dataset_from_table   |                | show_roc               |
-| **Modelsutils** |                      |                | show_nn_roc            |
-|                 | create_model         |                | show_confusion_matrix  |
-|                 | create_loss_function |                | plot_confusion_matrix  |
-|                 | create_optimizer     |                |                        |
-|                 | train_model          |                |                        |
-|                 | model_inference      |                |                        |
-|                 | supported            |                |                        |
+- [x] First BETA release.
 
 </small>

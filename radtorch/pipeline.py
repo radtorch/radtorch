@@ -555,17 +555,27 @@ class Feature_Extraction():
             pass
 
 
-
-    def set_trained_model(self, model_path, mode):
+    def export(self, target_path):
         '''
-        Loads a previously trained model into pipeline
-        Inputs:
-            model_path: [str] Path to target model
-            mode: [str] either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.
-        '''
-        if mode == 'train':
-            self.model = torch.load(model_path)
-        elif mode == 'infer':
-            self.model = torch.load(model_path)
+        Exports the whole image classification pipelie for future use
 
-        print ('Model Loaded Successfully.')
+        ***Arguments**
+        - target_path: _(str)_ target location for export.
+        '''
+        outfile = open(target_path,'wb')
+        pickle.dump(self,outfile)
+        outfile.close()
+
+    # def set_trained_model(self, model_path, mode):
+    #     '''
+    #     Loads a previously trained model into pipeline
+    #     Inputs:
+    #         model_path: [str] Path to target model
+    #         mode: [str] either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.
+    #     '''
+    #     if mode == 'train':
+    #         self.model = torch.load(model_path)
+    #     elif mode == 'infer':
+    #         self.model = torch.load(model_path)
+    #
+    #     print ('Model Loaded Successfully.')

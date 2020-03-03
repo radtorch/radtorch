@@ -456,14 +456,16 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     - Arguments:
         - csv_path: _(str)_ Path to output csv file.
 
+    **.export()**
 
-    **set_trained_model**
-
-    - Loads a previously trained model into pipeline
+    - Exports the whole image classification pipeline for future use
 
     - Arguments:
-        - model_path: _(str)_ path to target model
-        - mode: _(str)_ either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.
+        - target_path: _(str)_ target location for export.
+
+
+    **.set_trained_model()** : ***Temporarily Disabled for future update.***
+
 
 ####Examples
 
