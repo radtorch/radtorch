@@ -48,7 +48,7 @@ supported_models = [x for x in model_dict.keys()]
 
 supported_image_classification_losses = ['NLLLoss', 'CrossEntropyLoss']
 
-supported_multi
+supported_multi_label_image_classification_losses = []
 
 supported_optimizer = ['Adam', 'ASGD', 'RMSprop', 'SGD']
 
