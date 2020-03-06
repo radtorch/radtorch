@@ -79,6 +79,7 @@ class dataset_from_table(Dataset):
                 input_source=None,
                 img_path_column='IMAGE_PATH',
                 img_label_column='IMAGE_LABEL',
+                multi_label = False,
                 mode='RAW',
                 wl=None, trans=transforms.Compose([transforms.ToTensor()])):
 
@@ -91,6 +92,7 @@ class dataset_from_table(Dataset):
         self.mode = mode
         self.wl = wl
         self.trans = trans
+        self.multi_label = multi_label
 
 
         if self.is_csv:
@@ -106,8 +108,15 @@ class dataset_from_table(Dataset):
         else:
             self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x[-3:] in IMG_EXTENSIONS]
         # self.classes = self.input_data.self.image_label_col.unique()
-        self.classes = np.unique(list(self.input_data[self.image_label_col]))
-        self.class_to_idx = class_to_idx(self.classes)
+
+        if self.multi_label == True:
+            class_column = self.input_data[self.image_label_col].to_numpy()
+            self.classes = (np.unique(class_column)).tolist()
+            self.class_to_idx = class_to_idx(self.classes)
+        else:
+            self.classes = np.unique(list(self.input_data[self.image_label_col]))
+            self.class_to_idx = class_to_idx(self.classes)
+
 
         if len(self.dataset_files)==0:
             print ('Error! No data files found in directory:', self.data_directory)
@@ -126,8 +135,17 @@ class dataset_from_table(Dataset):
 
         image = self.trans(image)
 
-        label = self.input_data.iloc[index][self.image_label_col]
-        label_idx = [v for k, v in self.class_to_idx.items() if k == label][0]
+        if self.multi_label == True:
+            label_idx = [0] * len(self.classes)
+            label = self.input_data.iloc[index][self.image_label_col]
+            positive_labels = [self.classes.index(x) for x in label]
+            for i in positive_labels:
+                label_idx[i] == 1
+
+        else:
+            label = self.input_data.iloc[index][self.image_label_col]
+            label_idx = [v for k, v in self.class_to_idx.items() if k == label][0]
+
 
         return image, label_idx, image_path
 

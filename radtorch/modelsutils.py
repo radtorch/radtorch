@@ -44,12 +44,11 @@ loss_dict = {
             'MultiLabelSoftMarginLoss':torch.nn.MultiLabelSoftMarginLoss(),
             }
 
-
-
-
 supported_models = [x for x in model_dict.keys()]
 
 supported_image_classification_losses = ['NLLLoss', 'CrossEntropyLoss']
+
+supported_multi
 
 supported_optimizer = ['Adam', 'ASGD', 'RMSprop', 'SGD']
 
@@ -314,7 +313,18 @@ def model_inference(model, input_image_path, inference_transformations=transform
 
 
 
-
+# def efficientNetNetwork(modelarchitecture, output_classes, pretrained=True):
+#
+#     if pretrained:
+#         trainingNetwork = EfficientNet.from_pretrained('efficientnet-b'+str(modelarchitecture))
+#     else:
+#         trainingNetwork = EfficientNet.from_name('efficientnet-b'+str(modelarchitecture))
+#
+#     in_features = trainingNetwork._fc.in_features
+#     trainingNetwork._fc =  nn.Linear(in_features=in_features, out_features=output_classes, bias=True)
+#
+#                                       )
+#     return trainingNetwork
 
 
 

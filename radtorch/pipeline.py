@@ -1,5 +1,4 @@
 
-
 import torch, torchvision, datetime, time, pickle, pydicom, os
 import torchvision.models as models
 import torch.nn as nn
@@ -55,6 +54,7 @@ class Image_Classification():
     table_source=None,
     path_col = 'IMAGE_PATH',
     label_col = 'IMAGE_LABEL' ,
+    multi_label = False ,
     mode='RAW',
     wl=None,
     batch_size=16,
@@ -103,6 +103,7 @@ class Image_Classification():
         self.loss_function = loss_function
         self.path_col = path_col
         self.label_col = label_col
+        self.multi_label = multi_label
 
         if device == 'default':
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -119,6 +120,7 @@ class Image_Classification():
                         input_source=self.table_source,
                         img_path_column=self.path_col,
                         img_label_column=self.label_col,
+                        multi_label = self.multi_label,
                         mode=self.mode,
                         wl=self.wl,
                         trans=self.transformations)
@@ -127,16 +129,20 @@ class Image_Classification():
                 pass
 
         else:
-            try:
-                self.data_set = dataset_from_folder(
-                            data_directory=self.data_directory,
-                            is_dicom=self.is_dicom,
-                            mode=self.mode,
-                            wl=self.wl,
-                            trans=self.transformations)
-            except:
-                raise TypeError('Dataset could not be created.')
+            if self.multi_label == True:
+                raise TypeError('Dataset could not be created. Multilabel dataset creation is not yet allowed from folders. Please use dataset_from_table instead.')
                 pass
+            else:
+                try:
+                    self.data_set = dataset_from_folder(
+                                data_directory=self.data_directory,
+                                is_dicom=self.is_dicom,
+                                mode=self.mode,
+                                wl=self.wl,
+                                trans=self.transformations)
+                except:
+                    raise TypeError('Dataset could not be created.')
+                    pass
 
 
         valid_size = int(self.valid_percent*len(self.data_set))
@@ -502,17 +508,6 @@ class Feature_Extraction():
         self.features = []
         self.labels_idx = []
         self.img_path_list = []
-
-
-        # with torch.no_grad():
-        #     self.model.eval()
-        #     for input, label, img_path in tqdm(self.data_set, total=len(self.data_set)):
-        #         input = input.to(self.device)
-        #         input = input.unsqueeze(0)
-        #         output = (self.model(input))[0].tolist()
-        #         self.features.append(output)
-        #         self.labels_idx.append(label)
-        #         self.img_path_list.append(img_path)
 
         self.model = self.model.to(self.device)
 
