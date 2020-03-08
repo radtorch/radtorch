@@ -369,11 +369,11 @@ class Image_Classification():
             target_data_set = target_data_set
             target_data_set.trans = self.transformations
 
-        output = show_nn_misclassified(model=self.trained_model, target_data_set=target_data_set, is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
+        self.misclassified = show_nn_misclassified(model=self.trained_model, target_data_set=target_data_set, is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
 
         if show_table:
-            output
-        return output
+            self.misclassified
+        return self.misclassified
 
     def export(self, target_path):
         '''
