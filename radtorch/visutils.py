@@ -77,10 +77,12 @@ def show_dataset_info(dataset):
     # num_instances = list(label_stats.values())+[len(dataset)]
 
     class_names = list(dataset.class_to_idx.keys())+['Total Instances']
+    print (class_names)
     class_idx = list(dataset.class_to_idx.values())+['']
+    print (class_idx)
     num_instances = []
     for i in list(dataset.class_to_idx.keys()):
-      num_instances.append(len(input_data[image_label_col==i]))
+      num_instances.append(input_data[image_label_col].value_counts()[[i]].sum())
     num_instances =num_instances+[len(dataset)]
     output = pd.DataFrame(list(zip(class_names, class_idx, num_instances)), columns=['Classes', 'Class Idx', 'Number of Instances'])
 
