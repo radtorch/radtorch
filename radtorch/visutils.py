@@ -69,21 +69,21 @@ def show_dataset_info(dataset):
     label_list = [i[1] for i in dataset]
     label_stats = getDuplicatesWithCount(label_list)
 
-    print ('Number of intances =', len(dataset))
-    print ('Number of classes = ', len(dataset.classes))
-    print ('Class IDX = ', dataset.class_to_idx)
-    print ('')
-    print ('Class Frequency: ')
-    print ('{0:2s} {1:3s}'.format('Class', 'Number of instances'))
-    for key, value in label_stats.items():
-        print('{0:2d} {1:3s} {2:4d}'.format(key, '',value))
+    # print ('Number of intances =', len(dataset))
+    # print ('Number of classes = ', len(dataset.classes))
+    # print ('Class IDX = ', dataset.class_to_idx)
+    # print ('')
+    # print ('Class Frequency: ')
+    # print ('{0:2s} {1:3s}'.format('Class', 'Number of instances'))
+    # for key, value in label_stats.items():
+    #     print('{0:2d} {1:3s} {2:4d}'.format(key, '',value))
 
     class_names = list(dataset.class_to_idx.keys())+['Total Instances']
-    print (class_names)
-    class_idx = list(dataset.class_to_idx.values()+[''])
-    print (class_idx)
+    # print (class_names)
+    class_idx = list(dataset.class_to_idx.values())+[''])
+    # print (class_idx)
     num_instances = list(label_stats.values())+[len(dataset)]
-    print (num_instances)
+    # print (num_instances)
     output = pd.DataFrame(list(zip(class_names, class_idx, num_instances)), columns=['Classes', 'Class Idx', 'Number of Instances'])
     return output
 

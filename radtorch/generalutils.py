@@ -24,7 +24,7 @@ def getDuplicatesWithCount(listOfElems):
     """
 
     dictOfElems = dict()
-    for elem in listOfElems:
+    for elem in tqdm(listOfElems, total=len(listOfElems)):
         if elem in dictOfElems:
             dictOfElems[elem] += 1
         else:
