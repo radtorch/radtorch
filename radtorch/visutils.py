@@ -337,7 +337,6 @@ def show_confusion_matrix(model, target_data_set, target_classes, device, figure
     '''
     true_labels = []
     pred_labels = []
-    misses_all = {}
 
     model.to(device)
     target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
@@ -351,8 +350,6 @@ def show_confusion_matrix(model, target_data_set, target_classes, device, figure
             out = model(imgs)
             ps = out
             pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
-            misses = misclassified(labels, pr, paths.list())
-            misses_all = dict(misses_all.items() + misses.items())
             pred_labels = pred_labels+pr
 
 
