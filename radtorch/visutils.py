@@ -22,7 +22,7 @@ from radtorch.generalutils import getDuplicatesWithCount
 
 
 
-def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=True):
+def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=False):
   """
     Displays sample of certain dataloader with corresponding class idx
 
@@ -34,7 +34,7 @@ def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10)
 
     - figsize: _(tuple)_ size of displayed figure. (default = (10,10))
 
-    - show_labels: _(boolen)_ display class idx of the sample displayed .(default=True)
+    - show_labels: _(boolen)_ display class idx of the sample displayed .(default=False)
 
     **Output**
 
@@ -77,6 +77,12 @@ def show_dataset_info(dataset):
     print ('{0:2s} {1:3s}'.format('Class', 'Number of instances'))
     for key, value in label_stats.items():
         print('{0:2d} {1:3s} {2:4d}'.format(key, '',value))
+
+    class_names = (dataset.class_to_idx).keys()+['Total Instances']
+    class_idx = (dataset.class_to_idx).values()
+    num_instances = label_stats.values()+[len(dataset)]
+    output = pd.DataFrame([class_names, class_idx, num_instances], columns=['Classes', 'Class Idx', 'Number of Instances'])
+    return output
 
 def show_metrics(source, fig_size=(15,5)):
     """
