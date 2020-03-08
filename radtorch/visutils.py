@@ -49,6 +49,7 @@ def show_misclassified(misclassified_dictionary, is_dicom = True, num_of_images 
             img = Image.open(sample[i]).convert('RGB')
         fig.add_subplot(row, col, i)
         plt.imshow(img)
+        plt.axis('off')
     plt.show()
 
 def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=False):
