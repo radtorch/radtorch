@@ -221,7 +221,7 @@ class Image_Classification():
         info.append({'Classes':'Valid Dataset Size', 'Number of Instances':len(self.valid_data_set)})
 
         if self.test_percent > 0:
-        info.append({'Classes':'Test Dataset Size', 'Number of Instances':len(self.test_data_set)})
+            info.append({'Classes':'Test Dataset Size', 'Number of Instances':len(self.test_data_set)})
 
         return info
 
