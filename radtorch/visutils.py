@@ -41,7 +41,7 @@ def show_misclassified(misclassified_dictionary, is_dicom = True, num_of_images 
     fig=plt.figure(figsize=(figure_size))
     col = int(math.sqrt(num_of_images))
     row = col
-    sample = random.sample(list(misclassified_dictionary), num_of_images)
+    sample = random.sample(list(misclassified_dictionary), num_of_images+1)
     for i in range(1, col*row +1):
         if is_dicom:
             img = dicom_to_narray(sample[i])
