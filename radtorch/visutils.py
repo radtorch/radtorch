@@ -393,4 +393,4 @@ def show_nn_misclassified(model, target_data_set, num_of_images, device, is_dico
     show_misclassified(misclassified_dictionary=misses_all, is_dicom = is_dicom, num_of_images = 16, figure_size = figure_size)
     output = pd.DataFrame(misses_all.values())
 
-    return misses_all
+    return output
