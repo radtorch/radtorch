@@ -379,7 +379,7 @@ def show_misclassified(model, target_data_set, num_of_images, device, figure_siz
             out = model(imgs)
             ps = out
             pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
-            misses = misclassified(labels, pr, paths.tolist())
+            misses = misclassified(labels, pr, list(paths))
             misses_all = dict(misses_all.items() + misses.items())
             pred_labels = pred_labels+pr
 
