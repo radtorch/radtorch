@@ -30,7 +30,7 @@ def misclassified(true_labels_list, predicted_labels_list, img_path_list):
 
     for i in range (len(true_labels_list)):
         if true_labels_list[i] != predicted_labels_list[i]:
-            misclassified[img_path_list[i]] = {'image_path': img_path_list[i], 'true_label': i, 'predicted_label': j}
+            misclassified[img_path_list[i]] = {'image_path': img_path_list[i], 'true_label': true_labels_list[i], 'predicted_label': predicted_labels_list[i]}
 
     # for i, j in list(zip(true_labels_list,predicted_labels_list )):
     #     if i != j:
