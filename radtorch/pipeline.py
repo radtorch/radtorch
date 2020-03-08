@@ -257,11 +257,11 @@ class Image_Classification():
             raise TypeError('Could not train image classification pipeline. Please check rpovided parameters.')
             pass
 
-    def metrics(self):
+    def metrics(self, fig_size=(15,5)):
         '''
         Display the training metrics.
         '''
-        show_metrics(self.train_metrics)
+        show_metrics(self.train_metrics, fig_size=fig_size)
 
     def export_model(self,output_path):
         '''
@@ -355,7 +355,8 @@ class Image_Classification():
         if num_classes <= 2:
             show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, figure_size=figure_size, device=self.device)
         else:
-            raise TypeError('ROC cannot support more than 2 classes at the current time. This will be fixed in an upcoming update.')
+            raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
+            pass
 
     def export(self, target_path):
         '''
