@@ -38,6 +38,7 @@ def misclassified(true_labels_list, predicted_labels_list, img_path_list):
     return misclassified
 
 def show_missclassified(misclassified_dictionary, num_of_images = 16, figure_size = (5,5)):
+    fig=plt.figure(figsize=(figure_size))
     col = int(math.sqrt(num_of_images))
     row = col
     sample = random.sample(list(misclassified_dictionary), num_of_images)
@@ -48,7 +49,6 @@ def show_missclassified(misclassified_dictionary, num_of_images = 16, figure_siz
             img = Image.open(sample[i]).convert('RGB')
         fig.add_subplot(row, col, i)
         plt.imshow(img)
-    plt.figure(figsize=figure_size)
     plt.show()
 
 def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=False):
