@@ -66,7 +66,7 @@ def show_dataset_info(dataset):
         - Class frequency breakdown.
     """
 
-    label_list = [i[1] for i in tqdm(dataset, total=len(dataset)]
+    label_list = [i[1] for i in tqdm(dataset, total=len(dataset))]
     label_stats = getDuplicatesWithCount(label_list)
 
     # print ('Number of intances =', len(dataset))
