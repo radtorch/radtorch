@@ -216,14 +216,14 @@ class Image_Classification():
         '''
         Display Dataset Information.
         '''
+        info = show_dataset_info(self.data_set)
+        info.append({'Classes':'Train Dataset Size', 'Number of Instances':len(self.train_data_set})
+        info.append({'Classes':'Valid Dataset Size', 'Number of Instances':len(self.valid_data_set})
 
-        print (show_dataset_info(self.data_set))
-        print ('Train Dataset Size ', len(self.train_data_set))
-        print ('Valid Dataset Size ', len(self.valid_data_set))
         if self.test_percent > 0:
-            print ('Test Dataset Size ', len(self.test_data_set))
+        info.append({'Classes':'Test Dataset Size', 'Number of Instances':len(self.test_data_set})
 
-        return (show_dataset_info(self.data_set))
+        return info
 
     def sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):
         '''
