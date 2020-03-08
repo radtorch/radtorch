@@ -106,7 +106,7 @@ class dataset_from_table(Dataset):
         if self.is_dicom:
             self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x[-3:] == 'dcm'] # Returns only DICOM files from folder
         else:
-            self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x[-3:] in IMG_EXTENSIONS]
+            self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x.lower().endswith(IMG_EXTENSIONS)]
         # self.classes = self.input_data.self.image_label_col.unique()
 
         if self.multi_label == True:
