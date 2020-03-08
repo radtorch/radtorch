@@ -80,7 +80,7 @@ def show_dataset_info(dataset):
 
     class_names = list(dataset.class_to_idx.keys())+['Total Instances']
     # print (class_names)
-    class_idx = list(dataset.class_to_idx.values())+[''])
+    class_idx = list(dataset.class_to_idx.values())+['']
     # print (class_idx)
     num_instances = list(label_stats.values())+[len(dataset)]
     # print (num_instances)
