@@ -358,6 +358,23 @@ class Image_Classification():
             raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
             pass
 
+    def missclassified(self, target_data_set='default', num_of_images=16, figure_size=(7,7), show_table=False):
+        if target_data_set=='default':
+            if self.test_data_set == 0:
+                raise TypeError('Error. Test Percent set to Zero in image classification pipeline. Please change or set another target testing dataset.')
+                pass
+            else:
+                target_data_set = self.test_data_set
+        else:
+            target_data_set = target_data_set
+            target_data_set.trans = self.transformations
+
+        output = show_misclassified(model=self.trained_model, target_data_set=target_data_set, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
+
+        if show_table:
+            return output
+
+
     def export(self, target_path):
         '''
         Exports the whole image classification pipelie for future use

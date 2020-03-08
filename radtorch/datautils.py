@@ -24,6 +24,18 @@ from radtorch.visutils import show_dataset_info
 IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
 
 
+def set_random_seed(seed):
+    """
+    .. include:: ./documentation/docs/datautils.md##set_random_seed
+    """
+    try:
+        torch.manual_seed(seed)
+        np.random.seed(seed)
+        print ('random seed set successfully')
+    except:
+        raise TypeError('Error. Could not set Random Seed. Please check again.')
+        pass
+
 def list_of_files(root):
     """
     .. include:: ./documentation/docs/datautils.md##list_of_files

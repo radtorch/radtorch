@@ -1,4 +1,4 @@
-import torch, torchvision, datetime, time, pickle, pydicom, os
+import torch, torchvision, datetime, time, pickle, pydicom, os, math, random
 import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim
@@ -18,9 +18,33 @@ from pathlib import Path
 
 
 from radtorch.generalutils import getDuplicatesWithCount
+from radtorch.dicomutils import dicom_to_narray
 
 
 
+
+
+
+def misclassified(true_labels_list, predicted_labels_list, img_path_list):
+    misclassified = {}
+    for i, j in list(zip(true_labels_list,predicted_labels_list )):
+        if i != j:
+            misclassified[img_path_list.index(i)] = {'image_path': img_path_list.index(i), 'true_label': i, 'predicted_label': j}
+    return missclassified
+
+def show_missclassified(misclassified_dictionary, num_of_images = 16, figure_size = (5,5)):
+    col = int(math.sqrt(num_of_images))
+    row = col
+    sample = random.sample(misclassified_dictionary.items(), num_of_images)
+    for i in range(1, col*row +1):
+        if sample.keys()[i][-3:] == 'dcm':
+            img = dicom_to_narray(sample.keys()[i])
+        else:
+            img = Image.open(sample.keys()[i]).convert('RGB')
+        fig.add_subplot(row, col, i)
+        plt.imshow(img)
+    plt.figure(figsize=figure_size)
+    plt.show()
 
 def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=False):
   """
@@ -313,20 +337,22 @@ def show_confusion_matrix(model, target_data_set, target_classes, device, figure
     '''
     true_labels = []
     pred_labels = []
+    misses_all = {}
+
     model.to(device)
     target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
 
-    for i, (imgs, labels, path) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
+    for i, (imgs, labels, paths) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
         imgs = imgs.to(device)
         labels = labels.to(device)
         true_labels = true_labels+labels.tolist()
-        # print (imgs.shape)
         with torch.no_grad():
             model.eval()
             out = model(imgs)
-            # ps = torch.exp(out)
             ps = out
             pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
+            misses = misclassified(labels, pr, paths.list())
+            misses_all = dict(misses_all.items() + misses.items())
             pred_labels = pred_labels+pr
 
 
@@ -338,3 +364,29 @@ def show_confusion_matrix(model, target_data_set, target_classes, device, figure
                           normalize=False,
                           figure_size=figure_size
                           )
+
+def show_misclassified(model, target_data_set, num_of_images, device, figure_size=(5,5)):
+    true_labels = []
+    pred_labels = []
+    misses_all = {}
+
+    model.to(device)
+    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
+
+    for i, (imgs, labels, paths) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
+        imgs = imgs.to(device)
+        labels = labels.to(device)
+        true_labels = true_labels+labels.tolist()
+        with torch.no_grad():
+            model.eval()
+            out = model(imgs)
+            ps = out
+            pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
+            misses = misclassified(labels, pr, paths.list())
+            misses_all = dict(misses_all.items() + misses.items())
+            pred_labels = pred_labels+pr
+
+    show_missclassified(misclassified_dictionary=misses_all, num_of_images = 16, figure_size = figure_size)
+    output = pd.DataFrame(misses_all.values())
+
+    return misses_all
