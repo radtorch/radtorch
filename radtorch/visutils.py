@@ -81,7 +81,7 @@ def show_dataset_info(dataset):
     class_names = list(dataset.class_to_idx.keys())+['Total Instances']
     class_idx = list(dataset.class_to_idx.values())
     num_instances = list(label_stats.values())+[len(dataset)]
-    output = pd.DataFrame(dict(zip[class_names, class_idx, num_instances]), columns=['Classes', 'Class Idx', 'Number of Instances'])
+    output = pd.DataFrame(list(zip[class_names, class_idx, num_instances]), columns=['Classes', 'Class Idx', 'Number of Instances'])
     return output
 
 def show_metrics(source, fig_size=(15,5)):
