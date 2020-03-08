@@ -37,7 +37,7 @@ def misclassified(true_labels_list, predicted_labels_list, img_path_list):
     #         misclassified[img_path_list[true_labels_list.index(i)]] = {'image_path': img_path_list[true_labels_list.index(i)], 'true_label': i, 'predicted_label': j}
     return misclassified
 
-def show_missclassified(misclassified_dictionary, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
+def show_misclassified(misclassified_dictionary, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
     fig=plt.figure(figsize=(figure_size))
     col = int(math.sqrt(num_of_images))
     row = col
@@ -389,7 +389,7 @@ def show_nn_misclassified(model, target_data_set, num_of_images, device, is_dico
             misses_all.update(misses)
             pred_labels = pred_labels+pr
 
-    show_missclassified(misclassified_dictionary=misses_all, is_dicom = is_dicom, num_of_images = 16, figure_size = figure_size)
+    show_misclassified(misclassified_dictionary=misses_all, is_dicom = is_dicom, num_of_images = 16, figure_size = figure_size)
     output = pd.DataFrame(misses_all.values())
 
     return misses_all

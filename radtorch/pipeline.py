@@ -19,7 +19,7 @@ from pathlib import Path
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table
-from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc, show_nn_roc, show_misclassified
+from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified
 
 
 
@@ -358,7 +358,7 @@ class Image_Classification():
             raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
             pass
 
-    def missclassified(self, target_data_set='default', num_of_images=16, figure_size=(7,7), show_table=False):
+    def misclassified(self, target_data_set='default', num_of_images=16, figure_size=(7,7), show_table=False):
         if target_data_set=='default':
             if self.test_data_set == 0:
                 raise TypeError('Error. Test Percent set to Zero in image classification pipeline. Please change or set another target testing dataset.')
