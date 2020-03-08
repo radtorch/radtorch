@@ -367,7 +367,7 @@ def show_confusion_matrix(model, target_data_set, target_classes, device, figure
                           figure_size=figure_size
                           )
 
-def show_misclassified(model, target_data_set, num_of_images, device, figure_size=(5,5)):
+def show_nn_misclassified(model, target_data_set, is_dicom = True, num_of_images, device, figure_size=(5,5)):
     true_labels = []
     pred_labels = []
     misses_all = {}
@@ -389,7 +389,7 @@ def show_misclassified(model, target_data_set, num_of_images, device, figure_siz
             misses_all.update(misses)
             pred_labels = pred_labels+pr
 
-    show_missclassified(misclassified_dictionary=misses_all, num_of_images = 16, figure_size = figure_size)
+    show_missclassified(misclassified_dictionary=misses_all, is_dicom = is_dicom, num_of_images = 16, figure_size = figure_size)
     output = pd.DataFrame(misses_all.values())
 
     return misses_all
