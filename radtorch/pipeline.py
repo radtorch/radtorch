@@ -372,7 +372,8 @@ class Image_Classification():
         output = show_nn_misclassified(model=self.trained_model, target_data_set=target_data_set, is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
 
         if show_table:
-            return output
+            output
+        return output
 
     def export(self, target_path):
         '''
