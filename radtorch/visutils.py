@@ -27,9 +27,14 @@ from radtorch.dicomutils import dicom_to_narray
 
 def misclassified(true_labels_list, predicted_labels_list, img_path_list):
     misclassified = {}
-    for i, j in list(zip(true_labels_list,predicted_labels_list )):
-        if i != j:
-            misclassified[img_path_list[true_labels_list.index(i)]] = {'image_path': img_path_list[true_labels_list.index(i)], 'true_label': i, 'predicted_label': j}
+
+    for i in range (len(true_labels_list)):
+        if true_labels_list[i] != predicted_labels_list[i]:
+            misclassified[img_path_list[i]] = {'image_path': img_path_list[i], 'true_label': i, 'predicted_label': j}
+
+    # for i, j in list(zip(true_labels_list,predicted_labels_list )):
+    #     if i != j:
+    #         misclassified[img_path_list[true_labels_list.index(i)]] = {'image_path': img_path_list[true_labels_list.index(i)], 'true_label': i, 'predicted_label': j}
     return missclassified
 
 def show_missclassified(misclassified_dictionary, num_of_images = 16, figure_size = (5,5)):
@@ -379,7 +384,7 @@ def show_misclassified(model, target_data_set, num_of_images, device, figure_siz
             out = model(imgs)
             ps = out
             pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
-            misses = misclassified(labels.tolist(), pr, list(paths))
+            misses = misclassified(true_labels_list=labels.tolist(), predicted_labels_list=pr, img_path_list=list(paths))
             misses_all = dict(misses_all.items() + misses.items())
             pred_labels = pred_labels+pr
 
