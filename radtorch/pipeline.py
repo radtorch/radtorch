@@ -225,7 +225,7 @@ class Image_Classification():
 
         return info
 
-    def sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):
+    def sample(self, num_of_images_per_row=4, fig_size=(10,10), show_labels=False):
         '''
         Display sample of the training dataset.
         Inputs:
