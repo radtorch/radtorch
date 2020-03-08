@@ -29,7 +29,7 @@ def misclassified(true_labels_list, predicted_labels_list, img_path_list):
     misclassified = {}
     for i, j in list(zip(true_labels_list,predicted_labels_list )):
         if i != j:
-            misclassified[img_path_list.index(i)] = {'image_path': img_path_list.index(i), 'true_label': i, 'predicted_label': j}
+            misclassified[img_path_list[true_labels_list.index(i)]] = {'image_path': img_path_list[true_labels_list.index(i)], 'true_label': i, 'predicted_label': j}
     return missclassified
 
 def show_missclassified(misclassified_dictionary, num_of_images = 16, figure_size = (5,5)):
