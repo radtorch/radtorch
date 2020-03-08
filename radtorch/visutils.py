@@ -66,16 +66,24 @@ def show_dataset_info(dataset):
         - Class frequency breakdown.
     """
 
-    label_list = [i[1] for i in tqdm(dataset, total=len(dataset))]
-    label_stats = getDuplicatesWithCount(label_list)
+    input_data = dataset.input_data
+    image_path_col = dataset.image_path_col
+    image_label_col = dataset.image_label_col
+
+
+
+    # label_list = [i[1] for i in tqdm(dataset, total=len(dataset))]
+    # label_stats = getDuplicatesWithCount(label_list)
+    # num_instances = list(label_stats.values())+[len(dataset)]
 
     class_names = list(dataset.class_to_idx.keys())+['Total Instances']
-    # print (class_names)
     class_idx = list(dataset.class_to_idx.values())+['']
-    # print (class_idx)
-    num_instances = list(label_stats.values())+[len(dataset)]
-    # print (num_instances)
+    num_instances = []
+    for i in list(class_to_idx.values()):
+      num = len(input_data[image_label_col==i])
+    num_instances =num_instances+[len(dataset)]
     output = pd.DataFrame(list(zip(class_names, class_idx, num_instances)), columns=['Classes', 'Class Idx', 'Number of Instances'])
+
     return output
 
 def show_metrics(source, fig_size=(15,5)):

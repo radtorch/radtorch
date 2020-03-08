@@ -121,7 +121,7 @@ class dataset_from_table(Dataset):
         if len(self.dataset_files)==0:
             print ('Error! No data files found in directory:', self.data_directory)
 
-        if len(self.classes)==0:
+        if len(self.classes)    ==0:
             print ('Error! No classes extracted from directory:', self.data_directory)
 
     def __getitem__(self, index):
@@ -180,6 +180,11 @@ class dataset_from_folder(Dataset):
         self.trans = trans
         self.classes, self.class_to_idx = root_to_class(self.data_directory)
         self.all_files = list_of_files(self.data_directory)
+        self.all_classes = [path_to_class(i) for i in self.all_files]
+        self.image_path_col = 'IMAGE_PATH'
+        self.image_label_col = 'IMAGE_LABEL'
+        self.input_data = pd.DataFrame(list(zip(self.all_files, self.all_classes)), columns=[self.image_path_col, self.image_label_col])
+
 
         if self.is_dicom:
             self.dataset_files = [x for x in self.all_files if x[-3:] == 'dcm'] # Returns only DICOM files from folder
