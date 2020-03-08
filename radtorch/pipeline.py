@@ -374,7 +374,6 @@ class Image_Classification():
         if show_table:
             return output
 
-
     def export(self, target_path):
         '''
         Exports the whole image classification pipelie for future use
