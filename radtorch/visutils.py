@@ -37,13 +37,13 @@ def misclassified(true_labels_list, predicted_labels_list, img_path_list):
     #         misclassified[img_path_list[true_labels_list.index(i)]] = {'image_path': img_path_list[true_labels_list.index(i)], 'true_label': i, 'predicted_label': j}
     return misclassified
 
-def show_missclassified(misclassified_dictionary, num_of_images = 16, figure_size = (5,5)):
+def show_missclassified(misclassified_dictionary, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
     fig=plt.figure(figsize=(figure_size))
     col = int(math.sqrt(num_of_images))
     row = col
     sample = random.sample(list(misclassified_dictionary), num_of_images)
     for i in range(1, col*row +1):
-        if sample[i][-3:] == 'dcm':
+        if is_dicom:
             img = dicom_to_narray(sample[i])
         else:
             img = Image.open(sample[i]).convert('RGB')

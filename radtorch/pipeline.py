@@ -369,7 +369,7 @@ class Image_Classification():
             target_data_set = target_data_set
             target_data_set.trans = self.transformations
 
-        output = show_misclassified(model=self.trained_model, target_data_set=target_data_set, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
+        output = show_misclassified(model=self.trained_model, target_data_set=target_data_set, is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
 
         if show_table:
             return output
