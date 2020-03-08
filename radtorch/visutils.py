@@ -78,8 +78,8 @@ def show_dataset_info(dataset):
     for key, value in label_stats.items():
         print('{0:2d} {1:3s} {2:4d}'.format(key, '',value))
 
-    class_names = (dataset.class_to_idx).keys()+['Total Instances']
-    class_idx = (dataset.class_to_idx).values()
+    class_names = list(dataset.class_to_idx.keys())+['Total Instances']
+    class_idx = list(dataset.class_to_idx.values())
     num_instances = label_stats.values()+[len(dataset)]
     output = pd.DataFrame([class_names, class_idx, num_instances], columns=['Classes', 'Class Idx', 'Number of Instances'])
     return output
