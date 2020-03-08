@@ -367,7 +367,7 @@ def show_confusion_matrix(model, target_data_set, target_classes, device, figure
                           figure_size=figure_size
                           )
 
-def show_nn_misclassified(model, target_data_set, is_dicom = True, num_of_images, device, figure_size=(5,5)):
+def show_nn_misclassified(model, target_data_set, num_of_images, device, is_dicom = True, figure_size=(5,5)):
     true_labels = []
     pred_labels = []
     misses_all = {}
