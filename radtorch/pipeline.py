@@ -217,11 +217,11 @@ class Image_Classification():
         Display Dataset Information.
         '''
         info = show_dataset_info(self.data_set)
-        info.append({'Classes':'Train Dataset Size', 'Number of Instances':len(self.train_data_set)})
-        info.append({'Classes':'Valid Dataset Size', 'Number of Instances':len(self.valid_data_set)})
+        info.append({'Classes':'Train Dataset Size', 'Number of Instances':len(self.train_data_set)}, ignore_index=True )
+        info.append({'Classes':'Valid Dataset Size', 'Number of Instances':len(self.valid_data_set)}, ignore_index=True )
 
         if self.test_percent > 0:
-            info.append({'Classes':'Test Dataset Size', 'Number of Instances':len(self.test_data_set)})
+            info.append({'Classes':'Test Dataset Size', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
 
         return info
 
