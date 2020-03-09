@@ -19,7 +19,7 @@ from pathlib import Path
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table
-from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified
+from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified
 
 
 
@@ -329,7 +329,7 @@ class Image_Classification():
         else:
             target_classes = target_classes
 
-        show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
+        show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
 
     def roc(self, target_data_set='default', auc=True, figure_size=(7,7)):
         '''
@@ -369,11 +369,11 @@ class Image_Classification():
             target_data_set = target_data_set
             target_data_set.trans = self.transformations
 
-        self.misclassified = show_nn_misclassified(model=self.trained_model, target_data_set=target_data_set, is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
+        self.misclassified_instances = show_nn_misclassified(model=self.trained_model, target_data_set=target_data_set, is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
 
         if show_table:
-            self.misclassified
-        return self.misclassified
+            self.misclassified_instances
+        return self.misclassified_instances
 
     def export(self, target_path):
         '''

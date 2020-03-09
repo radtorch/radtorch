@@ -251,7 +251,7 @@ def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
 
     show_roc(true_labels, pred_labels, auc=auc, figure_size=figure_size)
 
-def plot_confusion_matrix(cm,
+def show_confusion_matrix(cm,
                           target_names,
                           title='Confusion Matrix',
                           cmap=None,
@@ -319,7 +319,7 @@ def plot_confusion_matrix(cm,
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
     plt.show()
 
-def show_confusion_matrix(model, target_data_set, target_classes, device, figure_size=(8,6), cmap=None):
+def show_nn_confusion_matrix(model, target_data_set, target_classes, device, figure_size=(8,6), cmap=None):
     '''
     Displays Confusion Matrix for Image Classifier Model.
 
@@ -360,7 +360,7 @@ def show_confusion_matrix(model, target_data_set, target_classes, device, figure
 
 
     cm = metrics.confusion_matrix(true_labels, pred_labels)
-    plot_confusion_matrix(cm=cm,
+    show_confusion_matrix(cm=cm,
                           target_names=target_classes,
                           title='Confusion Matrix',
                           cmap=cmap,
