@@ -134,7 +134,7 @@ class dataset_from_table(Dataset):
                     else:
                         t.append(0)
                 self.multi_label_idx.append(t)
-            self.input_data['MULTI_LABEL_IDX'] = multi_label_idx
+            self.input_data['MULTI_LABEL_IDX'] = self.multi_label_idx
 
         else:
             self.classes = np.unique(list(self.input_data[self.image_label_col]))
