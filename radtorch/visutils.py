@@ -42,15 +42,26 @@ def show_misclassified(misclassified_dictionary, is_dicom = True, num_of_images 
     col = int(math.sqrt(num_of_images))
     row = col
     sample = random.sample(list(misclassified_dictionary), num_of_images+1)
-    for i in range(1, col*row +1):
-        if is_dicom:
-            img = dicom_to_narray(sample[i])
-        else:
-            img = Image.open(sample[i]).convert('RGB')
-        fig.add_subplot(row, col, i)
-        plt.imshow(img)
-        plt.axis('off')
-    plt.show()
+
+    if is_dicom:
+        imgs = [dicom_to_narray(i) for i in sample]
+    else:
+        imgs = [Image.open(i).convert('RGB') for i in sample]
+
+    #
+    # for i in range(1, col*row +1):
+    #     if is_dicom:
+    #         img = dicom_to_narray(sample[i])
+    #     else:
+    #         img = Image.open(sample[i]).convert('RGB')
+    #     fig.add_subplot(row, col, i)
+    #     plt.imshow(img)
+    #     plt.axis('off')
+    grid = torchvision.utils.make_grid(imgs, nrow=row)
+    plt.figure(figsize=(figure_size))
+    plt.imshow(np.transpose(grid, (1,2,0)))
+
+    # plt.show()
 
 def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=False):
   """
