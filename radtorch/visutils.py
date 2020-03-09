@@ -38,15 +38,15 @@ def misclassified(true_labels_list, predicted_labels_list, img_path_list):
     return misclassified
 
 def show_misclassified(misclassified_dictionary, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
-    fig=plt.figure(figsize=(figure_size))
-    col = int(math.sqrt(num_of_images))
-    row = col
+    # fig=plt.figure(figsize=(figure_size))
+    row = int(math.sqrt(num_of_images))
+    # row = col
     sample = random.sample(list(misclassified_dictionary), num_of_images+1)
-
+    transform=transforms.Compose([transforms.ToTensor()])
     if is_dicom:
-        imgs = [dicom_to_narray(i) for i in sample]
+        imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
     else:
-        imgs = [Image.open(i).convert('RGB') for i in sample]
+        imgs = [transform(Image.open(i).convert('RGB')) for i in sample]
 
     #
     # for i in range(1, col*row +1):
