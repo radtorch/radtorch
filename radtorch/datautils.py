@@ -115,19 +115,31 @@ class dataset_from_table(Dataset):
         else:
             self.input_data = self.input_source
 
+
         if self.is_dicom:
             self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x[-3:] == 'dcm'] # Returns only DICOM files from folder
         else:
             self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x.lower().endswith(IMG_EXTENSIONS)]
-        # self.classes = self.input_data.self.image_label_col.unique()
+
 
         if self.multi_label == True:
-            class_column = self.input_data[self.image_label_col].to_numpy()
-            self.classes = (np.unique(class_column)).tolist()
+            self.classes = list(np.unique([item for t in self.input_data[self.image_label_col].to_numpy() for item in t]))
             self.class_to_idx = class_to_idx(self.classes)
+            self.multi_label_idx = []
+            for i, row in self.input_data.iterrows():
+                t = []
+                for u in self.classes:
+                    if u in row[self.image_label_col]:
+                        t.append(1)
+                    else:
+                        t.append(0)
+                self.multi_label_idx.append(t)
+            self.input_data['MULTI_LABEL_IDX'] = multi_label_idx
+
         else:
             self.classes = np.unique(list(self.input_data[self.image_label_col]))
             self.class_to_idx = class_to_idx(self.classes)
+
 
 
         if len(self.dataset_files)==0:
@@ -135,6 +147,8 @@ class dataset_from_table(Dataset):
 
         if len(self.classes)    ==0:
             print ('Error! No classes extracted from directory:', self.data_directory)
+
+
 
     def __getitem__(self, index):
         image_path = self.input_data.iloc[index][self.image_path_col]
@@ -148,11 +162,8 @@ class dataset_from_table(Dataset):
         image = self.trans(image)
 
         if self.multi_label == True:
-            label_idx = [0] * len(self.classes)
             label = self.input_data.iloc[index][self.image_label_col]
-            positive_labels = [self.classes.index(x) for x in label]
-            for i in positive_labels:
-                label_idx[i] == 1
+            label_idx = self.input_data.iloc[index]['MULTI_LABEL_IDX']
 
         else:
             label = self.input_data.iloc[index][self.image_label_col]
