@@ -42,7 +42,7 @@ def show_misclassified(misclassified_dictionary, is_dicom = True, num_of_images 
     row = int(math.sqrt(num_of_images))
     # row = col
     sample = random.sample(list(misclassified_dictionary), num_of_images+1)
-    transform=transforms.Compose([transforms.ToTensor()])
+    transform=transforms.Compose([transforms.Resize((244, 244)),transforms.ToTensor()])
     if is_dicom:
         imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
     else:
