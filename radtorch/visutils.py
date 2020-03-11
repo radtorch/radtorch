@@ -1,4 +1,4 @@
-import torch, torchvision, datetime, time, pickle, pydicom, os, math, random
+import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools
 import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim
@@ -8,13 +8,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-
 from sklearn import metrics
 from tqdm import tqdm_notebook as tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
 from pathlib import Path
+
+from bokeh.io import output_notebook
+from math import pi
+from bokeh.io import show
+from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter
+from bokeh.plotting import figure
+from bokeh.sampledata.unemployment1948 import data
 
 
 from radtorch.generalutils import getDuplicatesWithCount
@@ -23,45 +29,26 @@ from radtorch.dicomutils import dicom_to_narray
 
 
 
-
-
 def misclassified(true_labels_list, predicted_labels_list, img_path_list):
     misclassified = {}
-
     for i in range (len(true_labels_list)):
         if true_labels_list[i] != predicted_labels_list[i]:
             misclassified[img_path_list[i]] = {'image_path': img_path_list[i], 'true_label': true_labels_list[i], 'predicted_label': predicted_labels_list[i]}
-
-    # for i, j in list(zip(true_labels_list,predicted_labels_list )):
-    #     if i != j:
-    #         misclassified[img_path_list[true_labels_list.index(i)]] = {'image_path': img_path_list[true_labels_list.index(i)], 'true_label': i, 'predicted_label': j}
     return misclassified
 
+
 def show_misclassified(misclassified_dictionary, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
-    # fig=plt.figure(figsize=(figure_size))
     row = int(math.sqrt(num_of_images))
-    # row = col
-    sample = random.sample(list(misclassified_dictionary), num_of_images+1)
+    sample = random.sample(list(misclassified_dictionary), num_of_images)
     transform=transforms.Compose([transforms.Resize((244, 244)),transforms.ToTensor()])
     if is_dicom:
         imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
     else:
         imgs = [transform(Image.open(i).convert('RGB')) for i in sample]
-
-    #
-    # for i in range(1, col*row +1):
-    #     if is_dicom:
-    #         img = dicom_to_narray(sample[i])
-    #     else:
-    #         img = Image.open(sample[i]).convert('RGB')
-    #     fig.add_subplot(row, col, i)
-    #     plt.imshow(img)
-    #     plt.axis('off')
     grid = torchvision.utils.make_grid(imgs, nrow=row)
     plt.figure(figsize=(figure_size))
     plt.imshow(np.transpose(grid, (1,2,0)))
 
-    # plt.show()
 
 def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=False):
   """
@@ -89,6 +76,7 @@ def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10)
   plt.imshow(np.transpose(grid, (1,2,0)))
   if show_labels:
       print ('labels:', labels)
+
 
 def show_dataset_info(dataset):
     """
@@ -123,6 +111,7 @@ def show_dataset_info(dataset):
 
     return output
 
+
 def show_metrics(source, fig_size=(15,5)):
     """
     Displays metrics created by the training loop.
@@ -152,6 +141,7 @@ def show_metrics(source, fig_size=(15,5)):
     ax2.legend(['Train Accuracy', 'Valid Accuracy'])
     ax2.set(xlabel='Epoch Number', ylabel='Accuracy')
     ax2.grid(True)
+
 
 def show_dicom_sample(dataloader, figsize=(30,10)):
     """
@@ -185,6 +175,7 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
         plt.imshow(i[0][0], cmap='gray');
         plt.title(l[0]);
 
+
 def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC Curve'):
     """
     Displays ROC curve and AUC using true and predicted label lists.
@@ -217,6 +208,7 @@ def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC
         plt.xlabel('FPR (1-specficity)\nAUC={:0.4f}'.format(metrics.roc_auc_score(true_labels, predictions)))
         # print ('AUC =',metrics.roc_auc_score(true_labels, predictions))
         return metrics.roc_auc_score(true_labels, predictions)
+
 
 def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
     """
@@ -262,38 +254,8 @@ def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
 
     show_roc(true_labels, pred_labels, auc=auc, figure_size=figure_size)
 
-def show_confusion_matrix(cm,
-                          target_names,
-                          title='Confusion Matrix',
-                          cmap=None,
-                          normalize=False,
-                          figure_size=(8,6)):
-    """
-    Given a sklearn confusion matrix (cm), make a nice plot. Code adapted from : https://www.kaggle.com/grfiv4/plot-a-confusion-matrix.
 
-    **Arguments**
-
-    - cm: _(numpy array)_ confusion matrix from sklearn.metrics.confusion_matrix.
-
-    - target_names: _(list)_ list of class names.
-
-    - title: _(str)_ title displayed on top of the output figure. (default='Confusion Matrix')
-
-    - cmap: _(str)_ The gradient of the values displayed from matplotlib.pyplot.cm . See http://matplotlib.org/examples/color/colormaps_reference.html. (default=None which is plt.get_cmap('jet') or plt.cm.Blues)
-
-    - normalize: _(boolean)_  If False, plot the raw numbers. If True, plot the proportions. (default=False)
-
-    - figure_size: _(tuple)_ size of the displayed figure. (default=8,6)
-
-    **Output**
-
-    -  Output: _(figure)_
-
-    """
-    import matplotlib.pyplot as plt
-    import numpy as np
-    import itertools
-
+def show_confusion_matrix(cm,target_names,title='Confusion Matrix',cmap=None,normalize=False,figure_size=(8,6)):
     accuracy = np.trace(cm) / float(np.sum(cm))
     misclass = 1 - accuracy
 
@@ -329,6 +291,7 @@ def show_confusion_matrix(cm,
     plt.ylabel('True label')
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
     plt.show()
+
 
 def show_nn_confusion_matrix(model, target_data_set, target_classes, device, figure_size=(8,6), cmap=None):
     '''
@@ -379,6 +342,7 @@ def show_nn_confusion_matrix(model, target_data_set, target_classes, device, fig
                           figure_size=figure_size
                           )
 
+
 def show_nn_misclassified(model, target_data_set, num_of_images, device, is_dicom = True, figure_size=(5,5)):
     true_labels = []
     pred_labels = []
@@ -405,3 +369,57 @@ def show_nn_misclassified(model, target_data_set, num_of_images, device, is_dico
     output = pd.DataFrame(misses_all.values())
 
     return output
+
+
+def plot_features(feature_table, num_features, num_images,image_col='img_path'):
+    '''
+    .. include:: ./documentation/docs/visutils.md##plot_features
+    '''
+
+    output_notebook()
+
+    f = (feature_table[:num_images]).copy()
+    f = f[[image_col]+xt.feature_names[:num_features]]
+    f[image_col] = f[image_col].astype(str)
+
+    i = f[image_col].tolist()
+    i = [os.path.basename(str(x)) for x in i]
+    f[image_col] = i
+
+    f = f.set_index(image_col)
+
+    f.columns.name = 'features'
+    images = list(f.index)
+    features = list(f.columns)
+
+    df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
+    colors = ['#E0E0E0', '#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#FF9300']
+    mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
+    TOOLS = "hover,save,box_zoom,reset,wheel_zoom"
+
+    p = figure(title=("Extracted Imaging Features"),
+            x_range=features, y_range=images,
+            x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
+            tools=TOOLS, toolbar_location='below',
+            tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
+
+    p.grid.grid_line_color = None
+    p.axis.axis_line_color = None
+    p.axis.major_tick_line_color = None
+    p.axis.major_label_text_font_size = "4pt"
+    p.axis.major_label_standoff = 0
+    p.xaxis.major_label_orientation = pi / 3
+
+    p.rect(x="features", y="img_path", width=1, height=1,
+        source=df,
+        fill_color={'field': 'value', 'transform': mapper},
+        line_color=None)
+
+    color_bar = ColorBar(color_mapper=mapper, major_label_text_font_size="8pt",
+                      ticker=BasicTicker(desired_num_ticks=len(colors)),
+                      #  formatter=PrintfTickFormatter(format="%d%%"),
+                      label_standoff=6, border_line_color=None, location=(0, 0))
+
+    p.add_layout(color_bar, 'right')
+
+    show(p)      # show the p

@@ -506,7 +506,7 @@ class Feature_Extraction():
         '''
         Displays Dataset Information.
         '''
-        print (show_dataset_info(self.data_set))
+        return (show_dataset_info(self.data_set))
 
 
     def sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):

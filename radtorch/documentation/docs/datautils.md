@@ -1,6 +1,25 @@
 # Data Module <small> radtorch.datautils </small>
 
 
+
+
+## set_random_seed
+
+
+    datautils.set_random_seed(seed)
+
+
+!!! quote ""
+
+    Sets the PyTorch and Numpy randoom seed for consistensy.
+
+      **Arguments**
+
+      - seed: _(int)_ target random seed.
+
+
+
+
 ## list_of_files
 
 
