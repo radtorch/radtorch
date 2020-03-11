@@ -19,7 +19,7 @@ from pathlib import Path
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table
-from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified
+from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features
 
 
 
@@ -580,6 +580,11 @@ class Feature_Extraction():
         outfile = open(target_path,'wb')
         pickle.dump(self,outfile)
         outfile.close()
+
+
+    def plot_features(self, feature_table=self.feature_table, num_features=100, num_images=100,image_col='img_path')):
+
+        return plot_features(feature_table, num_features, num_images,image_col))
 
     # def set_trained_model(self, model_path, mode):
     #     '''
