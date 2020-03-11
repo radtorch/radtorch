@@ -393,7 +393,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_c
     features = list(f.columns)
 
     df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
-    colors = ['#EBF5FB', '#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#FF9300']
+    colors = ['##F2F4F4', '#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#154360']
     # # E0E0E0
     mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
     TOOLS = "hover,save,box_zoom,reset,wheel_zoom"
