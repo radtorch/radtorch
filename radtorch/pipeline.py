@@ -554,11 +554,11 @@ class Feature_Extraction():
         self.feature_table = feature_table
 
         if verbose:
-            self.feature_table
+            return self.feature_table
 
         self.features = self.feature_table[self.feature_names]
 
-        return self.feature_table
+        # return self.feature_table
 
 
     def export_features(self,csv_path):
