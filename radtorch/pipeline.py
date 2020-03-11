@@ -582,8 +582,9 @@ class Feature_Extraction():
         outfile.close()
 
 
-    def plot_extracted_features(feature_table=self.feature_table, num_features=100, num_images=100,image_col='img_path'):
-
+    def plot_extracted_features(self, feature_table=None, num_features=100, num_images=100,image_col='img_path'):
+        if feature_table == None:
+            feature_table = self.feature_table
         return plot_features(feature_table, num_features, num_images,image_col)
 
     # def set_trained_model(self, model_path, mode):
