@@ -440,6 +440,6 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
         figures.append(p)
 
         # show(p)
-    tabs = Tabs(tabs=Figures)
+    tabs = Tabs(tabs=figures)
 
     show(tabs)
