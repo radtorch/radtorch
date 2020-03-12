@@ -457,9 +457,10 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
         features = list(f.columns)
         figures = []
         for b in range(len(file_label_dict)):
-            f = f[f[image_path_col] in file_label_dict[str(b)]]
-            images = list(f.index)
-            features = list(f.columns)
+            d =  f[np.intersect1d(df.columns, file_label_dict[str(b))]
+            # f[f[image_path_col] in file_label_dict[str(b)]]
+            images = list(d.index)
+            features = list(d.columns)
             p = figure(title=("Extracted Imaging Features"),
                     x_range=features, y_range=images,
                     x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
