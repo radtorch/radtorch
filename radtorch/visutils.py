@@ -456,13 +456,13 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
         # images = list(f.index)
         # features = list(f.columns)
         figures = []
-        for b in range(len(file_label_dict)):
-            d =  f[f[image_path_col].isin (file_label_dict[str(b)])]
+        for k, v file_label_dict)):
+            d =  f[f[image_path_col].isin v]
             # f[np.intersect1d(df.columns, file_label_dict[str(b)])]
             # f[f[image_path_col] in file_label_dict[str(b)]]
             images = list(d.index)
             features = list(d.columns)
-            p = figure(title=("Extracted Imaging Features"),
+            p = figure(title=("Extracted Imaging Features for label"+str(k)),
                     x_range=features, y_range=images,
                     x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
                     tools=TOOLS, toolbar_location='below',
