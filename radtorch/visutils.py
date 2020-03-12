@@ -383,7 +383,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
 
-    f = (feature_table[:num_images]).copy()
+    f = (feature_table).copy()
 
 
     file_label_dict = {}
@@ -394,7 +394,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     figures = []
 
     for k, v in file_label_dict.items():
-        f = v
+        f = v[:num_images]
         f = f[[image_path_col]+feature_names[:num_features]]
         f[image_path_col] = f[image_path_col].astype(str)
         i = f[image_path_col].tolist()
@@ -411,7 +411,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
         df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
         mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
 
-        p = figure(title=("Extracted Imaging Features, Label "+str(k)),
+        p = figure(title=("Extracted Imaging Features for class "+str(k)),
                 x_range=features, y_range=images,
                 x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
                 tools=TOOLS, toolbar_location='below',
@@ -436,7 +436,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
 
         p.add_layout(color_bar, 'right')
-        tab = Panel(child=p,title=("Extracted Imaging Features, Label "+str(k)) )
+        tab = Panel(child=p,title=("Extracted Imaging Features for class "+str(k)) )
         figures.append(tab)
 
         # show(p)
