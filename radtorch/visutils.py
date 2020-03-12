@@ -385,8 +385,8 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
     f = (feature_table).copy()
 
-    max = f.max()
-    min = f.min()
+    max = max(f[feature_names].max().tolist())
+    min = min(f[feature_names].min().tolist())
 
 
     file_label_dict = {}
