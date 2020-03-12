@@ -396,7 +396,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     if split_by_class:
         data_frames = {}
         for i in feature_table[image_label_col].unique():
-            data_frames[i] = feature_table[feature_table[image_label_col] == i]
+            data_frames[str(i)] = feature_table[feature_table[image_label_col] == i]
         figures = []
         for k, v in data_frames.items():
             f = v
