@@ -436,7 +436,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
 
         p.add_layout(color_bar, 'right')
-        tab = Panel(child=p,title=("Extracted Imaging Features for class "+str(k)) )
+        tab = Panel(child=p,title=("Class "+str(k)) )
         figures.append(tab)
 
         # show(p)
