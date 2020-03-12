@@ -389,7 +389,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     i = [os.path.basename(str(x)) for x in i]
     f[image_path_col] = i
 
-    f = f.set_index(image_col)
+    f = f.set_index(image_path_col)
 
 
 
