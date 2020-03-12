@@ -389,7 +389,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     file_label_dict = {}
 
     for i in f[image_label_col].unique():
-        file_label_dict[str(i)] = f[f[image_label_col] == i]
+        file_label_dict[str(i)] = f[f[image_label_col] == i];
 
     figures = []
 
@@ -436,7 +436,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
 
         p.add_layout(color_bar, 'right')
-        tab = Panel(child=p)
+        tab = Panel(child=p,title=("Extracted Imaging Features, Label "+str(k)) )
         figures.append(tab)
 
         # show(p)
