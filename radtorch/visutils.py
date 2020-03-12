@@ -437,7 +437,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
 
     else:
-        f = f.drop(image_label_col, axis=1)
+        f = f.drop(image_label_col)
         f.columns.name = 'features'
         images = list(f.index)
         features = list(f.columns)
