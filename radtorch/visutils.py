@@ -391,7 +391,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
     file_label_dict = {}
 
-    for i in (f[image_label_col].unique()).sort():
+    for i in sorted(f[image_label_col].unique()):
         file_label_dict[str(i)] = f[f[image_label_col] == i];
 
     figures = []
