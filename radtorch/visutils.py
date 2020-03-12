@@ -398,8 +398,8 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
         for i in feature_table[image_label_col].unique():
             data_frames[i] = feature_table[feature_table[image_label_col] == i]
         figures = []
-        for i in data_frames:
-            f = i.value()
+        for k, v in data_frames.items():
+            f = v
             f.columns.name = 'features'
             images = list(f.index)
             features = list(f.columns)
@@ -408,7 +408,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
             features = list(f.columns)
             df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
             mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
-            p = figure(title=("Extracted Imaging Features for Label "+str(i.key())),
+            p = figure(title=("Extracted Imaging Features for Label "+str(k),
                     x_range=features, y_range=images,
                     x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
                     tools=TOOLS, toolbar_location='below',
