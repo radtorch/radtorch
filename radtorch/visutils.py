@@ -408,7 +408,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
             features = list(f.columns)
             df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
             mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
-            p = figure(title=("Extracted Imaging Features for Label "+str(k),
+            p = figure(title=("Extracted Imaging Features for Label "+str(k)),
                     x_range=features, y_range=images,
                     x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
                     tools=TOOLS, toolbar_location='below',
