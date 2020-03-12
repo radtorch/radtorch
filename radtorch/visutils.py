@@ -21,6 +21,7 @@ from bokeh.io import show
 from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter
 from bokeh.plotting import figure
 from bokeh.sampledata.unemployment1948 import data
+from bokeh.layouts import row
 
 
 from radtorch.generalutils import getDuplicatesWithCount
@@ -371,56 +372,101 @@ def show_nn_misclassified(model, target_data_set, num_of_images, device, is_dico
     return output
 
 
-def plot_features(feature_table, feature_names, num_features, num_images,image_col):
+def plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col, split_by_class=False):
     '''
     .. include:: ./documentation/docs/visutils.md##plot_features
     '''
 
     output_notebook()
+    colors = ['#F2F4F4', '#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1']
+    TOOLS = "hover,save,box_zoom,reset,wheel_zoom"
+
 
     f = (feature_table[:num_images]).copy()
-    f = f[[image_col]+feature_names[:num_features]]
-    f[image_col] = f[image_col].astype(str)
-
-    i = f[image_col].tolist()
+    f = f[[image_path_col]+feature_names[:num_features]]
+    f[image_path_col] = f[image_path_col].astype(str)
+    i = f[image_path_col].tolist()
     i = [os.path.basename(str(x)) for x in i]
-    f[image_col] = i
+    f[image_path_col] = i
 
     f = f.set_index(image_col)
 
-    f.columns.name = 'features'
-    images = list(f.index)
-    features = list(f.columns)
 
-    df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
-    colors = ['#F2F4F4', '#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1']
-    # # E0E0E0
-    mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
-    TOOLS = "hover,save,box_zoom,reset,wheel_zoom"
 
-    p = figure(title=("Extracted Imaging Features"),
-            x_range=features, y_range=images,
-            x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
-            tools=TOOLS, toolbar_location='below',
-            tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
+    if split_by_class:
+        data_frames = {}
+        for i in feature_table[image_label_col].unique():
+            data_frames[i] = feature_table[feature_table[image_label_col] == i]
+        figures = []
+        for i in data_frames:
+            f = i.value()
+            f.columns.name = 'features'
+            images = list(f.index)
+            features = list(f.columns)
+            f.columns.name = 'features'
+            images = list(f.index)
+            features = list(f.columns)
+            df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
+            mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
+            p = figure(title=("Extracted Imaging Features for Label "+str(i.key())),
+                    x_range=features, y_range=images,
+                    x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
+                    tools=TOOLS, toolbar_location='below',
+                    tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
+            p.grid.grid_line_color = None
+            p.axis.axis_line_color = None
+            p.axis.major_tick_line_color = None
+            p.axis.major_label_text_font_size = "4pt"
+            p.axis.major_label_standoff = 0
+            p.xaxis.major_label_orientation = pi / 3
+            p.rect(x="features", y="img_path", width=1, height=1,
+                source=df,
+                fill_color={'field': 'value', 'transform': mapper},
+                line_color=None)
 
-    p.grid.grid_line_color = None
-    p.axis.axis_line_color = None
-    p.axis.major_tick_line_color = None
-    p.axis.major_label_text_font_size = "4pt"
-    p.axis.major_label_standoff = 0
-    p.xaxis.major_label_orientation = pi / 3
+            color_bar = ColorBar(color_mapper=mapper, major_label_text_font_size="8pt",
+                              ticker=BasicTicker(desired_num_ticks=len(colors)),
+                              #  formatter=PrintfTickFormatter(format="%d%%"),
+                              label_standoff=6, border_line_color=None, location=(0, 0))
 
-    p.rect(x="features", y="img_path", width=1, height=1,
-        source=df,
-        fill_color={'field': 'value', 'transform': mapper},
-        line_color=None)
+            p.add_layout(color_bar, 'right')
 
-    color_bar = ColorBar(color_mapper=mapper, major_label_text_font_size="8pt",
-                      ticker=BasicTicker(desired_num_ticks=len(colors)),
-                      #  formatter=PrintfTickFormatter(format="%d%%"),
-                      label_standoff=6, border_line_color=None, location=(0, 0))
+            figures = figures + p
 
-    p.add_layout(color_bar, 'right')
+        show(row(figures))
 
-    show(p)
+
+    else:
+        f.columns.name = 'features'
+        images = list(f.index)
+        features = list(f.columns)
+
+        df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
+        mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
+
+        p = figure(title=("Extracted Imaging Features"),
+                x_range=features, y_range=images,
+                x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
+                tools=TOOLS, toolbar_location='below',
+                tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
+
+        p.grid.grid_line_color = None
+        p.axis.axis_line_color = None
+        p.axis.major_tick_line_color = None
+        p.axis.major_label_text_font_size = "4pt"
+        p.axis.major_label_standoff = 0
+        p.xaxis.major_label_orientation = pi / 3
+
+        p.rect(x="features", y="img_path", width=1, height=1,
+            source=df,
+            fill_color={'field': 'value', 'transform': mapper},
+            line_color=None)
+
+        color_bar = ColorBar(color_mapper=mapper, major_label_text_font_size="8pt",
+                          ticker=BasicTicker(desired_num_ticks=len(colors)),
+                          #  formatter=PrintfTickFormatter(format="%d%%"),
+                          label_standoff=6, border_line_color=None, location=(0, 0))
+
+        p.add_layout(color_bar, 'right')
+
+        show(p)
