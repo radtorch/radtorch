@@ -457,7 +457,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
         # features = list(f.columns)
         figures = []
         for k, v in file_label_dict.items():
-            d =  f[f[image_path_col].isin v]
+            d =  f[f[image_path_col].isin(v)]
             # f[np.intersect1d(df.columns, file_label_dict[str(b)])]
             # f[f[image_path_col] in file_label_dict[str(b)]]
             images = list(d.index)
