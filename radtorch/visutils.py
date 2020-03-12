@@ -379,7 +379,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
     output_notebook()
     colors = ['#F2F4F4', '#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1']
-    TOOLS = "hover,save,box_zoom,reset,wheel_zoom"
+    TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
 
     f = (feature_table[:num_images]).copy()
