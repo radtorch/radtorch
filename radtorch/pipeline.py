@@ -587,7 +587,7 @@ class Feature_Extraction():
             feature_table = self.feature_table
         if feature_names == None:
             feature_names = self.feature_names
-        return plot_features(feature_table, feature_names, num_features, num_images,image_col, image_path_col, image_label_col, split_by_class=split_by_class)
+        return plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col, split_by_class=split_by_class)
 
     # def set_trained_model(self, model_path, mode):
     #     '''
