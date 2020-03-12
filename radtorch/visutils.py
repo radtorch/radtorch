@@ -453,11 +453,11 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
 
     if split_by_class:
-        images = list(f.index)
-        features = list(f.columns)
+        # images = list(f.index)
+        # features = list(f.columns)
         figures = []
         for b in range(len(file_label_dict)):
-            d =  f.rows.intersection(file_label_dict[str(b)])
+            d =  f.index.intersection(file_label_dict[str(b)])
             # f[np.intersect1d(df.columns, file_label_dict[str(b)])]
             # f[f[image_path_col] in file_label_dict[str(b)]]
             images = list(d.index)
