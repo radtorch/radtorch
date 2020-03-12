@@ -399,7 +399,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
             data_frames[str(i)] = feature_table[feature_table[image_label_col] == i]
         figures = []
         for k, v in data_frames.items():
-            f = v.drop(image_label_col)
+            f = v.drop(columns=[image_label_col])
             f.columns.name = 'features'
             images = list(f.index)
             features = list(f.columns)
@@ -437,7 +437,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
 
     else:
-        f = f.drop(image_label_col)
+        f = f.drop(columns=[image_label_col])
         f.columns.name = 'features'
         images = list(f.index)
         features = list(f.columns)
