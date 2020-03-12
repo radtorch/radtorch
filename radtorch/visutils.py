@@ -18,7 +18,7 @@ from pathlib import Path
 from bokeh.io import output_notebook
 from math import pi
 from bokeh.io import show
-from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter
+from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel
 from bokeh.plotting import figure
 from bokeh.sampledata.unemployment1948 import data
 from bokeh.layouts import row, gridplot
@@ -385,52 +385,61 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
     f = (feature_table[:num_images]).copy()
 
+
     file_label_dict = {}
 
     for i in f[image_label_col].unique():
         file_label_dict[str(i)] = f[f[image_label_col] == i]
 
+    figures = []
 
-    f = f[[image_path_col]+feature_names[:num_features]]
-    f[image_path_col] = f[image_path_col].astype(str)
-    i = f[image_path_col].tolist()
-    i = [os.path.basename(str(x)) for x in i]
-    f[image_path_col] = i
+    for k, v in file_label_dict.items():
+        f = v
+        f = f[[image_path_col]+feature_names[:num_features]]
+        f[image_path_col] = f[image_path_col].astype(str)
+        i = f[image_path_col].tolist()
+        i = [os.path.basename(str(x)) for x in i]
+        f[image_path_col] = i
 
-    f = f.set_index(image_path_col)
-
-
-    f.columns.name = 'features'
-    images = list(f.index)
-    features = list(f.columns)
-
-    df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
-    mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
-
-    p = figure(title=("Extracted Imaging Features"),
-            x_range=features, y_range=images,
-            x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
-            tools=TOOLS, toolbar_location='below',
-            tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
-
-    p.grid.grid_line_color = None
-    p.axis.axis_line_color = None
-    p.axis.major_tick_line_color = None
-    p.axis.major_label_text_font_size = "4pt"
-    p.axis.major_label_standoff = 0
-    p.xaxis.major_label_orientation = pi / 3
-
-    p.rect(x="features", y="img_path", width=1, height=1,
-        source=df,
-        fill_color={'field': 'value', 'transform': mapper},
-        line_color=None)
-
-    color_bar = ColorBar(color_mapper=mapper, major_label_text_font_size="8pt",
-                      ticker=BasicTicker(desired_num_ticks=len(colors)),
-                      #  formatter=PrintfTickFormatter(format="%d%%"),
-                      label_standoff=6, border_line_color=None, location=(0, 0))
+        f = f.set_index(image_path_col)
 
 
-    p.add_layout(color_bar, 'right')
+        f.columns.name = 'features'
+        images = list(f.index)
+        features = list(f.columns)
 
-    show(p)
+        df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
+        mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
+
+        p = figure(title=("Extracted Imaging Features, Label "+str(k)),
+                x_range=features, y_range=images,
+                x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
+                tools=TOOLS, toolbar_location='below',
+                tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
+
+        p.grid.grid_line_color = None
+        p.axis.axis_line_color = None
+        p.axis.major_tick_line_color = None
+        p.axis.major_label_text_font_size = "4pt"
+        p.axis.major_label_standoff = 0
+        p.xaxis.major_label_orientation = pi / 3
+
+        p.rect(x="features", y="img_path", width=1, height=1,
+            source=df,
+            fill_color={'field': 'value', 'transform': mapper},
+            line_color=None)
+
+        color_bar = ColorBar(color_mapper=mapper, major_label_text_font_size="8pt",
+                          ticker=BasicTicker(desired_num_ticks=len(colors)),
+                          #  formatter=PrintfTickFormatter(format="%d%%"),
+                          label_standoff=6, border_line_color=None, location=(0, 0))
+
+
+        p.add_layout(color_bar, 'right')
+        tab = Panel(child=p)
+        figures.append(p)
+
+        # show(p)
+    tabs = Tabs(tabs=Figures)
+
+    show(tabs)
