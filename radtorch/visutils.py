@@ -453,13 +453,9 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
 
     if split_by_class:
-        # images = list(f.index)
-        # features = list(f.columns)
         figures = []
         for k, v in file_label_dict.items():
-            d =  f[f.index.isin(v)]
-            # f[np.intersect1d(df.columns, file_label_dict[str(b)])]
-            # f[f[image_path_col] in file_label_dict[str(b)]]
+            d =  f[f[image_path_col].isin(v)]
             images = list(d.index)
             features = list(d.columns)
             p = figure(title=("Extracted Imaging Features for label"+str(k)),
@@ -467,6 +463,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
                     x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
                     tools=TOOLS, toolbar_location='below',
                     tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
+
             figures.append(p)
 
 
@@ -496,7 +493,9 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
                       #  formatter=PrintfTickFormatter(format="%d%%"),
                       label_standoff=6, border_line_color=None, location=(0, 0))
 
-    p.add_layout(color_bar, 'right')
+    for i in figures:
+        i.add_layout(color_bar, 'right')
+    # p.add_layout(color_bar, 'right')
 
     grid = gridplot(figures, ncols=1)
 
