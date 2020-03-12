@@ -437,9 +437,9 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
         p.add_layout(color_bar, 'right')
         tab = Panel(child=p)
-        figures.append(p)
+        figures.append(tab)
 
         # show(p)
-    tabs = Tabs(tabs=[figures])
+    tabs = Tabs(tabs=figures)
 
     show(tabs)
