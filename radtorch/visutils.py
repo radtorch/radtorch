@@ -383,7 +383,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
 
     f = (feature_table[:num_images]).copy()
-    f = f[[image_path_col]+feature_names[:num_features]]
+    # f = f[[image_path_col]+f[[image_label_col]]+feature_names[:num_features]]
     f[image_path_col] = f[image_path_col].astype(str)
     i = f[image_path_col].tolist()
     i = [os.path.basename(str(x)) for x in i]
@@ -437,6 +437,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
 
     else:
+        f = f.drop(image_label_col, axis=1)
         f.columns.name = 'features'
         images = list(f.index)
         features = list(f.columns)
