@@ -385,6 +385,9 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
     f = (feature_table).copy()
 
+    max = f.max()
+    min = f.min()
+
 
     file_label_dict = {}
 
@@ -396,6 +399,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     for k, v in file_label_dict.items():
         f = v[:num_images]
         f = f[[image_path_col]+feature_names[:num_features]]
+
         f[image_path_col] = f[image_path_col].astype(str)
         i = f[image_path_col].tolist()
         i = [os.path.basename(str(x)) for x in i]
@@ -409,7 +413,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
         features = list(f.columns)
 
         df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
-        mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
+        mapper = LinearColorMapper(palette=colors, low=min, high=max)
 
         p = figure(title=("Extracted Imaging Features for class "+str(k)),
                 x_range=features, y_range=images,
