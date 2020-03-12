@@ -378,6 +378,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     '''
 
     output_notebook()
+
     colors = ['#F2F4F4', '#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1']
     TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
@@ -399,52 +400,6 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     f = f.set_index(image_path_col)
 
 
-    #
-    #
-    #
-    # if split_by_class:
-    #     data_frames = {}
-    #     for i in feature_table[image_label_col].unique():
-    #         data_frames[str(i)] = feature_table[feature_table[image_label_col] == i]
-    #     figures = []
-    #     for k, v in data_frames.items():
-    #         f = v.drop(columns=[image_label_col])
-    #         f.columns.name = 'features'
-    #         images = list(f.index)
-    #         features = list(f.columns)
-    #         f.columns.name = 'features'
-    #         images = list(f.index)
-    #         features = list(f.columns)
-    #         df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
-    #         mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
-    #         p = figure(title=("Extracted Imaging Features for Label "+str(k)),
-    #                 x_range=features, y_range=images,
-    #                 x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
-    #                 tools=TOOLS, toolbar_location='below',
-    #                 tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
-    #         p.grid.grid_line_color = None
-    #         p.axis.axis_line_color = None
-    #         p.axis.major_tick_line_color = None
-    #         p.axis.major_label_text_font_size = "4pt"
-    #         p.axis.major_label_standoff = 0
-    #         p.xaxis.major_label_orientation = pi / 3
-    #         p.rect(x="features", y="img_path", width=1, height=1,
-    #             source=df,
-    #             fill_color={'field': 'value', 'transform': mapper},
-    #             line_color=None)
-    #
-    #         color_bar = ColorBar(color_mapper=mapper, major_label_text_font_size="8pt",
-    #                           ticker=BasicTicker(desired_num_ticks=len(colors)),
-    #                           #  formatter=PrintfTickFormatter(format="%d%%"),
-    #                           label_standoff=6, border_line_color=None, location=(0, 0))
-    #
-    #         p.add_layout(color_bar, 'right')
-    #
-    #         figures = figures + p
-    #
-    #     show(row(figures))
-
-
     f.columns.name = 'features'
     images = list(f.index)
     features = list(f.columns)
@@ -452,29 +407,11 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
     mapper = LinearColorMapper(palette=colors, low=df.value.min(), high=df.value.max())
 
-    if split_by_class:
-        figures = []
-        for k, v in file_label_dict.items():
-            d =  f[f[image_path_col].isin(v)]
-            images = list(d.index)
-            features = list(d.columns)
-            p = figure(title=("Extracted Imaging Features for label"+str(k)),
-                    x_range=features, y_range=images,
-                    x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
-                    tools=TOOLS, toolbar_location='below',
-                    tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
-
-            figures.append(p)
-
-
-
-    else:
-        p = figure(title=("Extracted Imaging Features"),
-                x_range=features, y_range=images,
-                x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
-                tools=TOOLS, toolbar_location='below',
-                tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
-        figures = [p]
+    p = figure(title=("Extracted Imaging Features"),
+            x_range=features, y_range=images,
+            x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
+            tools=TOOLS, toolbar_location='below',
+            tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
 
     p.grid.grid_line_color = None
     p.axis.axis_line_color = None
@@ -493,10 +430,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
                       #  formatter=PrintfTickFormatter(format="%d%%"),
                       label_standoff=6, border_line_color=None, location=(0, 0))
 
-    for i in figures:
-        i.add_layout(color_bar, 'right')
-    # p.add_layout(color_bar, 'right')
 
-    grid = gridplot(figures, ncols=1)
+    p.add_layout(color_bar, 'right')
 
-    show(grid)
+    show(p)
