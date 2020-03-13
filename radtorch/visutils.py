@@ -427,7 +427,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
         p = figure(title=("Extracted Imaging Features for class "+str(k)),
                 x_range=features, y_range=images,
-                x_axis_location="above", plot_width=num_features*8, plot_height=num_images*8,
+                x_axis_location="above", plot_width=plot_width, plot_height=plot_height,
                 tools=TOOLS, toolbar_location='below',
                 tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
 
