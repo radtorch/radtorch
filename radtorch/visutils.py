@@ -382,6 +382,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     colors = ['#F2F4F4', '#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1']
     TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
+    min_fig_size = 400
 
     f = (feature_table).copy()
 
@@ -414,6 +415,15 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
         df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
         mapper = LinearColorMapper(palette=colors, low=min_value, high=max_value)
+
+        plot_width = num_features*8
+        plot_height=num_images*8
+
+        if plot_width < min_fig_size:
+            plot_width = min_fig_size
+
+        if plot_height < min_fig_size:
+            plot_height = min_fig_size
 
         p = figure(title=("Extracted Imaging Features for class "+str(k)),
                 x_range=features, y_range=images,
