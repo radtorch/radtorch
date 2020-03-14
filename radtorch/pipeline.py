@@ -158,12 +158,16 @@ class Image_Classification():
         self.train_data_loader = torch.utils.data.DataLoader(
                                                     self.train_data_set,
                                                     batch_size=self.batch_size,
-                                                    shuffle=True)
+                                                    shuffle=True,
+                                                    num_workers=4)
+
 
         self.valid_data_loader = torch.utils.data.DataLoader(
                                                     self.valid_data_set,
                                                     batch_size=self.batch_size,
-                                                    shuffle=True)
+                                                    shuffle=True,
+                                                    num_workers=4)
+
 
         if self.test_percent == 0:
             self.test_data_loader = 0
@@ -171,7 +175,8 @@ class Image_Classification():
             self.test_data_loader = torch.utils.data.DataLoader(
                                                     self.test_data_set,
                                                     batch_size=self.batch_size,
-                                                    shuffle=True)
+                                                    shuffle=True,
+                                                    num_workers=4)
 
         self.num_output_classes = len(self.data_set.classes)
 
@@ -478,7 +483,8 @@ class Feature_Extraction():
         self.data_loader = torch.utils.data.DataLoader(
                                                     self.data_set,
                                                     batch_size=self.batch_size,
-                                                    shuffle=self.shuffle)
+                                                    shuffle=self.shuffle,
+                                                    num_workers=4)
 
 
         self.num_output_classes = len(self.data_set.classes)
