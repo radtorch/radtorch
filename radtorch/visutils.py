@@ -140,49 +140,49 @@ def show_metrics(metric_source, metric='all', show_points = False, fig_size = (6
     # ax2.legend(['Train Accuracy', 'Valid Accuracy'])
     # ax2.set(xlabel='Epoch Number', ylabel='Accuracy')
     # ax2.grid(True)
-  output_notebook()
-  TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
+    output_notebook()
+    TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
-  metrics = {
+    metrics = {
      'Accuracy': metric_source[['Train_Accuracy', 'Valid_Accuracy']].rename(columns={'Train_Accuracy':'train','Valid_Accuracy':'valid'}),
     'Loss': metric_source[['Train_Loss', 'Valid_Loss']].rename(columns={'Train_Loss':'train','Valid_Loss':'valid'}),
-  }
+    }
 
-  output = []
+    output = []
 
-  for k, v in metrics.items():
-    p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training '+k), tools=TOOLS, toolbar_location='below', tooltips=[('value', '@y')])
-    p.line(v.index, v.train, line_width=1.5, line_color= '#2F5EC4',  legend_label='Train')
-    p.line(v.index, v.valid, line_width=1.5, line_color='#93D5ED',  legend_label='Valid')
-    if show_points:
-      p.circle(v.index, v.train,  fill_color= '#2F5EC4', line_color=None, legend_label='Train')
-      p.circle(v.index, v.valid,  fill_color='#93D5ED', line_color=None,  legend_label='Valid')
-    p.legend.location = "center_right"
-    p.legend.click_policy="hide"
-    p.xaxis.axis_line_color = '#D6DBDF'
-    p.yaxis.axis_line_color = '#D6DBDF'
-    p.xgrid.grid_line_color=None
-    p.yaxis.axis_line_width = 2
-    p.xaxis.axis_line_width = 2
-    p.xaxis.major_tick_line_color = '#D6DBDF'
-    p.yaxis.major_tick_line_color = '#D6DBDF'
-    p.xaxis.minor_tick_line_color = '#D6DBDF'
-    p.yaxis.minor_tick_line_color = '#D6DBDF'
-    p.yaxis.major_tick_line_width = 2
-    p.xaxis.major_tick_line_width = 2
-    p.yaxis.minor_tick_line_width = 0
-    p.xaxis.minor_tick_line_width = 0
-    p.xaxis.major_label_text_color = '#99A3A4'
-    p.yaxis.major_label_text_color = '#99A3A4'
-    p.outline_line_color = None
-    output.append(p)
+    for k, v in metrics.items():
+        p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training '+k), tools=TOOLS, toolbar_location='below', tooltips=[('value', '@y')])
+        p.line(v.index, v.train, line_width=1.5, line_color= '#2F5EC4',  legend_label='Train')
+        p.line(v.index, v.valid, line_width=1.5, line_color='#93D5ED',  legend_label='Valid')
+        if show_points:
+          p.circle(v.index, v.train,  fill_color= '#2F5EC4', line_color=None, legend_label='Train')
+          p.circle(v.index, v.valid,  fill_color='#93D5ED', line_color=None,  legend_label='Valid')
+        p.legend.location = "center_right"
+        p.legend.click_policy="hide"
+        p.xaxis.axis_line_color = '#D6DBDF'
+        p.yaxis.axis_line_color = '#D6DBDF'
+        p.xgrid.grid_line_color=None
+        p.yaxis.axis_line_width = 2
+        p.xaxis.axis_line_width = 2
+        p.xaxis.major_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_color = '#D6DBDF'
+        p.xaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_width = 2
+        p.xaxis.major_tick_line_width = 2
+        p.yaxis.minor_tick_line_width = 0
+        p.xaxis.minor_tick_line_width = 0
+        p.xaxis.major_label_text_color = '#99A3A4'
+        p.yaxis.major_label_text_color = '#99A3A4'
+        p.outline_line_color = None
+        output.append(p)
 
-  if metric == 'accuracy':
-    show(row(output[0]))
-  elif metric == 'loss':
-    show(row(output[1]))
-  else:
-    show(row(output))
+    if metric == 'accuracy':
+        show(row(output[0]))
+    elif metric == 'loss':
+        show(row(output[1]))
+    else:
+        show(row(output))
 
 def show_dicom_sample(dataloader, figsize=(30,10)):
     """
