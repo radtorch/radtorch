@@ -469,7 +469,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
                 x_range=features, y_range=images,
                 x_axis_location="above", plot_width=plot_width, plot_height=plot_height,
                 tools=TOOLS, toolbar_location='below',
-                tooltips=[('image', '@img_path'), ('feature', '@features'), ('value', '@value')])
+                tooltips=[('instance', '@img_path'), ('feature', '@features'), ('value', '@value')])
 
         p.grid.grid_line_color = None
         p.axis.axis_line_color = None
