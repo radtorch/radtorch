@@ -253,6 +253,7 @@ class Image_Classification():
                                                     epochs = self.train_epochs,
                                                     device = self.device,
                                                     verbose=verbose)
+            self.train_metrics = pd.DataFrame(data=self.train_metrics, columns = ['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
         except:
             raise TypeError('Could not train image classification pipeline. Please check rpovided parameters.')
             pass
@@ -261,7 +262,8 @@ class Image_Classification():
         '''
         Display the training metrics.
         '''
-        show_metrics(self.train_metrics, fig_size=fig_size)
+        # show_metrics(self.train_metrics, fig_size=fig_size)
+        show_metrics(self.train_metrics, metric='all', show_points = False, fig_size = (600,400))
 
     def export_model(self,output_path):
         '''

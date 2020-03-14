@@ -15,18 +15,15 @@ from torchvision import transforms
 from PIL import Image
 from pathlib import Path
 
-from bokeh.io import output_notebook
+from bokeh.io import output_notebook, show
 from math import pi
-from bokeh.io import show
 from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel
 from bokeh.plotting import figure
 from bokeh.sampledata.unemployment1948 import data
 from bokeh.layouts import row, gridplot
 
-
 from radtorch.generalutils import getDuplicatesWithCount
 from radtorch.dicomutils import dicom_to_narray
-
 
 
 
@@ -113,7 +110,8 @@ def show_dataset_info(dataset):
     return output
 
 
-def show_metrics(source, fig_size=(15,5)):
+# def show_metrics(source, fig_size=(15,5)):
+def show_metrics(metric_source, metric='all', show_points = False, fig_size = (600,400)):
     """
     Displays metrics created by the training loop.
 
@@ -128,21 +126,63 @@ def show_metrics(source, fig_size=(15,5)):
     -  Output: _(figure)_ Matplotlib graphs of accuracy and error for training and validation.
     """
 
-    metrics = np.array(source)
-    loss = metrics[:,0:2]
-    accuracy = metrics[:,2:4]
+    # metrics = np.array(source)
+    # loss = metrics[:,0:2]
+    # accuracy = metrics[:,2:4]
+    #
+    # fig, (ax1, ax2) = plt.subplots(1, 2, figsize=fig_size)
+    #
+    # ax1.plot(loss)
+    # ax1.legend(['Train Loss', 'Valid Loss'])
+    # ax1.set(xlabel='Epoch Number', ylabel='Loss')
+    # ax1.grid(True)
+    # ax2.plot(accuracy)
+    # ax2.legend(['Train Accuracy', 'Valid Accuracy'])
+    # ax2.set(xlabel='Epoch Number', ylabel='Accuracy')
+    # ax2.grid(True)
+  output_notebook()
+  TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=fig_size)
+  metrics = {
+     'Accuracy': metric_source[['Train_Accuracy', 'Valid_Accuracy']].rename(columns={'Train_Accuracy':'train','Valid_Accuracy':'valid'}),
+    'Loss': metric_source[['Train_Loss', 'Valid_Loss']].rename(columns={'Train_Loss':'train','Valid_Loss':'valid'}),
+  }
 
-    ax1.plot(loss)
-    ax1.legend(['Train Loss', 'Valid Loss'])
-    ax1.set(xlabel='Epoch Number', ylabel='Loss')
-    ax1.grid(True)
-    ax2.plot(accuracy)
-    ax2.legend(['Train Accuracy', 'Valid Accuracy'])
-    ax2.set(xlabel='Epoch Number', ylabel='Accuracy')
-    ax2.grid(True)
+  output = []
 
+  for k, v in metrics.items():
+    p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training '+k), tools=TOOLS, toolbar_location='below', tooltips=[('value', '@y')])
+    p.line(v.index, v.train, line_width=1.5, line_color= '#2F5EC4',  legend_label='Train')
+    p.line(v.index, v.valid, line_width=1.5, line_color='#93D5ED',  legend_label='Valid')
+    if show_points:
+      p.circle(v.index, v.train,  fill_color= '#2F5EC4', line_color=None, legend_label='Train')
+      p.circle(v.index, v.valid,  fill_color='#93D5ED', line_color=None,  legend_label='Valid')
+    p.legend.location = "center_right"
+    p.legend.click_policy="hide"
+    p.xaxis.axis_line_color = '#D6DBDF'
+    p.yaxis.axis_line_color = '#D6DBDF'
+    p.xgrid.grid_line_color=None
+    p.yaxis.axis_line_width = 2
+    p.xaxis.axis_line_width = 2
+    p.xaxis.major_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_color = '#D6DBDF'
+    p.xaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_width = 2
+    p.xaxis.major_tick_line_width = 2
+    p.yaxis.minor_tick_line_width = 0
+    p.xaxis.minor_tick_line_width = 0
+    p.xaxis.major_label_text_color = '#99A3A4'
+    p.yaxis.major_label_text_color = '#99A3A4'
+    p.outline_line_color = None
+    output.append(p)
+
+  if metric == 'accuracy':
+    show(row(output[0]))
+  elif metric == 'loss':
+    show(row(output[1]))
+  else:
+    show(row(output))
 
 def show_dicom_sample(dataloader, figsize=(30,10)):
     """
