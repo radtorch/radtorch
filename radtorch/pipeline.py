@@ -19,7 +19,7 @@ from pathlib import Path
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table
-from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_info
+from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info
 
 
 
@@ -202,7 +202,6 @@ class Image_Classification():
             raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
             pass
 
-
     def info(self):
         '''
         Display Parameters of the Image Classification Pipeline.
@@ -229,14 +228,9 @@ class Image_Classification():
             info = info.append({'Classes':'Test Dataset Size', 'Class Idx': '', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
 
         if plot:
-            plot_pipline_info(info, test_percent = self.test_percent)
+            plot_pipline_dataset_info(info, test_percent = self.test_percent)
         else:
             return info
-
-
-    def plot_dataset_info(self):
-        return plot_pipline_info(self.dataset_info())
-
 
     def sample(self, num_of_images_per_row=4, fig_size=(10,10), show_labels=False):
         '''
@@ -248,7 +242,7 @@ class Image_Classification():
         '''
         return show_dataloader_sample(dataloader=self.train_data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
 
-    def train(self, verbose=True):
+    def run(self, verbose=True):
         '''
         Train the image classification pipeline.
         Inputs:
@@ -507,7 +501,6 @@ class Feature_Extraction():
 
         self.model = self.model.to(self.device)
 
-
     def info(self):
         '''
         Displays Feature Extraction Pipeline Parameters.
@@ -517,13 +510,11 @@ class Feature_Extraction():
             if key != 'trans':
                 print('>', key,'=',value)
 
-
     def dataset_info(self):
         '''
         Displays Dataset Information.
         '''
         return (show_dataset_info(self.data_set))
-
 
     def sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):
         '''
@@ -531,11 +522,9 @@ class Feature_Extraction():
         '''
         return show_dataloader_sample(dataloader=self.data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
 
-
     def num_features(self):
         output = model_dict[self.model_arch]['output_features']
         return output
-
 
     def run(self, verbose=True):
         '''
@@ -576,7 +565,6 @@ class Feature_Extraction():
 
         # return self.feature_table
 
-
     def export_features(self,csv_path):
         try:
             self.feature_table.to_csv(csv_path, index=False)
@@ -584,7 +572,6 @@ class Feature_Extraction():
         except:
             print ('Error! No features found. Please check again or re-run the extracion pipeline.')
             pass
-
 
     def export(self, target_path):
         '''
@@ -596,7 +583,6 @@ class Feature_Extraction():
         outfile = open(target_path,'wb')
         pickle.dump(self,outfile)
         outfile.close()
-
 
     def plot_extracted_features(self, feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx', split_by_class=False):
         if feature_table == None:
