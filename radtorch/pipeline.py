@@ -19,7 +19,7 @@ from pathlib import Path
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table
-from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, show_pipeline_dataset_info
+from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_info
 
 
 
@@ -217,19 +217,23 @@ class Image_Classification():
         if self.test_percent > 0:
             print ('Test Dataset Size =', len(self.test_data_set))
 
-    def dataset_info(self):
+    def dataset_info(self, plot=False):
         '''
         Display Dataset Information.
         '''
-        # info = show_dataset_info(self.data_set)
-        # info = info.append({'Classes':'Train Dataset Size', 'Class Idx': '','Number of Instances':len(self.train_data_set)}, ignore_index=True )
-        # info = info.append({'Classes':'Valid Dataset Size', 'Class Idx': '','Number of Instances':len(self.valid_data_set)}, ignore_index=True )
-        #
-        # if self.test_percent > 0:
-        #     info = info.append({'Classes':'Test Dataset Size', 'Class Idx': '', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
-        # 
-        # return info
-        return show_pipeline_dataset_info(self)
+        info = show_dataset_info(self.data_set)
+        info = info.append({'Classes':'Train Dataset Size', 'Class Idx': '','Number of Instances':len(self.train_data_set)}, ignore_index=True )
+        info = info.append({'Classes':'Valid Dataset Size', 'Class Idx': '','Number of Instances':len(self.valid_data_set)}, ignore_index=True )
+
+        if self.test_percent > 0:
+            info = info.append({'Classes':'Test Dataset Size', 'Class Idx': '', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
+
+        return info
+
+
+    def plot_dataset_info(self):
+        return plot_pipline_info(self)
+
 
     def sample(self, num_of_images_per_row=4, fig_size=(10,10), show_labels=False):
         '''
