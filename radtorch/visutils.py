@@ -248,6 +248,8 @@ def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC
     plt.xlabel('FPR (1-specficity)');
     plt.ylabel('TPR (Sensitivity)');
     plt.grid(True)
+    print (fpr)
+    print (tpr)
     if auc == True:
         plt.xlabel('FPR (1-specficity)\nAUC={:0.4f}'.format(metrics.roc_auc_score(true_labels, predictions)))
         # print ('AUC =',metrics.roc_auc_score(true_labels, predictions))
