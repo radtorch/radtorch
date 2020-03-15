@@ -502,7 +502,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     show(tabs)
 
 
-def plot_pipline_info(dataframe):
+def plot_pipline_info(dataframe, test_percent):
 
     colors = ['#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1']
     TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
@@ -510,7 +510,7 @@ def plot_pipline_info(dataframe):
     G = dataframe[['Classes', 'Number of Instances']]
     G.columns = ['Classes', 'Number']
 
-    if x.test_percent==0:
+    if test_percent==0:
         Z = -3
     else:
         Z = -4

@@ -229,7 +229,7 @@ class Image_Classification():
             info = info.append({'Classes':'Test Dataset Size', 'Class Idx': '', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
 
         if plot:
-            plot_pipline_info(info)
+            plot_pipline_info(info, test_percent = self.test_percent)
         else:
             return info
 
