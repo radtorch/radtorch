@@ -232,7 +232,7 @@ class Image_Classification():
 
 
     def plot_dataset_info(self):
-        return plot_pipline_info(self)
+        return plot_pipline_info(self.dataset_info())
 
 
     def sample(self, num_of_images_per_row=4, fig_size=(10,10), show_labels=False):
