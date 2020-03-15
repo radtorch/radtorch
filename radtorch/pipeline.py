@@ -228,7 +228,10 @@ class Image_Classification():
         if self.test_percent > 0:
             info = info.append({'Classes':'Test Dataset Size', 'Class Idx': '', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
 
-        return info
+        if plot:
+            plot_pipline_info(info)
+        else:
+            return info
 
 
     def plot_dataset_info(self):
