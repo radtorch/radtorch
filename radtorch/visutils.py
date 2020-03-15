@@ -512,9 +512,9 @@ def show_pipeline_dataset_info(pipeline):
     G.columns = ['Classes', 'Number']
 
     if x.test_percent==0:
-    Z = -3
+        Z = -3
     else:
-    Z = -4
+        Z = -4
 
     output_notebook()
 
