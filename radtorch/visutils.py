@@ -17,13 +17,16 @@ from pathlib import Path
 
 from bokeh.io import output_notebook, show
 from math import pi
-from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel
-from bokeh.plotting import figure
+from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource
+from bokeh.plotting import figure, show
 from bokeh.sampledata.unemployment1948 import data
 from bokeh.layouts import row, gridplot
+from bokeh.transform import factor_cmap, cumsum
+
 
 from radtorch.generalutils import getDuplicatesWithCount
 from radtorch.dicomutils import dicom_to_narray
+
 
 
 
@@ -110,7 +113,6 @@ def show_dataset_info(dataset):
     return output
 
 
-# def show_metrics(source, fig_size=(15,5)):
 def show_metrics(metric_source, metric='all', show_points = False, fig_size = (600,400)):
     """
     Displays metrics created by the training loop.
@@ -151,7 +153,7 @@ def show_metrics(metric_source, metric='all', show_points = False, fig_size = (6
     output = []
 
     for k, v in metrics.items():
-        p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training '+k), tools=TOOLS, toolbar_location='below', tooltips=[('value', '@y')])
+        p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training '+k), tools=TOOLS, toolbar_location='below', 1)
         p.line(v.index, v.train, line_width=1.5, line_color= '#2F5EC4',  legend_label='Train')
         p.line(v.index, v.valid, line_width=1.5, line_color='#93D5ED',  legend_label='Valid')
         if show_points:
@@ -183,6 +185,7 @@ def show_metrics(metric_source, metric='all', show_points = False, fig_size = (6
         show(row(output[1]))
     else:
         show(row(output))
+
 
 def show_dicom_sample(dataloader, figsize=(30,10)):
     """
@@ -497,3 +500,68 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     tabs = Tabs(tabs=figures)
 
     show(tabs)
+
+
+def show_pipeline_dataset_info(pipeline):
+
+    colors = ['#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1']
+    TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
+
+    G = pipeline.dataset_info()
+    G = G[['Classes', 'Number of Instances']]
+    G.columns = ['Classes', 'Number']
+
+    if x.test_percent==0:
+    Z = -3
+    else:
+    Z = -4
+
+    output_notebook()
+
+    source = ColumnDataSource(G)
+
+    output = []
+
+    p = figure(plot_width=600, plot_height=400, x_range=G['Classes'].tolist()[:Z], tools=TOOLS, tooltips=[('','@Classes'), ('','@Number')])
+    p.vbar(x='Classes', width=0.4, top = 'Number', line_color=None, source=source, fill_color=factor_cmap('Classes', palette=colors[::-1], factors=(G['Classes'].tolist()[:Z])))
+    output.append(p)
+    p.xaxis.axis_line_color = '#D6DBDF'
+    p.yaxis.axis_line_color = '#D6DBDF'
+    p.xgrid.grid_line_color=None
+    p.yaxis.axis_line_width = 2
+    p.xaxis.axis_line_width = 2
+    p.xaxis.major_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_color = '#D6DBDF'
+    p.xaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_width = 2
+    p.xaxis.major_tick_line_width = 2
+    p.yaxis.minor_tick_line_width = 0
+    p.xaxis.minor_tick_line_width = 0
+    p.xaxis.major_label_text_color = '#99A3A4'
+    p.yaxis.major_label_text_color = '#99A3A4'
+    p.outline_line_color = None
+
+
+
+    p = figure(plot_width=600, plot_height=400, x_range=G['Classes'].tolist()[Z:], tooltips=[('','@Classes'), ('','@Number')])
+    p.vbar(x='Classes', width=0.5, top = 'Number', line_color=None, source=source, fill_color=factor_cmap('Classes', palette=colors[::-1], factors=(G['Classes'].tolist()[Z:])))
+    p.xaxis.axis_line_color = '#D6DBDF'
+    p.yaxis.axis_line_color = '#D6DBDF'
+    p.xgrid.grid_line_color=None
+    p.yaxis.axis_line_width = 2
+    p.xaxis.axis_line_width = 2
+    p.xaxis.major_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_color = '#D6DBDF'
+    p.xaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_width = 2
+    p.xaxis.major_tick_line_width = 2
+    p.yaxis.minor_tick_line_width = 0
+    p.xaxis.minor_tick_line_width = 0
+    p.xaxis.major_label_text_color = '#99A3A4'
+    p.yaxis.major_label_text_color = '#99A3A4'
+    p.outline_line_color = None
+    output.append(p)
+
+    show(row(output))
