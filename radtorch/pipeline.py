@@ -212,11 +212,11 @@ class Image_Classification():
         classifier_info = pd.DataFrame.from_dict(info.items())
         classifier_info.columns = ['Property', 'Value']
 
-        classifier_info = classifier_info.append({'Property':'Train Dataset Size', 'Value':len(self.train_data_set)})
-        classifier_info = classifier_info.append({'Property':'Valid Dataset Size', 'Value':len(self.valid_data_set)})
+        classifier_info = classifier_info.append({'Property':'Train Dataset Size', 'Value':len(self.train_data_set)}, ignore_index=True)
+        classifier_info = classifier_info.append({'Property':'Valid Dataset Size', 'Value':len(self.valid_data_set)}, ignore_index=True)
 
         if self.test_percent > 0:
-            classifier_info = classifier_info.append({'Property':'Test Dataset Size', 'Value':len(self.test_data_set)})
+            classifier_info = classifier_info.append({'Property':'Test Dataset Size', 'Value':len(self.test_data_set)}, ignore_index=True)
 
         return classifier_info
 
