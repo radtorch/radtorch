@@ -553,7 +553,7 @@ def plot_pipline_dataset_info(dataframe, test_percent):
 
     output = []
 
-    p = figure(plot_width=600, plot_height=400, x_range=G['Classes'].tolist()[:Z], tools=TOOLS, tooltips=[('','@Classes'), ('','@Number')])
+    p = figure(plot_width=600, plot_height=400, x_range=G['Classes'].tolist()[:Z], tools=TOOLS, tooltips=[('','@Classes'), ('','@Number')], title='Data Breakdown by Class')
     p.vbar(x='Classes', width=0.4, top = 'Number', line_color=None, source=source, fill_color=factor_cmap('Classes', palette=colors[::-1], factors=(G['Classes'].tolist()[:Z])))
     output.append(p)
     p.xaxis.axis_line_color = '#D6DBDF'
@@ -575,7 +575,7 @@ def plot_pipline_dataset_info(dataframe, test_percent):
 
 
 
-    p = figure(plot_width=600, plot_height=400, x_range=G['Classes'].tolist()[Z:], tooltips=[('','@Classes'), ('','@Number')])
+    p = figure(plot_width=600, plot_height=400, x_range=G['Classes'].tolist()[Z:], tooltips=[('','@Classes'), ('','@Number')], title='Data Breakdown by Subsets')
     p.vbar(x='Classes', width=0.5, top = 'Number', line_color=None, source=source, fill_color=factor_cmap('Classes', palette=colors[::-1], factors=(G['Classes'].tolist()[Z:])))
     p.xaxis.axis_line_color = '#D6DBDF'
     p.yaxis.axis_line_color = '#D6DBDF'
