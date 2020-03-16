@@ -304,7 +304,7 @@ def model_inference(model, input_image_path, inference_transformations=transform
 
         model.eval()
         out = model(target_img_tensor)
-        # ps = torch.exp(out)
+        ps = torch.exp(out)
         ps=out
         prediction_percentages = (ps.cpu().numpy()[0]).tolist()
         pred = prediction_percentages.index(max(prediction_percentages))
