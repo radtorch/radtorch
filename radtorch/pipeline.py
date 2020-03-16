@@ -340,7 +340,7 @@ class Image_Classification():
 
         show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
 
-    def roc(self, target_data_set='default', auc=True, figure_size=(7,7)):
+    def roc(self, target_data_set='default', figure_size=(600,400)):
         '''
         Display ROC and AUC
         Inputs:
@@ -362,7 +362,7 @@ class Image_Classification():
             target_data_set.trans = self.transformations
 
         if num_classes <= 2:
-            show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, figure_size=figure_size, device=self.device)
+            show_nn_roc(model=self.trained_model, target_data_set=target_data_set, figure_size=figure_size, device=self.device)
         else:
             raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
             pass
