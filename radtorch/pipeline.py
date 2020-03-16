@@ -209,7 +209,7 @@ class Image_Classification():
 
         print ('RADTorch Image Classification Pipeline Parameters')
         info = {key:value for key, value in self.__dict__.items() if key !='trans'}
-        info = {key:value for key, value in info if key !='model'}
+        info = {key:value for key, value in info.items() if key !='model'}
         classifier_info = pd.DataFrame.from_dict(info)
         # for key, value in self.__dict__.items():
         #     if key != 'trans':
