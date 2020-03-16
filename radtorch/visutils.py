@@ -153,7 +153,7 @@ def show_metrics(metric_source, metric='all', show_points = False, fig_size = (6
     output = []
 
     for k, v in metrics.items():
-        p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training '+k), tools=TOOLS, toolbar_location='below')
+        p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training '+k), tools=TOOLS, toolbar_location='below', tooltips=[('','@index'), ('','@y')])
         p.line(v.index, v.train, line_width=1.5, line_color= '#2F5EC4',  legend_label='Train')
         p.line(v.index, v.valid, line_width=1.5, line_color='#93D5ED',  legend_label='Valid')
         if show_points:

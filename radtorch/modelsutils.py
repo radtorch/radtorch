@@ -291,7 +291,7 @@ def model_inference(model, input_image_path, inference_transformations=transform
     if input_image_path.endswith('dcm'):
         target_img = dicom_to_pil(input_image_path)
     else:
-        target_img = Image.open(test_image_name).convert('RGB')
+        target_img = Image.open(input_image_path).convert('RGB')
 
     target_img_tensor = inference_transformations(target_img)
     # target_img_tensor = target_img_tensor.unsqueeze(1)
