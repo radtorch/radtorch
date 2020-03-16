@@ -244,7 +244,7 @@ def show_roc(true_labels, predictions, figure_size=(550,400), title='ROC Curve')
 
     baseline = [0, 0.5, 1.0]
 
-    p = figure(plot_width=figsize[0], plot_height=figsize[1])
+    p = figure(plot_width=figure_size[0], plot_height=figure_size[1])
     p.line(fpr, tpr, line_width=2, line_color= '#2F5EC4')
     p.line(baseline, baseline, line_width=1.5, line_color='#93D5ED', line_dash='dashed')
     p.xaxis.axis_line_color = '#D6DBDF'
@@ -271,7 +271,6 @@ def show_roc(true_labels, predictions, figure_size=(550,400), title='ROC Curve')
     p.yaxis.axis_label_text_font_style = None
     show(p)
     return auc
-
     # plt.figure(figsize=figure_size)
     # plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='orange', alpha=.8)
     # plt.plot(fpr, tpr)
@@ -287,9 +286,7 @@ def show_roc(true_labels, predictions, figure_size=(550,400), title='ROC Curve')
     #     return metrics.roc_auc_score(true_labels, predictions)
 
 
-
-
-def show_nn_roc(model, target_data_set,  device, figure_size=(10,10)):
+def show_nn_roc(model, target_data_set,  device, figure_size=(600,400)):
     """
     Displays the ROC and AUC of a certain trained model on a target(for example test) dataset.
 
