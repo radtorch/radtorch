@@ -15,7 +15,7 @@ from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
 from pathlib import Path
-
+from collections import Counter
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table
