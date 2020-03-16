@@ -220,7 +220,7 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
         plt.title(l[0]);
 
 
-def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC Curve'):
+def show_roc(true_labels, predictions, figure_size=(550,400), title='ROC Curve'):
     """
     Displays ROC curve and AUC using true and predicted label lists.
 
@@ -230,7 +230,6 @@ def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC
 
     - predictions: _(list)_ list of predicted labels.
 
-    - auc: _(boolen)_ True to display AUC. (default=True)
 
     - figure_size: _(tuple)_ size of the displayed figure. (default=10,10)
 
@@ -241,19 +240,53 @@ def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC
     -  Output: _(figure)_
     """
     fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
-    plt.figure(figsize=figure_size)
-    plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='orange', alpha=.8)
-    plt.plot(fpr, tpr)
-    plt.title(title);
-    plt.xlabel('FPR (1-specficity)');
-    plt.ylabel('TPR (Sensitivity)');
-    plt.grid(True)
-    print (fpr)
-    print (tpr)
-    if auc == True:
-        plt.xlabel('FPR (1-specficity)\nAUC={:0.4f}'.format(metrics.roc_auc_score(true_labels, predictions)))
-        # print ('AUC =',metrics.roc_auc_score(true_labels, predictions))
-        return metrics.roc_auc_score(true_labels, predictions)
+    auc = metrics.roc_auc_score(true_labels, predictions)
+
+    baseline = [0, 0.5, 1.0]
+
+    p = figure(plot_width=figsize[0], plot_height=figsize[1])
+    p.line(fpr, tpr, line_width=2, line_color= '#2F5EC4')
+    p.line(baseline, baseline, line_width=1.5, line_color='#93D5ED', line_dash='dashed')
+    p.xaxis.axis_line_color = '#D6DBDF'
+    p.yaxis.axis_line_color = '#D6DBDF'
+    p.xgrid.grid_line_color=None
+    p.yaxis.axis_line_width = 2
+    p.xaxis.axis_line_width = 2
+    p.xaxis.major_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_color = '#D6DBDF'
+    p.xaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_width = 2
+    p.xaxis.major_tick_line_width = 2
+    p.yaxis.minor_tick_line_width = 0
+    p.xaxis.minor_tick_line_width = 0
+    p.xaxis.major_label_text_color = '#99A3A4'
+    p.yaxis.major_label_text_color = '#99A3A4'
+    p.outline_line_color = None
+    p.yaxis.axis_label = 'TPR (Sensitivity)'
+    p.xaxis.axis_label = ('FPR (1-specficity)\n   AUC={:0.4f}'.format(5))
+    p.xaxis.axis_label_text_color = '#ABB2B9'
+    p.yaxis.axis_label_text_color = '#ABB2B9'
+    p.xaxis.axis_label_text_font_style = None
+    p.yaxis.axis_label_text_font_style = None
+    show(p)
+    return auc
+
+    # plt.figure(figsize=figure_size)
+    # plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='orange', alpha=.8)
+    # plt.plot(fpr, tpr)
+    # plt.title(title);
+    # plt.xlabel('FPR (1-specficity)');
+    # plt.ylabel('TPR (Sensitivity)');
+    # plt.grid(True)
+    # print (fpr)
+    # print (tpr)
+    # if auc == True:
+    #     plt.xlabel('FPR (1-specficity)\nAUC={:0.4f}'.format(metrics.roc_auc_score(true_labels, predictions)))
+    #     # print ('AUC =',metrics.roc_auc_score(true_labels, predictions))
+    #     return metrics.roc_auc_score(true_labels, predictions)
+
+
 
 
 def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
