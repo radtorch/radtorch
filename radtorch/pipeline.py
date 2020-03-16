@@ -208,35 +208,36 @@ class Image_Classification():
         '''
 
         print ('RADTorch Image Classification Pipeline Parameters')
-        for key, value in self.__dict__.items():
-            if key != 'trans':
-                print('>', key,'=',value)
-        print ('Train Dataset Size =', len(self.train_data_set))
-        print ('Valid Dataset Size =', len(self.valid_data_set))
-        if self.test_percent > 0:
-            print ('Test Dataset Size =', len(self.test_data_set))
+        classifier_info = pd.DataFrame.from_dict(self.__dict__, orient='index')
+        # for key, value in self.__dict__.items():
+        #     if key != 'trans':
+        #         print('>', key,'=',value)
+        # print ('Train Dataset Size =', len(self.train_data_set))
+        # print ('Valid Dataset Size =', len(self.valid_data_set))
+        # if self.test_percent > 0:
+        #     print ('Test Dataset Size =', len(self.test_data_set))
+        return classifier_info
 
     def dataset_info(self, plot=False):
         '''
         Display Dataset Information.
         '''
-        train_labels = sorted([i[1] for i in self.train_data_set])
-        valid_labels = sorted([i[1] for i in self.valid_data_set])
-        test_labels = sorted([i[1] for i in self.test_data_set])
-
         info = show_dataset_info(self.data_set)
         info = info.append({'Classes':'Train Dataset Size', 'Class Idx': '','Number of Instances':len(self.train_data_set)}, ignore_index=True )
         info = info.append({'Classes':'Valid Dataset Size', 'Class Idx': '','Number of Instances':len(self.valid_data_set)}, ignore_index=True )
 
-
         if self.test_percent > 0:
             info = info.append({'Classes':'Test Dataset Size', 'Class Idx': '', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
 
-        info = info.append({'Classes':'Train Dataset Breakdown', 'Class Idx': '','Number of Instances':list(zip(Counter(train_labels).keys(), Counter(train_labels).values()))}, ignore_index=True )
-        info = info.append({'Classes':'Valid Dataset Breakdown', 'Class Idx': '','Number of Instances':list(zip(Counter(valid_labels).keys(), Counter(valid_labels).values()))}, ignore_index=True )
 
-        if self.test_percent > 0:
-            info = info.append({'Classes':'Test Dataset Breakdown', 'Class Idx': '','Number of Instances':list(zip(Counter(test_labels).keys(), Counter(test_labels).values()))}, ignore_index=True )
+        # CODE FOR CLASS BREAKDOWN IN SUBSETS .. IN PROGRESS
+        # train_labels = sorted([i[1] for i in self.train_data_set])
+        # valid_labels = sorted([i[1] for i in self.valid_data_set])
+        # test_labels = sorted([i[1] for i in self.test_data_set])
+        # info = info.append({'Classes':'Train Dataset Breakdown', 'Class Idx': '','Number of Instances':list(zip(Counter(train_labels).keys(), Counter(train_labels).values()))}, ignore_index=True )
+        # info = info.append({'Classes':'Valid Dataset Breakdown', 'Class Idx': '','Number of Instances':list(zip(Counter(valid_labels).keys(), Counter(valid_labels).values()))}, ignore_index=True )
+        # if self.test_percent > 0:
+        #     info = info.append({'Classes':'Test Dataset Breakdown', 'Class Idx': '','Number of Instances':list(zip(Counter(test_labels).keys(), Counter(test_labels).values()))}, ignore_index=True )
 
         if plot:
             plot_pipline_dataset_info(info, test_percent = self.test_percent)
