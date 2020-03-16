@@ -18,7 +18,7 @@ from pathlib import Path
 
 
 from radtorch.dicomutils import dicom_to_pil
-from radtorch.datautils import IMG_EXTENSIONS
+from radtorch.datautils import IMG_EXTENSIONS, set_random_seed
 
 
 
@@ -172,7 +172,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
     '''
     .. include:: ./documentation/docs/modelutils.md##train_model
     '''
-
+    set_random_seed(100)
     start_time = datetime.datetime.now()
     training_metrics = []
     if verbose:
