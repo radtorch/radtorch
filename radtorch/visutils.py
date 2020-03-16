@@ -289,7 +289,7 @@ def show_roc(true_labels, predictions, figure_size=(550,400), title='ROC Curve')
 
 
 
-def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
+def show_nn_roc(model, target_data_set,  device, figure_size=(10,10)):
     """
     Displays the ROC and AUC of a certain trained model on a target(for example test) dataset.
 
@@ -331,7 +331,7 @@ def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
             pred_labels = pred_labels+pr
 
 
-    show_roc(true_labels, pred_labels, auc=auc, figure_size=figure_size)
+    show_roc(true_labels, pred_labels,figure_size=figure_size)
 
 
 def show_confusion_matrix(cm,target_names,title='Confusion Matrix',cmap=None,normalize=False,figure_size=(8,6)):
