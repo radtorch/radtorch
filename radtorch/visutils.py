@@ -1,4 +1,4 @@
-import torch, torchvision, datetime, time, pickle, pydicom, os
+import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools
 import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim
@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-
 from sklearn import metrics
 from tqdm import tqdm_notebook as tqdm
 from torch.utils.data.dataset import Dataset
@@ -16,13 +15,43 @@ from torchvision import transforms
 from PIL import Image
 from pathlib import Path
 
+from bokeh.io import output_notebook, show
+from math import pi
+from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource
+from bokeh.plotting import figure, show
+from bokeh.sampledata.unemployment1948 import data
+from bokeh.layouts import row, gridplot
+from bokeh.transform import factor_cmap, cumsum
+
 
 from radtorch.generalutils import getDuplicatesWithCount
+from radtorch.dicomutils import dicom_to_narray
 
 
 
 
-def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=True):
+def misclassified(true_labels_list, predicted_labels_list, img_path_list):
+    misclassified = {}
+    for i in range (len(true_labels_list)):
+        if true_labels_list[i] != predicted_labels_list[i]:
+            misclassified[img_path_list[i]] = {'image_path': img_path_list[i], 'true_label': true_labels_list[i], 'predicted_label': predicted_labels_list[i]}
+    return misclassified
+
+
+def show_misclassified(misclassified_dictionary, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
+    row = int(math.sqrt(num_of_images))
+    sample = random.sample(list(misclassified_dictionary), num_of_images)
+    transform=transforms.Compose([transforms.Resize((244, 244)),transforms.ToTensor()])
+    if is_dicom:
+        imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
+    else:
+        imgs = [transform(Image.open(i).convert('RGB')) for i in sample]
+    grid = torchvision.utils.make_grid(imgs, nrow=row)
+    plt.figure(figsize=(figure_size))
+    plt.imshow(np.transpose(grid, (1,2,0)))
+
+
+def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=False):
   """
     Displays sample of certain dataloader with corresponding class idx
 
@@ -34,7 +63,7 @@ def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10)
 
     - figsize: _(tuple)_ size of displayed figure. (default = (10,10))
 
-    - show_labels: _(boolen)_ display class idx of the sample displayed .(default=True)
+    - show_labels: _(boolen)_ display class idx of the sample displayed .(default=False)
 
     **Output**
 
@@ -48,6 +77,7 @@ def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10)
   plt.imshow(np.transpose(grid, (1,2,0)))
   if show_labels:
       print ('labels:', labels)
+
 
 def show_dataset_info(dataset):
     """
@@ -66,19 +96,24 @@ def show_dataset_info(dataset):
         - Class frequency breakdown.
     """
 
-    label_list = [i[1] for i in dataset]
-    label_stats = getDuplicatesWithCount(label_list)
+    input_data = dataset.input_data
+    image_path_col = dataset.image_path_col
+    image_label_col = dataset.image_label_col
 
-    print ('Number of intances =', len(dataset))
-    print ('Number of classes = ', len(dataset.classes))
-    print ('Class IDX = ', dataset.class_to_idx)
-    print ('')
-    print ('Class Frequency: ')
-    print ('{0:2s} {1:3s}'.format('Class', 'Number of instances'))
-    for key, value in label_stats.items():
-        print('{0:2d} {1:3s} {2:4d}'.format(key, '',value))
 
-def show_metrics(source, fig_size=(15,5)):
+
+    class_names = list(dataset.class_to_idx.keys())+['Total Instances']
+    class_idx = list(dataset.class_to_idx.values())+['']
+    num_instances = []
+    for i in list(dataset.class_to_idx.keys()):
+      num_instances.append(input_data[image_label_col].value_counts()[[i]].sum())
+    num_instances =num_instances+[len(dataset)]
+    output = pd.DataFrame(list(zip(class_names, class_idx, num_instances)), columns=['Classes', 'Class Idx', 'Number of Instances'])
+
+    return output
+
+
+def show_metrics(metric_source, metric='all', show_points = False, fig_size = (600,400)):
     """
     Displays metrics created by the training loop.
 
@@ -93,20 +128,64 @@ def show_metrics(source, fig_size=(15,5)):
     -  Output: _(figure)_ Matplotlib graphs of accuracy and error for training and validation.
     """
 
-    metrics = np.array(source)
-    loss = metrics[:,0:2]
-    accuracy = metrics[:,2:4]
+    # metrics = np.array(source)
+    # loss = metrics[:,0:2]
+    # accuracy = metrics[:,2:4]
+    #
+    # fig, (ax1, ax2) = plt.subplots(1, 2, figsize=fig_size)
+    #
+    # ax1.plot(loss)
+    # ax1.legend(['Train Loss', 'Valid Loss'])
+    # ax1.set(xlabel='Epoch Number', ylabel='Loss')
+    # ax1.grid(True)
+    # ax2.plot(accuracy)
+    # ax2.legend(['Train Accuracy', 'Valid Accuracy'])
+    # ax2.set(xlabel='Epoch Number', ylabel='Accuracy')
+    # ax2.grid(True)
+    output_notebook()
+    TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=fig_size)
+    metrics = {
+     'Accuracy': metric_source[['Train_Accuracy', 'Valid_Accuracy']].rename(columns={'Train_Accuracy':'train','Valid_Accuracy':'valid'}),
+    'Loss': metric_source[['Train_Loss', 'Valid_Loss']].rename(columns={'Train_Loss':'train','Valid_Loss':'valid'}),
+    }
 
-    ax1.plot(loss)
-    ax1.legend(['Train Loss', 'Valid Loss'])
-    ax1.set(xlabel='Epoch Number', ylabel='Loss')
-    ax1.grid(True)
-    ax2.plot(accuracy)
-    ax2.legend(['Train Accuracy', 'Valid Accuracy'])
-    ax2.set(xlabel='Epoch Number', ylabel='Accuracy')
-    ax2.grid(True)
+    output = []
+
+    for k, v in metrics.items():
+        p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training '+k), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+        p.line(v.index, v.train, line_width=1.5, line_color= '#2F5EC4',  legend_label='Train')
+        p.line(v.index, v.valid, line_width=1.5, line_color='#93D5ED',  legend_label='Valid')
+        if show_points:
+          p.circle(v.index, v.train,  fill_color= '#2F5EC4', line_color=None, legend_label='Train')
+          p.circle(v.index, v.valid,  fill_color='#93D5ED', line_color=None,  legend_label='Valid')
+        p.legend.location = "center_right"
+        p.legend.click_policy="hide"
+        p.xaxis.axis_line_color = '#D6DBDF'
+        p.yaxis.axis_line_color = '#D6DBDF'
+        p.xgrid.grid_line_color=None
+        p.yaxis.axis_line_width = 2
+        p.xaxis.axis_line_width = 2
+        p.xaxis.major_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_color = '#D6DBDF'
+        p.xaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_width = 2
+        p.xaxis.major_tick_line_width = 2
+        p.yaxis.minor_tick_line_width = 0
+        p.xaxis.minor_tick_line_width = 0
+        p.xaxis.major_label_text_color = '#99A3A4'
+        p.yaxis.major_label_text_color = '#99A3A4'
+        p.outline_line_color = None
+        output.append(p)
+
+    if metric == 'accuracy':
+        show(row(output[0]))
+    elif metric == 'loss':
+        show(row(output[1]))
+    else:
+        show(row(output))
+
 
 def show_dicom_sample(dataloader, figsize=(30,10)):
     """
@@ -140,7 +219,8 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
         plt.imshow(i[0][0], cmap='gray');
         plt.title(l[0]);
 
-def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC Curve'):
+
+def show_roc(true_labels, predictions, figure_size=(550,400), title='ROC Curve'):
     """
     Displays ROC curve and AUC using true and predicted label lists.
 
@@ -150,7 +230,6 @@ def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC
 
     - predictions: _(list)_ list of predicted labels.
 
-    - auc: _(boolen)_ True to display AUC. (default=True)
 
     - figure_size: _(tuple)_ size of the displayed figure. (default=10,10)
 
@@ -161,19 +240,53 @@ def show_roc(true_labels, predictions, auc=True, figure_size=(10,10), title='ROC
     -  Output: _(figure)_
     """
     fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
-    plt.figure(figsize=figure_size)
-    plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='orange', alpha=.8)
-    plt.plot(fpr, tpr)
-    plt.title(title);
-    plt.xlabel('FPR (1-specficity)');
-    plt.ylabel('TPR (Sensitivity)');
-    plt.grid(True)
-    if auc == True:
-        plt.xlabel('FPR (1-specficity)\nAUC={:0.4f}'.format(metrics.roc_auc_score(true_labels, predictions)))
-        # print ('AUC =',metrics.roc_auc_score(true_labels, predictions))
-        return metrics.roc_auc_score(true_labels, predictions)
+    auc = metrics.roc_auc_score(true_labels, predictions)
 
-def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
+    baseline = [0, 0.5, 1.0]
+
+    p = figure(plot_width=figure_size[0], plot_height=figure_size[1])
+    p.line(fpr, tpr, line_width=2, line_color= '#2F5EC4')
+    p.line(baseline, baseline, line_width=1.5, line_color='#93D5ED', line_dash='dashed')
+    p.xaxis.axis_line_color = '#D6DBDF'
+    p.yaxis.axis_line_color = '#D6DBDF'
+    p.xgrid.grid_line_color=None
+    p.yaxis.axis_line_width = 2
+    p.xaxis.axis_line_width = 2
+    p.xaxis.major_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_color = '#D6DBDF'
+    p.xaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_width = 2
+    p.xaxis.major_tick_line_width = 2
+    p.yaxis.minor_tick_line_width = 0
+    p.xaxis.minor_tick_line_width = 0
+    p.xaxis.major_label_text_color = '#99A3A4'
+    p.yaxis.major_label_text_color = '#99A3A4'
+    p.outline_line_color = None
+    p.yaxis.axis_label = 'TPR (Sensitivity)'
+    p.xaxis.axis_label = ('FPR (1-specficity)\n   AUC={:0.4f}'.format(5))
+    p.xaxis.axis_label_text_color = '#ABB2B9'
+    p.yaxis.axis_label_text_color = '#ABB2B9'
+    p.xaxis.axis_label_text_font_style = None
+    p.yaxis.axis_label_text_font_style = None
+    show(p)
+    return auc
+    # plt.figure(figsize=figure_size)
+    # plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='orange', alpha=.8)
+    # plt.plot(fpr, tpr)
+    # plt.title(title);
+    # plt.xlabel('FPR (1-specficity)');
+    # plt.ylabel('TPR (Sensitivity)');
+    # plt.grid(True)
+    # print (fpr)
+    # print (tpr)
+    # if auc == True:
+    #     plt.xlabel('FPR (1-specficity)\nAUC={:0.4f}'.format(metrics.roc_auc_score(true_labels, predictions)))
+    #     # print ('AUC =',metrics.roc_auc_score(true_labels, predictions))
+    #     return metrics.roc_auc_score(true_labels, predictions)
+
+
+def show_nn_roc(model, target_data_set,  device, figure_size=(600,400)):
     """
     Displays the ROC and AUC of a certain trained model on a target(for example test) dataset.
 
@@ -215,40 +328,10 @@ def show_nn_roc(model, target_data_set,  device, auc=True, figure_size=(10,10)):
             pred_labels = pred_labels+pr
 
 
-    show_roc(true_labels, pred_labels, auc=auc, figure_size=figure_size)
+    show_roc(true_labels, pred_labels,figure_size=figure_size)
 
-def plot_confusion_matrix(cm,
-                          target_names,
-                          title='Confusion Matrix',
-                          cmap=None,
-                          normalize=False,
-                          figure_size=(8,6)):
-    """
-    Given a sklearn confusion matrix (cm), make a nice plot. Code adapted from : https://www.kaggle.com/grfiv4/plot-a-confusion-matrix.
 
-    **Arguments**
-
-    - cm: _(numpy array)_ confusion matrix from sklearn.metrics.confusion_matrix.
-
-    - target_names: _(list)_ list of class names.
-
-    - title: _(str)_ title displayed on top of the output figure. (default='Confusion Matrix')
-
-    - cmap: _(str)_ The gradient of the values displayed from matplotlib.pyplot.cm . See http://matplotlib.org/examples/color/colormaps_reference.html. (default=None which is plt.get_cmap('jet') or plt.cm.Blues)
-
-    - normalize: _(boolean)_  If False, plot the raw numbers. If True, plot the proportions. (default=False)
-
-    - figure_size: _(tuple)_ size of the displayed figure. (default=8,6)
-
-    **Output**
-
-    -  Output: _(figure)_
-
-    """
-    import matplotlib.pyplot as plt
-    import numpy as np
-    import itertools
-
+def show_confusion_matrix(cm,target_names,title='Confusion Matrix',cmap=None,normalize=False,figure_size=(8,6)):
     accuracy = np.trace(cm) / float(np.sum(cm))
     misclass = 1 - accuracy
 
@@ -285,7 +368,8 @@ def plot_confusion_matrix(cm,
     plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
     plt.show()
 
-def show_confusion_matrix(model, target_data_set, target_classes, device, figure_size=(8,6), cmap=None):
+
+def show_nn_confusion_matrix(model, target_data_set, target_classes, device, figure_size=(8,6), cmap=None):
     '''
     Displays Confusion Matrix for Image Classifier Model.
 
@@ -309,28 +393,206 @@ def show_confusion_matrix(model, target_data_set, target_classes, device, figure
     '''
     true_labels = []
     pred_labels = []
+
     model.to(device)
     target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
 
-    for i, (imgs, labels, path) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
+    for i, (imgs, labels, paths) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
         imgs = imgs.to(device)
         labels = labels.to(device)
         true_labels = true_labels+labels.tolist()
-        # print (imgs.shape)
         with torch.no_grad():
             model.eval()
             out = model(imgs)
-            # ps = torch.exp(out)
             ps = out
             pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
             pred_labels = pred_labels+pr
 
 
     cm = metrics.confusion_matrix(true_labels, pred_labels)
-    plot_confusion_matrix(cm=cm,
+    show_confusion_matrix(cm=cm,
                           target_names=target_classes,
                           title='Confusion Matrix',
                           cmap=cmap,
                           normalize=False,
                           figure_size=figure_size
                           )
+
+
+def show_nn_misclassified(model, target_data_set, num_of_images, device, is_dicom = True, figure_size=(5,5)):
+    true_labels = []
+    pred_labels = []
+    misses_all = {}
+
+    model.to(device)
+    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
+
+    for i, (imgs, labels, paths) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
+        imgs = imgs.to(device)
+        labels = labels.to(device)
+        true_labels = true_labels+labels.tolist()
+        with torch.no_grad():
+            model.eval()
+            out = model(imgs)
+            ps = out
+            pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
+            misses = misclassified(true_labels_list=labels.tolist(), predicted_labels_list=pr, img_path_list=list(paths))
+            # misses_all = dict(misses_all.items() + misses.items())
+            misses_all.update(misses)
+            pred_labels = pred_labels+pr
+
+    show_misclassified(misclassified_dictionary=misses_all, is_dicom = is_dicom, num_of_images = num_of_images, figure_size = figure_size)
+    output = pd.DataFrame(misses_all.values())
+
+    return output
+
+
+def plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col):
+    '''
+    .. include:: ./documentation/docs/visutils.md##plot_features
+    '''
+
+    output_notebook()
+
+    colors = ['#F2F4F4', '#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1']
+    TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
+
+    min_fig_size = 400
+
+    f = (feature_table).copy()
+
+    max_value = max(f[feature_names].max().tolist())
+    min_value = min(f[feature_names].min().tolist())
+
+
+    file_label_dict = {}
+
+    for i in sorted(f[image_label_col].unique()):
+        file_label_dict[str(i)] = f[f[image_label_col] == i];
+
+    figures = []
+
+    for k, v in file_label_dict.items():
+        f = v[:num_images]
+        f = f[[image_path_col]+feature_names[:num_features]]
+
+        f[image_path_col] = f[image_path_col].astype(str)
+        i = f[image_path_col].tolist()
+        i = [os.path.basename(str(x)) for x in i]
+        f[image_path_col] = i
+
+        f = f.set_index(image_path_col)
+
+
+        f.columns.name = 'features'
+        images = list(f.index)
+        features = list(f.columns)
+
+        df = pd.DataFrame(f.stack(), columns=['value']).reset_index()
+        mapper = LinearColorMapper(palette=colors, low=min_value, high=max_value)
+
+        plot_width = num_features*8
+        plot_height=num_images*8
+
+        if plot_width < min_fig_size:
+            plot_width = min_fig_size
+
+        if plot_height < min_fig_size:
+            plot_height = min_fig_size
+
+        p = figure(title=("Extracted Imaging Features for class "+str(k)),
+                x_range=features, y_range=images,
+                x_axis_location="above", plot_width=plot_width, plot_height=plot_height,
+                tools=TOOLS, toolbar_location='below',
+                tooltips=[('instance', '@img_path'), ('feature', '@features'), ('value', '@value')])
+
+        p.grid.grid_line_color = None
+        p.axis.axis_line_color = None
+        p.axis.major_tick_line_color = None
+        p.axis.major_label_text_font_size = "4pt"
+        p.axis.major_label_standoff = 0
+        p.xaxis.major_label_orientation = pi / 3
+
+        p.rect(x="features", y="img_path", width=1, height=1,
+            source=df,
+            fill_color={'field': 'value', 'transform': mapper},
+            line_color=None)
+
+        color_bar = ColorBar(color_mapper=mapper, major_label_text_font_size="8pt",
+                          ticker=BasicTicker(desired_num_ticks=len(colors)),
+                          #  formatter=PrintfTickFormatter(format="%d%%"),
+                          label_standoff=6, border_line_color=None, location=(0, 0))
+
+
+        p.add_layout(color_bar, 'right')
+        tab = Panel(child=p,title=("Class "+str(k)) )
+        figures.append(tab)
+
+        # show(p)
+    tabs = Tabs(tabs=figures)
+
+    show(tabs)
+
+
+def plot_pipline_dataset_info(dataframe, test_percent):
+
+    colors = ['#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1']
+    TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
+
+    G = dataframe[['Classes', 'Number of Instances']]
+    G.columns = ['Classes', 'Number']
+
+    if test_percent==0:
+        Z = -3
+    else:
+        Z = -4
+
+    output_notebook()
+
+    source = ColumnDataSource(G)
+
+    output = []
+
+    p = figure(plot_width=600, plot_height=400, x_range=G['Classes'].tolist()[:Z], tools=TOOLS, tooltips=[('','@Classes'), ('','@Number')], title='Data Breakdown by Class')
+    p.vbar(x='Classes', width=0.4, top = 'Number', line_color=None, source=source, fill_color=factor_cmap('Classes', palette=colors[::-1], factors=(G['Classes'].tolist()[:Z])))
+    output.append(p)
+    p.xaxis.axis_line_color = '#D6DBDF'
+    p.yaxis.axis_line_color = '#D6DBDF'
+    p.xgrid.grid_line_color=None
+    p.yaxis.axis_line_width = 2
+    p.xaxis.axis_line_width = 2
+    p.xaxis.major_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_color = '#D6DBDF'
+    p.xaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_width = 2
+    p.xaxis.major_tick_line_width = 2
+    p.yaxis.minor_tick_line_width = 0
+    p.xaxis.minor_tick_line_width = 0
+    p.xaxis.major_label_text_color = '#99A3A4'
+    p.yaxis.major_label_text_color = '#99A3A4'
+    p.outline_line_color = None
+
+
+
+    p = figure(plot_width=600, plot_height=400, x_range=G['Classes'].tolist()[Z:], tooltips=[('','@Classes'), ('','@Number')], title='Data Breakdown by Subsets')
+    p.vbar(x='Classes', width=0.5, top = 'Number', line_color=None, source=source, fill_color=factor_cmap('Classes', palette=colors[::-1], factors=(G['Classes'].tolist()[Z:])))
+    p.xaxis.axis_line_color = '#D6DBDF'
+    p.yaxis.axis_line_color = '#D6DBDF'
+    p.xgrid.grid_line_color=None
+    p.yaxis.axis_line_width = 2
+    p.xaxis.axis_line_width = 2
+    p.xaxis.major_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_color = '#D6DBDF'
+    p.xaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_width = 2
+    p.xaxis.major_tick_line_width = 2
+    p.yaxis.minor_tick_line_width = 0
+    p.xaxis.minor_tick_line_width = 0
+    p.xaxis.major_label_text_color = '#99A3A4'
+    p.yaxis.major_label_text_color = '#99A3A4'
+    p.outline_line_color = None
+    output.append(p)
+
+    show(row(output))

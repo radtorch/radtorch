@@ -1,7 +1,4 @@
 
-
-
-
 <!doctype html>
 <html lang="en" class="no-js">
   <head>
@@ -32,11 +29,11 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../img/radtorch_icon.ico">
-      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-4.4.0">
     
     
       
-        <title>Version log - RADTorch</title>
+        <title>Releases/Versions - RADTorch</title>
       
     
     
@@ -85,7 +82,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#version-log" tabindex="1" class="md-skip">
+      <a href="#releasesversions" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -111,7 +108,7 @@
             </span>
             <span class="md-header-nav__topic">
               
-                Version log
+                Releases/Versions
               
             </span>
           
@@ -273,11 +270,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Version log
+        Releases/Versions
       </label>
     
-    <a href="./" title="Version log" class="md-nav__link md-nav__link--active">
-      Version log
+    <a href="./" title="Releases/Versions" class="md-nav__link md-nav__link--active">
+      Releases/Versions
     </a>
     
       
@@ -291,16 +288,43 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v011-_-3-3-2020" title="v.0.1.1 _ 3-3-2020" class="md-nav__link">
-    v.0.1.1 _ 3-3-2020
+  <a href="#nightly" title="Nightly" class="md-nav__link">
+    Nightly
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#v010-_-3-1-2020" title="v.0.1.0 _ 3-1-2020" class="md-nav__link">
-    v.0.1.0 _ 3-1-2020
+  <a href="#official-releases" title="Official Releases" class="md-nav__link">
+    Official Releases
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v012-beta" title="v.0.1.2-beta" class="md-nav__link">
+    v.0.1.2-beta
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v011-beta" title="v.0.1.1-beta" class="md-nav__link">
+    v.0.1.1-beta
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v010-beta" title="v.0.1.0-beta" class="md-nav__link">
+    v.0.1.0-beta
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -360,16 +384,43 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#v011-_-3-3-2020" title="v.0.1.1 _ 3-3-2020" class="md-nav__link">
-    v.0.1.1 _ 3-3-2020
+  <a href="#nightly" title="Nightly" class="md-nav__link">
+    Nightly
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#v010-_-3-1-2020" title="v.0.1.0 _ 3-1-2020" class="md-nav__link">
-    v.0.1.0 _ 3-1-2020
+  <a href="#official-releases" title="Official Releases" class="md-nav__link">
+    Official Releases
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v012-beta" title="v.0.1.2-beta" class="md-nav__link">
+    v.0.1.2-beta
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v011-beta" title="v.0.1.1-beta" class="md-nav__link">
+    v.0.1.1-beta
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v010-beta" title="v.0.1.0-beta" class="md-nav__link">
+    v.0.1.0-beta
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -390,23 +441,44 @@
               
                 
                 
-                <h1 id="version-log">Version Log</h1>
+                <h1 id="releasesversions">Releases/Versions</h1>
 <p><small></p>
-<h4 id="v011-_-3-3-2020"><em>v.0.1.1 _ 3-3-2020</em></h4>
-<ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Feature Extraction Pipeline now uses batches not single images into GPU = improved speed.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Inference done during confusion matrix and roc creation for Image Classification Pipeline now uses batches not single images into GPU = improved speed.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Fix error with Image Classification Pipeline when using external test dataset.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Allow omitting creating an internal test subset for the Image Classification Pipeline by setting test_percent = 0.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Allow export and import of pipeline structures.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Add shuffle parameter to Feature Extraction Pipeline.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> updated documentation.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> restructure exported csv file with feature extraction pipeline.</li>
-</ul>
-<h4 id="v010-_-3-1-2020"><em>v.0.1.0 _ 3-1-2020</em></h4>
-<ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> First BETA release.</li>
-</ul>
+<h2 id="nightly">Nightly</h2>
+<h2 id="official-releases">Official Releases</h2>
+<h3 id="v012-beta"><a href="https://github.com/radtorch/radtorch/releases">v.0.1.2-beta</a></h3>
+<pre><code>- Release Date: 3-17-2020
+- Fixes
+  - Restructure how dataset information is processed.
+    Internally a dataframe input_data is created to expedite calling dataset_info.
+  - Set same random seed during training.
+  - Change Image_Classification.train() to Image_Classification.run()
+  - Update number of workers for pipeline dataloader to default = 4
+
+- New Features
+  - Allow user to set/change pytorch and numpy random seed.
+  - Graphs have been updated to Bokeh (more interactive).
+  - Graphically display pipeline dataset information
+  - Misclassified items during testing in the image classification pipeline can now be viewed.
+  - Extracted Imaging Features can now be graphically viewed per class.
+  - Figure size of training metrics is now changeable.
+  - When doing inference using a trained model, prediction percentages for all classes can now be viewed as table.
+</code></pre>
+<h3 id="v011-beta"><a href="https://github.com/radtorch/radtorch/releases">v.0.1.1-beta</a></h3>
+<pre><code>-  Release Date: 3-3-2020
+-  Feature Extraction Pipeline now uses batches not single images into GPU = improved speed.
+-  Inference done during confusion matrix and roc creation for Image Classification Pipeline now uses batches not single images into GPU = improved speed.
+-  Fix error with Image Classification Pipeline when using external test dataset.
+-  Allow omitting creating an internal test subset for the Image Classification Pipeline by setting test_percent = 0.
+-  Change line color in roc to default blue.
+-  Allow export and import of pipeline structures.
+-  Add shuffle parameter to Feature Extraction Pipeline.
+-  Restructure exported csv file with feature extraction pipeline.
+-  Updated documentation.
+</code></pre>
+<h3 id="v010-beta"><a href="https://github.com/radtorch/radtorch/releases">v.0.1.0-beta</a></h3>
+<pre><code>- Release Date: 3-1-2020
+- First BETA release.
+</code></pre>
 <p></small></p>
                 
                   
@@ -479,7 +551,7 @@
     
       <script src="../assets/javascripts/application.245445c6.js"></script>
       
-      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
+      <script>app.initialize({version:"1.1",url:{base:".."}})</script>
       
     
   </body>

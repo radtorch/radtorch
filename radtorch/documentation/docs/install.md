@@ -3,7 +3,7 @@
 RADTorch tool kit and its dependencies can be installed using the following terminal commands:
 
 ```
-pip3 install https://repo.radtorch.com/archive/v0.1.1.zip
+pip3 install https://repo.radtorch.com/archive/v0.1.2-beta.zip
 
 ```
 
@@ -40,3 +40,5 @@ RADTorch depends on the following packages which are installed automatically dur
 - sklearn  0.22.1
 
 - pathlib
+
+- Bokeh 2.0.0

@@ -18,7 +18,7 @@ from pathlib import Path
 
 
 from radtorch.dicomutils import dicom_to_pil
-from radtorch.datautils import IMG_EXTENSIONS
+from radtorch.datautils import IMG_EXTENSIONS, set_random_seed
 
 
 
@@ -44,12 +44,11 @@ loss_dict = {
             'MultiLabelSoftMarginLoss':torch.nn.MultiLabelSoftMarginLoss(),
             }
 
-
-
-
 supported_models = [x for x in model_dict.keys()]
 
 supported_image_classification_losses = ['NLLLoss', 'CrossEntropyLoss']
+
+supported_multi_label_image_classification_losses = []
 
 supported_optimizer = ['Adam', 'ASGD', 'RMSprop', 'SGD']
 
@@ -105,7 +104,9 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
                 train_model.classifier[6] = Identity()
             else:
                 train_model.classifier[6] = nn.Sequential(
-                    nn.Linear(in_features=4096, out_features=output_classes, bias=True))
+                    nn.Linear(in_features=4096, out_features=output_classes, bias=True),
+                    torch.nn.LogSoftmax(dim=1)
+                    )
 
 
         elif model_arch == 'resnet50' or model_arch == 'resnet101' or model_arch == 'resnet152' or model_arch == 'wide_resnet50_2' or  model_arch == 'wide_resnet101_2':
@@ -125,15 +126,19 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
                 train_model.fc = Identity()
             else:
                 train_model.fc = nn.Sequential(
-                  nn.Linear(in_features=2048, out_features=output_classes, bias=True))
+                  nn.Linear(in_features=2048, out_features=output_classes, bias=True),
+                  torch.nn.LogSoftmax(dim=1)
+                  )
 
         elif model_arch == 'inception_v3':
             train_model = torchvision.models.inception_v3(pretrained=pre_trained)
             if mode == 'feature_extraction':
                 train_model.fc = Identity()
             else:
-                train_model.fc = nn.Linear(in_features=2048, out_features=output_classes, bias=True)
-
+                train_model.fc = nn.Sequential(
+                  nn.Linear(in_features=2048, out_features=output_classes, bias=True),
+                  torch.nn.LogSoftmax(dim=1)
+                  )
 
         for param in train_model.parameters():
             param.requires_grad = unfreeze_weights
@@ -173,7 +178,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
     '''
     .. include:: ./documentation/docs/modelutils.md##train_model
     '''
-
+    set_random_seed(100)
     start_time = datetime.datetime.now()
     training_metrics = []
     if verbose:
@@ -284,7 +289,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 
     return model, training_metrics
 
-def model_inference(model, input_image_path, inference_transformations=transforms.Compose([transforms.ToTensor()])):
+def model_inference(model, input_image_path, all_predictions = False, inference_transformations=transforms.Compose([transforms.ToTensor()])):
     '''
     .. include:: ./documentation/docs/modelutils.md##model_inference
     '''
@@ -292,7 +297,7 @@ def model_inference(model, input_image_path, inference_transformations=transform
     if input_image_path.endswith('dcm'):
         target_img = dicom_to_pil(input_image_path)
     else:
-        target_img = Image.open(test_image_name).convert('RGB')
+        target_img = Image.open(input_image_path).convert('RGB')
 
     target_img_tensor = inference_transformations(target_img)
     # target_img_tensor = target_img_tensor.unsqueeze(1)
@@ -304,17 +309,34 @@ def model_inference(model, input_image_path, inference_transformations=transform
         target_img_tensor.to('cpu')
 
         model.eval()
+
         out = model(target_img_tensor)
-        # ps = torch.exp(out)
-        ps=out
-        prediction_percentages = (ps.cpu().numpy()[0]).tolist()
-        pred = prediction_percentages.index(max(prediction_percentages))
-        return (pred, max(prediction_percentages))
+        softmax = torch.exp(out).cpu()
+        prediction_percentages = softmax.cpu().numpy()[0]
+        prediction_percentages = [i*100 for i in prediction_percentages]
+        _, final_prediction = torch.max(out, 1)
+        prediction_table = pd.DataFrame(list(zip([*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label_idx', 'prediction_percentage'])
+
+    if all_predictions:
+        return prediction_table
+    else:
+        return final_prediction.item(), prediction_percentages[final_prediction.item()]
 
 
 
 
-
+# def efficientNetNetwork(modelarchitecture, output_classes, pretrained=True):
+#
+#     if pretrained:
+#         trainingNetwork = EfficientNet.from_pretrained('efficientnet-b'+str(modelarchitecture))
+#     else:
+#         trainingNetwork = EfficientNet.from_name('efficientnet-b'+str(modelarchitecture))
+#
+#     in_features = trainingNetwork._fc.in_features
+#     trainingNetwork._fc =  nn.Linear(in_features=in_features, out_features=output_classes, bias=True)
+#
+#                                       )
+#     return trainingNetwork
 
 
 

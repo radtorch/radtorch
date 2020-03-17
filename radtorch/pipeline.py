@@ -1,5 +1,4 @@
 
-
 import torch, torchvision, datetime, time, pickle, pydicom, os
 import torchvision.models as models
 import torch.nn as nn
@@ -16,11 +15,11 @@ from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
 from pathlib import Path
-
+from collections import Counter
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table
-from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_confusion_matrix, show_roc, show_nn_roc
+from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info
 
 
 
@@ -55,6 +54,7 @@ class Image_Classification():
     table_source=None,
     path_col = 'IMAGE_PATH',
     label_col = 'IMAGE_LABEL' ,
+    multi_label = False ,
     mode='RAW',
     wl=None,
     batch_size=16,
@@ -103,6 +103,7 @@ class Image_Classification():
         self.loss_function = loss_function
         self.path_col = path_col
         self.label_col = label_col
+        self.multi_label = multi_label
 
         if device == 'default':
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -119,6 +120,7 @@ class Image_Classification():
                         input_source=self.table_source,
                         img_path_column=self.path_col,
                         img_label_column=self.label_col,
+                        multi_label = self.multi_label,
                         mode=self.mode,
                         wl=self.wl,
                         trans=self.transformations)
@@ -127,16 +129,20 @@ class Image_Classification():
                 pass
 
         else:
-            try:
-                self.data_set = dataset_from_folder(
-                            data_directory=self.data_directory,
-                            is_dicom=self.is_dicom,
-                            mode=self.mode,
-                            wl=self.wl,
-                            trans=self.transformations)
-            except:
-                raise TypeError('Dataset could not be created.')
+            if self.multi_label == True:
+                raise TypeError('Dataset could not be created. Multilabel dataset creation is not yet allowed from folders. Please use dataset_from_table instead.')
                 pass
+            else:
+                try:
+                    self.data_set = dataset_from_folder(
+                                data_directory=self.data_directory,
+                                is_dicom=self.is_dicom,
+                                mode=self.mode,
+                                wl=self.wl,
+                                trans=self.transformations)
+                except:
+                    raise TypeError('Dataset could not be created.')
+                    pass
 
 
         valid_size = int(self.valid_percent*len(self.data_set))
@@ -152,12 +158,16 @@ class Image_Classification():
         self.train_data_loader = torch.utils.data.DataLoader(
                                                     self.train_data_set,
                                                     batch_size=self.batch_size,
-                                                    shuffle=True)
+                                                    shuffle=True,
+                                                    num_workers=4)
+
 
         self.valid_data_loader = torch.utils.data.DataLoader(
                                                     self.valid_data_set,
                                                     batch_size=self.batch_size,
-                                                    shuffle=True)
+                                                    shuffle=True,
+                                                    num_workers=4)
+
 
         if self.test_percent == 0:
             self.test_data_loader = 0
@@ -165,7 +175,8 @@ class Image_Classification():
             self.test_data_loader = torch.utils.data.DataLoader(
                                                     self.test_data_set,
                                                     batch_size=self.batch_size,
-                                                    shuffle=True)
+                                                    shuffle=True,
+                                                    num_workers=4)
 
         self.num_output_classes = len(self.data_set.classes)
 
@@ -191,33 +202,51 @@ class Image_Classification():
             raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
             pass
 
-
     def info(self):
         '''
         Display Parameters of the Image Classification Pipeline.
         '''
 
         print ('RADTorch Image Classification Pipeline Parameters')
-        for key, value in self.__dict__.items():
-            if key != 'trans':
-                print('>', key,'=',value)
-        print ('Train Dataset Size =', len(self.train_data_set))
-        print ('Valid Dataset Size =', len(self.valid_data_set))
-        if self.test_percent > 0:
-            print ('Test Dataset Size =', len(self.test_data_set))
+        info = {key:str(value) for key, value in self.__dict__.items()}
+        classifier_info = pd.DataFrame.from_dict(info.items())
+        classifier_info.columns = ['Property', 'Value']
 
-    def dataset_info(self):
+        classifier_info = classifier_info.append({'Property':'Train Dataset Size', 'Value':len(self.train_data_set)}, ignore_index=True)
+        classifier_info = classifier_info.append({'Property':'Valid Dataset Size', 'Value':len(self.valid_data_set)}, ignore_index=True)
+
+        if self.test_percent > 0:
+            classifier_info = classifier_info.append({'Property':'Test Dataset Size', 'Value':len(self.test_data_set)}, ignore_index=True)
+
+        return classifier_info
+
+    def dataset_info(self, plot=False):
         '''
         Display Dataset Information.
         '''
+        info = show_dataset_info(self.data_set)
+        info = info.append({'Classes':'Train Dataset Size', 'Class Idx': '','Number of Instances':len(self.train_data_set)}, ignore_index=True )
+        info = info.append({'Classes':'Valid Dataset Size', 'Class Idx': '','Number of Instances':len(self.valid_data_set)}, ignore_index=True )
 
-        print (show_dataset_info(self.data_set))
-        print ('Train Dataset Size ', len(self.train_data_set))
-        print ('Valid Dataset Size ', len(self.valid_data_set))
         if self.test_percent > 0:
-            print ('Test Dataset Size ', len(self.test_data_set))
+            info = info.append({'Classes':'Test Dataset Size', 'Class Idx': '', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
 
-    def sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):
+
+        # CODE FOR CLASS BREAKDOWN IN SUBSETS .. IN PROGRESS
+        # train_labels = sorted([i[1] for i in self.train_data_set])
+        # valid_labels = sorted([i[1] for i in self.valid_data_set])
+        # test_labels = sorted([i[1] for i in self.test_data_set])
+        # info = info.append({'Classes':'Train Dataset Breakdown', 'Class Idx': '','Number of Instances':list(zip(Counter(train_labels).keys(), Counter(train_labels).values()))}, ignore_index=True )
+        # info = info.append({'Classes':'Valid Dataset Breakdown', 'Class Idx': '','Number of Instances':list(zip(Counter(valid_labels).keys(), Counter(valid_labels).values()))}, ignore_index=True )
+        # if self.test_percent > 0:
+        #     info = info.append({'Classes':'Test Dataset Breakdown', 'Class Idx': '','Number of Instances':list(zip(Counter(test_labels).keys(), Counter(test_labels).values()))}, ignore_index=True )
+
+        if plot:
+            plot_pipline_dataset_info(info, test_percent = self.test_percent)
+        else:
+            return info
+
+    def sample(self, num_of_images_per_row=4, fig_size=(10,10), show_labels=False):
         '''
         Display sample of the training dataset.
         Inputs:
@@ -227,7 +256,7 @@ class Image_Classification():
         '''
         return show_dataloader_sample(dataloader=self.train_data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
 
-    def train(self, verbose=True):
+    def run(self, verbose=True):
         '''
         Train the image classification pipeline.
         Inputs:
@@ -245,15 +274,17 @@ class Image_Classification():
                                                     epochs = self.train_epochs,
                                                     device = self.device,
                                                     verbose=verbose)
+            self.train_metrics = pd.DataFrame(data=self.train_metrics, columns = ['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
         except:
             raise TypeError('Could not train image classification pipeline. Please check rpovided parameters.')
             pass
 
-    def metrics(self):
+    def metrics(self, metric='all', show_points = False, fig_size=(600,400)):
         '''
         Display the training metrics.
         '''
-        show_metrics(self.train_metrics)
+        # show_metrics(self.train_metrics, fig_size=fig_size)
+        show_metrics(self.train_metrics, metric=metrics, show_points = show_points, fig_size = fig_size)
 
     def export_model(self,output_path):
         '''
@@ -279,7 +310,7 @@ class Image_Classification():
             self.trained_model = torch.load(model_path)
         print ('Model Loaded Successfully.')
 
-    def inference(self, test_img_path, transformations='default'):
+    def inference(self, test_img_path, transformations='default',  all_predictions=False):
         '''
         Performs inference on target DICOM image using a trained classifier.
         Inputs:
@@ -293,9 +324,7 @@ class Image_Classification():
         else:
             transformations = transformations
 
-        pred, percent = model_inference(model=self.trained_model,input_image_path=test_img_path, inference_transformations=transformations)
-        print (pred)
-        return (pred, percent)
+        return model_inference(model=self.trained_model,input_image_path=test_img_path, inference_transformations=transformations, all_predictions=all_predictions)
 
     def confusion_matrix(self, target_data_set='default', target_classes='default', figure_size=(7,7), cmap=None):
         '''
@@ -321,9 +350,9 @@ class Image_Classification():
         else:
             target_classes = target_classes
 
-        show_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
+        show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
 
-    def roc(self, target_data_set='default', auc=True, figure_size=(7,7)):
+    def roc(self, target_data_set='default', figure_size=(600,400)):
         '''
         Display ROC and AUC
         Inputs:
@@ -345,9 +374,28 @@ class Image_Classification():
             target_data_set.trans = self.transformations
 
         if num_classes <= 2:
-            show_nn_roc(model=self.trained_model, target_data_set=target_data_set, auc=auc, figure_size=figure_size, device=self.device)
+            show_nn_roc(model=self.trained_model, target_data_set=target_data_set, figure_size=figure_size, device=self.device)
         else:
-            raise TypeError('ROC cannot support more than 2 classes at the current time. This will be fixed in an upcoming update.')
+            raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
+            pass
+
+    def misclassified(self, target_data_set='default', num_of_images=16, figure_size=(7,7), show_table=False):
+        if target_data_set=='default':
+            if self.test_data_set == 0:
+                raise TypeError('Error. Test Percent set to Zero in image classification pipeline. Please change or set another target testing dataset.')
+                pass
+            else:
+                target_data_set = self.test_data_set
+        else:
+            target_data_set = target_data_set
+            target_data_set.trans = self.transformations
+
+        self.misclassified_instances = show_nn_misclassified(model=self.trained_model, target_data_set=target_data_set, is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
+
+        if show_table:
+            self.misclassified_instances
+
+        return self.misclassified_instances
 
     def export(self, target_path):
         '''
@@ -450,7 +498,8 @@ class Feature_Extraction():
         self.data_loader = torch.utils.data.DataLoader(
                                                     self.data_set,
                                                     batch_size=self.batch_size,
-                                                    shuffle=self.shuffle)
+                                                    shuffle=self.shuffle,
+                                                    num_workers=4)
 
 
         self.num_output_classes = len(self.data_set.classes)
@@ -465,23 +514,26 @@ class Feature_Extraction():
 
         self.model = self.model.to(self.device)
 
-
     def info(self):
         '''
         Displays Feature Extraction Pipeline Parameters.
         '''
         print ('RADTorch Feature Extraction Pipeline Parameters')
-        for key, value in self.__dict__.items():
-            if key != 'trans':
-                print('>', key,'=',value)
+        info = {key:str(value) for key, value in self.__dict__.items()}
+        extractor_info = pd.DataFrame.from_dict(info.items())
+        extractor_info.columns = ['Property', 'Value']
+        return extractor_info
 
-
-    def dataset_info(self):
+    def dataset_info(self, plot=False):
         '''
         Displays Dataset Information.
         '''
-        print (show_dataset_info(self.data_set))
+        info = show_dataset_info(self.data_set)
 
+        if plot:
+            plot_pipline_dataset_info(info, test_percent = 0)
+        else:
+            return info
 
     def sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):
         '''
@@ -489,11 +541,9 @@ class Feature_Extraction():
         '''
         return show_dataloader_sample(dataloader=self.data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
 
-
     def num_features(self):
         output = model_dict[self.model_arch]['output_features']
         return output
-
 
     def run(self, verbose=True):
         '''
@@ -502,17 +552,6 @@ class Feature_Extraction():
         self.features = []
         self.labels_idx = []
         self.img_path_list = []
-
-
-        # with torch.no_grad():
-        #     self.model.eval()
-        #     for input, label, img_path in tqdm(self.data_set, total=len(self.data_set)):
-        #         input = input.to(self.device)
-        #         input = input.unsqueeze(0)
-        #         output = (self.model(input))[0].tolist()
-        #         self.features.append(output)
-        #         self.labels_idx.append(label)
-        #         self.img_path_list.append(img_path)
 
         self.model = self.model.to(self.device)
 
@@ -539,12 +578,9 @@ class Feature_Extraction():
         self.feature_table = feature_table
 
         if verbose:
-            self.feature_table
+            return self.feature_table
 
         self.features = self.feature_table[self.feature_names]
-
-        return self.feature_table
-
 
     def export_features(self,csv_path):
         try:
@@ -553,7 +589,6 @@ class Feature_Extraction():
         except:
             print ('Error! No features found. Please check again or re-run the extracion pipeline.')
             pass
-
 
     def export(self, target_path):
         '''
@@ -565,6 +600,13 @@ class Feature_Extraction():
         outfile = open(target_path,'wb')
         pickle.dump(self,outfile)
         outfile.close()
+
+    def plot_extracted_features(self, feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx'):
+        if feature_table == None:
+            feature_table = self.feature_table
+        if feature_names == None:
+            feature_names = self.feature_names
+        return plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col)
 
     # def set_trained_model(self, model_path, mode):
     #     '''
