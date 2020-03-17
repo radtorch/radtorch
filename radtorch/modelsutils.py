@@ -307,17 +307,15 @@ def model_inference(model, input_image_path, all_predictions = False, inference_
         out = model(target_img_tensor)
         softmax = torch.exp(out).cpu()
         prediction_percentages = softmax.cpu().numpy()[0]
+        prediction_percentages = [i*100 for i in prediction_percentages]
         _, final_prediction = torch.max(out, 1)
+        prediction_table = pd.DataFrame(list(zip([*range(0, len(out), 1)], prediction_percentages)), columns=['label_idx', 'prediction_percentage'])
 
-    return final_prediction.item(), prediction_percentages[final_prediction.item()]*100            
+    if all_predictions:
+        return prediction_table
+    else:
+        return final_prediction.item(), prediction_percentages[final_prediction.item()]
 
-    #     ps = torch.exp(out)
-    #     # ps=out
-    #     prediction_percentages = (ps.cpu().numpy()[0]).tolist()
-    #     pred = prediction_percentages.index(max(prediction_percentages))
-    # if all_predictions == False
-    #     return (pred, max(prediction_percentages))
-    # else:
 
 
 
