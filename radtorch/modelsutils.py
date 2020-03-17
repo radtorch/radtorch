@@ -315,7 +315,7 @@ def model_inference(model, input_image_path, all_predictions = False, inference_
         prediction_percentages = softmax.cpu().numpy()[0]
         prediction_percentages = [i*100 for i in prediction_percentages]
         _, final_prediction = torch.max(out, 1)
-        prediction_table = pd.DataFrame(list(zip([*range(0, len(out), 1)], prediction_percentages)), columns=['label_idx', 'prediction_percentage'])
+        prediction_table = pd.DataFrame(list(zip([*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label_idx', 'prediction_percentage'])
 
     if all_predictions:
         return prediction_table
