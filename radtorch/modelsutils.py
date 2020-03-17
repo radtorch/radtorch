@@ -283,7 +283,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
 
     return model, training_metrics
 
-def model_inference(model, input_image_path, inference_transformations=transforms.Compose([transforms.ToTensor()])):
+def model_inference(model, input_image_path, all_predictions = False, inference_transformations=transforms.Compose([transforms.ToTensor()])):
     '''
     .. include:: ./documentation/docs/modelutils.md##model_inference
     '''
@@ -304,12 +304,19 @@ def model_inference(model, input_image_path, inference_transformations=transform
 
         model.eval()
         out = model(target_img_tensor)
-        ps = torch.exp(out)
-        # ps=out
-        prediction_percentages = (ps.cpu().numpy()[0]).tolist()
-        pred = prediction_percentages.index(max(prediction_percentages))
-        return (pred, max(prediction_percentages))
+        softmax = torch.exp(out).cpu()
+        prob = list(softmax.numpy())
+        predictions = np.argmax(prob, axis=1)
+    print (pred)
+    print  (predictions)
 
+    #     ps = torch.exp(out)
+    #     # ps=out
+    #     prediction_percentages = (ps.cpu().numpy()[0]).tolist()
+    #     pred = prediction_percentages.index(max(prediction_percentages))
+    # if all_predictions == False
+    #     return (pred, max(prediction_percentages))
+    # else:
 
 
 
