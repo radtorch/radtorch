@@ -394,6 +394,7 @@ class Image_Classification():
 
         if show_table:
             self.misclassified_instances
+
         return self.misclassified_instances
 
     def export(self, target_path):
@@ -518,15 +519,21 @@ class Feature_Extraction():
         Displays Feature Extraction Pipeline Parameters.
         '''
         print ('RADTorch Feature Extraction Pipeline Parameters')
-        for key, value in self.__dict__.items():
-            if key != 'trans':
-                print('>', key,'=',value)
+        info = {key:str(value) for key, value in self.__dict__.items()}
+        extractor_info = pd.DataFrame.from_dict(info.items())
+        extractor_info.columns = ['Property', 'Value']
+        return extractor_info
 
-    def dataset_info(self):
+    def dataset_info(self, plot=False):
         '''
         Displays Dataset Information.
         '''
-        return (show_dataset_info(self.data_set))
+        info = show_dataset_info(self.data_set)
+
+        if plot:
+            plot_pipline_dataset_info(info, test_percent = 0)
+        else:
+            return info
 
     def sample(self, num_of_images_per_row=5, fig_size=(10,10), show_labels=True):
         '''
@@ -575,8 +582,6 @@ class Feature_Extraction():
 
         self.features = self.feature_table[self.feature_names]
 
-        # return self.feature_table
-
     def export_features(self,csv_path):
         try:
             self.feature_table.to_csv(csv_path, index=False)
@@ -596,12 +601,12 @@ class Feature_Extraction():
         pickle.dump(self,outfile)
         outfile.close()
 
-    def plot_extracted_features(self, feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx', split_by_class=False):
+    def plot_extracted_features(self, feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx'):
         if feature_table == None:
             feature_table = self.feature_table
         if feature_names == None:
             feature_names = self.feature_names
-        return plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col, split_by_class=split_by_class)
+        return plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col)
 
     # def set_trained_model(self, model_path, mode):
     #     '''

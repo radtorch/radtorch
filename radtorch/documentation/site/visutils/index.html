@@ -257,6 +257,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#plot_pipline_dataset_info" title="plot_pipline_dataset_info" class="md-nav__link">
+    plot_pipline_dataset_info
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#show_metrics" title="show_metrics" class="md-nav__link">
     show_metrics
   </a>
@@ -285,15 +292,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#plot_confusion_matrix" title="plot_confusion_matrix" class="md-nav__link">
-    plot_confusion_matrix
+  <a href="#show_confusion_matrix" title="show_confusion_matrix" class="md-nav__link">
+    show_confusion_matrix
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#show_confusion_matrix" title="show_confusion_matrix" class="md-nav__link">
-    show_confusion_matrix
+  <a href="#show_nn_confusion_matrix" title="show_nn_confusion_matrix" class="md-nav__link">
+    show_nn_confusion_matrix
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#misclassified" title="misclassified" class="md-nav__link">
+    misclassified
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show_misclassified" title="show_misclassified" class="md-nav__link">
+    show_misclassified
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show_nn_misclassified" title="show_nn_misclassified" class="md-nav__link">
+    show_nn_misclassified
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plot_features" title="plot_features" class="md-nav__link">
+    plot_features
   </a>
   
 </li>
@@ -351,8 +386,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../version/" title="Version log" class="md-nav__link">
-      Version log
+    <a href="../version/" title="Releases/Versions" class="md-nav__link">
+      Releases/Versions
     </a>
   </li>
 
@@ -416,6 +451,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#plot_pipline_dataset_info" title="plot_pipline_dataset_info" class="md-nav__link">
+    plot_pipline_dataset_info
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#show_metrics" title="show_metrics" class="md-nav__link">
     show_metrics
   </a>
@@ -444,15 +486,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#plot_confusion_matrix" title="plot_confusion_matrix" class="md-nav__link">
-    plot_confusion_matrix
+  <a href="#show_confusion_matrix" title="show_confusion_matrix" class="md-nav__link">
+    show_confusion_matrix
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#show_confusion_matrix" title="show_confusion_matrix" class="md-nav__link">
-    show_confusion_matrix
+  <a href="#show_nn_confusion_matrix" title="show_nn_confusion_matrix" class="md-nav__link">
+    show_nn_confusion_matrix
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#misclassified" title="misclassified" class="md-nav__link">
+    misclassified
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show_misclassified" title="show_misclassified" class="md-nav__link">
+    show_misclassified
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#show_nn_misclassified" title="show_nn_misclassified" class="md-nav__link">
+    show_nn_misclassified
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plot_features" title="plot_features" class="md-nav__link">
+    plot_features
   </a>
   
 </li>
@@ -474,16 +544,18 @@
               
                 
                 
-                <h1 id="visualization-module-radtorchvisutils">Visualization Module <small> radtorch.visutils </small></h1>
-<p>Different tools and utilities for data visualization. Based upon Matplotlib.</p>
+                <!-- Last Updated 3/17/2020, Mohamed Elbanan -->
+
+<h1 id="visualization-module-radtorchvisutils">Visualization Module <small> radtorch.visutils </small></h1>
+<p>Different tools and utilities for data visualization. Based upon Matplotlib and Bokeh.</p>
 <pre><code>from radtorch import visutils
 </code></pre>
 <h2 id="show_dataloader_sample">show_dataloader_sample</h2>
 <pre><code>visutils.show_dataloader_sample(dataloader, num_of_images_per_row=10,
-                        figsize=(10,10), show_labels=True)
+                        figsize=(10,10), show_labels=False)
 </code></pre>
 <div class="admonition quote">
-<p>Displays sample of certain dataloader with corresponding class idx</p>
+<p>Displays sample of a dataloader with corresponding class idx</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li>
@@ -496,51 +568,55 @@
 <p>figsize: <em>(tuple)</em> size of displayed figure. (default = (10,10))</p>
 </li>
 <li>
-<p>show_labels: <em>(boolen)</em> display class idx of the sample displayed .(default=True)</p>
+<p>show_labels: <em>(boolen)</em> display class idx of the sample displayed .(default=False)</p>
 </li>
-</ul>
-<p><strong>Output</strong></p>
-<ul>
-<li>Output: <em>(figure)</em></li>
 </ul>
 </div>
 <h2 id="show_dataset_info">show_dataset_info</h2>
 <pre><code>visutils.show_dataset_info(dataset)
 </code></pre>
 <div class="admonition quote">
-<p>Displays a summary of the pytorch dataset information.</p>
+<p>Displays a Pandas DataFrame summary of the pytorch dataset information.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li>dataset: <em>(pytorch dataset object)</em> target dataset to inspect.</li>
 </ul>
-<p><strong>Output</strong></p>
+</div>
+<h2 id="plot_pipline_dataset_info">plot_pipline_dataset_info</h2>
+<pre><code>visutils.plot_pipline_dataset_info(dataframe, test_percent)
+</code></pre>
+<div class="admonition quote">
+<p>Displays a graphical representation of the dataset information dataframe generated by visutils.show_dataset_info</p>
+<p><strong>Arguments</strong></p>
 <ul>
-<li>Output: <em>(str)</em> Dataset information including:<ul>
-<li>Number of instances</li>
-<li>Number of classes</li>
-<li>Dictionary of class and class_id</li>
-<li>Class frequency breakdown.</li>
-</ul>
+<li>
+<p>dataframe: <em>(Pandas DataFrame)</em> dataframe containing dataset information</p>
+</li>
+<li>
+<p>test_percent: <em>(float)</em> the percent of testing subset.</p>
 </li>
 </ul>
 </div>
 <h2 id="show_metrics">show_metrics</h2>
-<pre><code>visutils.show_metrics(source, fig_size=(15,5))
+<pre><code>visutils.show_metrics(metric_source, metric='all',
+                      show_points = False, fig_size = (600,400))
 </code></pre>
 <div class="admonition quote">
-<p>Displays metrics created by the training loop.</p>
+<p>Displays metrics created by model training loop.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li>
-<p>source: <em>(list)</em> the metrics generated during the training process as by modelsutils.train_model()</p>
+<p>metric_source: <em>(list)</em> the metrics generated during the training process as by modelsutils.train_model()</p>
 </li>
 <li>
-<p>fig_size: <em>(tuple)</em> size of the displayed figure. (default=15,5)</p>
+<p>metric: <em>(str)</em> the metric to display. Options include 'all', 'accuracy' or 'loss'. (default='all')</p>
 </li>
-</ul>
-<p><strong>Output</strong></p>
-<ul>
-<li>Output: <em>(figure)</em> Matplotlib graphs of accuracy and error for training and validation.</li>
+<li>
+<p>show_points: <em>(boolean)</em> display single points on graph (default = False)</p>
+</li>
+<li>
+<p>fig_size: <em>(tuple)</em> size of the displayed figure. (default=400,600)</p>
+</li>
 </ul>
 </div>
 <h2 id="show_dicom_sample">show_dicom_sample</h2>
@@ -557,14 +633,10 @@
 <p>figsize: <em>(tuple)</em> size of the displayed figure. (default=30,10)</p>
 </li>
 </ul>
-<p><strong>Output</strong></p>
-<ul>
-<li>Output: <em>(figure)</em> single image in case of one window and 3 images in case of multiple window.</li>
-</ul>
 </div>
 <h2 id="show_roc">show_roc</h2>
-<pre><code>visutils.show_roc(true_labels, predictions, auc=True,
-                  figure_size=(10,10), title='ROC Curve')
+<pre><code>visutils.show_roc(true_labels, predictions,
+                  figure_size=(550,400), title='ROC Curve')
 </code></pre>
 <div class="admonition quote">
 <p>Displays ROC curve and AUC using true and predicted label lists.</p>
@@ -577,22 +649,15 @@
 <p>predictions: <em>(list)</em> list of predicted labels.</p>
 </li>
 <li>
-<p>auc: <em>(boolen)</em> True to display AUC. (default=True)</p>
-</li>
-<li>
-<p>figure_size: <em>(tuple)</em> size of the displayed figure. (default=10,10)</p>
+<p>figure_size: <em>(tuple)</em> size of the displayed figure. (default=550,400)</p>
 </li>
 <li>
 <p>title: <em>(str)</em> title displayed on top of the output figure. (default='ROC Curve')</p>
 </li>
 </ul>
-<p><strong>Output</strong></p>
-<ul>
-<li>Output: <em>(figure)</em></li>
-</ul>
 </div>
 <h2 id="show_nn_roc">show_nn_roc</h2>
-<pre><code>visutils.show_nn_roc(model, target_data_set, auc=True, figure_size=(10,10))
+<pre><code>visutils.show_nn_roc(model, target_data_set,  device, figure_size=(600,400))
 </code></pre>
 <div class="admonition quote">
 <p>Displays the ROC and AUC of a certain trained model on a target(for example test) dataset.</p>
@@ -605,19 +670,15 @@
 <p>target_data_set: <em>(pytorch dataset object)</em> target dataset.</p>
 </li>
 <li>
-<p>auc: <em>(boolen)</em> True to display AUC. (default=True)</p>
+<p>device: <em>(str)</em> 'cpu' or 'cuda'.</p>
 </li>
 <li>
-<p>figure_size: <em>(tuple)</em> size of the displayed figure. (default=10,10)</p>
+<p>figure_size: <em>(tuple)</em> size of the displayed figure. (default=(600,400))</p>
 </li>
 </ul>
-<p><strong>Output</strong></p>
-<ul>
-<li>Output: <em>(figure)</em></li>
-</ul>
 </div>
-<h2 id="plot_confusion_matrix">plot_confusion_matrix</h2>
-<pre><code>visutils.plot_confusion_matrix(cm,target_names, title='Confusion Matrix',
+<h2 id="show_confusion_matrix">show_confusion_matrix</h2>
+<pre><code>visutils.show_confusion_matrix(cm,target_names, title='Confusion Matrix',
                               cmap=None,normalize=False,figure_size=(8,6))
 </code></pre>
 <div class="admonition quote">
@@ -643,13 +704,9 @@
 <p>figure_size: <em>(tuple)</em> size of the displayed figure. (default=8,6)</p>
 </li>
 </ul>
-<p><strong>Output</strong></p>
-<ul>
-<li>Output: <em>(figure)</em></li>
-</ul>
 </div>
-<h2 id="show_confusion_matrix">show_confusion_matrix</h2>
-<pre><code>visutils.show_confusion_matrix(model, target_data_set,
+<h2 id="show_nn_confusion_matrix">show_nn_confusion_matrix</h2>
+<pre><code>visutils.show_nn_confusion_matrix(model, target_data_set,
           target_classes, figure_size=(8,6), cmap=None)
 </code></pre>
 <div class="admonition quote">
@@ -672,9 +729,105 @@
 <p>cmap: <em>(str)</em> the colormap of the generated figure (default=None, which is Blues)</p>
 </li>
 </ul>
+</div>
+<h2 id="misclassified">misclassified</h2>
+<pre><code>visutils.misclassified(true_labels_list, predicted_labels_list, img_path_list)
+</code></pre>
+<div class="admonition quote">
+<p>Returns Dictionary of image path, true label and predicted label for instances not correctly classified by image classification model.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>
+<p>true_labels_list: <em>(list)</em> list of true label idx</p>
+</li>
+<li>
+<p>predicted_labels_list: <em>(list)</em> list of predicted label idx</p>
+</li>
+<li>
+<p>img_path_list: <em>(list)</em> list of image paths</p>
+</li>
+</ul>
 <p><strong>Output</strong></p>
 <ul>
-<li>Output: <em>(figure)</em></li>
+<li>Dictionary of image path, true label and predicted label for instances not correctly classified by image classification model.</li>
+</ul>
+</div>
+<h2 id="show_misclassified">show_misclassified</h2>
+<pre><code>visutils.show_misclassified(misclassified_dictionary, is_dicom = True,
+                            num_of_images = 16, figure_size = (5,5))
+</code></pre>
+<div class="admonition quote">
+<p>Displays sample images from misclassified instances.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>
+<p>misclassified_dictionary: <em>(dictionary)</em> dictionary of image path, true labels and predicted labels generated by <a href="#misclassified">visutils.misclassified</a></p>
+</li>
+<li>
+<p>is_dicom: <em>(boolean)</em> True for DICOM images.</p>
+</li>
+<li>
+<p>num_of_images: <em>(int)</em> number of imgaes to display (default=16)</p>
+</li>
+<li>
+<p>figure_size: <em>(tuple)</em> size of displayed figure (default = (5,5))</p>
+</li>
+</ul>
+</div>
+<h2 id="show_nn_misclassified">show_nn_misclassified</h2>
+<pre><code>visutils.show_nn_misclassified(model, target_data_set, num_of_images,
+                      device, is_dicom = True, figure_size=(5,5))
+</code></pre>
+<div class="admonition quote">
+<p>Displays sample of misclassified images of an image classification pipeline.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>
+<p>model: <em>(pytorch model object)</em> target model.</p>
+</li>
+<li>
+<p>target_data_set: <em>(pytorch dataset object)</em> target dataset.</p>
+</li>
+<li>
+<p>num_of_images: <em>(int)</em> number of images to display.</p>
+</li>
+<li>
+<p>device: <em>(str)</em> 'cpu' or 'cuda'.</p>
+</li>
+<li>
+<p>is_dicom: <em>(boolean)</em> True for DICOM images. (default=True)</p>
+</li>
+<li>
+<p>figure_size: <em>(tuple)</em> size of displayed figure (default = (5,5))</p>
+</li>
+</ul>
+</div>
+<h2 id="plot_features">plot_features</h2>
+<pre><code>visutils.plot_features(feature_table, feature_names, num_features,
+                        num_images, image_path_col, image_label_col)
+</code></pre>
+<div class="admonition quote">
+<p>Displays a graphical representation of extracted imaging features from a Feature Extraction Pipeline. Features can be displayed overall or per class.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>
+<p>feature_table: <em>(Pandas DataFrame)</em> feature table produced by feature extraction pipeline.</p>
+</li>
+<li>
+<p>feature_names: <em>(list)</em> list of imaging features produced by feature extraction pipeline.</p>
+</li>
+<li>
+<p>num_features: <em>(int)</em> number of imaging features produced by feature extraction pipeline.</p>
+</li>
+<li>
+<p>num_images: <em>(int)</em> number of images to show features for.</p>
+</li>
+<li>
+<p>image_path_col: <em>(str)</em> the name of the column which contains image path in the feature table.</p>
+</li>
+<li>
+<p>image_label_col: <em>(str)</em> the name of the column which contains image label idx in the feature table.</p>
+</li>
 </ul>
 </div>
                 

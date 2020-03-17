@@ -370,8 +370,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../version/" title="Version log" class="md-nav__link">
-      Version log
+    <a href="../version/" title="Releases/Versions" class="md-nav__link">
+      Releases/Versions
     </a>
   </li>
 
@@ -516,6 +516,8 @@
 <p><p style='text-align: justify;'>
 Pipelines are probably the most exciting feature of RADTorch tool kit. With few lines of code, the pipeline module allows you to run state-of-the-art image classification algorithms and much more.
 </p></p>
+<pre><code>from radtorch import pipeline
+</code></pre>
 <h2 id="image_classification">Image_Classification</h2>
 <pre><code>  pipeline.Image_Classification(data_directory, transformations='default',
   custom_resize='default', device='default', optimizer='Adam', is_dicom=True,
@@ -553,6 +555,9 @@ Under the hood, the following happens:</p>
 </li>
 <li>
 <p>Confusion Matrix and ROC (for binary classification) can be displayed as well (by default, the test subset is used to calculate the confusion matrix and the ROC)</p>
+</li>
+<li>
+<p>Misclassifed samples can be displayed.</p>
 </li>
 <li>
 <p>Trained model can be exported to outside file for future use.</p>
@@ -646,18 +651,26 @@ Under the hood, the following happens:</p>
 </ul>
 <p><strong>device:</strong></p>
 <ul>
-<li><em>(str)</em> device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.</li>
+<li><em>(str)</em> device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if CUDA is available and trains on it.</li>
 </ul>
 </div>
 <h4 id="methods">Methods</h4>
 <div class="admonition quote">
 <p><strong>.info()</strong></p>
 <ul>
-<li>Display Parameters of the Image Classification Pipeline.</li>
+<li>Display Pandas Dataframe with properties of the Image Classification Pipeline.</li>
 </ul>
 <p><strong>.dataset_info()</strong></p>
 <ul>
-<li>Display Dataset Information.</li>
+<li>
+<p>Display Dataset Information.</p>
+</li>
+<li>
+<p>Arguments:</p>
+<ul>
+<li>plot: <em>(boolean)</em> displays dataset information in graphical representation. By default, data is shown as table. (default=False)</li>
+</ul>
+</li>
 </ul>
 <p><strong>.sample()</strong></p>
 <ul>
@@ -669,14 +682,14 @@ Under the hood, the following happens:</p>
 <ul>
 <li>num_of_images_per_row: <em>(int)</em> number of images per column. (default=5)</li>
 <li>fig_size: <em>(tuple)</em> figure size. (default=(10,10))</li>
-<li>show_labels: <em>(boolean)</em> show the image label idx. (default=True)</li>
+<li>show_labels: <em>(boolean)</em> show the image label idx. (default=False)</li>
 </ul>
 </li>
 </ul>
-<p><strong>.train()</strong></p>
+<p><strong>.run()</strong></p>
 <ul>
 <li>
-<p>Train the image classification pipeline.</p>
+<p>Start the image classification pipeline training.</p>
 </li>
 <li>
 <p>Arguments:</p>
@@ -736,6 +749,7 @@ Under the hood, the following happens:</p>
 <ul>
 <li>test_img_path: <em>(str)</em> path to target image.</li>
 <li>transformations: <em>(pytorch transforms list)</em> list of transforms to be performed on the target image. (default='default' which is the same transforms using for training the pipeline)</li>
+<li>all_predictions: <em>(boolean)</em>  if True , shows table of all prediction classes and accuracy percentages. (default=False)</li>
 </ul>
 </li>
 <li>
@@ -754,8 +768,7 @@ Under the hood, the following happens:</p>
 <p>Arguments:</p>
 <ul>
 <li>target_data_set: <em>(pytorch dataset object)</em> dataset used for predictions to create the ROC. By default, the image classification pipeline uses the test dataset created to calculate the ROC. If no test dataset was created in the pipeline (e.g. test_percent=0), then an external test dataset is required. (default=default')</li>
-<li>auc: <em>(boolen)</em> Display area under curve. (default=True)</li>
-<li>figure_size: <em>(tuple)</em> figure size. (default=(7,7))</li>
+<li>figure_size: <em>(tuple)</em> figure size. (default=(600,400))</li>
 </ul>
 </li>
 </ul>
@@ -773,74 +786,23 @@ Under the hood, the following happens:</p>
 </ul>
 </li>
 </ul>
+<p><strong>.misclassfied()</strong></p>
+<ul>
+<li>
+<p>Displays sample of misclassfied images from confusion matrix or ROC.</p>
+</li>
+<li>
+<p>Arguments:</p>
+</li>
+<li>target_data_set: <em>(pytorch dataset object)</em> dataset used for predictions. By default, the image classification pipeline uses the test dataset. If no test dataset was created in the pipeline (e.g. test_percent=0), then an external test dataset is required. (default=default')</li>
+<li>num_of_images: <em>(int)</em> number of images to be displayed.</li>
+<li>figure_size: <em>(tuple)</em> figure size (default=(7,7))</li>
+<li>show_table: <em>(boolean)</em> display table of misclassied images. (default=False)</li>
+</ul>
 </div>
 <h4 id="examples">Examples</h4>
 <div class="admonition quote">
-<p><strong>Importing the pipeline and setting up data directory</strong></p>
-<pre><code>from radtorch import pipeline
-data_root = '/content/data'
-</code></pre>
-<p><strong>Create the image classifier pipeline</strong></p>
-<p>The below example will create the pipeline using resnet50 model architecture with trained weights loaded and will train for 30 epochs.</p>
-<pre><code>clf = pipeline.Image_Classification(data_directory=data_root,
-      mode='HU', model_arch='resnet50', train_epochs=30)
-</code></pre>
-<p><strong>Show dataset Information</strong></p>
-<pre><code>clf.dataset_info()
-</code></pre>
-<!-- **** -->
-
-<pre><code>Number of intances = 77
-Number of classes =  2
-Class IDX =  {'axr': 0, 'cxr': 1}
-
-Class Frequency:
-Class Number of instances
- 1       39
- 0       38
-None
-Train Dataset Size  47
-Valid Dataset Size  15
-Test Dataset Size  15
-</code></pre>
-<p><strong>Display sample of the dataset</strong></p>
-<pre><code>clf.sample()
-</code></pre>
-<p><img alt="" src="../img/sample.png" /></p>
-<p><strong>Train the classifier</strong></p>
-<pre><code>clf.train()
-</code></pre>
-<!-- **** -->
-
-<pre><code>Starting training at 2020-02-27 17:47:54.918173
-Epoch : 000/30 : [Training: Loss: 0.7937, Accuracy: 46.8085%]  [Validation : Loss : 0.7436, Accuracy: 40.0000%] [Time: 1.4200s]
-Epoch : 001/30 : [Training: Loss: 0.6054, Accuracy: 63.8298%]  [Validation : Loss : 0.7793, Accuracy: 40.0000%] [Time: 1.3436s]
-Epoch : 002/30 : [Training: Loss: 0.5504, Accuracy: 80.8511%]  [Validation : Loss : 1.2314, Accuracy: 40.0000%] [Time: 1.3500s]
-...
-...
-...
-Epoch : 026/30 : [Training: Loss: 0.0499, Accuracy: 97.8723%]  [Validation : Loss : 0.4143, Accuracy: 93.3333%] [Time: 1.3612s]
-Epoch : 027/30 : [Training: Loss: 0.0235, Accuracy: 97.8723%]  [Validation : Loss : 0.0321, Accuracy: 100.000%] [Time: 1.3540s]
-Epoch : 028/30 : [Training: Loss: 0.0142, Accuracy: 100.000%]  [Validation : Loss : 0.2476, Accuracy: 93.3333%] [Time: 1.3584s]
-Epoch : 029/30 : [Training: Loss: 0.0067, Accuracy: 100.000%]  [Validation : Loss : 0.4216, Accuracy: 93.3333%] [Time: 1.3728s]
-
-Total training time = 0:00:40.758802
-</code></pre>
-<p><strong>Display training metrics</strong></p>
-<pre><code>clf.metrics()
-</code></pre>
-<p><img alt="" src="../img/metrics.png" /></p>
-<p><strong>Display Confusion Matrix</strong></p>
-<pre><code>clf.confusion_matrix()
-</code></pre>
-<p><img alt="" src="../img/cm.png" /></p>
-<p><strong>Display ROC</strong></p>
-<pre><code>clf.roc()
-</code></pre>
-<p><img alt="" src="../img/roc.png" /></p>
-<p><strong>Export Trained Model</strong></p>
-<pre><code>clf.export_model('/folder/model.pth')
-</code></pre>
+<p>Full example for Image Classification Pipeline can be found <a href="https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=njIH9PnCLhHp">HERE</a></p>
 </div>
 <hr>
 
@@ -852,7 +814,8 @@ label_col = 'IMAGE_LABEL', mode='RAW', wl=None, model_arch='vgg16',
 pre_trained=True, unfreeze_weights=False, shuffle=True)
 </code></pre>
 <div class="admonition quote">
-<p>The feature extraction pipeline utilizes a pre-trained model to extract a set of features that can be used in another machine learning algorithms e.g. XGBoost. The trained model by default can one of the supported model architectures trained with default weights trained on the ImageNet dataset or a model that has been trained and exported using the image classification pipeline.</p>
+<p>The feature extraction pipeline utilizes a pre-trained model to extract a set of features that can be used in another machine learning algorithms e.g. Adaboost or KNN.</p>
+<p>The trained model by default can one of the supported model architectures trained with default weights trained on the ImageNet dataset. (The ability to use a model that has been trained and exported using the image classification pipeline will be added later.)</p>
 <p>The output is a pandas dataframe that has feature columns, label column and file path column.</p>
 <p>Under the hood, the pipeline removes the last FC layer of the pretrained models to output the features.</p>
 <p>The number of extracted features depends on the model architecture selected:</p>
@@ -983,15 +946,33 @@ model_arch: [str] PyTorch neural network architecture (default='vgg16')</li>
 <div class="admonition quote">
 <p><strong>.info()</strong></p>
 <ul>
-<li>Displays Feature Extraction Pipeline Parameters.</li>
+<li>Display Pandas Dataframe with properties of the Image Classification Pipeline.</li>
 </ul>
 <p><strong>.dataset_info()</strong></p>
 <ul>
-<li>Display Dataset Information.</li>
+<li>
+<p>Display Dataset Information.</p>
+</li>
+<li>
+<p>Arguments:</p>
+<ul>
+<li>plot: <em>(boolean)</em> displays dataset information in graphical representation. By default, data is shown as table. (default=False)</li>
+</ul>
+</li>
 </ul>
 <p><strong>.sample()</strong></p>
 <ul>
-<li>Display sample of the training dataset.</li>
+<li>
+<p>Display sample of the training dataset.</p>
+</li>
+<li>
+<p>Arguments:</p>
+<ul>
+<li>num_of_images_per_row: <em>(int)</em> number of images per column. (default=5)</li>
+<li>fig_size: <em>(tuple)</em> figure size. (default=(10,10))</li>
+<li>show_labels: <em>(boolean)</em> show the image label idx. (default=False)</li>
+</ul>
+</li>
 </ul>
 <p><strong>.num_features()</strong></p>
 <ul>
@@ -1033,57 +1014,24 @@ model_arch: [str] PyTorch neural network architecture (default='vgg16')</li>
 </ul>
 </li>
 </ul>
+<p><strong>.plot_extracted_features()</strong></p>
+<ul>
+<li>
+<p>Plots a graphical representation of extracted features.</p>
+</li>
+<li>
+<p>Arguments:</p>
+</li>
+<li>num_features: <em>(int)</em> number of features to be displayed (default=100)</li>
+<li>num_images: <em>(int)</em> number of images to display features for (default=100)</li>
+<li>image_path_col: <em>(str)</em> name of column containing image paths in the feature table. (default='img_path')</li>
+<li>image_label_col: <em>(str)</em> name of column containing image label idx in the feature table. (default='label_idx')</li>
+</ul>
 <p><strong>.set_trained_model()</strong> : <strong><em>Temporarily Disabled for future update.</em></strong></p>
 </div>
 <h4 id="examples_1">Examples</h4>
 <div class="admonition quote">
-<p><strong>Importing the pipeline and setting up data directory</strong>
-<div class="highlight"><pre><span></span>from radtorch import pipeline
-data_root = &#39;/content/data&#39;
-</pre></div>
-<strong>Create the feature extractor pipeline</strong></p>
-<p>The below example will create the pipeline using resnet152 model architecture with trained weights loaded.</p>
-<div class="highlight"><pre><span></span>extractor = pipeline.Feature_Extraction(data_directory=data_root, mode=&#39;HU&#39;,
-            model_arch=&#39;resnet152&#39;)
-</pre></div>
-
-<p><strong>Display number of Features to be extracted</strong>
-<div class="highlight"><pre><span></span>extractor.num_features()
-</pre></div>
-<div class="highlight"><pre><span></span>2048
-</pre></div></p>
-<p><strong>Show Dataset information</strong>
-<div class="highlight"><pre><span></span>extractor.dataset_info()
-</pre></div>
-<div class="highlight"><pre><span></span>Number of intances = 77
-Number of classes =  2
-Class IDX =  {&#39;axr&#39;: 0, &#39;cxr&#39;: 1}
-
-Class Frequency:
-Class Number of instances
-0       38
-1       39
-</pre></div></p>
-<p><strong>Display sample of the dataset</strong>
-<div class="highlight"><pre><span></span>extractor.sample()
-</pre></div>
-<img alt="" src="../img/sample.png" /></p>
-<p><strong>Run pipeline to extract features</strong>
-<div class="highlight"><pre><span></span>extractor.run()
-</pre></div>
-<div class="highlight"><pre><span></span>  |    | img_path       |  label_idx |       f_0 |      f_1 |         f_2 |      f_3 | ........ |
-  |---:|:---------------|-----------:|----------:|---------:|------------:|---------:|---------:|
-  |  0 | /content/dat...|          0 | 0.135294  | 0.368051 | 0.000352088 | 0.378677 | ........ |
-  |  1 | /content/dat...|          0 | 0.0721618 | 0.930238 | 0.0286931   | 0.732228 | ........ |
-  |  2 | /content/dat...|          0 | 0.0780637 | 0.432966 | 0.0175741   | 0.685681 | ........ |
-  |  3 | /content/dat...|          0 | 0.560777  | 0.449213 | 0.0432512   | 0.432942 | ........ |
-  |  4 | /content/dat...|          0 | 0.176524  | 0.669066 | 0.0396659   | 0.273474 | ........ |
-</pre></div></p>
-<p><strong>Show feature names list</strong>
-<div class="highlight"><pre><span></span>extractor.feature_names
-</pre></div>
-<div class="highlight"><pre><span></span>[&#39;f_0&#39;,&#39;f_1&#39;,&#39;f_2&#39;,&#39;f_3&#39;,&#39;f_4&#39;, &#39;f_5&#39;, ... ]
-</pre></div></p>
+<p>Full example for Feature Extraction Pipeline can be found <a href="https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=iTAp7Zz6CrJ3">HERE</a></p>
 </div>
 <h2 id="load_pipeline">load_pipeline</h2>
 <pre><code>  pipeline.load_pipeline(target_path)

@@ -4,7 +4,9 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 </p>
 
 
+    from radtorch import pipeline
 
+    
 
 ## Image_Classification
 
@@ -37,7 +39,9 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
     6. Confusion Matrix and ROC (for binary classification) can be displayed as well (by default, the test subset is used to calculate the confusion matrix and the ROC)
 
-    7. Trained model can be exported to outside file for future use.
+    7. Misclassifed samples can be displayed.
+
+    8. Trained model can be exported to outside file for future use.
 
 
 ####Parameters
@@ -130,7 +134,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
     **device:**
 
-    - _(str)_ device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
+    - _(str)_ device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if CUDA is available and trains on it.
 
 
 ####Methods
@@ -140,11 +144,14 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
     **.info()**
 
-    - Display Parameters of the Image Classification Pipeline.
+    - Display Pandas Dataframe with properties of the Image Classification Pipeline.
 
     **.dataset_info()**
 
     - Display Dataset Information.
+
+    - Arguments:
+        - plot: _(boolean)_ displays dataset information in graphical representation. By default, data is shown as table. (default=False)
 
     **.sample()**
 
@@ -153,11 +160,11 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     - Arguments:
         - num_of_images_per_row: _(int)_ number of images per column. (default=5)
         - fig_size: _(tuple)_ figure size. (default=(10,10))
-        - show_labels: _(boolean)_ show the image label idx. (default=True)
+        - show_labels: _(boolean)_ show the image label idx. (default=False)
 
-    **.train()**
+    **.run()**
 
-    - Train the image classification pipeline.
+    - Start the image classification pipeline training.
 
     - Arguments:
         - verbose: _(boolean)_ Show display progress after each epoch. (default=True)
@@ -197,6 +204,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     - Arguments:
         - test_img_path: _(str)_ path to target image.
         - transformations: _(pytorch transforms list)_ list of transforms to be performed on the target image. (default='default' which is the same transforms using for training the pipeline)
+        - all_predictions: _(boolean)_  if True , shows table of all prediction classes and accuracy percentages. (default=False)
 
     - Outputs:
         - Output: _(tuple)_ tuple of prediction (class idx , accuracy percentage).
@@ -208,8 +216,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
     - Arguments:
         - target_data_set: _(pytorch dataset object)_ dataset used for predictions to create the ROC. By default, the image classification pipeline uses the test dataset created to calculate the ROC. If no test dataset was created in the pipeline (e.g. test_percent=0), then an external test dataset is required. (default=default')
-        - auc: _(boolen)_ Display area under curve. (default=True)
-        - figure_size: _(tuple)_ figure size. (default=(7,7))
+        - figure_size: _(tuple)_ figure size. (default=(600,400))
 
 
     **.confusion_matrix()**
@@ -221,94 +228,24 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
         - target_classes: _(list)_ list of classes. By default, the image classification pipeline uses the training classes.
         - figure_size: _(tuple)_ figure size. (default=(7,7))
 
+
+    **.misclassfied()**
+
+    - Displays sample of misclassfied images from confusion matrix or ROC.
+
+    - Arguments:
+      - target_data_set: _(pytorch dataset object)_ dataset used for predictions. By default, the image classification pipeline uses the test dataset. If no test dataset was created in the pipeline (e.g. test_percent=0), then an external test dataset is required. (default=default')
+      - num_of_images: _(int)_ number of images to be displayed.
+      - figure_size: _(tuple)_ figure size (default=(7,7))
+      - show_table: _(boolean)_ display table of misclassied images. (default=False)
+
+
+
 ####Examples
 
 !!! quote ""
 
-    **Importing the pipeline and setting up data directory**
-
-        from radtorch import pipeline
-        data_root = '/content/data'
-
-
-    **Create the image classifier pipeline**
-
-    The below example will create the pipeline using resnet50 model architecture with trained weights loaded and will train for 30 epochs.
-
-        clf = pipeline.Image_Classification(data_directory=data_root,
-              mode='HU', model_arch='resnet50', train_epochs=30)
-
-    **Show dataset Information**
-
-        clf.dataset_info()
-
-    <!-- **** -->
-
-
-        Number of intances = 77
-        Number of classes =  2
-        Class IDX =  {'axr': 0, 'cxr': 1}
-
-        Class Frequency:
-        Class Number of instances
-         1       39
-         0       38
-        None
-        Train Dataset Size  47
-        Valid Dataset Size  15
-        Test Dataset Size  15
-
-    **Display sample of the dataset**
-
-        clf.sample()
-
-    ![](img/sample.png)
-
-    **Train the classifier**
-
-        clf.train()
-
-    <!-- **** -->
-
-
-        Starting training at 2020-02-27 17:47:54.918173
-        Epoch : 000/30 : [Training: Loss: 0.7937, Accuracy: 46.8085%]  [Validation : Loss : 0.7436, Accuracy: 40.0000%] [Time: 1.4200s]
-        Epoch : 001/30 : [Training: Loss: 0.6054, Accuracy: 63.8298%]  [Validation : Loss : 0.7793, Accuracy: 40.0000%] [Time: 1.3436s]
-        Epoch : 002/30 : [Training: Loss: 0.5504, Accuracy: 80.8511%]  [Validation : Loss : 1.2314, Accuracy: 40.0000%] [Time: 1.3500s]
-        ...
-        ...
-        ...
-        Epoch : 026/30 : [Training: Loss: 0.0499, Accuracy: 97.8723%]  [Validation : Loss : 0.4143, Accuracy: 93.3333%] [Time: 1.3612s]
-        Epoch : 027/30 : [Training: Loss: 0.0235, Accuracy: 97.8723%]  [Validation : Loss : 0.0321, Accuracy: 100.000%] [Time: 1.3540s]
-        Epoch : 028/30 : [Training: Loss: 0.0142, Accuracy: 100.000%]  [Validation : Loss : 0.2476, Accuracy: 93.3333%] [Time: 1.3584s]
-        Epoch : 029/30 : [Training: Loss: 0.0067, Accuracy: 100.000%]  [Validation : Loss : 0.4216, Accuracy: 93.3333%] [Time: 1.3728s]
-
-        Total training time = 0:00:40.758802
-
-
-    **Display training metrics**
-
-        clf.metrics()
-
-    ![](img/metrics.png)
-
-
-    **Display Confusion Matrix**
-
-        clf.confusion_matrix()
-
-    ![](img/cm.png)
-
-
-    **Display ROC**
-
-        clf.roc()
-
-    ![](img/roc.png)
-
-    **Export Trained Model**
-
-        clf.export_model('/folder/model.pth')
+    Full example for Image Classification Pipeline can be found [HERE](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=njIH9PnCLhHp)
 
 
 <hr>
@@ -325,7 +262,9 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
 !!! quote ""
 
-    The feature extraction pipeline utilizes a pre-trained model to extract a set of features that can be used in another machine learning algorithms e.g. XGBoost. The trained model by default can one of the supported model architectures trained with default weights trained on the ImageNet dataset or a model that has been trained and exported using the image classification pipeline.
+    The feature extraction pipeline utilizes a pre-trained model to extract a set of features that can be used in another machine learning algorithms e.g. Adaboost or KNN.
+
+    The trained model by default can one of the supported model architectures trained with default weights trained on the ImageNet dataset. (The ability to use a model that has been trained and exported using the image classification pipeline will be added later.)
 
     The output is a pandas dataframe that has feature columns, label column and file path column.
 
@@ -428,15 +367,23 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
     **.info()**
 
-    - Displays Feature Extraction Pipeline Parameters.
+    - Display Pandas Dataframe with properties of the Image Classification Pipeline.
 
     **.dataset_info()**
 
     - Display Dataset Information.
 
+    - Arguments:
+        - plot: _(boolean)_ displays dataset information in graphical representation. By default, data is shown as table. (default=False)
+
     **.sample()**
 
     - Display sample of the training dataset.
+
+    - Arguments:
+        - num_of_images_per_row: _(int)_ number of images per column. (default=5)
+        - fig_size: _(tuple)_ figure size. (default=(10,10))
+        - show_labels: _(boolean)_ show the image label idx. (default=False)
 
     **.num_features()**
 
@@ -463,6 +410,16 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     - Arguments:
         - target_path: _(str)_ target location for export.
 
+    **.plot_extracted_features()**
+
+    - Plots a graphical representation of extracted features.
+
+    - Arguments:
+      - num_features: _(int)_ number of features to be displayed (default=100)
+      - num_images: _(int)_ number of images to display features for (default=100)
+      - image_path_col: _(str)_ name of column containing image paths in the feature table. (default='img_path')
+      - image_label_col: _(str)_ name of column containing image label idx in the feature table. (default='label_idx')
+
 
     **.set_trained_model()** : ***Temporarily Disabled for future update.***
 
@@ -471,75 +428,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
 !!! quote ""
 
-    **Importing the pipeline and setting up data directory**
-    ```
-    from radtorch import pipeline
-    data_root = '/content/data'
-
-    ```
-    **Create the feature extractor pipeline**
-
-    The below example will create the pipeline using resnet152 model architecture with trained weights loaded.
-
-    ```
-    extractor = pipeline.Feature_Extraction(data_directory=data_root, mode='HU',
-                model_arch='resnet152')
-    ```
-
-
-    **Display number of Features to be extracted**
-    ```
-    extractor.num_features()
-    ```
-    ```
-    2048
-    ```
-
-    **Show Dataset information**
-    ```
-    extractor.dataset_info()
-    ```
-    ```
-    Number of intances = 77
-    Number of classes =  2
-    Class IDX =  {'axr': 0, 'cxr': 1}
-
-    Class Frequency:
-    Class Number of instances
-    0       38
-    1       39
-    ```
-
-    **Display sample of the dataset**
-    ```
-    extractor.sample()
-    ```
-    ![](img/sample.png)
-
-    **Run pipeline to extract features**
-    ```
-    extractor.run()
-    ```
-    ```
-      |    | img_path       |  label_idx |       f_0 |      f_1 |         f_2 |      f_3 | ........ |
-      |---:|:---------------|-----------:|----------:|---------:|------------:|---------:|---------:|
-      |  0 | /content/dat...|          0 | 0.135294  | 0.368051 | 0.000352088 | 0.378677 | ........ |
-      |  1 | /content/dat...|          0 | 0.0721618 | 0.930238 | 0.0286931   | 0.732228 | ........ |
-      |  2 | /content/dat...|          0 | 0.0780637 | 0.432966 | 0.0175741   | 0.685681 | ........ |
-      |  3 | /content/dat...|          0 | 0.560777  | 0.449213 | 0.0432512   | 0.432942 | ........ |
-      |  4 | /content/dat...|          0 | 0.176524  | 0.669066 | 0.0396659   | 0.273474 | ........ |
-
-
-    ```
-
-    **Show feature names list**
-    ```
-    extractor.feature_names
-    ```
-    ```
-    ['f_0','f_1','f_2','f_3','f_4', 'f_5', ... ]
-    ```
-
+    Full example for Feature Extraction Pipeline can be found [HERE](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=iTAp7Zz6CrJ3)
 
 
 ## load_pipeline

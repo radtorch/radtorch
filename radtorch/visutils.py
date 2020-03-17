@@ -447,7 +447,7 @@ def show_nn_misclassified(model, target_data_set, num_of_images, device, is_dico
     return output
 
 
-def plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col, split_by_class=False):
+def plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col):
     '''
     .. include:: ./documentation/docs/visutils.md##plot_features
     '''

@@ -8,16 +8,24 @@
 
 ## Official Releases
 ### [v.0.1.2-beta](https://github.com/radtorch/radtorch/releases)
-    - Projected Release Date: 3-15-2020
-    - Expected Fixes
+    - Release Date: 3-17-2020
+    - Fixes
       - Restructure how dataset information is processed.
         Internally a dataframe input_data is created to expedite calling dataset_info.
+      - Set same random seed during training.
+      - Change Image_Classification.train() to Image_Classification.run()
+      - Update number of workers for pipeline dataloader to default = 4
 
-    - Expected New Features
+    - New Features
       - Allow user to set/change pytorch and numpy random seed.
+      - Graphs have been updated to Bokeh (more interactive).
+      - Graphically display pipeline dataset information
       - Misclassified items during testing in the image classification pipeline can now be viewed.
-      - Figure size of traning metrics is now changable.
-      - Multilabel classification added to Image Classification Pipeline.
+      - Extracted Imaging Features can now be graphically viewed per class.
+      - Figure size of training metrics is now changeable.
+      - When doing inference using a trained model, prediction percentages for all classes can now be viewed as table.
+
+
 
 ### [v.0.1.1-beta](https://github.com/radtorch/radtorch/releases)
 
