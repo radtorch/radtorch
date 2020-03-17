@@ -307,6 +307,8 @@ def model_inference(model, input_image_path, all_predictions = False, inference_
         softmax = torch.exp(out).cpu()
         prob = list(softmax.numpy())
         predictions = np.argmax(prob, axis=1)
+    print (out)
+    print (softmax)
     print (prob)
     print (predictions)
 
