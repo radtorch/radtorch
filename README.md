@@ -3,11 +3,11 @@
 
 Official repository for RADTorch - The Radiology Machine Learning Tool Kit
 
-![](https://img.shields.io/badge/stable%20version-0.1.1_beta-blue)
-![](https://img.shields.io/badge/nightly%20version-0.1.2_beta-yellow)
+![](https://img.shields.io/badge/stable%20version-0.1.2_beta-blue)
+![](https://img.shields.io/badge/nightly%20version-0.1.3_beta-yellow)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen)
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
-[![DOI](https://zenodo.org/badge/240820858.svg)](https://zenodo.org/badge/latestdoi/240820858)
+
 
 
 Documentation: https://docs.radtorch.com
