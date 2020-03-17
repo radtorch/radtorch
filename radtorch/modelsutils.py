@@ -104,7 +104,9 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
                 train_model.classifier[6] = Identity()
             else:
                 train_model.classifier[6] = nn.Sequential(
-                    nn.Linear(in_features=4096, out_features=output_classes, bias=True))
+                    nn.Linear(in_features=4096, out_features=output_classes, bias=True),
+                    torch.nn.LogSoftmax(dim=1)
+                    )
 
 
         elif model_arch == 'resnet50' or model_arch == 'resnet101' or model_arch == 'resnet152' or model_arch == 'wide_resnet50_2' or  model_arch == 'wide_resnet101_2':
@@ -124,15 +126,19 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
                 train_model.fc = Identity()
             else:
                 train_model.fc = nn.Sequential(
-                  nn.Linear(in_features=2048, out_features=output_classes, bias=True))
+                  nn.Linear(in_features=2048, out_features=output_classes, bias=True),
+                  torch.nn.LogSoftmax(dim=1)
+                  )
 
         elif model_arch == 'inception_v3':
             train_model = torchvision.models.inception_v3(pretrained=pre_trained)
             if mode == 'feature_extraction':
                 train_model.fc = Identity()
             else:
-                train_model.fc = nn.Linear(in_features=2048, out_features=output_classes, bias=True)
-
+                train_model.fc = nn.Sequential(
+                  nn.Linear(in_features=2048, out_features=output_classes, bias=True),
+                  torch.nn.LogSoftmax(dim=1)
+                  )
 
         for param in train_model.parameters():
             param.requires_grad = unfreeze_weights
