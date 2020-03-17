@@ -309,7 +309,7 @@ def model_inference(model, input_image_path, all_predictions = False, inference_
         prediction_percentages = softmax.cpu().numpy()[0]
         _, final_prediction = torch.max(out, 1)
 
-    return final_prediction.item(), prediction_percentages[preds.item()]*100            
+    return final_prediction.item(), prediction_percentages[final_prediction.item()]*100            
 
     #     ps = torch.exp(out)
     #     # ps=out
