@@ -24,7 +24,7 @@ RADTorch was developed and is currently maintained by Mohamed Elbanan, MD: a Rad
 
 ## Getting Started
 
-Running a state-of-the-art DICOM image classifier can be run using the [Image Classification](pipeline/#image_classification) Pipeline using the commands:
+Running a state-of-the-art DICOM image classifier can be run using the Image Classification Pipeline using the commands:
 ```
 from radtorch import pipeline
 
