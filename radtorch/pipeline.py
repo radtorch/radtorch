@@ -104,6 +104,7 @@ class Image_Classification():
         self.path_col = path_col
         self.label_col = label_col
         self.multi_label = multi_label
+        self.num_workers = 0
 
         if device == 'default':
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -159,14 +160,14 @@ class Image_Classification():
                                                     self.train_data_set,
                                                     batch_size=self.batch_size,
                                                     shuffle=True,
-                                                    num_workers=4)
+                                                    num_workers=self.num_workers)
 
 
         self.valid_data_loader = torch.utils.data.DataLoader(
                                                     self.valid_data_set,
                                                     batch_size=self.batch_size,
                                                     shuffle=True,
-                                                    num_workers=4)
+                                                    num_workers=self.num_workers)
 
 
         if self.test_percent == 0:
@@ -176,7 +177,7 @@ class Image_Classification():
                                                     self.test_data_set,
                                                     batch_size=self.batch_size,
                                                     shuffle=True,
-                                                    num_workers=4)
+                                                    num_workers=self.num_workers)
 
         self.num_output_classes = len(self.data_set.classes)
 
