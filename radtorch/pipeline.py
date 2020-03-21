@@ -18,7 +18,7 @@ from pathlib import Path
 from collections import Counter
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
-from radtorch.datautils import dataset_from_folder, dataset_from_table
+from radtorch.datautils import dataset_from_folder, dataset_from_table, split_dataset
 from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info, plot_images
 
 
@@ -156,7 +156,7 @@ class Image_Classification():
         else:
             self.train_data_set, self.valid_data_set, self.test_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
 
-        
+
         #
         # if self.test_percent == 0:
         #     self.train_data_set, self.valid_data_set = torch.utils.data.random_split(self.data_set, [train_size, valid_size])
