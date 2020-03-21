@@ -20,7 +20,7 @@ from math import pi
 from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource
 from bokeh.plotting import figure, show
 from bokeh.sampledata.unemployment1948 import data
-from bokeh.layouts import row, gridplot
+from bokeh.layouts import row, gridplot, column
 from bokeh.transform import factor_cmap, cumsum
 
 
