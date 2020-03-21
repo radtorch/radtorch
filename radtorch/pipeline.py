@@ -54,7 +54,7 @@ class Image_Classification():
     table_source=None,
     path_col = 'IMAGE_PATH',
     label_col = 'IMAGE_LABEL' ,
-    over_sample = False,
+    balance_class = False,
     multi_label = False,
     mode='RAW',
     wl=None,
@@ -89,7 +89,7 @@ class Image_Classification():
         self.label_col = label_col
         self.multi_label = multi_label
         self.num_workers = 0
-        self.over_sample = over_sample
+        self.balance_class = balance_class
 
         # Custom Resize
         if custom_resize=='default':
@@ -199,13 +199,13 @@ class Image_Classification():
         # Split Data set
         if self.test_percent == 0:
             self.train_data_set, self.valid_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
-            if self.over_sample:
+            if self.balance_class:
                 self.train_data_set = over_sample(self.train_data_set)
                 self.valid_data_set = over_sample(self.valid_data_set)
             self.test_data_set = 0
         else:
             self.train_data_set, self.valid_data_set, self.test_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
-            if self.over_sample:
+            if self.balance_class:
                 self.train_data_set = over_sample(self.train_data_set)
                 self.valid_data_set = over_sample(self.valid_data_set)
                 self.test_data_set = over_sample(self.test_data_set)
