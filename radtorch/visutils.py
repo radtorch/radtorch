@@ -51,7 +51,6 @@ def show_misclassified(misclassified_dictionary, is_dicom = True, num_of_images 
     plt.imshow(np.transpose(grid, (1,2,0)))
 
 
-
 def plot_images(images, titles=None, figure_size=(10,10)):
     """
     Display a list of images in a single figure with matplotlib.
@@ -76,12 +75,11 @@ def plot_images(images, titles=None, figure_size=(10,10)):
         a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
         if image.ndim == 2:
             plt.gray()
-        plt.imshow(image)
+        plt.imshow(image.astype('uint8'))
         plt.axis('off')
         a.set_title(title)
     plt.axis('off')
     plt.show()
-
 
 
 def show_dataloader_sample(dataloader, show_file_name = False, figsize=(10,10), show_labels=True):
@@ -94,7 +92,6 @@ def show_dataloader_sample(dataloader, show_file_name = False, figsize=(10,10), 
   if show_file_name:
       titles = [ntpath.basename(x) for x in paths]
   plot_images(images=images, titles=titles, figure_size=figsize)
-
 
 
 def show_dataset_info(dataset):
