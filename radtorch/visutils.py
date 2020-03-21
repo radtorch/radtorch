@@ -113,7 +113,7 @@ def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10)
 
   batch = next(iter(dataloader))
   images, labels, paths = batch
-  images = np.moveaxis(images, -1, 0)
+  images = [np.moveaxis(i, -1, 0) for i in images]
   # grid = torchvision.utils.make_grid(images, nrow=num_of_images_per_row)
   # plt.figure(figsize=(figsize))
   # plt.imshow(np.transpose(grid, (1,2,0)))
