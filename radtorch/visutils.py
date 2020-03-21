@@ -51,6 +51,47 @@ def show_misclassified(misclassified_dictionary, is_dicom = True, num_of_images 
     plt.imshow(np.transpose(grid, (1,2,0)))
 
 
+
+def plot_images(images, titles=None, figure_size=(10,10)):
+    """
+    Display a list of images in a single figure with matplotlib.
+
+    Parameters
+    ---------
+    images: List of np.arrays compatible with plt.imshow.
+
+    titles: List of titles corresponding to each image. Must have
+            the same length as titles.
+
+    Source
+    ---------
+    https://gist.github.com/soply/f3eec2e79c165e39c9d540e916142ae1
+    """
+    cols = int(math.sqrt(len(images)))
+    assert((titles is None)or (len(images) == len(titles)))
+    n_images = len(images)
+    if titles is None: titles = ['Image (%d)' % i for i in range(1,n_images + 1)]
+    fig = plt.figure(figsize=figure_size)
+    for n, (image, title) in enumerate(zip(images, titles)):
+        a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
+        if image.ndim == 2:
+            plt.gray()
+        plt.imshow(image)
+        plt.axis('off')
+        a.set_title(title)
+    plt.axis('off')
+    plt.show()
+
+
+
+
+
+
+
+
+
+
+
 def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=False):
   """
     Displays sample of certain dataloader with corresponding class idx
@@ -72,11 +113,13 @@ def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10)
 
   batch = next(iter(dataloader))
   images, labels, paths = batch
-  grid = torchvision.utils.make_grid(images, nrow=num_of_images_per_row)
-  plt.figure(figsize=(figsize))
-  plt.imshow(np.transpose(grid, (1,2,0)))
-  if show_labels:
-      print ('labels:', labels)
+  # grid = torchvision.utils.make_grid(images, nrow=num_of_images_per_row)
+  # plt.figure(figsize=(figsize))
+  # plt.imshow(np.transpose(grid, (1,2,0)))
+  # if show_labels:
+  #     print ('labels:', labels)
+  plot_images(images=images, titles=None, figure_size=figsize)
+
 
 
 def show_dataset_info(dataset):
