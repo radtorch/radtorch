@@ -1,4 +1,4 @@
-import torch, torchvision, datetime, time, pickle, pydicom, os
+import torch, torchvision, datetime, time, pickle, pydicom, os, copy
 import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim
