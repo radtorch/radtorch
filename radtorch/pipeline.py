@@ -151,10 +151,18 @@ class Image_Classification():
         train_size = len(self.data_set) - (valid_size+test_size)
 
         if self.test_percent == 0:
-            self.train_data_set, self.valid_data_set = torch.utils.data.random_split(self.data_set, [train_size, valid_size])
+            self.train_data_set, self.valid_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
             self.test_data_set = 0
         else:
-            self.train_data_set, self.valid_data_set, self.test_data_set = torch.utils.data.random_split(self.data_set, [train_size, valid_size, test_size])
+            self.train_data_set, self.valid_data_set, self.test_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
+
+        
+        #
+        # if self.test_percent == 0:
+        #     self.train_data_set, self.valid_data_set = torch.utils.data.random_split(self.data_set, [train_size, valid_size])
+        #     self.test_data_set = 0
+        # else:
+        #     self.train_data_set, self.valid_data_set, self.test_data_set = torch.utils.data.random_split(self.data_set, [train_size, valid_size, test_size])
 
         self.train_data_loader = torch.utils.data.DataLoader(
                                                     self.train_data_set,
