@@ -18,7 +18,7 @@ from pathlib import Path
 from collections import Counter
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
-from radtorch.datautils import dataset_from_folder, dataset_from_table, split_dataset
+from radtorch.datautils import dataset_from_folder, dataset_from_table, split_dataset, calculate_mean_std
 from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info, plot_images
 
 
@@ -57,6 +57,7 @@ class Image_Classification():
     multi_label = False ,
     mode='RAW',
     wl=None,
+    normalize=True,
     batch_size=16,
     test_percent = 0.2,
     valid_percent = 0.2,
@@ -73,6 +74,7 @@ class Image_Classification():
         self.table_source = table_source
         self.mode = mode
         self.wl = wl
+        self.normalize = normalize
 
         if custom_resize=='default':
             self.input_resize = model_dict[model_arch]['input_size']
@@ -145,10 +147,51 @@ class Image_Classification():
                     raise TypeError('Dataset could not be created from folder structure.')
                     pass
 
+        if self.normalize:
+            self.data_loader = torch.utils.data.DataLoader(
+                                                    self.data_set,
+                                                    batch_size=self.batch_size,
+                                                    shuffle=True,
+                                                    num_workers=self.num_workers)
 
-        valid_size = int(self.valid_percent*len(self.data_set))
-        test_size = int(self.test_percent*len(self.data_set))
-        train_size = len(self.data_set) - (valid_size+test_size)
+            mean, std = calculate_mean_std(self.data_loader)
+
+            if transformations == 'default':
+                if self.is_dicom == True:
+                    self.transformations = transforms.Compose([
+                            transforms.Resize((self.input_resize, self.input_resize)),
+                            transforms.transforms.Grayscale(3),
+                            transforms.ToTensor(),
+                            transforms.normalize(mean=mean, std=std)])
+                else:
+                    self.transformations = transforms.Compose([
+                            transforms.Resize((self.input_resize, self.input_resize)),
+                            transforms.ToTensor(),
+                            transforms.normalize(mean=mean, std=std)])
+            else:
+                self.transformations = transformations
+
+            if self.label_from_table == True:
+                try:
+                    self.data_set = dataset_from_table(
+                            data_directory=self.data_directory,
+                            is_csv=self.is_csv,
+                            is_dicom=self.is_dicom,
+                            input_source=self.table_source,
+                            img_path_column=self.path_col,
+                            img_label_column=self.label_col,
+                            multi_label = self.multi_label,
+                            mode=self.mode,
+                            wl=self.wl,
+                            trans=self.transformations)
+                except:
+                    raise TypeError('Dataset could not be created from table.')
+                    pass
+
+
+        # valid_size = int(self.valid_percent*len(self.data_set))
+        # test_size = int(self.test_percent*len(self.data_set))
+        # train_size = len(self.data_set) - (valid_size+test_size)
 
         if self.test_percent == 0:
             self.train_data_set, self.valid_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
@@ -283,6 +326,7 @@ class Image_Classification():
             verbose: _(boolean)_ Show display progress after each epoch. (default=True)
         '''
         try:
+            print ('Starting Image Classification Pipeline Training')
             self.trained_model, self.train_metrics = train_model(
                                                     model = self.train_model,
                                                     train_data_loader = self.train_data_loader,

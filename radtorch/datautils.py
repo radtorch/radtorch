@@ -25,6 +25,27 @@ IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tif
 
 
 
+def calculate_mean_std(dataloader):
+    '''
+    Source
+    -------
+    https://discuss.pytorch.org/t/about-normalization-using-pre-trained-vgg16-networks/23560/6
+    '''
+    mean = 0.
+    std = 0.
+    nb_samples = 0.
+    for data in dataloader:
+        batch_samples = data.size(0)
+        data = data.view(batch_samples, data.size(1), -1)
+        mean += data.mean(2).sum(0)
+        std += data.std(2).sum(0)
+        nb_samples += batch_samples
+    mean /= nb_samples
+    std /= nb_samples
+    return (mean, std)
+
+
+
 def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_split=True, shuffle=True):
     num_all = len(dataset)
     train_percent = 1.0 - (valid_percent+test_percent)
@@ -58,8 +79,6 @@ def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_spli
 
         return  train_ds, valid_ds
 
-
-
 def set_random_seed(seed):
     """
     .. include:: ./documentation/docs/datautils.md##set_random_seed
@@ -67,7 +86,7 @@ def set_random_seed(seed):
     try:
         torch.manual_seed(seed)
         np.random.seed(seed)
-        print ('random seed set successfully')
+        print ('Random Seed Set Successfully')
     except:
         raise TypeError('Error. Could not set Random Seed. Please check again.')
         pass

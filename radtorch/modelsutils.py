@@ -102,12 +102,14 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
 
             if mode == 'feature_extraction':
                 train_model.classifier[6] = Identity()
+            elif mode == 'feature_visualization':
+                train_model.classifier[6] = nn.Sequential(
+                    nn.Linear(in_features=4096, out_features=output_classes, bias=True))
             else:
                 train_model.classifier[6] = nn.Sequential(
                     nn.Linear(in_features=4096, out_features=output_classes, bias=True),
                     torch.nn.LogSoftmax(dim=1)
                     )
-
 
         elif model_arch == 'resnet50' or model_arch == 'resnet101' or model_arch == 'resnet152' or model_arch == 'wide_resnet50_2' or  model_arch == 'wide_resnet101_2':
             if model_arch == 'resnet50':
@@ -124,16 +126,23 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
             fc_inputs = train_model.fc.in_features
             if mode == 'feature_extraction':
                 train_model.fc = Identity()
+            elif mode == 'feature_visualization':
+                train_model.fc = nn.Sequential(
+                  nn.Linear(in_features=2048, out_features=output_classes, bias=True))
             else:
                 train_model.fc = nn.Sequential(
                   nn.Linear(in_features=2048, out_features=output_classes, bias=True),
                   torch.nn.LogSoftmax(dim=1)
                   )
 
+
         elif model_arch == 'inception_v3':
             train_model = torchvision.models.inception_v3(pretrained=pre_trained)
             if mode == 'feature_extraction':
                 train_model.fc = Identity()
+            elif mode == 'feature_visualization':
+                train_model.fc = nn.Sequential(
+                  nn.Linear(in_features=2048, out_features=output_classes, bias=True))
             else:
                 train_model.fc = nn.Sequential(
                   nn.Linear(in_features=2048, out_features=output_classes, bias=True),
