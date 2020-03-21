@@ -57,7 +57,7 @@ class Image_Classification():
     multi_label = False ,
     mode='RAW',
     wl=None,
-    normalize=True,
+    normalize='default',
     batch_size=16,
     test_percent = 0.2,
     valid_percent = 0.2,
@@ -154,6 +154,9 @@ class Image_Classification():
                                                         num_workers=self.num_workers)
 
                 self.mean, self.std = calculate_mean_std(self.data_loader)
+            elif self.normalize == 'default':
+                self.mean = [0.5, 0.5, 0.5]
+                self.std = [0.5, 0.5, 0.5]
             else:
                 self.mean = self.normalize[0]
                 self.std = self.normalize[1]
