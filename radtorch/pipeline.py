@@ -146,13 +146,17 @@ class Image_Classification():
                 pass
 
         if self.normalize:
-            self.data_loader = torch.utils.data.DataLoader(
-                                                    self.data_set,
-                                                    batch_size=self.batch_size,
-                                                    shuffle=True,
-                                                    num_workers=self.num_workers)
+            if self.normalize == 'auto':
+                self.data_loader = torch.utils.data.DataLoader(
+                                                        self.data_set,
+                                                        batch_size=self.batch_size,
+                                                        shuffle=True,
+                                                        num_workers=self.num_workers)
 
-            self.mean, self.std = calculate_mean_std(self.data_loader)
+                self.mean, self.std = calculate_mean_std(self.data_loader)
+            else:
+                self.mean = self.normalize[0]
+                self.std = self.normalzie[1]
 
             if transformations == 'default':
                 if self.is_dicom == True:
