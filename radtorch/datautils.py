@@ -26,7 +26,6 @@ IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tif
 
 
 def over_sample(dataset, shuffle=True):
-  dataset = cf.data_set
   max_size = dataset.input_data[dataset.image_label_col].value_counts().max()
   lst = [dataset.input_data]
   for class_index, group in dataset.input_data.groupby(dataset.image_label_col):
