@@ -156,7 +156,7 @@ class Image_Classification():
                 self.mean, self.std = calculate_mean_std(self.data_loader)
             else:
                 self.mean = self.normalize[0]
-                self.std = self.normalzie[1]
+                self.std = self.normalize[1]
 
             if transformations == 'default':
                 if self.is_dicom == True:
