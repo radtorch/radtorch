@@ -75,25 +75,6 @@ class Image_Classification():
         self.mode = mode
         self.wl = wl
         self.normalize = normalize
-
-        if custom_resize=='default':
-            self.input_resize = model_dict[model_arch]['input_size']
-        else:
-            self.input_resize = custom_resize
-
-        if transformations == 'default':
-            if self.is_dicom == True:
-                self.transformations = transforms.Compose([
-                        transforms.Resize((self.input_resize, self.input_resize)),
-                        transforms.transforms.Grayscale(3),
-                        transforms.ToTensor()])
-            else:
-                self.transformations = transforms.Compose([
-                        transforms.Resize((self.input_resize, self.input_resize)),
-                        transforms.ToTensor()])
-        else:
-            self.transformations = transformations
-
         self.batch_size = batch_size
         self.test_percent = test_percent
         self.valid_percent = valid_percent
@@ -108,12 +89,33 @@ class Image_Classification():
         self.multi_label = multi_label
         self.num_workers = 0
 
+        # Custom Resize
+        if custom_resize=='default':
+            self.input_resize = model_dict[model_arch]['input_size']
+        else:
+            self.input_resize = custom_resize
+
+        # Transformations
+        if transformations == 'default':
+            if self.is_dicom == True:
+                self.transformations = transforms.Compose([
+                        transforms.Resize((self.input_resize, self.input_resize)),
+                        transforms.transforms.Grayscale(3),
+                        transforms.ToTensor()])
+            else:
+                self.transformations = transforms.Compose([
+                        transforms.Resize((self.input_resize, self.input_resize)),
+                        transforms.ToTensor()])
+        else:
+            self.transformations = transformations
+
+        # Device
         if device == 'default':
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         else:
             self.device == device
 
-        # Create DataSet
+        # Create Dataset
         if self.label_from_table == True:
             try:
                 self.data_set = dataset_from_table(
@@ -132,20 +134,16 @@ class Image_Classification():
                 pass
 
         else:
-            if self.multi_label == True:
-                raise TypeError('Dataset could not be created. Multilabel dataset creation is not yet allowed from folders. Please use dataset_from_table instead.')
+            try:
+                self.data_set = dataset_from_folder(
+                            data_directory=self.data_directory,
+                            is_dicom=self.is_dicom,
+                            mode=self.mode,
+                            wl=self.wl,
+                            trans=self.transformations)
+            except:
+                raise TypeError('Dataset could not be created from folder structure.')
                 pass
-            else:
-                try:
-                    self.data_set = dataset_from_folder(
-                                data_directory=self.data_directory,
-                                is_dicom=self.is_dicom,
-                                mode=self.mode,
-                                wl=self.wl,
-                                trans=self.transformations)
-                except:
-                    raise TypeError('Dataset could not be created from folder structure.')
-                    pass
 
         if self.normalize:
             self.data_loader = torch.utils.data.DataLoader(
@@ -154,7 +152,7 @@ class Image_Classification():
                                                     shuffle=True,
                                                     num_workers=self.num_workers)
 
-            mean, std = calculate_mean_std(self.data_loader)
+            self.mean, self.std = calculate_mean_std(self.data_loader)
 
             if transformations == 'default':
                 if self.is_dicom == True:
@@ -162,12 +160,12 @@ class Image_Classification():
                             transforms.Resize((self.input_resize, self.input_resize)),
                             transforms.transforms.Grayscale(3),
                             transforms.ToTensor(),
-                            transforms.Normalize(mean=mean, std=std)])
+                            transforms.Normalize(mean=self.mean, std=self.std)])
                 else:
                     self.transformations = transforms.Compose([
                             transforms.Resize((self.input_resize, self.input_resize)),
                             transforms.ToTensor(),
-                            transforms.Normalize(mean=mean, std=std)])
+                            transforms.Normalize(mean=self.mean, std=self.std)])
             else:
                 self.transformations = transformations
 
@@ -189,10 +187,7 @@ class Image_Classification():
                     pass
 
 
-        # valid_size = int(self.valid_percent*len(self.data_set))
-        # test_size = int(self.test_percent*len(self.data_set))
-        # train_size = len(self.data_set) - (valid_size+test_size)
-
+        # Split Data set
         if self.test_percent == 0:
             self.train_data_set, self.valid_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
             self.test_data_set = 0
@@ -200,13 +195,7 @@ class Image_Classification():
             self.train_data_set, self.valid_data_set, self.test_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
 
 
-        #
-        # if self.test_percent == 0:
-        #     self.train_data_set, self.valid_data_set = torch.utils.data.random_split(self.data_set, [train_size, valid_size])
-        #     self.test_data_set = 0
-        # else:
-        #     self.train_data_set, self.valid_data_set, self.test_data_set = torch.utils.data.random_split(self.data_set, [train_size, valid_size, test_size])
-
+        # Data Loaders
         self.train_data_loader = torch.utils.data.DataLoader(
                                                     self.train_data_set,
                                                     batch_size=self.batch_size,
@@ -230,7 +219,9 @@ class Image_Classification():
                                                     shuffle=True,
                                                     num_workers=self.num_workers)
 
+
         self.num_output_classes = len(self.data_set.classes)
+
 
         self.train_model = create_model(
                                     model_arch=self.model_arch,
