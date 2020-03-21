@@ -265,7 +265,7 @@ class Image_Classification():
           titles = [((list(self.data_set.class_to_idx.keys())[list(self.data_set.class_to_idx.values()).index(i)]), i) for i in titles]
         if show_file_name:
           titles = [ntpath.basename(x) for x in paths]
-        plot_images(images=images, titles=titles, figure_size=figsize)
+        plot_images(images=images, titles=titles, figure_size=fig_size)
 
 
     def run(self, verbose=True):
