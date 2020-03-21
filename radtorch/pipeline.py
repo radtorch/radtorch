@@ -287,7 +287,7 @@ class Image_Classification():
         info_dict = {}
 
         # Display the train/valid/test size
-        full_dataset_info = pd.Dataframe()
+        full_dataset_info = pd.DataFrame()
         full_dataset_info = full_dataset_info.append({'Classes':'Train Dataset Size','Number of Instances':len(self.train_data_set)}, ignore_index=True )
         full_dataset_info = full_dataset_info.append({'Classes':'Valid Dataset Size','Number of Instances':len(self.valid_data_set)}, ignore_index=True )
         if self.test_percent > 0:
