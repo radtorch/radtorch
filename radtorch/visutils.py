@@ -1,4 +1,4 @@
-import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools
+import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools, ntpath
 import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim
