@@ -25,17 +25,18 @@ IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tif
 
 
 
-def oversample_dataset(dataset):
-    grouped = dataset.input_data.groupby(data_set.image_label_col)
-    classes = [k for k,v in grouped.groups.items()]
-    class_instances = [len(v) for k,v in grouped.groups.items()]
-    max_class = max(class_instances)
-    class_difference = [max_class-i for i in class_instances]
-
-    ## WORK IN PROGRESS !!!
-
-
-    return balanced_dataset
+def over_sample(dataset, shuffle=True):
+  dataset = cf.data_set
+  max_size = dataset.input_data[dataset.image_label_col].value_counts().max()
+  lst = [dataset.input_data]
+  for class_index, group in dataset.input_data.groupby(dataset.image_label_col):
+      lst.append(group.sample(max_size-len(group), replace=True))
+  balanced_dataframe = pd.concat(lst)
+  if shuffle:
+    balanced_dataframe = balanced_dataframe.sample(frac=1).reset_index(drop=True)
+  balanced_dataset = copy.deepcopy(dataset)
+  balanced_dataset.input_data = balanced_dataframe
+  return balanced_dataset
 
 
 def calculate_mean_std(dataloader):
