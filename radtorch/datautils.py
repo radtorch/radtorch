@@ -25,6 +25,19 @@ IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tif
 
 
 
+def oversample_dataset(dataset):
+    grouped = dataset.input_data.groupby(data_set.image_label_col)
+    classes = [k for k,v in grouped.groups.items()]
+    class_instances = [len(v) for k,v in grouped.groups.items()]
+    max_class = max(class_instances)
+    class_difference = [max_class-i for i in class_instances]
+
+    ## WORK IN PROGRESS !!!
+
+
+    return balanced_dataset
+
+
 def calculate_mean_std(dataloader):
     '''
     Source
@@ -43,7 +56,6 @@ def calculate_mean_std(dataloader):
     mean /= nb_samples
     std /= nb_samples
     return (mean, std)
-
 
 
 def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_split=True, shuffle=True):
@@ -79,6 +91,7 @@ def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_spli
 
         return  train_ds, valid_ds
 
+
 def set_random_seed(seed):
     """
     .. include:: ./documentation/docs/datautils.md##set_random_seed
@@ -90,6 +103,7 @@ def set_random_seed(seed):
     except:
         raise TypeError('Error. Could not set Random Seed. Please check again.')
         pass
+
 
 def list_of_files(root):
     """
@@ -106,6 +120,7 @@ def list_of_files(root):
             allFiles.append(fullPath)
     return allFiles
 
+
 def path_to_class(filepath):
     """
     .. include:: ./documentation/docs/datautils.md##path_to_class
@@ -113,6 +128,7 @@ def path_to_class(filepath):
 
     item_class = (Path(filepath)).parts
     return item_class[-2]
+
 
 def root_to_class(root):
 
@@ -125,6 +141,7 @@ def root_to_class(root):
     class_to_idx = {classes[i]: i for i in range(len(classes))}
     return classes, class_to_idx
 
+
 def class_to_idx(classes):
     """
     .. include:: ./documentation/docs/datautils.md##class_to_idx
@@ -133,6 +150,7 @@ def class_to_idx(classes):
     classes.sort()
     class_to_idx = {classes[i]: i for i in range(len(classes))}
     return class_to_idx
+
 
 class dataset_from_table(Dataset):
     """
@@ -238,6 +256,7 @@ class dataset_from_table(Dataset):
 
     def info(self):
         return show_dataset_info(self)
+
 
 class dataset_from_folder(Dataset):
     """

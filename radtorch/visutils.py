@@ -286,19 +286,6 @@ def show_roc(true_labels, predictions, figure_size=(550,400), title='ROC Curve')
     p.yaxis.axis_label_text_font_style = None
     show(p)
     return auc
-    # plt.figure(figsize=figure_size)
-    # plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='orange', alpha=.8)
-    # plt.plot(fpr, tpr)
-    # plt.title(title);
-    # plt.xlabel('FPR (1-specficity)');
-    # plt.ylabel('TPR (Sensitivity)');
-    # plt.grid(True)
-    # print (fpr)
-    # print (tpr)
-    # if auc == True:
-    #     plt.xlabel('FPR (1-specficity)\nAUC={:0.4f}'.format(metrics.roc_auc_score(true_labels, predictions)))
-    #     # print ('AUC =',metrics.roc_auc_score(true_labels, predictions))
-    #     return metrics.roc_auc_score(true_labels, predictions)
 
 
 def show_nn_roc(model, target_data_set,  device, figure_size=(600,400)):
