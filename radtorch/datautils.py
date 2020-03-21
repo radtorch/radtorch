@@ -26,16 +26,16 @@ IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tif
 
 
 def over_sample(dataset, shuffle=True):
-  max_size = dataset.input_data[dataset.image_label_col].value_counts().max()
-  lst = [dataset.input_data]
-  for class_index, group in dataset.input_data.groupby(dataset.image_label_col):
+    balanced_dataset = copy.deepcopy(dataset)
+    max_size = balanced_dataset.input_data[balanced_dataset.image_label_col].value_counts().max()
+    lst = [balanced_dataset.input_data]
+    for class_index, group in balanced_dataset.input_data.groupby(balanced_dataset.image_label_col):
       lst.append(group.sample(max_size-len(group), replace=True))
-  balanced_dataframe = pd.concat(lst)
-  if shuffle:
-    balanced_dataframe = balanced_dataframe.sample(frac=1).reset_index(drop=True)
-  balanced_dataset = copy.deepcopy(dataset)
-  balanced_dataset.input_data = balanced_dataframe
-  return balanced_dataset
+    balanced_dataframe = pd.concat(lst)
+    if shuffle:
+        balanced_dataframe = balanced_dataframe.sample(frac=1).reset_index(drop=True)
+    balanced_dataset.input_data = balanced_dataframe
+    return balanced_dataset
 
 
 def calculate_mean_std(dataloader):
