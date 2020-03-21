@@ -75,7 +75,7 @@ def plot_images(images, titles=None, figure_size=(10,10)):
         a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
         if image.ndim == 2:
             plt.gray()
-        plt.imshow(image.astype('uint8'))
+        plt.imshow(image)
         plt.axis('off')
         a.set_title(title)
     plt.axis('off')
