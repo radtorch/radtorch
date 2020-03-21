@@ -287,12 +287,12 @@ class Image_Classification():
         info_dict = {}
 
         # Display the train/valid/test size
-        full_dataset_info = pd.DataFrame()
-        full_dataset_info = full_dataset_info.append({'Classes':'Train Dataset Size','Number of Instances':len(self.train_data_set)}, ignore_index=True )
-        full_dataset_info = full_dataset_info.append({'Classes':'Valid Dataset Size','Number of Instances':len(self.valid_data_set)}, ignore_index=True )
+        master_dataset_info = pd.DataFrame()
+        master_dataset_info = master_dataset_info.append({'Classes':'Train Dataset Size','Number of Instances':len(self.train_data_set)}, ignore_index=True )
+        master_dataset_info = master_dataset_info.append({'Classes':'Valid Dataset Size','Number of Instances':len(self.valid_data_set)}, ignore_index=True )
         if self.test_percent > 0:
-            full_dataset_info = full_dataset_info.append({'Classes':'Test Dataset Size', 'Class Idx': '', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
-        info_dict['full_dataset'] = full_dataset_info
+            master_dataset_info = master_dataset_info.append({'Classes':'Test Dataset Size', 'Class Idx': '', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
+        info_dict['full_dataset'] = master_dataset_info
 
         # Display train breakdown by class
         info_dict['train_dataset'] = show_dataset_info(self.train_data_set)

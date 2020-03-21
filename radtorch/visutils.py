@@ -115,13 +115,12 @@ def show_dataset_info(dataset):
     image_path_col = dataset.image_path_col
     image_label_col = dataset.image_label_col
 
-
     class_names = list(dataset.class_to_idx.keys())+['Total Instances']
     class_idx = list(dataset.class_to_idx.values())+['']
     num_instances = []
     for i in list(dataset.class_to_idx.keys()):
       num_instances.append(input_data[image_label_col].value_counts()[[i]].sum())
-    num_instances =num_instances+sum(num_instances)
+    num_instances.append(sum(num_instances))
     output = pd.DataFrame(list(zip(class_names, class_idx, num_instances)), columns=['Classes', 'Class Idx', 'Number of Instances'])
 
     return output
@@ -607,7 +606,6 @@ def plot_dataset_info(dataframe_dictionary, plot_size=(500,300)):
     for dataframe_title , dataframe in dataframe_dictionary.items():
         G = dataframe[['Classes', 'Number of Instances']]
         G.columns = ['Classes', 'Number']
-
         source = ColumnDataSource(G)
         p = figure(plot_width=plot_size[0], plot_height=plot_size[1], x_range=G['Classes'].tolist(), tools=TOOLS, tooltips=[('','@Classes'), ('','@Number')], title=('Data Breakdown for '+dataframe_title))
         p.vbar(x='Classes', width=0.4, top = 'Number', line_color=None, source=source, fill_color=factor_cmap('Classes', palette=colors[::-1], factors=(G['Classes'].tolist())))
