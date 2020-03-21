@@ -89,6 +89,7 @@ class Image_Classification():
         self.label_col = label_col
         self.multi_label = multi_label
         self.num_workers = 0
+        self.over_sample = over_sample
 
         # Custom Resize
         if custom_resize=='default':
