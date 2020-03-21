@@ -19,7 +19,7 @@ from collections import Counter
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table
-from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info
+from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info, plot_images
 
 
 
@@ -247,7 +247,7 @@ class Image_Classification():
         else:
             return info
 
-    def sample(self, num_of_images_per_row=4, fig_size=(10,10), show_labels=False):
+    def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
         '''
         Display sample of the training dataset.
         Inputs:
@@ -255,7 +255,18 @@ class Image_Classification():
             fig_size: _(tuple)_figure size. (default=(10,10))
             show_labels: _(boolean)_ show the image label idx. (default=True)
         '''
-        return show_dataloader_sample(dataloader=self.train_data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
+        # return show_dataloader_sample(dataloader=self.train_data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
+        batch = next(iter(self.train_data_loader))
+        images, labels, paths = batch
+        images = images.numpy()
+        images = [np.moveaxis(x, 0, -1) for x in images]
+        if show_labels:
+          titles = labels.numpy()
+          titles = [(self.class_to_idx[i], i) for i in titles]
+        if show_file_name:
+          titles = [ntpath.basename(x) for x in paths]
+        plot_images(images=images, titles=titles, figure_size=figsize)
+
 
     def run(self, verbose=True):
         '''

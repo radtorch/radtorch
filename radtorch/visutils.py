@@ -84,42 +84,16 @@ def plot_images(images, titles=None, figure_size=(10,10)):
 
 
 
-
-
-
-
-
-
-
-
-def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=False):
-  """
-    Displays sample of certain dataloader with corresponding class idx
-
-    **Arguments**
-
-    - dataloader: _(dataloader object)_ selected pytorch dataloader.
-
-    - num_of_images_per_row: _(int)_ number of images per row. (default=10)
-
-    - figsize: _(tuple)_ size of displayed figure. (default = (10,10))
-
-    - show_labels: _(boolen)_ display class idx of the sample displayed .(default=False)
-
-    **Output**
-
-    -  Output: _(figure)_
-  """
-
+def show_dataloader_sample(dataloader, show_file_name = False, figsize=(10,10), show_labels=True):
   batch = next(iter(dataloader))
   images, labels, paths = batch
-  images = [np.moveaxis(i, -1, 0) for i in images]
-  # grid = torchvision.utils.make_grid(images, nrow=num_of_images_per_row)
-  # plt.figure(figsize=(figsize))
-  # plt.imshow(np.transpose(grid, (1,2,0)))
-  # if show_labels:
-  #     print ('labels:', labels)
-  plot_images(images=images, titles=None, figure_size=figsize)
+  images = images.numpy()
+  images = [np.moveaxis(x, 0, -1) for x in images]
+  if show_labels:
+      titles = labels.numpy()
+  if show_file_name:
+      titles = [ntpath.basename(x) for x in paths]
+  plot_images(images=images, titles=titles, figure_size=figsize)
 
 
 
