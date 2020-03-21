@@ -162,12 +162,12 @@ class Image_Classification():
                             transforms.Resize((self.input_resize, self.input_resize)),
                             transforms.transforms.Grayscale(3),
                             transforms.ToTensor(),
-                            transforms.normalize(mean=mean, std=std)])
+                            transforms.Normalize(mean=mean, std=std)])
                 else:
                     self.transformations = transforms.Compose([
                             transforms.Resize((self.input_resize, self.input_resize)),
                             transforms.ToTensor(),
-                            transforms.normalize(mean=mean, std=std)])
+                            transforms.Normalize(mean=mean, std=std)])
             else:
                 self.transformations = transformations
 
