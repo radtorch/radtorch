@@ -19,7 +19,7 @@ from collections import Counter
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table, split_dataset, calculate_mean_std, over_sample
-from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info, plot_images
+from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info, plot_images ,plot_dataset_info
 
 
 
@@ -279,29 +279,36 @@ class Image_Classification():
 
         return classifier_info
 
-    def dataset_info(self, plot=False):
+    def dataset_info(self, plot=True, plot_size=(500,300)):
         '''
         Display Dataset Information.
         '''
-        info = show_dataset_info(self.data_set)
-        info = info.append({'Classes':'Train Dataset Size', 'Class Idx': '','Number of Instances':len(self.train_data_set)}, ignore_index=True )
-        info = info.append({'Classes':'Valid Dataset Size', 'Class Idx': '','Number of Instances':len(self.valid_data_set)}, ignore_index=True )
 
+        info_dict = {}
+
+        # Display the train/valid/test size
+        full_dataset_info = pd.Dataframe()
+        full_dataset_info = full_dataset_info.append({'Classes':'Train Dataset Size','Number of Instances':len(self.train_data_set)}, ignore_index=True )
+        full_dataset_info = full_dataset_info.append({'Classes':'Valid Dataset Size','Number of Instances':len(self.valid_data_set)}, ignore_index=True )
         if self.test_percent > 0:
-            info = info.append({'Classes':'Test Dataset Size', 'Class Idx': '', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
+            full_dataset_info = full_dataset_info.append({'Classes':'Test Dataset Size', 'Class Idx': '', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
+        info_dict['full_dataset'] = full_dataset_info
+
+        # Display train breakdown by class
+        info_dict['train_dataset'] = show_dataset_info(self.train_data_set)
+
+        # Display valid breakdown by class
+        info_dict['valid_dataset'] = show_dataset_info(self.valid_data_set)
+
+        # Display test breakdown by class
+        if self.test_percent > 0:
+            info_dict['test_dataset'] = show_dataset_info(self.test_data_set)
 
 
-        # CODE FOR CLASS BREAKDOWN IN SUBSETS .. IN PROGRESS
-        # train_labels = sorted([i[1] for i in self.train_data_set])
-        # valid_labels = sorted([i[1] for i in self.valid_data_set])
-        # test_labels = sorted([i[1] for i in self.test_data_set])
-        # info = info.append({'Classes':'Train Dataset Breakdown', 'Class Idx': '','Number of Instances':list(zip(Counter(train_labels).keys(), Counter(train_labels).values()))}, ignore_index=True )
-        # info = info.append({'Classes':'Valid Dataset Breakdown', 'Class Idx': '','Number of Instances':list(zip(Counter(valid_labels).keys(), Counter(valid_labels).values()))}, ignore_index=True )
-        # if self.test_percent > 0:
-        #     info = info.append({'Classes':'Test Dataset Breakdown', 'Class Idx': '','Number of Instances':list(zip(Counter(test_labels).keys(), Counter(test_labels).values()))}, ignore_index=True )
 
         if plot:
-            plot_pipline_dataset_info(info, test_percent = self.test_percent)
+            plot_dataset_info(info_dict, plot_size= plot_size)
+            # plot_pipline_dataset_info(info, test_percent = self.test_percent)
         else:
             return info
 
