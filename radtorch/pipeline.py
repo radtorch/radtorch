@@ -1,5 +1,5 @@
 
-import torch, torchvision, datetime, time, pickle, pydicom, os
+import torch, torchvision, datetime, time, pickle, pydicom, os, itertools
 import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim
@@ -722,3 +722,80 @@ class Feature_Extraction():
     #         self.model = torch.load(model_path)
     #
     #     print ('Model Loaded Successfully.')
+
+
+
+class Compare_Classifier():
+    def __init__(
+    self,
+    data_directory,
+    transformations=['default'], ####
+    custom_resize = 'default',
+    device='default',
+    optimizer='Adam',
+    is_dicom=True,
+    label_from_table=False,
+    is_csv=None,
+    table_source=None,
+    path_col = 'IMAGE_PATH',
+    label_col = 'IMAGE_LABEL' ,
+    balance_class = False, ####
+    multi_label = False,
+    mode='RAW',
+    wl=None,
+    normalize='default', ####
+    batch_size=16,  ####
+    test_percent = 0.2, ####
+    valid_percent = 0.2, ####
+    model_arch='vgg16', ####
+    pre_trained=True, ####
+    unfreeze_weights=True,
+    train_epochs=10,
+    learning_rate=0.0001, ####
+    loss_function='CrossEntropyLoss'):
+
+    self.data_directory = data_directory
+    self.transformations = transformations
+    self.custom_resize = custom_resize
+    self.device = device
+    self.optimizer = optimizer
+    self.label_from_table = label_from_table
+    self.is_dicom = is_dicom
+    self.is_csv = is_csv
+    self.table_source = table_source
+    self.path_col = path_col
+    self.label_col = label_col
+    self.balance_class = balance_class
+    self.multi_label = multi_label
+    self.mode = mode
+    self.wl = wl
+    self.normalize = normalize
+    self.batch_size = batch_size
+    self.test_percent = test_percent
+    self.valid_percent = valid_percent
+    self.model_arch = model_arch
+    self.pre_trained = pre_trained
+    self.unfreeze_weights = unfreeze_weights
+    self.train_epochs = train_epochs
+    self.learning_rate = learning_rate
+    self.loss_function = loss_function
+    self.num_workers = 0
+
+    variables = [
+    self.balance_class,
+    self.normalize,
+    self.batch_size,
+    self.test_percent,
+    self.valid_percent,
+    self.train_epochs,
+    self.learning_rate,
+    self.model_arch,
+    self.pre_trained
+    ]
+
+    train_scenarios = list(itertools.product(*variables))
+
+    train_scenarios_df = pd.DataFrame(train_scenarios, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained']
+
+
+    return train_scenarios_df
