@@ -754,48 +754,48 @@ class Compare_Classifier():
     learning_rate=0.0001, ####
     loss_function='CrossEntropyLoss'):
 
-    self.data_directory = data_directory
-    self.transformations = transformations
-    self.custom_resize = custom_resize
-    self.device = device
-    self.optimizer = optimizer
-    self.label_from_table = label_from_table
-    self.is_dicom = is_dicom
-    self.is_csv = is_csv
-    self.table_source = table_source
-    self.path_col = path_col
-    self.label_col = label_col
-    self.balance_class = balance_class
-    self.multi_label = multi_label
-    self.mode = mode
-    self.wl = wl
-    self.normalize = normalize
-    self.batch_size = batch_size
-    self.test_percent = test_percent
-    self.valid_percent = valid_percent
-    self.model_arch = model_arch
-    self.pre_trained = pre_trained
-    self.unfreeze_weights = unfreeze_weights
-    self.train_epochs = train_epochs
-    self.learning_rate = learning_rate
-    self.loss_function = loss_function
-    self.num_workers = 0
+        self.data_directory = data_directory
+        self.transformations = transformations
+        self.custom_resize = custom_resize
+        self.device = device
+        self.optimizer = optimizer
+        self.label_from_table = label_from_table
+        self.is_dicom = is_dicom
+        self.is_csv = is_csv
+        self.table_source = table_source
+        self.path_col = path_col
+        self.label_col = label_col
+        self.balance_class = balance_class
+        self.multi_label = multi_label
+        self.mode = mode
+        self.wl = wl
+        self.normalize = normalize
+        self.batch_size = batch_size
+        self.test_percent = test_percent
+        self.valid_percent = valid_percent
+        self.model_arch = model_arch
+        self.pre_trained = pre_trained
+        self.unfreeze_weights = unfreeze_weights
+        self.train_epochs = train_epochs
+        self.learning_rate = learning_rate
+        self.loss_function = loss_function
+        self.num_workers = 0
 
-    variables = [
-    self.balance_class,
-    self.normalize,
-    self.batch_size,
-    self.test_percent,
-    self.valid_percent,
-    self.train_epochs,
-    self.learning_rate,
-    self.model_arch,
-    self.pre_trained
-    ]
+        variables = [
+        self.balance_class,
+        self.normalize,
+        self.batch_size,
+        self.test_percent,
+        self.valid_percent,
+        self.train_epochs,
+        self.learning_rate,
+        self.model_arch,
+        self.pre_trained
+        ]
 
-    train_scenarios = list(itertools.product(*variables))
+        train_scenarios = list(itertools.product(*variables))
 
-    train_scenarios_df = pd.DataFrame(train_scenarios, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained']
+        train_scenarios_df = pd.DataFrame(train_scenarios, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained']
 
 
-    return train_scenarios_df
+        return train_scenarios_df
