@@ -798,4 +798,4 @@ class Compare_Classifier():
         train_scenarios_df = pd.DataFrame(train_scenarios, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained'])
 
 
-        return train_scenarios_df
+        train_scenarios_df
