@@ -729,7 +729,7 @@ class Compare_Classifier():
     def __init__(
     self,
     data_directory,
-    transformations=['default'], ####
+    transformations='default', ####
     custom_resize = 'default',
     device='default',
     optimizer='Adam',
@@ -739,19 +739,19 @@ class Compare_Classifier():
     table_source=None,
     path_col = 'IMAGE_PATH',
     label_col = 'IMAGE_LABEL' ,
-    balance_class = False, ####
+    balance_class =[], ####
     multi_label = False,
     mode='RAW',
     wl=None,
-    normalize='default', ####
-    batch_size=16,  ####
-    test_percent = 0.2, ####
-    valid_percent = 0.2, ####
-    model_arch='vgg16', ####
-    pre_trained=True, ####
+    normalize=[], ####
+    batch_size=[],  ####
+    test_percent = [], ####
+    valid_percent = [], ####
+    model_arch=[], ####
+    pre_trained=[], ####
     unfreeze_weights=True,
-    train_epochs=10,
-    learning_rate=0.0001, ####
+    train_epochs=[],
+    learning_rate=[], ####
     loss_function='CrossEntropyLoss'):
 
         self.data_directory = data_directory
