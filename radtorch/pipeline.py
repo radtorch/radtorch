@@ -795,7 +795,7 @@ class Compare_Classifier():
 
         self.train_scenarios = list(itertools.product(*variables))
 
-        self.train_scenarios_df = pd.DataFrame(train_scenarios, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained'])
+        self.train_scenarios_df = pd.DataFrame(self.train_scenarios, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained'])
 
 
 
