@@ -35,7 +35,7 @@ Running a state-of-the-art DICOM image classifier can be run using the [Image Cl
 from radtorch import pipeline
 
 classifier = pipeline.Image_Classification(data_directory='path to data')
-classifier.train()
+classifier.run()
 ```
 <small>
 The above 3 lines of code will run an image classifier using VGG16 with pre-trained weights.
