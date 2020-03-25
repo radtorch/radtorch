@@ -729,6 +729,7 @@ from tqdm.notebook import tqdm
 import itertools
 
 class Compare_Image_Classifier():
+
     def __init__(
     self,
     data_directory,
@@ -756,7 +757,6 @@ class Compare_Image_Classifier():
     train_epochs=[10],
     learning_rate=[0.0001],
     loss_function='CrossEntropyLoss'):
-
         self.data_directory = data_directory
         self.transformations = transformations
         self.custom_resize = custom_resize
@@ -818,7 +818,7 @@ class Compare_Image_Classifier():
         model_arch = i[7]
         pre_trained  = i[8]
 
-        clf = pipeline.Image_Classification(  data_directory = self.data_directory,
+        clf = Image_Classification(  data_directory = self.data_directory,
                                               transformations=self.transformations,
                                               custom_resize = self.custom_resize,
                                               device=self.device,
