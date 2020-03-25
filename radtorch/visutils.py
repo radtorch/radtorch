@@ -634,12 +634,12 @@ def show_multiple_metrics(classifer_list, fig_size=(800,600)):
 
   metrics_list = [x.train_metrics for x in classifer_list]
 
-  colors = ['#ffa372', '#ed6663', '#0f4c81', '#1b262c']*len(metrics_list)
-
-  colors=['#151965',
-'#32407b',
-'#515585',
-'#46b5d1',]*len(metrics_list)
+#   colors = ['#ffa372', '#ed6663', '#0f4c81', '#1b262c']*len(metrics_list)
+#
+#   colors=['#151965',
+# '#32407b',
+# '#515585',
+# '#46b5d1',]*len(metrics_list)
 
   output_notebook()
 
@@ -654,7 +654,7 @@ def show_multiple_metrics(classifer_list, fig_size=(800,600)):
       p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
 
       for i in metrics_list:
-        # colors = brewer['Accent'][len(metrics_list)*2]
+        colors = brewer['Accent'][len(metrics_list)*2]
         x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= colors[ind])
         y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= colors[-ind], line_dash='dotted')
         legend_items.append((('Model '+str(ind)+' Train Loss') , [x]))
@@ -665,7 +665,7 @@ def show_multiple_metrics(classifer_list, fig_size=(800,600)):
       legend_items = []
       p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
       for i in metrics_list:
-        # colors = brewer['Accent'][len(metrics_list)*2]
+        colors = brewer['Accent'][len(metrics_list)*2]
         x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= colors[ind])
         y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= colors[-ind], line_dash='dotted')
         legend_items.append((('Model '+str(ind)+' Train Accuracy') , [x]))

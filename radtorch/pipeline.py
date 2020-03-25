@@ -862,3 +862,13 @@ class Compare_Image_Classifier():
 
     def metrics(self,  fig_size=(500,300)):
         return show_multiple_metrics(self.classifiers,  fig_size=fig_size)
+
+
+    def roc(self):
+        # Show separate roc curves
+        print ('roc')
+
+
+    def best(self):
+        # Show separate roc curves
+        print ('best classifier')
