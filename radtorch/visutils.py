@@ -277,7 +277,7 @@ def show_roc(true_labels, predictions, figure_size=(550,400), title='ROC Curve')
     p.yaxis.major_label_text_color = '#99A3A4'
     p.outline_line_color = None
     p.yaxis.axis_label = 'TPR (Sensitivity)'
-    p.xaxis.axis_label = ('FPR (1-specficity)\n   AUC={:0.4f}'.format(5))
+    p.xaxis.axis_label = ('FPR (1-specficity)\n   AUC={:0.4f}'.format(auc))
     p.xaxis.axis_label_text_color = '#ABB2B9'
     p.yaxis.axis_label_text_color = '#ABB2B9'
     p.xaxis.axis_label_text_font_style = None
