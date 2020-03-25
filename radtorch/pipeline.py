@@ -19,7 +19,7 @@ from collections import Counter
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table, split_dataset, calculate_mean_std, over_sample
-from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info, plot_images ,plot_dataset_info
+from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info, plot_images ,plot_dataset_info, show_multiple_metrics
 
 
 
@@ -724,12 +724,15 @@ class Feature_Extraction():
     #     print ('Model Loaded Successfully.')
 
 
+import torch
+from tqdm.notebook import tqdm
+import itertools
 
-class Compare_Classifier():
+class Compare_Image_Classifier():
     def __init__(
     self,
     data_directory,
-    transformations='default', ####
+    transformations='default',
     custom_resize = 'default',
     device='default',
     optimizer='Adam',
@@ -739,19 +742,19 @@ class Compare_Classifier():
     table_source=None,
     path_col = 'IMAGE_PATH',
     label_col = 'IMAGE_LABEL' ,
-    balance_class =[], ####
+    balance_class =[False],
     multi_label = False,
     mode='RAW',
     wl=None,
-    normalize=[], ####
-    batch_size=[],  ####
-    test_percent = [], ####
-    valid_percent = [], ####
-    model_arch=[], ####
-    pre_trained=[], ####
+    normalize=['default'],
+    batch_size=[16],
+    test_percent = [0.2],
+    valid_percent = [0.2],
+    model_arch=['vgg16'],
+    pre_trained=[True],
     unfreeze_weights=True,
-    train_epochs=[],
-    learning_rate=[], ####
+    train_epochs=[10],
+    learning_rate=[0.0001],
     loss_function='CrossEntropyLoss'):
 
         self.data_directory = data_directory
@@ -793,12 +796,69 @@ class Compare_Classifier():
         self.pre_trained
         ]
 
-        self.train_scenarios = list(itertools.product(*variables))
-
-        self.train_scenarios_df = pd.DataFrame(self.train_scenarios, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained'])
-
-
+        self.scenarios_list = list(itertools.product(*variables))
+        self.num_scenarios = len(self.scenarios_list)
+        self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained'])
 
 
-    def scenarios(self):
-        return self.train_scenarios_df
+    def train_grid(self):
+      return self.scenarios_df
+
+
+    def create_classifiers(self):
+      self.classifiers = []
+      for i in self.scenarios_list:
+        balance_class = i[0]
+        normalize = i[1]
+        batch_size = i[2]
+        test_percent = i[3]
+        valid_percent = i[4]
+        train_epochs = i[5]
+        learning_rate = i[6]
+        model_arch = i[7]
+        pre_trained  = i[8]
+
+        clf = pipeline.Image_Classification(  data_directory = self.data_directory,
+                                              transformations=self.transformations,
+                                              custom_resize = self.custom_resize,
+                                              device=self.device,
+                                              optimizer=self.optimizer,
+                                              is_dicom=self.is_dicom,
+                                              label_from_table=self.label_from_table,
+                                              is_csv=self.is_csv,
+                                              table_source=self.table_source,
+                                              path_col = self.path_col,
+                                              label_col = self.label_col ,
+                                              balance_class = balance_class,
+                                              multi_label = self.multi_label,
+                                              mode=self.mode,
+                                              wl=self.wl,
+                                              normalize=normalize,
+                                              batch_size=batch_size,
+                                              test_percent = test_percent,
+                                              valid_percent = valid_percent,
+                                              model_arch=model_arch,
+                                              pre_trained=pre_trained,
+                                              unfreeze_weights=self.unfreeze_weights,
+                                              train_epochs=train_epochs,
+                                              learning_rate=learning_rate,
+                                              loss_function=self.loss_function)
+        classifiers.append(clf)
+
+      return classifiers
+
+
+    def run(self):
+      self.classifiers = self.create_classifiers()
+      self.master_metrics = []
+      self.trained_models = []
+      for i in tqdm(self.classifiers, total=len(self.classifiers)):
+        print ('Starting Training Classifier Number',self.classifiers.index(i))
+        i.run()
+        self.trained_models.append(i.trained_model)
+        self.master_metrics.append(i.train_metrics)
+        torch.cuda.empty_cache()
+
+
+    def metrics(self):
+        return show_multiple_metrics(self.master_metrics)

@@ -17,12 +17,12 @@ from pathlib import Path
 
 from bokeh.io import output_notebook, show
 from math import pi
-from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource
+from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource. Legend
 from bokeh.plotting import figure, show
 from bokeh.sampledata.unemployment1948 import data
 from bokeh.layouts import row, gridplot, column
 from bokeh.transform import factor_cmap, cumsum
-
+from bokeh.palettes import viridis, Paired, inferno, brewer, d3, Turbo256
 
 from radtorch.generalutils import getDuplicatesWithCount
 from radtorch.dicomutils import dicom_to_narray
@@ -628,3 +628,73 @@ def plot_dataset_info(dataframe_dictionary, plot_size=(500,300)):
         output.append(p)
 
     show(column(output))
+
+
+def show_multiple_metrics(classifer_list, fig_size=(800,600)):
+
+  metrics_list = [x.train_metrics for x in classifer_list]
+
+  colors = ['#ffa372', '#ed6663', '#0f4c81', '#1b262c']*len(metrics_list)
+
+  colors=['#151965',
+'#32407b',
+'#515585',
+'#46b5d1',]*len(metrics_list)
+
+  output_notebook()
+
+  TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
+
+  output = []
+
+  for m in ['Accuracy', 'Loss',]:
+    ind = 0
+    if m =='Loss':
+      legend_items = []
+      p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+
+      for i in metrics_list:
+        # colors = brewer['Accent'][len(metrics_list)*2]
+        x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= colors[ind])
+        y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= colors[-ind], line_dash='dotted')
+        legend_items.append((('Model '+str(ind)+' Train Loss') , [x]))
+        legend_items.append(('Model '+str(ind)+' Valid Loss' , [y]))
+        ind = ind +1
+
+    elif m == "Accuracy":
+      legend_items = []
+      p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+      for i in metrics_list:
+        # colors = brewer['Accent'][len(metrics_list)*2]
+        x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= colors[ind])
+        y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= colors[-ind], line_dash='dotted')
+        legend_items.append((('Model '+str(ind)+' Train Accuracy') , [x]))
+        legend_items.append(('Model '+str(ind)+' Valid Accuracy' , [y]))
+        ind = ind +1
+
+    legend = Legend(items=legend_items, location=(10, -20))
+    p.add_layout(legend, 'right')
+    # p.legend.location = "top_center"
+    p.legend.inactive_fill_alpha = 0.7
+    p.legend.border_line_width = 0
+    p.legend.click_policy="hide"
+    p.xaxis.axis_line_color = '#D6DBDF'
+    p.yaxis.axis_line_color = '#D6DBDF'
+    p.xgrid.grid_line_color=None
+    p.yaxis.axis_line_width = 2
+    p.xaxis.axis_line_width = 2
+    p.xaxis.major_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_color = '#D6DBDF'
+    p.xaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_width = 2
+    p.xaxis.major_tick_line_width = 2
+    p.yaxis.minor_tick_line_width = 0
+    p.xaxis.minor_tick_line_width = 0
+    p.xaxis.major_label_text_color = '#99A3A4'
+    p.yaxis.major_label_text_color = '#99A3A4'
+    p.outline_line_color = None
+    output.append(p)
+
+
+  show(row(output))
