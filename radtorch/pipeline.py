@@ -861,4 +861,4 @@ class Compare_Image_Classifier():
 
 
     def metrics(self):
-        return show_multiple_metrics(self.master_metrics)
+        return show_multiple_metrics(self.classifiers)
