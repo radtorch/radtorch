@@ -843,9 +843,9 @@ class Compare_Image_Classifier():
                                               train_epochs=train_epochs,
                                               learning_rate=learning_rate,
                                               loss_function=self.loss_function)
-        classifiers.append(clf)
+        self.classifiers.append(clf)
 
-      return classifiers
+      return self.classifiers
 
 
     def run(self):
