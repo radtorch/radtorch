@@ -860,5 +860,5 @@ class Compare_Image_Classifier():
         torch.cuda.empty_cache()
 
 
-    def metrics(self):
-        return show_multiple_metrics(self.classifiers)
+    def metrics(self,  fig_size=(800,600)):
+        return show_multiple_metrics(self.classifiers,  fig_size=fig_size)
