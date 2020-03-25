@@ -17,7 +17,7 @@ from pathlib import Path
 
 from bokeh.io import output_notebook, show
 from math import pi
-from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource. Legend
+from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource, Legend
 from bokeh.plotting import figure, show
 from bokeh.sampledata.unemployment1948 import data
 from bokeh.layouts import row, gridplot, column
