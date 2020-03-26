@@ -96,6 +96,34 @@ class Image_Classification():
         self.balance_class = balance_class
         self.predefined_datasets = predefined_datasets
 
+
+        # Custom Resize
+        if custom_resize=='default':
+            self.input_resize = model_dict[model_arch]['input_size']
+        else:
+            self.input_resize = custom_resize
+
+        # Transformations
+        if transformations == 'default':
+            if self.is_dicom == True:
+                self.transformations = transforms.Compose([
+                        transforms.Resize((self.input_resize, self.input_resize)),
+                        transforms.transforms.Grayscale(3),
+                        transforms.ToTensor()])
+            else:
+                self.transformations = transforms.Compose([
+                        transforms.Resize((self.input_resize, self.input_resize)),
+                        transforms.ToTensor()])
+        else:
+            self.transformations = transformations
+
+        # Device
+        if device == 'default':
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        else:
+            self.device == device
+
+
         if self.predefined_datasets:
             self.train_data_set = dataset_from_table(
                                                     data_directory=self.data_directory,
@@ -153,31 +181,6 @@ class Image_Classification():
 
         else:
 
-            # Custom Resize
-            if custom_resize=='default':
-                self.input_resize = model_dict[model_arch]['input_size']
-            else:
-                self.input_resize = custom_resize
-
-            # Transformations
-            if transformations == 'default':
-                if self.is_dicom == True:
-                    self.transformations = transforms.Compose([
-                            transforms.Resize((self.input_resize, self.input_resize)),
-                            transforms.transforms.Grayscale(3),
-                            transforms.ToTensor()])
-                else:
-                    self.transformations = transforms.Compose([
-                            transforms.Resize((self.input_resize, self.input_resize)),
-                            transforms.ToTensor()])
-            else:
-                self.transformations = transformations
-
-            # Device
-            if device == 'default':
-                self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-            else:
-                self.device == device
 
             # Create Dataset
             if self.label_from_table == True:
