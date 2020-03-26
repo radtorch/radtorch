@@ -688,8 +688,9 @@ def test_roc(classifier_list, fig_size=(700,400)):
         legend_items.append((('Model '+str(ind)+'. AUC = '+str(auc)),[x]))
         ind = ind+1
         auc_list.append(auc)
-        legend = Legend(items=legend_items, location=(10, -20))
-        p.add_layout(legend, 'right')
+
+    legend = Legend(items=legend_items, location=(10, -20))
+    p.add_layout(legend, 'right')
 
     p.legend.inactive_fill_alpha = 0.7
     p.legend.border_line_width = 0

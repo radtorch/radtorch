@@ -792,7 +792,7 @@ class Compare_Image_Classifier():
     mode='RAW',
     wl=None,
     normalize=['default'],
-    batch_size=[16],
+    batch_size=[8],
     test_percent = [0.2],
     valid_percent = [0.2],
     model_arch=['vgg16'],
@@ -844,12 +844,8 @@ class Compare_Image_Classifier():
         self.num_scenarios = len(self.scenarios_list)
         self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained'])
 
-    def train_grid(self):
-      return self.scenarios_df
-
-    def create_classifiers(self):
-      self.classifiers = []
-      for i in self.scenarios_list:
+        self.classifiers = []
+        for i in self.scenarios_list:
         balance_class = i[0]
         normalize = i[1]
         batch_size = i[2]
@@ -925,10 +921,11 @@ class Compare_Image_Classifier():
                                                   predefined_datasets=self.datasets)
             self.classifiers.append(clf)
 
-      return self.classifiers
+
+    def train_grid(self):
+      return self.scenarios_df
 
     def run(self):
-      self.classifiers = self.create_classifiers()
       self.master_metrics = []
       self.trained_models = []
       for i in tqdm(self.classifiers, total=len(self.classifiers)):
@@ -938,7 +935,7 @@ class Compare_Image_Classifier():
         self.master_metrics.append(i.train_metrics)
         torch.cuda.empty_cache()
 
-    def metrics(self,  fig_size=(500,300)):
+    def metrics(self, fig_size=(500,300)):
         return show_metrics(self.classifiers,  fig_size=fig_size)
 
     def roc(self, fig_size=(500,300)):
