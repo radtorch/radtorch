@@ -846,15 +846,15 @@ class Compare_Image_Classifier():
 
         self.classifiers = []
         for i in self.scenarios_list:
-        balance_class = i[0]
-        normalize = i[1]
-        batch_size = i[2]
-        test_percent = i[3]
-        valid_percent = i[4]
-        train_epochs = i[5]
-        learning_rate = i[6]
-        model_arch = i[7]
-        pre_trained  = i[8]
+            balance_class = i[0]
+            normalize = i[1]
+            batch_size = i[2]
+            test_percent = i[3]
+            valid_percent = i[4]
+            train_epochs = i[5]
+            learning_rate = i[6]
+            model_arch = i[7]
+            pre_trained  = i[8]
 
         if self.scenarios_list.index(i) == 0:
             clf = Image_Classification(data_directory = self.data_directory,
