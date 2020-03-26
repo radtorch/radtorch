@@ -856,70 +856,70 @@ class Compare_Image_Classifier():
             model_arch = i[7]
             pre_trained  = i[8]
 
-        if self.scenarios_list.index(i) == 0:
-            clf = Image_Classification(data_directory = self.data_directory,
-                                                  name = None,
-                                                  transformations=self.transformations,
-                                                  custom_resize = self.custom_resize,
-                                                  device=self.device,
-                                                  optimizer=self.optimizer,
-                                                  is_dicom=self.is_dicom,
-                                                  label_from_table=self.label_from_table,
-                                                  is_csv=self.is_csv,
-                                                  table_source=self.table_source,
-                                                  path_col = self.path_col,
-                                                  label_col = self.label_col ,
-                                                  balance_class = balance_class,
-                                                  multi_label = self.multi_label,
-                                                  mode=self.mode,
-                                                  wl=self.wl,
-                                                  normalize=normalize,
-                                                  batch_size=batch_size,
-                                                  test_percent = test_percent,
-                                                  valid_percent = valid_percent,
-                                                  model_arch=model_arch,
-                                                  pre_trained=pre_trained,
-                                                  unfreeze_weights=self.unfreeze_weights,
-                                                  train_epochs=train_epochs,
-                                                  learning_rate=learning_rate,
-                                                  loss_function=self.loss_function,
-                                                  predefined_datasets=None)
+            if self.classifiers.index(i) == 0:
+                clf = Image_Classification(data_directory = self.data_directory,
+                                                      name = None,
+                                                      transformations=self.transformations,
+                                                      custom_resize = self.custom_resize,
+                                                      device=self.device,
+                                                      optimizer=self.optimizer,
+                                                      is_dicom=self.is_dicom,
+                                                      label_from_table=self.label_from_table,
+                                                      is_csv=self.is_csv,
+                                                      table_source=self.table_source,
+                                                      path_col = self.path_col,
+                                                      label_col = self.label_col ,
+                                                      balance_class = balance_class,
+                                                      multi_label = self.multi_label,
+                                                      mode=self.mode,
+                                                      wl=self.wl,
+                                                      normalize=normalize,
+                                                      batch_size=batch_size,
+                                                      test_percent = test_percent,
+                                                      valid_percent = valid_percent,
+                                                      model_arch=model_arch,
+                                                      pre_trained=pre_trained,
+                                                      unfreeze_weights=self.unfreeze_weights,
+                                                      train_epochs=train_epochs,
+                                                      learning_rate=learning_rate,
+                                                      loss_function=self.loss_function,
+                                                      predefined_datasets=None)
 
-            self.train_label_table=clf.train_data_set.input_data
-            self.valid_label_table=clf.valid_data_set.input_data
-            self.test_label_table=clf.test_data_set.input_data
-            self.datasets = {'train':self.train_label_table, 'valid':self.valid_label_table,'test':self.test_label_table}
-            self.classifiers.append(clf)
+                self.train_label_table=clf.train_data_set.input_data
+                self.valid_label_table=clf.valid_data_set.input_data
+                self.test_label_table=clf.test_data_set.input_data
+                self.datasets = {'train':self.train_label_table, 'valid':self.valid_label_table,'test':self.test_label_table}
+                self.classifiers.append(clf)
 
-        else:
-            clf = Image_Classification(data_directory = self.data_directory,
-                                                  name = None,
-                                                  transformations=self.transformations,
-                                                  custom_resize = self.custom_resize,
-                                                  device=self.device,
-                                                  optimizer=self.optimizer,
-                                                  is_dicom=self.is_dicom,
-                                                  label_from_table=self.label_from_table,
-                                                  is_csv=self.is_csv,
-                                                  table_source=self.table_source,
-                                                  path_col = self.path_col,
-                                                  label_col = self.label_col ,
-                                                  balance_class = balance_class,
-                                                  multi_label = self.multi_label,
-                                                  mode=self.mode,
-                                                  wl=self.wl,
-                                                  normalize=normalize,
-                                                  batch_size=batch_size,
-                                                  test_percent = test_percent,
-                                                  valid_percent = valid_percent,
-                                                  model_arch=model_arch,
-                                                  pre_trained=pre_trained,
-                                                  unfreeze_weights=self.unfreeze_weights,
-                                                  train_epochs=train_epochs,
-                                                  learning_rate=learning_rate,
-                                                  loss_function=self.loss_function,
-                                                  predefined_datasets=self.datasets)
-            self.classifiers.append(clf)
+            else:
+                clf = Image_Classification(data_directory = self.data_directory,
+                                                      name = None,
+                                                      transformations=self.transformations,
+                                                      custom_resize = self.custom_resize,
+                                                      device=self.device,
+                                                      optimizer=self.optimizer,
+                                                      is_dicom=self.is_dicom,
+                                                      label_from_table=self.label_from_table,
+                                                      is_csv=self.is_csv,
+                                                      table_source=self.table_source,
+                                                      path_col = self.path_col,
+                                                      label_col = self.label_col ,
+                                                      balance_class = balance_class,
+                                                      multi_label = self.multi_label,
+                                                      mode=self.mode,
+                                                      wl=self.wl,
+                                                      normalize=normalize,
+                                                      batch_size=batch_size,
+                                                      test_percent = test_percent,
+                                                      valid_percent = valid_percent,
+                                                      model_arch=model_arch,
+                                                      pre_trained=pre_trained,
+                                                      unfreeze_weights=self.unfreeze_weights,
+                                                      train_epochs=train_epochs,
+                                                      learning_rate=learning_rate,
+                                                      loss_function=self.loss_function,
+                                                      predefined_datasets=self.datasets)
+                self.classifiers.append(clf)
 
 
     def train_grid(self):
