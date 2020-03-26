@@ -127,35 +127,9 @@ def show_dataset_info(dataset):
 
 
 def show_metrics(metric_source, metric='all', show_points = False, fig_size = (600,400)):
-    """
-    Displays metrics created by the training loop.
 
-    **Arguments**
-
-    - source: _(list)_ the metrics generated during the training process as by modelsutils.train_model()
-
-    - fig_size: _(tuple)_ size of the displayed figure. (default=15,5)
-
-    **Output**
-
-    -  Output: _(figure)_ Matplotlib graphs of accuracy and error for training and validation.
-    """
-
-    # metrics = np.array(source)
-    # loss = metrics[:,0:2]
-    # accuracy = metrics[:,2:4]
-    #
-    # fig, (ax1, ax2) = plt.subplots(1, 2, figsize=fig_size)
-    #
-    # ax1.plot(loss)
-    # ax1.legend(['Train Loss', 'Valid Loss'])
-    # ax1.set(xlabel='Epoch Number', ylabel='Loss')
-    # ax1.grid(True)
-    # ax2.plot(accuracy)
-    # ax2.legend(['Train Accuracy', 'Valid Accuracy'])
-    # ax2.set(xlabel='Epoch Number', ylabel='Accuracy')
-    # ax2.grid(True)
     output_notebook()
+
     TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
     metrics = {
@@ -633,13 +607,6 @@ def plot_dataset_info(dataframe_dictionary, plot_size=(500,300)):
 def show_multiple_metrics(classifer_list, fig_size=(800,600)):
 
   metrics_list = [x.train_metrics for x in classifer_list]
-
-#   colors = ['#ffa372', '#ed6663', '#0f4c81', '#1b262c']*len(metrics_list)
-#
-#   colors=['#151965',
-# '#32407b',
-# '#515585',
-# '#46b5d1',]*len(metrics_list)
 
   output_notebook()
 

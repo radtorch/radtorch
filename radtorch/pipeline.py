@@ -11,6 +11,7 @@ import pandas as pd
 
 from sklearn import metrics
 from tqdm import tqdm_notebook as tqdm
+from tqdm.notebook import tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
@@ -338,7 +339,6 @@ class Image_Classification():
           titles = [ntpath.basename(x) for x in paths]
         plot_images(images=images, titles=titles, figure_size=fig_size)
 
-
     def run(self, verbose=True):
         '''
         Train the image classification pipeline.
@@ -491,6 +491,9 @@ class Image_Classification():
         outfile = open(target_path,'wb')
         pickle.dump(self,outfile)
         outfile.close()
+
+    def test(self):
+        return show_multiple_metrics([self])
 
 
 class Feature_Extraction():
@@ -709,24 +712,6 @@ class Feature_Extraction():
             feature_names = self.feature_names
         return plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col)
 
-    # def set_trained_model(self, model_path, mode):
-    #     '''
-    #     Loads a previously trained model into pipeline
-    #     Inputs:
-    #         model_path: [str] Path to target model
-    #         mode: [str] either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.
-    #     '''
-    #     if mode == 'train':
-    #         self.model = torch.load(model_path)
-    #     elif mode == 'infer':
-    #         self.model = torch.load(model_path)
-    #
-    #     print ('Model Loaded Successfully.')
-
-
-import torch
-from tqdm.notebook import tqdm
-import itertools
 
 class Compare_Image_Classifier():
 
