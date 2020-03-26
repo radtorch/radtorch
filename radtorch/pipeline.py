@@ -20,7 +20,7 @@ from collections import Counter
 
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table, split_dataset, calculate_mean_std, over_sample
-from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info, plot_images ,plot_dataset_info
+from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, test_roc, show_nn_confusion_matrix, show_roc, show_nn_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info, plot_images ,plot_dataset_info
 
 
 
@@ -44,6 +44,7 @@ class Image_Classification():
 
     def __init__(
     self,
+    name = None,
     data_directory,
     transformations='default',
     custom_resize = 'default',
@@ -57,6 +58,7 @@ class Image_Classification():
     label_col = 'IMAGE_LABEL' ,
     balance_class = False,
     multi_label = False,
+    predefined_datasets = False,
     mode='RAW',
     wl=None,
     normalize='default',
@@ -69,6 +71,7 @@ class Image_Classification():
     train_epochs=20,
     learning_rate=0.0001,
     loss_function='CrossEntropyLoss'):
+        self.name = name
         self.data_directory = data_directory
         self.label_from_table = label_from_table
         self.is_csv = is_csv
@@ -91,94 +94,59 @@ class Image_Classification():
         self.multi_label = multi_label
         self.num_workers = 0
         self.balance_class = balance_class
+        self.predefined_datasets = predefined_datasets
 
-        # Custom Resize
-        if custom_resize=='default':
-            self.input_resize = model_dict[model_arch]['input_size']
+        if self.predefined_datasets:
+            self.train_data_set = self.predefined_datasets['train']
+            self.valid_data_set = self.predefined_datasets['valid']
+            self.test_data_set = self.predefined_datasets['test']
+            self.num_output_classes = len(self.train_data_set.classes)
+            self.train_data_loader = torch.utils.data.DataLoader(
+                                                    self.train_data_set,
+                                                    batch_size=self.batch_size,
+                                                    shuffle=True,
+                                                    num_workers=self.num_workers)
+            self.valid_data_loader = torch.utils.data.DataLoader(
+                                                    self.valid_data_set,
+                                                    batch_size=self.batch_size,
+                                                    shuffle=True,
+                                                    num_workers=self.num_workers)
+            self.test_data_loader = torch.utils.data.DataLoader(
+                                                    self.test_data_set,
+                                                    batch_size=self.batch_size,
+                                                    shuffle=True,
+                                                    num_workers=self.num_workers)
+
+
         else:
-            self.input_resize = custom_resize
 
-        # Transformations
-        if transformations == 'default':
-            if self.is_dicom == True:
-                self.transformations = transforms.Compose([
-                        transforms.Resize((self.input_resize, self.input_resize)),
-                        transforms.transforms.Grayscale(3),
-                        transforms.ToTensor()])
+            # Custom Resize
+            if custom_resize=='default':
+                self.input_resize = model_dict[model_arch]['input_size']
             else:
-                self.transformations = transforms.Compose([
-                        transforms.Resize((self.input_resize, self.input_resize)),
-                        transforms.ToTensor()])
-        else:
-            self.transformations = transformations
+                self.input_resize = custom_resize
 
-        # Device
-        if device == 'default':
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        else:
-            self.device == device
-
-        # Create Dataset
-        if self.label_from_table == True:
-            try:
-                self.data_set = dataset_from_table(
-                        data_directory=self.data_directory,
-                        is_csv=self.is_csv,
-                        is_dicom=self.is_dicom,
-                        input_source=self.table_source,
-                        img_path_column=self.path_col,
-                        img_label_column=self.label_col,
-                        multi_label = self.multi_label,
-                        mode=self.mode,
-                        wl=self.wl,
-                        trans=self.transformations)
-            except:
-                raise TypeError('Dataset could not be created from table.')
-                pass
-
-        else:
-            try:
-                self.data_set = dataset_from_folder(
-                            data_directory=self.data_directory,
-                            is_dicom=self.is_dicom,
-                            mode=self.mode,
-                            wl=self.wl,
-                            trans=self.transformations)
-            except:
-                raise TypeError('Dataset could not be created from folder structure.')
-                pass
-
-        if self.normalize:
-            if self.normalize == 'auto':
-                self.data_loader = torch.utils.data.DataLoader(
-                                                        self.data_set,
-                                                        batch_size=self.batch_size,
-                                                        shuffle=True,
-                                                        num_workers=self.num_workers)
-
-                self.mean, self.std = calculate_mean_std(self.data_loader)
-            elif self.normalize == 'default':
-                self.mean = [0.5, 0.5, 0.5]
-                self.std = [0.5, 0.5, 0.5]
-            else:
-                self.mean = self.normalize[0]
-                self.std = self.normalize[1]
-
+            # Transformations
             if transformations == 'default':
                 if self.is_dicom == True:
                     self.transformations = transforms.Compose([
                             transforms.Resize((self.input_resize, self.input_resize)),
                             transforms.transforms.Grayscale(3),
-                            transforms.ToTensor(),
-                            transforms.Normalize(mean=self.mean, std=self.std)])
+                            transforms.ToTensor()])
                 else:
                     self.transformations = transforms.Compose([
                             transforms.Resize((self.input_resize, self.input_resize)),
-                            transforms.ToTensor(),
-                            transforms.Normalize(mean=self.mean, std=self.std)])
+                            transforms.ToTensor()])
             else:
                 self.transformations = transformations
 
+            # Device
+            if device == 'default':
+                self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            else:
+                self.device == device
+
+            # Create Dataset
             if self.label_from_table == True:
                 try:
                     self.data_set = dataset_from_table(
@@ -196,49 +164,106 @@ class Image_Classification():
                     raise TypeError('Dataset could not be created from table.')
                     pass
 
+            else:
+                try:
+                    self.data_set = dataset_from_folder(
+                                data_directory=self.data_directory,
+                                is_dicom=self.is_dicom,
+                                mode=self.mode,
+                                wl=self.wl,
+                                trans=self.transformations)
+                except:
+                    raise TypeError('Dataset could not be created from folder structure.')
+                    pass
 
-        # Split Data set
-        if self.test_percent == 0:
-            self.train_data_set, self.valid_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
-            if self.balance_class:
-                self.train_data_set = over_sample(self.train_data_set)
-                self.valid_data_set = over_sample(self.valid_data_set)
-            self.test_data_set = 0
-        else:
-            self.train_data_set, self.valid_data_set, self.test_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
-            if self.balance_class:
-                self.train_data_set = over_sample(self.train_data_set)
-                self.valid_data_set = over_sample(self.valid_data_set)
-                self.test_data_set = over_sample(self.test_data_set)
+            if self.normalize:
+                if self.normalize == 'auto':
+                    self.data_loader = torch.utils.data.DataLoader(
+                                                            self.data_set,
+                                                            batch_size=self.batch_size,
+                                                            shuffle=True,
+                                                            num_workers=self.num_workers)
 
+                    self.mean, self.std = calculate_mean_std(self.data_loader)
+                elif self.normalize == 'default':
+                    self.mean = [0.5, 0.5, 0.5]
+                    self.std = [0.5, 0.5, 0.5]
+                else:
+                    self.mean = self.normalize[0]
+                    self.std = self.normalize[1]
+
+                if transformations == 'default':
+                    if self.is_dicom == True:
+                        self.transformations = transforms.Compose([
+                                transforms.Resize((self.input_resize, self.input_resize)),
+                                transforms.transforms.Grayscale(3),
+                                transforms.ToTensor(),
+                                transforms.Normalize(mean=self.mean, std=self.std)])
+                    else:
+                        self.transformations = transforms.Compose([
+                                transforms.Resize((self.input_resize, self.input_resize)),
+                                transforms.ToTensor(),
+                                transforms.Normalize(mean=self.mean, std=self.std)])
+                else:
+                    self.transformations = transformations
+
+                if self.label_from_table == True:
+                    try:
+                        self.data_set = dataset_from_table(
+                                data_directory=self.data_directory,
+                                is_csv=self.is_csv,
+                                is_dicom=self.is_dicom,
+                                input_source=self.table_source,
+                                img_path_column=self.path_col,
+                                img_label_column=self.label_col,
+                                multi_label = self.multi_label,
+                                mode=self.mode,
+                                wl=self.wl,
+                                trans=self.transformations)
+                    except:
+                        raise TypeError('Dataset could not be created from table.')
+                        pass
+
+
+            # Split Data set
+            if self.test_percent == 0:
+                self.train_data_set, self.valid_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
+                if self.balance_class:
+                    self.train_data_set = over_sample(self.train_data_set)
+                    self.valid_data_set = over_sample(self.valid_data_set)
+                self.test_data_set = 0
+            else:
+                self.train_data_set, self.valid_data_set, self.test_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
+                if self.balance_class:
+                    self.train_data_set = over_sample(self.train_data_set)
+                    self.valid_data_set = over_sample(self.valid_data_set)
+                    self.test_data_set = over_sample(self.test_data_set)
+
+            self.num_output_classes = len(self.data_set.classes)
 
         # Data Loaders
-        self.train_data_loader = torch.utils.data.DataLoader(
-                                                    self.train_data_set,
-                                                    batch_size=self.batch_size,
-                                                    shuffle=True,
-                                                    num_workers=self.num_workers)
+            self.train_data_loader = torch.utils.data.DataLoader(
+                                                        self.train_data_set,
+                                                        batch_size=self.batch_size,
+                                                        shuffle=True,
+                                                        num_workers=self.num_workers)
 
 
-        self.valid_data_loader = torch.utils.data.DataLoader(
-                                                    self.valid_data_set,
-                                                    batch_size=self.batch_size,
-                                                    shuffle=True,
-                                                    num_workers=self.num_workers)
+            self.valid_data_loader = torch.utils.data.DataLoader(
+                                                        self.valid_data_set,
+                                                        batch_size=self.batch_size,
+                                                        shuffle=True,
+                                                        num_workers=self.num_workers)
 
 
-        if self.test_percent == 0:
-            self.test_data_loader = 0
-        else:
-            self.test_data_loader = torch.utils.data.DataLoader(
-                                                    self.test_data_set,
-                                                    batch_size=self.batch_size,
-                                                    shuffle=True,
-                                                    num_workers=self.num_workers)
-
-
-        self.num_output_classes = len(self.data_set.classes)
-
+            if self.test_percent == 0:
+                self.test_data_loader = 0
+            else:
+                self.test_data_loader = torch.utils.data.DataLoader(
+                                                        self.test_data_set,
+                                                        batch_size=self.batch_size,
+                                                        shuffle=True,
+                                                        num_workers=self.num_workers)
 
         self.train_model = create_model(
                                     model_arch=self.model_arch,
@@ -784,9 +809,133 @@ class Compare_Image_Classifier():
         self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained'])
 
 
+        # Custom Resize
+        if custom_resize=='default':
+            self.input_resize = model_dict[model_arch]['input_size']
+        else:
+            self.input_resize = custom_resize
+
+        # Transformations
+        if transformations == 'default':
+            if self.is_dicom == True:
+                self.transformations = transforms.Compose([
+                        transforms.Resize((self.input_resize, self.input_resize)),
+                        transforms.transforms.Grayscale(3),
+                        transforms.ToTensor()])
+            else:
+                self.transformations = transforms.Compose([
+                        transforms.Resize((self.input_resize, self.input_resize)),
+                        transforms.ToTensor()])
+        else:
+            self.transformations = transformations
+
+        # Device
+        if device == 'default':
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        else:
+            self.device == device
+
+        # Create Dataset
+        if self.label_from_table == True:
+            try:
+                self.data_set = dataset_from_table(
+                        data_directory=self.data_directory,
+                        is_csv=self.is_csv,
+                        is_dicom=self.is_dicom,
+                        input_source=self.table_source,
+                        img_path_column=self.path_col,
+                        img_label_column=self.label_col,
+                        multi_label = self.multi_label,
+                        mode=self.mode,
+                        wl=self.wl,
+                        trans=self.transformations)
+            except:
+                raise TypeError('Dataset could not be created from table.')
+                pass
+
+        else:
+            try:
+                self.data_set = dataset_from_folder(
+                            data_directory=self.data_directory,
+                            is_dicom=self.is_dicom,
+                            mode=self.mode,
+                            wl=self.wl,
+                            trans=self.transformations)
+            except:
+                raise TypeError('Dataset could not be created from folder structure.')
+                pass
+
+        if self.normalize:
+            if self.normalize == 'auto':
+                self.data_loader = torch.utils.data.DataLoader(
+                                                        self.data_set,
+                                                        batch_size=self.batch_size,
+                                                        shuffle=True,
+                                                        num_workers=self.num_workers)
+
+                self.mean, self.std = calculate_mean_std(self.data_loader)
+            elif self.normalize == 'default':
+                self.mean = [0.5, 0.5, 0.5]
+                self.std = [0.5, 0.5, 0.5]
+            else:
+                self.mean = self.normalize[0]
+                self.std = self.normalize[1]
+
+            if transformations == 'default':
+                if self.is_dicom == True:
+                    self.transformations = transforms.Compose([
+                            transforms.Resize((self.input_resize, self.input_resize)),
+                            transforms.transforms.Grayscale(3),
+                            transforms.ToTensor(),
+                            transforms.Normalize(mean=self.mean, std=self.std)])
+                else:
+                    self.transformations = transforms.Compose([
+                            transforms.Resize((self.input_resize, self.input_resize)),
+                            transforms.ToTensor(),
+                            transforms.Normalize(mean=self.mean, std=self.std)])
+            else:
+                self.transformations = transformations
+
+            if self.label_from_table == True:
+                try:
+                    self.data_set = dataset_from_table(
+                            data_directory=self.data_directory,
+                            is_csv=self.is_csv,
+                            is_dicom=self.is_dicom,
+                            input_source=self.table_source,
+                            img_path_column=self.path_col,
+                            img_label_column=self.label_col,
+                            multi_label = self.multi_label,
+                            mode=self.mode,
+                            wl=self.wl,
+                            trans=self.transformations)
+                except:
+                    raise TypeError('Dataset could not be created from table.')
+                    pass
+
+
+        # Split Data set
+        if self.test_percent == 0:
+            self.train_data_set, self.valid_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
+            if self.balance_class:
+                self.train_data_set = over_sample(self.train_data_set)
+                self.valid_data_set = over_sample(self.valid_data_set)
+            self.test_data_set = 0
+        else:
+            self.train_data_set, self.valid_data_set, self.test_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
+            if self.balance_class:
+                self.train_data_set = over_sample(self.train_data_set)
+                self.valid_data_set = over_sample(self.valid_data_set)
+                self.test_data_set = over_sample(self.test_data_set)
+
+        self.num_output_classes = len(self.data_set.classes)
+
+
+        self.datasets = {'train':self.train_data_set, 'valid':self.valid_data_set, 'test':self.test_data_set}
+
+
     def train_grid(self):
       return self.scenarios_df
-
 
     def create_classifiers(self):
       self.classifiers = []
@@ -801,7 +950,8 @@ class Compare_Image_Classifier():
         model_arch = i[7]
         pre_trained  = i[8]
 
-        clf = Image_Classification(  data_directory = self.data_directory,
+        clf = Image_Classification(data_directory = self.data_directory,
+                                              name = None,
                                               transformations=self.transformations,
                                               custom_resize = self.custom_resize,
                                               device=self.device,
@@ -825,11 +975,11 @@ class Compare_Image_Classifier():
                                               unfreeze_weights=self.unfreeze_weights,
                                               train_epochs=train_epochs,
                                               learning_rate=learning_rate,
-                                              loss_function=self.loss_function)
+                                              loss_function=self.loss_function,
+                                              predefined_datasets=self.datasets)
         self.classifiers.append(clf)
 
       return self.classifiers
-
 
     def run(self):
       self.classifiers = self.create_classifiers()
@@ -842,15 +992,12 @@ class Compare_Image_Classifier():
         self.master_metrics.append(i.train_metrics)
         torch.cuda.empty_cache()
 
-
     def metrics(self,  fig_size=(500,300)):
         return show_metrics(self.classifiers,  fig_size=fig_size)
 
+    def roc(self, fig_size=(500,300)):
 
-    def roc(self):
-        # Show separate roc curves
-        print ('roc')
-
+        return test_roc(self.classifiers, fig_size=(500,300))
 
     def best(self):
         # Show separate roc curves

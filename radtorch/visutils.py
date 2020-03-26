@@ -126,54 +126,6 @@ def show_dataset_info(dataset):
     return output
 
 
-# def show_metrics(metric_source, metric='all', show_points = False, fig_size = (600,400)):
-#
-#     output_notebook()
-#
-#     TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
-#
-#     metrics = {
-#      'Accuracy': metric_source[['Train_Accuracy', 'Valid_Accuracy']].rename(columns={'Train_Accuracy':'train','Valid_Accuracy':'valid'}),
-#     'Loss': metric_source[['Train_Loss', 'Valid_Loss']].rename(columns={'Train_Loss':'train','Valid_Loss':'valid'}),
-#     }
-#
-#     output = []
-#
-#     for k, v in metrics.items():
-#         p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training '+k), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
-#         p.line(v.index, v.train, line_width=1.5, line_color= '#2F5EC4',  legend_label='Train')
-#         p.line(v.index, v.valid, line_width=1.5, line_color='#93D5ED',  legend_label='Valid')
-#         if show_points:
-#           p.circle(v.index, v.train,  fill_color= '#2F5EC4', line_color=None, legend_label='Train')
-#           p.circle(v.index, v.valid,  fill_color='#93D5ED', line_color=None,  legend_label='Valid')
-#         p.legend.location = "center_right"
-#         p.legend.click_policy="hide"
-#         p.xaxis.axis_line_color = '#D6DBDF'
-#         p.yaxis.axis_line_color = '#D6DBDF'
-#         p.xgrid.grid_line_color=None
-#         p.yaxis.axis_line_width = 2
-#         p.xaxis.axis_line_width = 2
-#         p.xaxis.major_tick_line_color = '#D6DBDF'
-#         p.yaxis.major_tick_line_color = '#D6DBDF'
-#         p.xaxis.minor_tick_line_color = '#D6DBDF'
-#         p.yaxis.minor_tick_line_color = '#D6DBDF'
-#         p.yaxis.major_tick_line_width = 2
-#         p.xaxis.major_tick_line_width = 2
-#         p.yaxis.minor_tick_line_width = 0
-#         p.xaxis.minor_tick_line_width = 0
-#         p.xaxis.major_label_text_color = '#99A3A4'
-#         p.yaxis.major_label_text_color = '#99A3A4'
-#         p.outline_line_color = None
-#         output.append(p)
-#
-#     if metric == 'accuracy':
-#         show(row(output[0]))
-#     elif metric == 'loss':
-#         show(row(output[1]))
-#     else:
-#         show(row(output))
-
-
 def show_dicom_sample(dataloader, figsize=(30,10)):
     """
     Displays a sample image from a DICOM dataloader. Returns a single image in case of one window and 3 images in case of multiple window.
@@ -624,7 +576,7 @@ def show_metrics(classifer_list, fig_size=(500,300)):
         ind = 0
         if m =='Loss':
           legend_items = []
-          p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+          p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
           for i in metrics_list:
             x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= colors[ind])
             y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= colors[-ind], line_dash='dotted')
@@ -634,7 +586,7 @@ def show_metrics(classifer_list, fig_size=(500,300)):
 
         elif m == "Accuracy":
           legend_items = []
-          p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+          p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
           for i in metrics_list:
             x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= colors[ind])
             y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= colors[-ind], line_dash='dotted')
@@ -668,3 +620,95 @@ def show_metrics(classifer_list, fig_size=(500,300)):
 
 
     show(row(output))
+
+
+def calculate_nn_predictions(model, target_data_set,  device):
+    """
+    Displays the ROC and AUC of a certain trained model on a target(for example test) dataset.
+
+    **Arguments**
+
+    - model: _(pytorch model object)_ target model.
+
+    - target_data_set: _(pytorch dataset object)_ target dataset.
+
+    - auc: _(boolen)_ True to display AUC. (default=True)
+
+    - figure_size: _(tuple)_ size of the displayed figure. (default=10,10)
+
+    - device: _(str)_ device for inference. 'cpu' or 'cuda'
+
+
+    **Output**
+
+    -  Output: _(figure)_
+
+    """
+
+    true_labels = []
+    pred_labels = []
+    model.to(device)
+    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
+
+    for i, (imgs, labels, path) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
+        imgs = imgs.to(device)
+        labels = labels.to(device)
+        true_labels = true_labels+labels.tolist()
+        with torch.no_grad():
+            model.eval()
+            out = model(imgs)
+            ps = out
+            pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
+            pred_labels = pred_labels+pr
+
+    return (true_labels, pred_labels)
+
+
+def test_roc(classifier_list, fig_size=(500,300)):
+
+    output_notebook()
+
+    TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
+
+    output = []
+    p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('ROC'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+    p.line([0, 0.5, 1.0], [0, 0.5, 1.0], line_width=1.5, line_color='#93D5ED', line_dash='dashed')
+
+    ind = 0
+
+    auc_list = []
+
+    legend_items = []
+
+    for i in classifier_list:
+        true_labels, predictions = calculate_nn_predictions(model=i.trained_model, target_data_set=i.test_dataset, device=i.device)
+        fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
+        auc = metrics.roc_auc_score(true_labels, predictions)
+        x = p.line(fpr, tpr, line_width=2, line_color= colors[ind])
+        legend_items.append((('Model '+str(ind)+'. AUC = '+str(auc)),[x]))
+        ind = ind+1
+        auc_list.append(auc)
+        legend = Legend(items=legend_items, location=(10, -20))
+        p.add_layout(legend, 'right')
+
+    p.legend.inactive_fill_alpha = 0.7
+    p.legend.border_line_width = 0
+    p.legend.click_policy="hide"
+    p.xaxis.axis_line_color = '#D6DBDF'
+    p.yaxis.axis_line_color = '#D6DBDF'
+    p.xgrid.grid_line_color=None
+    p.yaxis.axis_line_width = 2
+    p.xaxis.axis_line_width = 2
+    p.xaxis.major_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_color = '#D6DBDF'
+    p.xaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_width = 2
+    p.xaxis.major_tick_line_width = 2
+    p.yaxis.minor_tick_line_width = 0
+    p.xaxis.minor_tick_line_width = 0
+    p.xaxis.major_label_text_color = '#99A3A4'
+    p.yaxis.major_label_text_color = '#99A3A4'
+    p.outline_line_color = None
+
+    show(p)
