@@ -678,6 +678,8 @@ def test_roc(classifier_list, fig_size=(500,300)):
 
     auc_list = []
 
+    colors = brewer['Accent'][8]
+
     legend_items = []
 
     for i in classifier_list:
