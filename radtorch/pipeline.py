@@ -44,8 +44,8 @@ class Image_Classification():
 
     def __init__(
     self,
-    name = None,
     data_directory,
+    name = None,
     transformations='default',
     custom_resize = 'default',
     device='default',
@@ -932,7 +932,6 @@ class Compare_Image_Classifier():
 
 
         self.datasets = {'train':self.train_data_set, 'valid':self.valid_data_set, 'test':self.test_data_set}
-
 
     def train_grid(self):
       return self.scenarios_df
