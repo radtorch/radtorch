@@ -845,6 +845,7 @@ class Compare_Image_Classifier():
         self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained'])
 
         self.classifiers = []
+
         for i in self.scenarios_list:
             balance_class = i[0]
             normalize = i[1]
@@ -856,7 +857,7 @@ class Compare_Image_Classifier():
             model_arch = i[7]
             pre_trained  = i[8]
 
-            if self.classifiers.index(i) == 0:
+            if self.scenarios_list.index(i) == 0:
                 clf = Image_Classification(data_directory = self.data_directory,
                                                       name = None,
                                                       transformations=self.transformations,
@@ -920,7 +921,6 @@ class Compare_Image_Classifier():
                                                       loss_function=self.loss_function,
                                                       predefined_datasets=self.datasets)
                 self.classifiers.append(clf)
-
 
     def train_grid(self):
       return self.scenarios_df
