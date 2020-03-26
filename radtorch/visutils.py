@@ -587,7 +587,7 @@ def show_roc(classifier_list, fig_size=(700,400)):
         fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
         auc = metrics.roc_auc_score(true_labels, predictions)
         x = p.line(fpr, tpr, line_width=2, line_color= COLORS[ind])
-        legend_items.append((('Model '+str(ind)+'. AUC = '+{:0.4f}.format(str(auc))),[x]))
+        legend_items.append((('Model '+str(ind)+'. AUC = '+'{:0.4f}'.format(str(auc))),[x]))
 
         ind = ind+1
         auc_list.append(auc)
