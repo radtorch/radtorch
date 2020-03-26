@@ -621,50 +621,50 @@ def show_metrics(classifer_list, fig_size=(500,300)):
     colors = brewer['Accent'][color_num]
 
     for m in ['Accuracy', 'Loss',]:
-    ind = 0
-    if m =='Loss':
-      legend_items = []
-      p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
-      for i in metrics_list:
-        x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= colors[ind])
-        y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= colors[-ind], line_dash='dotted')
-        legend_items.append((('Model '+str(ind)+' Train Loss') , [x]))
-        legend_items.append(('Model '+str(ind)+' Valid Loss' , [y]))
-        ind = ind +1
+        ind = 0
+        if m =='Loss':
+          legend_items = []
+          p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+          for i in metrics_list:
+            x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= colors[ind])
+            y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= colors[-ind], line_dash='dotted')
+            legend_items.append((('Model '+str(ind)+' Train Loss') , [x]))
+            legend_items.append(('Model '+str(ind)+' Valid Loss' , [y]))
+            ind = ind +1
 
-    elif m == "Accuracy":
-      legend_items = []
-      p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
-      for i in metrics_list:
-        x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= colors[ind])
-        y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= colors[-ind], line_dash='dotted')
-        legend_items.append((('Model '+str(ind)+' Train Accuracy') , [x]))
-        legend_items.append(('Model '+str(ind)+' Valid Accuracy' , [y]))
-        ind = ind +1
+        elif m == "Accuracy":
+          legend_items = []
+          p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+          for i in metrics_list:
+            x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= colors[ind])
+            y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= colors[-ind], line_dash='dotted')
+            legend_items.append((('Model '+str(ind)+' Train Accuracy') , [x]))
+            legend_items.append(('Model '+str(ind)+' Valid Accuracy' , [y]))
+            ind = ind +1
 
-    legend = Legend(items=legend_items, location=(10, -20))
-    p.add_layout(legend, 'right')
-    # p.legend.location = "top_center"
-    p.legend.inactive_fill_alpha = 0.7
-    p.legend.border_line_width = 0
-    p.legend.click_policy="hide"
-    p.xaxis.axis_line_color = '#D6DBDF'
-    p.yaxis.axis_line_color = '#D6DBDF'
-    p.xgrid.grid_line_color=None
-    p.yaxis.axis_line_width = 2
-    p.xaxis.axis_line_width = 2
-    p.xaxis.major_tick_line_color = '#D6DBDF'
-    p.yaxis.major_tick_line_color = '#D6DBDF'
-    p.xaxis.minor_tick_line_color = '#D6DBDF'
-    p.yaxis.minor_tick_line_color = '#D6DBDF'
-    p.yaxis.major_tick_line_width = 2
-    p.xaxis.major_tick_line_width = 2
-    p.yaxis.minor_tick_line_width = 0
-    p.xaxis.minor_tick_line_width = 0
-    p.xaxis.major_label_text_color = '#99A3A4'
-    p.yaxis.major_label_text_color = '#99A3A4'
-    p.outline_line_color = None
-    output.append(p)
+        legend = Legend(items=legend_items, location=(10, -20))
+        p.add_layout(legend, 'right')
+        # p.legend.location = "top_center"
+        p.legend.inactive_fill_alpha = 0.7
+        p.legend.border_line_width = 0
+        p.legend.click_policy="hide"
+        p.xaxis.axis_line_color = '#D6DBDF'
+        p.yaxis.axis_line_color = '#D6DBDF'
+        p.xgrid.grid_line_color=None
+        p.yaxis.axis_line_width = 2
+        p.xaxis.axis_line_width = 2
+        p.xaxis.major_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_color = '#D6DBDF'
+        p.xaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_width = 2
+        p.xaxis.major_tick_line_width = 2
+        p.yaxis.minor_tick_line_width = 0
+        p.xaxis.minor_tick_line_width = 0
+        p.xaxis.major_label_text_color = '#99A3A4'
+        p.yaxis.major_label_text_color = '#99A3A4'
+        p.outline_line_color = None
+        output.append(p)
 
 
     show(row(output))
