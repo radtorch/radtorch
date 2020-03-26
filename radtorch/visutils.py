@@ -664,7 +664,7 @@ def calculate_nn_predictions(model, target_data_set,  device):
     return (true_labels, pred_labels)
 
 
-def test_roc(classifier_list, fig_size=(500,300)):
+def test_roc(classifier_list, fig_size=(700,400)):
 
     output_notebook()
 
