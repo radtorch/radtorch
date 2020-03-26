@@ -27,8 +27,8 @@ from bokeh.palettes import viridis, Paired, inferno, brewer, d3, Turbo256
 from radtorch.generalutils import getDuplicatesWithCount
 from radtorch.dicomutils import dicom_to_narray
 
-
-
+TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
+COLORS = ['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300',' #F82716']*100
 
 def misclassified(true_labels_list, predicted_labels_list, img_path_list):
     misclassified = {}
@@ -562,15 +562,15 @@ def show_metrics(classifer_list, fig_size=(500,300)):
 
     output_notebook()
 
-    TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
+    # TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
     output = []
 
-    if len(metrics_list) < 2 :
-        color_num = 4
-    else:
-        color_num = len(metrics_list)*2
-    colors = brewer['Accent'][color_num]
+    # if len(metrics_list) < 2 :
+    #     color_num = 4
+    # else:
+    #     color_num = len(metrics_list)*2
+    # colors = brewer['Accent'][color_num]
 
     for m in ['Accuracy', 'Loss',]:
         ind = 0
@@ -578,8 +578,8 @@ def show_metrics(classifer_list, fig_size=(500,300)):
           legend_items = []
           p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
           for i in metrics_list:
-            x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= colors[ind])
-            y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= colors[-ind], line_dash='dotted')
+            x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= COLORS[ind])
+            y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= COLORS[-ind], line_dash='dotted')
             legend_items.append((('Model '+str(ind)+' Train Loss') , [x]))
             legend_items.append(('Model '+str(ind)+' Valid Loss' , [y]))
             ind = ind +1
@@ -588,8 +588,8 @@ def show_metrics(classifer_list, fig_size=(500,300)):
           legend_items = []
           p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
           for i in metrics_list:
-            x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= colors[ind])
-            y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= colors[-ind], line_dash='dotted')
+            x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= COLORS[ind])
+            y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= COLORS[-ind], line_dash='dotted')
             legend_items.append((('Model '+str(ind)+' Train Accuracy') , [x]))
             legend_items.append(('Model '+str(ind)+' Valid Accuracy' , [y]))
             ind = ind +1
@@ -678,15 +678,13 @@ def test_roc(classifier_list, fig_size=(500,300)):
 
     auc_list = []
 
-    colors = brewer['Accent'][8]
-
     legend_items = []
 
     for i in classifier_list:
         true_labels, predictions = calculate_nn_predictions(model=i.trained_model, target_data_set=i.test_data_set, device=i.device)
         fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
         auc = metrics.roc_auc_score(true_labels, predictions)
-        x = p.line(fpr, tpr, line_width=2, line_color= colors[ind])
+        x = p.line(fpr, tpr, line_width=2, line_color= COLORS[ind])
         legend_items.append((('Model '+str(ind)+'. AUC = '+str(auc)),[x]))
         ind = ind+1
         auc_list.append(auc)
