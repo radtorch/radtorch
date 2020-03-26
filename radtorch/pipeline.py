@@ -884,7 +884,7 @@ class Compare_Image_Classifier():
                                                   train_epochs=train_epochs,
                                                   learning_rate=learning_rate,
                                                   loss_function=self.loss_function,
-                                                  predefined_datasets=self.datasets)
+                                                  predefined_datasets=None)
 
             self.train_label_table=clf.train_data_set.input_data
             self.valid_label_table=clf.valid_data_set.input_data
