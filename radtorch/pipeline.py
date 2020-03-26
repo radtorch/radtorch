@@ -520,7 +520,7 @@ class Image_Classification():
             target_data_set.trans = self.transformations
 
         if num_classes <= 2:
-            show_nn_roc(model=self.trained_model, target_data_set=target_data_set, figure_size=figure_size, device=self.device)
+            show_roc([self], figure_size=figure_size)
         else:
             raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
             pass
@@ -935,12 +935,11 @@ class Compare_Image_Classifier():
         self.master_metrics.append(i.train_metrics)
         torch.cuda.empty_cache()
 
-    def metrics(self, fig_size=(500,300)):
+    def metrics(self, fig_size=(650,400)):
         return show_metrics(self.classifiers,  fig_size=fig_size)
 
-    def roc(self, fig_size=(500,300)):
-
-        return test_roc(self.classifiers, fig_size=(500,300))
+    def roc(self, fig_size=(650,400)):
+        test_roc(self.classifiers, fig_size=(500,300))
 
     def best(self):
         # Show separate roc curves

@@ -159,104 +159,6 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
         plt.title(l[0]);
 
 
-def show_roc(true_labels, predictions, figure_size=(550,400), title='ROC Curve'):
-    """
-    Displays ROC curve and AUC using true and predicted label lists.
-
-    **Arguments**
-
-    - true_labels: _(list)_ list of true labels.
-
-    - predictions: _(list)_ list of predicted labels.
-
-
-    - figure_size: _(tuple)_ size of the displayed figure. (default=10,10)
-
-    - title: _(str)_ title displayed on top of the output figure. (default='ROC Curve')
-
-    **Output**
-
-    -  Output: _(figure)_
-    """
-    fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
-    auc = metrics.roc_auc_score(true_labels, predictions)
-
-    baseline = [0, 0.5, 1.0]
-
-    p = figure(plot_width=figure_size[0], plot_height=figure_size[1])
-    p.line(fpr, tpr, line_width=2, line_color= '#2F5EC4')
-    p.line(baseline, baseline, line_width=1.5, line_color='#93D5ED', line_dash='dashed')
-    p.xaxis.axis_line_color = '#D6DBDF'
-    p.yaxis.axis_line_color = '#D6DBDF'
-    p.xgrid.grid_line_color=None
-    p.yaxis.axis_line_width = 2
-    p.xaxis.axis_line_width = 2
-    p.xaxis.major_tick_line_color = '#D6DBDF'
-    p.yaxis.major_tick_line_color = '#D6DBDF'
-    p.xaxis.minor_tick_line_color = '#D6DBDF'
-    p.yaxis.minor_tick_line_color = '#D6DBDF'
-    p.yaxis.major_tick_line_width = 2
-    p.xaxis.major_tick_line_width = 2
-    p.yaxis.minor_tick_line_width = 0
-    p.xaxis.minor_tick_line_width = 0
-    p.xaxis.major_label_text_color = '#99A3A4'
-    p.yaxis.major_label_text_color = '#99A3A4'
-    p.outline_line_color = None
-    p.yaxis.axis_label = 'TPR (Sensitivity)'
-    p.xaxis.axis_label = ('FPR (1-specficity)\n   AUC={:0.4f}'.format(auc))
-    p.xaxis.axis_label_text_color = '#ABB2B9'
-    p.yaxis.axis_label_text_color = '#ABB2B9'
-    p.xaxis.axis_label_text_font_style = None
-    p.yaxis.axis_label_text_font_style = None
-    show(p)
-    return auc
-
-
-def show_nn_roc(model, target_data_set,  device, figure_size=(600,400)):
-    """
-    Displays the ROC and AUC of a certain trained model on a target(for example test) dataset.
-
-    **Arguments**
-
-    - model: _(pytorch model object)_ target model.
-
-    - target_data_set: _(pytorch dataset object)_ target dataset.
-
-    - auc: _(boolen)_ True to display AUC. (default=True)
-
-    - figure_size: _(tuple)_ size of the displayed figure. (default=10,10)
-
-    - device: _(str)_ device for inference. 'cpu' or 'cuda'
-
-
-    **Output**
-
-    -  Output: _(figure)_
-
-    """
-
-    true_labels = []
-    pred_labels = []
-    model.to(device)
-    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
-
-    for i, (imgs, labels, path) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
-        imgs = imgs.to(device)
-        labels = labels.to(device)
-        true_labels = true_labels+labels.tolist()
-        # print (imgs.shape)
-        with torch.no_grad():
-            model.eval()
-            out = model(imgs)
-            # ps = torch.exp(out)
-            ps = out
-            pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
-            pred_labels = pred_labels+pr
-
-
-    show_roc(true_labels, pred_labels,figure_size=figure_size)
-
-
 def show_confusion_matrix(cm,target_names,title='Confusion Matrix',cmap=None,normalize=False,figure_size=(8,6)):
     accuracy = np.trace(cm) / float(np.sum(cm))
     misclass = 1 - accuracy
@@ -664,7 +566,7 @@ def calculate_nn_predictions(model, target_data_set,  device):
     return (true_labels, pred_labels)
 
 
-def test_roc(classifier_list, fig_size=(700,400)):
+def show_roc(classifier_list, fig_size=(700,400)):
 
     output_notebook()
 
