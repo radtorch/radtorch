@@ -97,9 +97,42 @@ class Image_Classification():
         self.predefined_datasets = predefined_datasets
 
         if self.predefined_datasets:
-            self.train_data_set = self.predefined_datasets['train']
-            self.valid_data_set = self.predefined_datasets['valid']
-            self.test_data_set = self.predefined_datasets['test']
+            self.train_data_set = dataset_from_table(
+                                                    data_directory=self.data_directory,
+                                                    is_csv=self.is_csv,
+                                                    is_dicom=self.is_dicom,
+                                                    input_source=self.predefined_datasets['train'],
+                                                    img_path_column=self.path_col,
+                                                    img_label_column=self.label_col,
+                                                    multi_label = self.multi_label,
+                                                    mode=self.mode,
+                                                    wl=self.wl,
+                                                    trans=self.transformations)
+
+            self.valid_data_set = dataset_from_table(
+                                                    data_directory=self.data_directory,
+                                                    is_csv=self.is_csv,
+                                                    is_dicom=self.is_dicom,
+                                                    input_source=self.predefined_datasets['valid'],
+                                                    img_path_column=self.path_col,
+                                                    img_label_column=self.label_col,
+                                                    multi_label = self.multi_label,
+                                                    mode=self.mode,
+                                                    wl=self.wl,
+                                                    trans=self.transformations)
+
+            self.test_data_set = dataset_from_table(
+                                                    data_directory=self.data_directory,
+                                                    is_csv=self.is_csv,
+                                                    is_dicom=self.is_dicom,
+                                                    input_source=self.predefined_datasets['test'],
+                                                    img_path_column=self.path_col,
+                                                    img_label_column=self.label_col,
+                                                    multi_label = self.multi_label,
+                                                    mode=self.mode,
+                                                    wl=self.wl,
+                                                    trans=self.transformations)
+
             self.num_output_classes = len(self.train_data_set.classes)
             self.train_data_loader = torch.utils.data.DataLoader(
                                                     self.train_data_set,
@@ -808,131 +841,6 @@ class Compare_Image_Classifier():
         self.num_scenarios = len(self.scenarios_list)
         self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained'])
 
-
-        # Custom Resize
-        if custom_resize=='default':
-            self.input_resize = model_dict[model_arch]['input_size']
-        else:
-            self.input_resize = custom_resize
-
-        # Transformations
-        if transformations == 'default':
-            if self.is_dicom == True:
-                self.transformations = transforms.Compose([
-                        transforms.Resize((self.input_resize, self.input_resize)),
-                        transforms.transforms.Grayscale(3),
-                        transforms.ToTensor()])
-            else:
-                self.transformations = transforms.Compose([
-                        transforms.Resize((self.input_resize, self.input_resize)),
-                        transforms.ToTensor()])
-        else:
-            self.transformations = transformations
-
-        # Device
-        if device == 'default':
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        else:
-            self.device == device
-
-        # Create Dataset
-        if self.label_from_table == True:
-            try:
-                self.data_set = dataset_from_table(
-                        data_directory=self.data_directory,
-                        is_csv=self.is_csv,
-                        is_dicom=self.is_dicom,
-                        input_source=self.table_source,
-                        img_path_column=self.path_col,
-                        img_label_column=self.label_col,
-                        multi_label = self.multi_label,
-                        mode=self.mode,
-                        wl=self.wl,
-                        trans=self.transformations)
-            except:
-                raise TypeError('Dataset could not be created from table.')
-                pass
-
-        else:
-            try:
-                self.data_set = dataset_from_folder(
-                            data_directory=self.data_directory,
-                            is_dicom=self.is_dicom,
-                            mode=self.mode,
-                            wl=self.wl,
-                            trans=self.transformations)
-            except:
-                raise TypeError('Dataset could not be created from folder structure.')
-                pass
-
-        if self.normalize:
-            if self.normalize == 'auto':
-                self.data_loader = torch.utils.data.DataLoader(
-                                                        self.data_set,
-                                                        batch_size=self.batch_size,
-                                                        shuffle=True,
-                                                        num_workers=self.num_workers)
-
-                self.mean, self.std = calculate_mean_std(self.data_loader)
-            elif self.normalize == 'default':
-                self.mean = [0.5, 0.5, 0.5]
-                self.std = [0.5, 0.5, 0.5]
-            else:
-                self.mean = self.normalize[0]
-                self.std = self.normalize[1]
-
-            if transformations == 'default':
-                if self.is_dicom == True:
-                    self.transformations = transforms.Compose([
-                            transforms.Resize((self.input_resize, self.input_resize)),
-                            transforms.transforms.Grayscale(3),
-                            transforms.ToTensor(),
-                            transforms.Normalize(mean=self.mean, std=self.std)])
-                else:
-                    self.transformations = transforms.Compose([
-                            transforms.Resize((self.input_resize, self.input_resize)),
-                            transforms.ToTensor(),
-                            transforms.Normalize(mean=self.mean, std=self.std)])
-            else:
-                self.transformations = transformations
-
-            if self.label_from_table == True:
-                try:
-                    self.data_set = dataset_from_table(
-                            data_directory=self.data_directory,
-                            is_csv=self.is_csv,
-                            is_dicom=self.is_dicom,
-                            input_source=self.table_source,
-                            img_path_column=self.path_col,
-                            img_label_column=self.label_col,
-                            multi_label = self.multi_label,
-                            mode=self.mode,
-                            wl=self.wl,
-                            trans=self.transformations)
-                except:
-                    raise TypeError('Dataset could not be created from table.')
-                    pass
-
-
-        # Split Data set
-        if self.test_percent == 0:
-            self.train_data_set, self.valid_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
-            if self.balance_class:
-                self.train_data_set = over_sample(self.train_data_set)
-                self.valid_data_set = over_sample(self.valid_data_set)
-            self.test_data_set = 0
-        else:
-            self.train_data_set, self.valid_data_set, self.test_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
-            if self.balance_class:
-                self.train_data_set = over_sample(self.train_data_set)
-                self.valid_data_set = over_sample(self.valid_data_set)
-                self.test_data_set = over_sample(self.test_data_set)
-
-        self.num_output_classes = len(self.data_set.classes)
-
-
-        self.datasets = {'train':self.train_data_set, 'valid':self.valid_data_set, 'test':self.test_data_set}
-
     def train_grid(self):
       return self.scenarios_df
 
@@ -949,34 +857,70 @@ class Compare_Image_Classifier():
         model_arch = i[7]
         pre_trained  = i[8]
 
-        clf = Image_Classification(data_directory = self.data_directory,
-                                              name = None,
-                                              transformations=self.transformations,
-                                              custom_resize = self.custom_resize,
-                                              device=self.device,
-                                              optimizer=self.optimizer,
-                                              is_dicom=self.is_dicom,
-                                              label_from_table=self.label_from_table,
-                                              is_csv=self.is_csv,
-                                              table_source=self.table_source,
-                                              path_col = self.path_col,
-                                              label_col = self.label_col ,
-                                              balance_class = balance_class,
-                                              multi_label = self.multi_label,
-                                              mode=self.mode,
-                                              wl=self.wl,
-                                              normalize=normalize,
-                                              batch_size=batch_size,
-                                              test_percent = test_percent,
-                                              valid_percent = valid_percent,
-                                              model_arch=model_arch,
-                                              pre_trained=pre_trained,
-                                              unfreeze_weights=self.unfreeze_weights,
-                                              train_epochs=train_epochs,
-                                              learning_rate=learning_rate,
-                                              loss_function=self.loss_function,
-                                              predefined_datasets=self.datasets)
-        self.classifiers.append(clf)
+        if self.scenarios_list.index(i) == 0:
+            clf = Image_Classification(data_directory = self.data_directory,
+                                                  name = None,
+                                                  transformations=self.transformations,
+                                                  custom_resize = self.custom_resize,
+                                                  device=self.device,
+                                                  optimizer=self.optimizer,
+                                                  is_dicom=self.is_dicom,
+                                                  label_from_table=self.label_from_table,
+                                                  is_csv=self.is_csv,
+                                                  table_source=self.table_source,
+                                                  path_col = self.path_col,
+                                                  label_col = self.label_col ,
+                                                  balance_class = balance_class,
+                                                  multi_label = self.multi_label,
+                                                  mode=self.mode,
+                                                  wl=self.wl,
+                                                  normalize=normalize,
+                                                  batch_size=batch_size,
+                                                  test_percent = test_percent,
+                                                  valid_percent = valid_percent,
+                                                  model_arch=model_arch,
+                                                  pre_trained=pre_trained,
+                                                  unfreeze_weights=self.unfreeze_weights,
+                                                  train_epochs=train_epochs,
+                                                  learning_rate=learning_rate,
+                                                  loss_function=self.loss_function,
+                                                  predefined_datasets=self.datasets)
+
+            self.train_label_table=clf.train_data_set.input_data
+            self.valid_label_table=clf.valid_data_set.input_data
+            self.test_label_table=clf.test_data_set.input_data
+            self.datasets = {'train':self.train_label_table, 'valid':self.valid_label_table,'test':self.test_label_table}
+            self.classifiers.append(clf)
+
+        else:
+            clf = Image_Classification(data_directory = self.data_directory,
+                                                  name = None,
+                                                  transformations=self.transformations,
+                                                  custom_resize = self.custom_resize,
+                                                  device=self.device,
+                                                  optimizer=self.optimizer,
+                                                  is_dicom=self.is_dicom,
+                                                  label_from_table=self.label_from_table,
+                                                  is_csv=self.is_csv,
+                                                  table_source=self.table_source,
+                                                  path_col = self.path_col,
+                                                  label_col = self.label_col ,
+                                                  balance_class = balance_class,
+                                                  multi_label = self.multi_label,
+                                                  mode=self.mode,
+                                                  wl=self.wl,
+                                                  normalize=normalize,
+                                                  batch_size=batch_size,
+                                                  test_percent = test_percent,
+                                                  valid_percent = valid_percent,
+                                                  model_arch=model_arch,
+                                                  pre_trained=pre_trained,
+                                                  unfreeze_weights=self.unfreeze_weights,
+                                                  train_epochs=train_epochs,
+                                                  learning_rate=learning_rate,
+                                                  loss_function=self.loss_function,
+                                                  predefined_datasets=self.datasets)
+            self.classifiers.append(clf)
 
       return self.classifiers
 
