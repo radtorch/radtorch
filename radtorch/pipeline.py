@@ -369,7 +369,7 @@ class Image_Classification():
         '''
         # show_metrics(self.train_metrics, fig_size=fig_size)
         # show_metrics(self.train_metrics, metric=metrics, show_points = show_points, fig_size = fig_size)
-        show_metrics([self], fig_size=(fig_size)
+        show_metrics([self], fig_size=(fig_size))
 
     def export_model(self,output_path):
         '''
@@ -492,7 +492,6 @@ class Image_Classification():
         outfile = open(target_path,'wb')
         pickle.dump(self,outfile)
         outfile.close()
-
 
 
 class Feature_Extraction():
