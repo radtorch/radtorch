@@ -922,7 +922,7 @@ class Compare_Image_Classifier():
                                                       predefined_datasets=self.datasets)
                 self.classifiers.append(clf)
 
-    def train_grid(self):
+    def grid(self):
       return self.scenarios_df
 
     def run(self):
