@@ -363,12 +363,13 @@ class Image_Classification():
             raise TypeError('Could not train image classification pipeline. Please check rpovided parameters.')
             pass
 
-    def metrics(self, metric='all', show_points = False, fig_size=(600,400)):
+    def metrics(self, fig_size=(500,300)):
         '''
         Display the training metrics.
         '''
         # show_metrics(self.train_metrics, fig_size=fig_size)
-        show_metrics(self.train_metrics, metric=metrics, show_points = show_points, fig_size = fig_size)
+        # show_metrics(self.train_metrics, metric=metrics, show_points = show_points, fig_size = fig_size)
+        show_metrics([self], fig_size=(fig_size)
 
     def export_model(self,output_path):
         '''
@@ -492,8 +493,6 @@ class Image_Classification():
         pickle.dump(self,outfile)
         outfile.close()
 
-    def test(self):
-        return show_multiple_metrics([self])
 
 
 class Feature_Extraction():
