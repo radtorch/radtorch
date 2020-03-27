@@ -518,6 +518,7 @@ def show_metrics(classifer_list, fig_size=(500,300)):
         p.xaxis.major_label_text_color = '#99A3A4'
         p.yaxis.major_label_text_color = '#99A3A4'
         p.outline_line_color = None
+        p.xaxis.axis_label = 'Epoch'
         output.append(p)
 
 
@@ -599,6 +600,8 @@ def show_roc(classifier_list, fig_size=(700,400)):
     p.legend.border_line_width = 0
     p.legend.click_policy="hide"
     p.xaxis.axis_line_color = '#D6DBDF'
+    p.xaxis.axis_label = 'FPR (1-Specificity)'
+    p.yaxis.axis_label = 'TPR (Senstivity)'
     p.yaxis.axis_line_color = '#D6DBDF'
     p.xgrid.grid_line_color=None
     p.yaxis.axis_line_width = 2

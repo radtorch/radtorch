@@ -939,10 +939,10 @@ class Compare_Image_Classifier():
         return show_metrics(self.classifiers,  fig_size=fig_size)
 
     def roc(self, fig_size=(700,400)):
-        show_roc(self.classifiers, fig_size=fig_size)
+        return show_roc(self.classifiers, fig_size=fig_size)
 
     def best(self, path=None, classifier=False, Model=False ):
-        self.auc_list = self.roc()
+        self.auc_list = roc()
         best_model_index = self.auc_list.index(max(self.auc_list))
         print (' Best Model is Model Number', best_model_index)
 
