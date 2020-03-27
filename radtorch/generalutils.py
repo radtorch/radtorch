@@ -40,8 +40,8 @@ def export(item, path):
     outfile.close()
 
 
-def import(path):
-    infile = open(path,'rb')
-    item = pickle.load(infile)
-    infile.close()
-    return item
+# def import(path):
+#     infile = open(path,'rb')
+#     item = pickle.load(infile)
+#     infile.close()
+#     return item
