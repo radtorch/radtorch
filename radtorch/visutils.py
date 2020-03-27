@@ -519,6 +519,8 @@ def show_metrics(classifer_list, fig_size=(500,300)):
         p.yaxis.major_label_text_color = '#99A3A4'
         p.outline_line_color = None
         p.xaxis.axis_label = 'Epoch'
+        p.xaxis.axis_label_text_align = 'right'
+        p.toolbar.autohide = True
         output.append(p)
 
 
@@ -617,7 +619,7 @@ def show_roc(classifier_list, fig_size=(700,400)):
     p.xaxis.major_label_text_color = '#99A3A4'
     p.yaxis.major_label_text_color = '#99A3A4'
     p.outline_line_color = None
-
+    p.toolbar.autohide = True
 
     show(p)
 

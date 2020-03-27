@@ -919,7 +919,7 @@ class Compare_Image_Classifier():
                                                       predefined_datasets=self.datasets)
                 self.classifiers.append(clf)
 
-    def grid(self):
+    def info(self):
       return self.scenarios_df
 
     def parameters(self):
@@ -942,18 +942,18 @@ class Compare_Image_Classifier():
         return show_roc(self.classifiers, fig_size=fig_size)
 
     def best(self, path=None, classifier=False, Model=False ):
-        self.auc_list = roc()
-        best_model_index = self.auc_list.index(max(self.auc_list))
-        print (' Best Model is Model Number', best_model_index)
-
-        if model == True:
-            export(self.classifiers[best_model_index].trained_model, path)
-            print (' Model Exported Successfully')
-        if classifier == True:
-            export(self.classifiers[best_model_index], path)
-            print (' Classifier Pipeline Exported Successfully')
-
-
+        # self.auc_list = roc()
+        # best_model_index = self.auc_list.index(max(self.auc_list))
+        # print (' Best Model is Model Number', best_model_index)
+        #
+        # if model == True:
+        #     export(self.classifiers[best_model_index].trained_model, path)
+        #     print (' Model Exported Successfully')
+        # if classifier == True:
+        #     export(self.classifiers[best_model_index], path)
+        #     print (' Classifier Pipeline Exported Successfully')
+        #
+        #
 
 
         print ('best classifier')
