@@ -1,4 +1,3 @@
-
 import torch, torchvision, datetime, time, pickle, pydicom, os, itertools
 import torchvision.models as models
 import torch.nn as nn
@@ -21,8 +20,7 @@ from collections import Counter
 from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
 from radtorch.datautils import dataset_from_folder, dataset_from_table, split_dataset, calculate_mean_std, over_sample
 from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info, plot_images ,plot_dataset_info
-
-
+from radotrch.generalutils import export, import
 
 def load_pipeline(target_path):
     '''
@@ -681,7 +679,6 @@ class Feature_Extraction():
         else:
             return info
 
-
     def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
         '''
         Display sample of the training dataset.
@@ -701,8 +698,6 @@ class Feature_Extraction():
         if show_file_name:
           titles = [ntpath.basename(x) for x in paths]
         plot_images(images=images, titles=titles, figure_size=fig_size)
-
-
 
     def num_features(self):
         output = model_dict[self.model_arch]['output_features']
@@ -840,9 +835,11 @@ class Compare_Image_Classifier():
         self.pre_trained
         ]
 
+        self.variables_names = ['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained']
+
         self.scenarios_list = list(itertools.product(*variables))
         self.num_scenarios = len(self.scenarios_list)
-        self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained'])
+        self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.variables_names)
 
         self.classifiers = []
 
@@ -925,6 +922,9 @@ class Compare_Image_Classifier():
     def grid(self):
       return self.scenarios_df
 
+    def parameters(self):
+        return self.variables_names
+
     def run(self):
       self.master_metrics = []
       self.trained_models = []
@@ -941,6 +941,19 @@ class Compare_Image_Classifier():
     def roc(self, fig_size=(700,400)):
         show_roc(self.classifiers, fig_size=fig_size)
 
-    def best(self):
-        # Show separate roc curves
+    def best(self, path=None, classifier=False, Model=False ):
+        self.auc_list = self.roc()
+        best_model_index = self.auc_list.index(max(self.auc_list))
+        print (' Best Model is Model Number', best_model_index)
+
+        if model == True:
+            export(self.classifiers[best_model_index].trained_model, path)
+            print (' Model Exported Successfully')
+        if classifier == True:
+            export(self.classifiers[best_model_index], path)
+            print (' Classifier Pipeline Exported Successfully')
+
+
+
+
         print ('best classifier')

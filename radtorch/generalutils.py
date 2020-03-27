@@ -31,3 +31,17 @@ def getDuplicatesWithCount(listOfElems):
             dictOfElems[elem] = 1
     dictOfElems = { key:value for key, value in dictOfElems.items() if value > 1}
     return dictOfElems
+
+
+
+def export(item, path):
+    outfile = open(path,'wb')
+    pickle.dump(item,outfile)
+    outfile.close()
+
+
+def import(path):
+    infile = open(path,'rb')
+    item = pickle.load(infile)
+    infile.close()
+    return item

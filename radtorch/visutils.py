@@ -615,4 +615,7 @@ def show_roc(classifier_list, fig_size=(700,400)):
     p.yaxis.major_label_text_color = '#99A3A4'
     p.outline_line_color = None
 
+
     show(p)
+
+    return auc_list
