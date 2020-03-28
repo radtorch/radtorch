@@ -518,7 +518,7 @@ class Image_Classification():
             target_data_set.trans = self.transformations
 
         if num_classes <= 2:
-            show_roc([self], figure_size=figure_size)
+            show_roc([self], fig_size=figure_size)
         else:
             raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
             pass

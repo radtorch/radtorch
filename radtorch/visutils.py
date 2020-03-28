@@ -77,7 +77,6 @@ def misclassified(true_labels_list, predicted_labels_list, accuracy_list, img_pa
 
 def show_misclassified(misclassified_dictionary, transforms, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
     row = int(math.sqrt(num_of_images))
-    print (misclassified_dictionary)
     sample = random.sample(list(misclassified_dictionary), num_of_images)
     if is_dicom:
         imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
@@ -85,7 +84,6 @@ def show_misclassified(misclassified_dictionary, transforms, is_dicom = True, nu
         imgs = [transforms(Image.open(i))[0] for i in sample]
 
     titles = [ (misclassified_dictionary[i]['true_label'], misclassified_dictionary[i]['predicted_label'], float('{:0.2f}'.format(misclassified_dictionary[i]['accuracy']))) for i in sample]
-    print (titles)
     plot_images(images=imgs, titles=titles, figure_size=figure_size)
 
 
