@@ -277,7 +277,7 @@ def show_nn_misclassified(model, target_data_set, num_of_images, device, transfo
             misses_all.update(misses)
             pred_labels = pred_labels+pr
 
-    show_misclassified(misclassified_dictionary=misses_all, transofms=transforms, is_dicom = is_dicom, num_of_images = num_of_images, figure_size = figure_size)
+    show_misclassified(misclassified_dictionary=misses_all, transforms=transforms, is_dicom = is_dicom, num_of_images = num_of_images, figure_size = figure_size)
     output = pd.DataFrame(misses_all.values())
 
     return output
