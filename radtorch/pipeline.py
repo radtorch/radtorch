@@ -944,7 +944,7 @@ class Compare_Image_Classifier():
         self.best_classifier = self.classifiers.index(self.best_model_index)
 
     def best(self, path=None, export_classifier=False, export_model=False):
-        try
+        try:
             print ('Best Classifier = Model', self.best_model_index)
             print ('Best Classifier AUC =', self.best_model_auc)
             if export_model:
@@ -953,7 +953,6 @@ class Compare_Image_Classifier():
             if export_classifier:
                 export(self.best_classifier, path)
                 print (' Best Classifier Pipeline Exported Successfully')
-
         except:
             raise.TypeError('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
 
