@@ -941,7 +941,7 @@ class Compare_Image_Classifier():
         self.auc_list = show_roc(self.classifiers, fig_size=fig_size)
         self.best_model_auc = max(self.auc_list)
         self.best_model_index = (self.auc_list.index(self.best_model_auc))
-        self.best_classifier = self.classifiers.index(self.best_model_index)
+        self.best_classifier = self.classifiers[self.best_model_index]
 
     def best(self, path=None, export_classifier=False, export_model=False):
         try:
