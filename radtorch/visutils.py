@@ -278,11 +278,11 @@ def show_nn_misclassified(model, target_data_set, num_of_images, device, transfo
             pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
             softmax = torch.exp(out).cpu()
             accuracies = [(max(i.tolist())) for i in softmax]
-            misses = misclassified(true_labels_list=labels.tolist(), predicted_labels_list=pr, img_path_list=list(paths), accuracy_list=accuracies, class_to_idx_dict=class_dictionary)
+            misses = misclassified(true_labels_list=labels.tolist(), predicted_labels_list=pr, img_path_list=list(paths), accuracy_list=accuracies)
             misses_all.update(misses)
             pred_labels = pred_labels+pr
 
-    show_misclassified(misclassified_dictionary=misses_all, transforms=transforms, is_dicom = is_dicom, num_of_images = num_of_images, figure_size = figure_size)
+    show_misclassified(misclassified_dictionary=misses_all, transforms=transforms,, class_to_idx_dict=class_dictionary, is_dicom = is_dicom, num_of_images = num_of_images, figure_size = figure_size)
 
     output = pd.DataFrame(misses_all.values())
 
