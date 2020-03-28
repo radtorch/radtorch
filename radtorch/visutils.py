@@ -70,24 +70,25 @@ def misclassified(true_labels_list, predicted_labels_list, accuracy_list, img_pa
             misclassified[img_path_list[i]] = {'image_path': img_path_list[i],
                                                 'true_label': true_labels_list[i],
                                                 'predicted_label': predicted_labels_list[i],
-                                                'accuarcy':accuracy_list[i]
+                                                'accuracy':accuracy_list[i]
                                                 }
     return misclassified
 
 
 def show_misclassified(misclassified_dictionary, transforms, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
     row = int(math.sqrt(num_of_images))
+    print (misclassified_dictionary)
     sample = random.sample(list(misclassified_dictionary), num_of_images)
-    # transform=transforms.Compose([transforms.Resize((244, 244)),transforms.ToTensor()])
     if is_dicom:
         imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
     else:
-        imgs = [transforms(Image.open(i).convert('RGB')) for i in sample]
-    titles = [(str(i['true_label']),',', str(i['predicted_label']),',', str(i['accuarcy'])+'%') for i in sample]
-    # grid = torchvision.utils.make_grid(imgs, nrow=row)
-    # plt.figure(figsize=(figure_size))
-    # plt.imshow(np.transpose(grid, (1,2,0)))
+        imgs = [transforms(Image.open(i))[0] for i in sample]
+
+    titles = [ (misclassified_dictionary[i]['true_label'], misclassified_dictionary[i]['predicted_label'], float('{:0.2f}'.format(misclassified_dictionary[i]['accuracy']))) for i in sample]
+    print (titles)
     plot_images(images=imgs, titles=titles, figure_size=figure_size)
+
+
 
 def show_dataloader_sample(dataloader, show_file_name = False, figsize=(10,10), show_labels=True):
   batch = next(iter(dataloader))
@@ -271,13 +272,14 @@ def show_nn_misclassified(model, target_data_set, num_of_images, device, transfo
             out = model(imgs)
             ps = out
             pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
-            accuracies = [(max(i.tolist())) for i in ps]
+            softmax = torch.exp(out).cpu()
+            accuracies = [(max(i.tolist())) for i in softmax]
             misses = misclassified(true_labels_list=labels.tolist(), predicted_labels_list=pr, img_path_list=list(paths), accuracy_list=accuracies)
-            # misses_all = dict(misses_all.items() + misses.items())
             misses_all.update(misses)
             pred_labels = pred_labels+pr
 
     show_misclassified(misclassified_dictionary=misses_all, transforms=transforms, is_dicom = is_dicom, num_of_images = num_of_images, figure_size = figure_size)
+
     output = pd.DataFrame(misses_all.values())
 
     return output
