@@ -62,7 +62,6 @@ def plot_images(images, titles=None, figure_size=(10,10)):
     plt.show()
 
 
-
 def misclassified(true_labels_list, predicted_labels_list, accuracy_list, img_path_list):
     misclassified = {}
     for i in range (len(true_labels_list)):
@@ -75,7 +74,7 @@ def misclassified(true_labels_list, predicted_labels_list, accuracy_list, img_pa
     return misclassified
 
 
-def show_misclassified(misclassified_dictionary, transforms, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
+def show_misclassified(misclassified_dictionary, transforms, class_to_idx_dict, is_dicom = True, num_of_images = 16, figure_size = (5,5), ):
     row = int(math.sqrt(num_of_images))
     sample = random.sample(list(misclassified_dictionary), num_of_images)
     if is_dicom:
@@ -83,9 +82,13 @@ def show_misclassified(misclassified_dictionary, transforms, is_dicom = True, nu
     else:
         imgs = [transforms(Image.open(i))[0] for i in sample]
 
-    titles = [ (misclassified_dictionary[i]['true_label'], misclassified_dictionary[i]['predicted_label'], float('{:0.2f}'.format(misclassified_dictionary[i]['accuracy']))) for i in sample]
+    titles = [(
+                k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['true_label'],
+                k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['predicted_label'],
+                float('{:0.2f}'.format(misclassified_dictionary[i]['accuracy']))
+                )
+               for i in sample]
     plot_images(images=imgs, titles=titles, figure_size=figure_size)
-
 
 
 def show_dataloader_sample(dataloader, show_file_name = False, figsize=(10,10), show_labels=True):
@@ -254,6 +257,9 @@ def show_nn_confusion_matrix(model, target_data_set, target_classes, device, fig
 
 
 def show_nn_misclassified(model, target_data_set, num_of_images, device, transforms, is_dicom = True, figure_size=(5,5)):
+
+    class_dictionary = target_data_set.class_to_idx
+
     true_labels = []
     pred_labels = []
     misses_all = {}
@@ -272,7 +278,7 @@ def show_nn_misclassified(model, target_data_set, num_of_images, device, transfo
             pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
             softmax = torch.exp(out).cpu()
             accuracies = [(max(i.tolist())) for i in softmax]
-            misses = misclassified(true_labels_list=labels.tolist(), predicted_labels_list=pr, img_path_list=list(paths), accuracy_list=accuracies)
+            misses = misclassified(true_labels_list=labels.tolist(), predicted_labels_list=pr, img_path_list=list(paths), accuracy_list=accuracies, class_to_idx_dict=class_dictionary)
             misses_all.update(misses)
             pred_labels = pred_labels+pr
 
