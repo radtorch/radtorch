@@ -961,5 +961,3 @@ class Compare_Image_Classifier():
                 print (' Best Classifier Pipeline Exported Successfully')
         except:
             raise TypeError('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
-
-        print ('best classifier')
