@@ -534,7 +534,7 @@ class Image_Classification():
             target_data_set = target_data_set
             target_data_set.trans = self.transformations
 
-        self.misclassified_instances = show_nn_misclassified(model=self.trained_model, target_data_set=target_data_set, is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
+        self.misclassified_instances = show_nn_misclassified(model=self.trained_model, target_data_set=target_data_set, transofms=self.transformations,   is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
 
         if show_table:
             self.misclassified_instances

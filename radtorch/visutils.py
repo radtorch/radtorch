@@ -30,26 +30,6 @@ from radtorch.dicomutils import dicom_to_narray
 TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 COLORS = ['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716']*100
 
-def misclassified(true_labels_list, predicted_labels_list, img_path_list):
-    misclassified = {}
-    for i in range (len(true_labels_list)):
-        if true_labels_list[i] != predicted_labels_list[i]:
-            misclassified[img_path_list[i]] = {'image_path': img_path_list[i], 'true_label': true_labels_list[i], 'predicted_label': predicted_labels_list[i]}
-    return misclassified
-
-
-def show_misclassified(misclassified_dictionary, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
-    row = int(math.sqrt(num_of_images))
-    sample = random.sample(list(misclassified_dictionary), num_of_images)
-    transform=transforms.Compose([transforms.Resize((244, 244)),transforms.ToTensor()])
-    if is_dicom:
-        imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
-    else:
-        imgs = [transform(Image.open(i).convert('RGB')) for i in sample]
-    grid = torchvision.utils.make_grid(imgs, nrow=row)
-    plt.figure(figsize=(figure_size))
-    plt.imshow(np.transpose(grid, (1,2,0)))
-
 
 def plot_images(images, titles=None, figure_size=(10,10)):
     """
@@ -81,6 +61,33 @@ def plot_images(images, titles=None, figure_size=(10,10)):
     plt.axis('off')
     plt.show()
 
+
+
+def misclassified(true_labels_list, predicted_labels_list, accuracy_list, img_path_list):
+    misclassified = {}
+    for i in range (len(true_labels_list)):
+        if true_labels_list[i] != predicted_labels_list[i]:
+            misclassified[img_path_list[i]] = {'image_path': img_path_list[i],
+                                                'true_label': true_labels_list[i],
+                                                'predicted_label': predicted_labels_list[i],
+                                                'accuarcy':accuracy_list[i]
+                                                }
+    return misclassified
+
+
+def show_misclassified(misclassified_dictionary, transforms, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
+    row = int(math.sqrt(num_of_images))
+    sample = random.sample(list(misclassified_dictionary), num_of_images)
+    # transform=transforms.Compose([transforms.Resize((244, 244)),transforms.ToTensor()])
+    if is_dicom:
+        imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
+    else:
+        imgs = [transforms(Image.open(i).convert('RGB')) for i in sample]
+    titles = [(str(i['true_label']),',', str(i['predicted_label']),',', str(i['accuarcy'])+'%') for i in sample]
+    # grid = torchvision.utils.make_grid(imgs, nrow=row)
+    # plt.figure(figsize=(figure_size))
+    # plt.imshow(np.transpose(grid, (1,2,0)))
+    plot_images(images=imgs, titles=titles, figure_size=figure_size)
 
 def show_dataloader_sample(dataloader, show_file_name = False, figsize=(10,10), show_labels=True):
   batch = next(iter(dataloader))
@@ -247,7 +254,7 @@ def show_nn_confusion_matrix(model, target_data_set, target_classes, device, fig
                           )
 
 
-def show_nn_misclassified(model, target_data_set, num_of_images, device, is_dicom = True, figure_size=(5,5)):
+def show_nn_misclassified(model, target_data_set, num_of_images, device, transforms, is_dicom = True, figure_size=(5,5)):
     true_labels = []
     pred_labels = []
     misses_all = {}
@@ -264,12 +271,13 @@ def show_nn_misclassified(model, target_data_set, num_of_images, device, is_dico
             out = model(imgs)
             ps = out
             pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
-            misses = misclassified(true_labels_list=labels.tolist(), predicted_labels_list=pr, img_path_list=list(paths))
+            accuracies = [(max(i.tolist())) for i in ps]
+            misses = misclassified(true_labels_list=labels.tolist(), predicted_labels_list=pr, img_path_list=list(paths), accuracy_list=accuracies)
             # misses_all = dict(misses_all.items() + misses.items())
             misses_all.update(misses)
             pred_labels = pred_labels+pr
 
-    show_misclassified(misclassified_dictionary=misses_all, is_dicom = is_dicom, num_of_images = num_of_images, figure_size = figure_size)
+    show_misclassified(misclassified_dictionary=misses_all, transofms=transforms, is_dicom = is_dicom, num_of_images = num_of_images, figure_size = figure_size)
     output = pd.DataFrame(misses_all.values())
 
     return output
