@@ -938,21 +938,23 @@ class Compare_Image_Classifier():
         return show_metrics(self.classifiers,  fig_size=fig_size)
 
     def roc(self, fig_size=(700,400)):
-        return show_roc(self.classifiers, fig_size=fig_size)
+        self.auc_list = show_roc(self.classifiers, fig_size=fig_size)
+        self.best_model_auc = max(self.auc_list)
+        self.best_model_index = (self.auc_list.indxx(self.best_model_auc))
+        self.best_classifier = self.classifiers.index(self.best_model_index)
 
-    def best(self, path=None, classifier=False, Model=False ):
-        # self.auc_list = roc()
-        # best_model_index = self.auc_list.index(max(self.auc_list))
-        # print (' Best Model is Model Number', best_model_index)
-        #
-        # if model == True:
-        #     export(self.classifiers[best_model_index].trained_model, path)
-        #     print (' Model Exported Successfully')
-        # if classifier == True:
-        #     export(self.classifiers[best_model_index], path)
-        #     print (' Classifier Pipeline Exported Successfully')
-        #
-        #
+    def best(self, path=None, export_classifier=False, export_model=False):
+        try
+            print ('Best Classifier = Model', self.best_model_index)
+            print ('Best Classifier AUC =', self.best_model_auc)
+            if export_model:
+                export(self.best_classifier.trained_model, path)
+                print (' Best Model Exported Successfully')
+            if export_classifier:
+                export(self.best_classifier, path)
+                print (' Best Classifier Pipeline Exported Successfully')
 
+        except:
+            raise.TypeError('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
 
         print ('best classifier')
