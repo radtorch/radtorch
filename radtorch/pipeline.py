@@ -921,6 +921,12 @@ class Compare_Image_Classifier():
     def info(self):
       return self.scenarios_df
 
+    def dataset_info(self,plot=True, plot_size=(500,300)):
+        return self.classifier[0].dataset_info(plot=plot, plot_size=plot_size)
+
+    def sample(fig_size=(10,10), show_labels=True, show_file_name=False):
+        return self.classifiers[0].sample(fig_size=fig_size, show_labels=show_labels, show_file_name=show_file_name)
+
     def parameters(self):
         return self.variables_names
 
