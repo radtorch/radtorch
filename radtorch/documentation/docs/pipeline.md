@@ -284,8 +284,8 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     | vgg13_bn           |         224 x 224        |       4096      |
     | vgg16_bn           |         224 x 224        |       4096      |
     | vgg19_bn           |         224 x 224        |       4096      |
-    | resnet18           |         224 x 224        |       2048      |
-    | resnet34           |         224 x 224        |       2048      |
+    | resnet18           |         224 x 224        |       512       |
+    | resnet34           |         224 x 224        |       512       |
     | resnet50           |         224 x 224        |       2048      |
     | resnet101          |         224 x 224        |       2048      |
     | resnet152          |         224 x 224        |       2048      |
