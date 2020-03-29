@@ -629,7 +629,7 @@ class Feature_Extraction():
         extractor_info.columns = ['Property', 'Value']
         return extractor_info
 
-    def dataset_info(self, plot=True):
+    def dataset_info(self, plot=True, plot_size=(500,300)):
         '''
         Displays Dataset Information.
         '''
