@@ -100,35 +100,35 @@ class Image_Classification():
         self.custom_resize = custom_resize
 
 
-        # # Custom Resize
-        # if self.custom_resize=='default':
-        #     self.input_resize = model_dict[model_arch]['input_size']
-        # else:
-        #     self.input_resize = custom_resize
-        #
-        # # Transformations
-        # if transformations == 'default':
-        #     if self.is_dicom == True:
-        #         self.transformations = transforms.Compose([
-        #                 transforms.Resize((self.input_resize, self.input_resize)),
-        #                 transforms.transforms.Grayscale(3),
-        #                 transforms.ToTensor()])
-        #     else:
-        #         self.transformations = transforms.Compose([
-        #                 transforms.Resize((self.input_resize, self.input_resize)),
-        #                 transforms.ToTensor()])
-        # else:
-        #     self.transformations = transformations
+        # Custom Resize
+        if self.custom_resize=='default':
+            self.input_resize = model_dict[model_arch]['input_size']
+        else:
+            self.input_resize = custom_resize
 
-        self.transformations, self.input_resize = set_transformations(model_arch=self.model_arch, custom_resize=self.custom_resize, is_dicom=self.is_dicom, transformations=transformations)
+        # Transformations
+        if transformations == 'default':
+            if self.is_dicom == True:
+                self.transformations = transforms.Compose([
+                        transforms.Resize((self.input_resize, self.input_resize)),
+                        transforms.transforms.Grayscale(3),
+                        transforms.ToTensor()])
+            else:
+                self.transformations = transforms.Compose([
+                        transforms.Resize((self.input_resize, self.input_resize)),
+                        transforms.ToTensor()])
+        else:
+            self.transformations = transformations
+
+        # self.transformations, self.input_resize = set_transformations(model_arch=self.model_arch, custom_resize=self.custom_resize, is_dicom=self.is_dicom, transformations=transformations)
 
 
         # Device
-        self.device = set_device(device)
-        # if device == 'default':
-        #     self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        # else:
-        #     self.device == device
+        # self.device = set_device(device)
+        if device == 'default':
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        else:
+            self.device == device
 
 
         if self.predefined_datasets:
