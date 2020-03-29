@@ -909,7 +909,21 @@ class Compare_Image_Classifier():
                                                       predefined_datasets=self.datasets)
                 self.classifiers.append(clf)
 
+
     def info(self):
+        info = {key:str(value) for key, value in self.__dict__.items()}
+        pipeline_info = pd.DataFrame.from_dict(info.items())
+        pipeline_info.columns = ['Property', 'Value']
+
+        pipeline_info = pipeline_info.append({'Property':'Train Dataset Size', 'Value':len(self.train_label_table)}, ignore_index=True)
+        pipeline_info = pipeline_info.append({'Property':'Valid Dataset Size', 'Value':len(self.valid_label_table)}, ignore_index=True)
+
+        if len(self.test_label_table) > 0:
+            pipeline_info = pipeline_info.append({'Property':'Test Dataset Size', 'Value':len(self.test_label_table)}, ignore_index=True)
+
+        return pipeline_info
+
+    def grid(self):
       return self.scenarios_df
 
     def dataset_info(self,plot=True, plot_size=(500,300)):
