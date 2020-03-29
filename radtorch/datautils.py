@@ -339,7 +339,7 @@ def load_predefined_datatables(*args, **kwargs):
                                         wl=kwargs['wl'],
                                         trans=kwargs['transformations'])
 
-    train_data_set = dataset_from_table(
+    valid_data_set = dataset_from_table(
                                         data_directory=kwargs['data_directory'],
                                         is_csv=kwargs['is_csv'],
                                         is_dicom=kwargs['is_dicom'],
@@ -350,7 +350,7 @@ def load_predefined_datatables(*args, **kwargs):
                                         wl=kwargs['wl'],
                                         trans=kwargs['transformations'])
 
-    train_data_set = dataset_from_table(
+    test_data_set = dataset_from_table(
                                         data_directory=kwargs['data_directory'],
                                         is_csv=kwargs['is_csv'],
                                         is_dicom=kwargs['is_dicom'],
