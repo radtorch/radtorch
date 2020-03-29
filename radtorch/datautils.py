@@ -330,37 +330,37 @@ class dataset_from_folder(Dataset):
 
 def load_predefined_datatables(*args, **kwargs):
     train_data_set = dataset_from_table(
-                                        data_directory=data_directory,
-                                        is_csv=is_csv,
-                                        is_dicom=is_dicom,
-                                        input_source=predefined_datasets['train'],
-                                        img_path_column=path_col,
-                                        img_label_column=label_col,
-                                        mode=mode,
-                                        wl=wl,
-                                        trans=transformations)
+                                        data_directory=kwargs['data_directory'],
+                                        is_csv=kwargs['is_csv'],
+                                        is_dicom=kwargs['is_dicom'],
+                                        input_source=kwargs['predefined_datasets']['train'],
+                                        img_path_column=kwargs['path_col'],
+                                        img_label_column=kwargs['label_col'],
+                                        mode=kwargs['mode'],
+                                        wl=kwargs['wl'],
+                                        trans=kwargs['transformations'])
 
-    valid_data_set = dataset_from_table(
-                                        data_directory=data_directory,
-                                        is_csv=is_csv,
-                                        is_dicom=is_dicom,
-                                        input_source=predefined_datasets['valid'],
-                                        img_path_column=path_col,
-                                        img_label_column=label_col,
-                                        mode=mode,
-                                        wl=wl,
-                                        trans=transformations)
+    train_data_set = dataset_from_table(
+                                        data_directory=kwargs['data_directory'],
+                                        is_csv=kwargs['is_csv'],
+                                        is_dicom=kwargs['is_dicom'],
+                                        input_source=kwargs['predefined_datasets']['valid'],
+                                        img_path_column=kwargs['path_col'],
+                                        img_label_column=kwargs['label_col'],
+                                        mode=kwargs['mode'],
+                                        wl=kwargs['wl'],
+                                        trans=kwargs['transformations'])
 
-    test_data_set = dataset_from_table(
-                                        data_directory=data_directory,
-                                        is_csv=is_csv,
-                                        is_dicom=is_dicom,
-                                        input_source=predefined_datasets['test'],
-                                        img_path_column=path_col,
-                                        img_label_column=label_col,
-                                        mode=mode,
-                                        wl=wl,
-                                        trans=transformations)
+    train_data_set = dataset_from_table(
+                                        data_directory=kwargs['data_directory'],
+                                        is_csv=kwargs['is_csv'],
+                                        is_dicom=kwargs['is_dicom'],
+                                        input_source=kwargs['predefined_datasets']['test'],
+                                        img_path_column=kwargs['path_col'],
+                                        img_label_column=kwargs['label_col'],
+                                        mode=kwargs['mode'],
+                                        wl=kwargs['wl'],
+                                        trans=kwargs['transformations'])
 
     return train_data_set, valid_data_set, test_data_set
 
