@@ -62,6 +62,28 @@ def set_device(device):
         selected_device == device
     return selected_device
 
+def set_transformations(model_arch, custom_resize, is_dicom, transformations):
+    # Custom Resize
+    if custom_resize=='default':
+        input_resize = model_dict[model_arch]['input_size']
+    else:
+        input_resize = custom_resize
+
+    # Transformations
+    if transformations == 'default':
+        if is_dicom == True:
+            self.transformations = transforms.Compose([
+                    transforms.Resize((input_resize, input_resize)),
+                    transforms.transforms.Grayscale(3),
+                    transforms.ToTensor()])
+        else:
+            transformations = transforms.Compose([
+                    transforms.Resize((input_resize, input_resize)),
+                    transforms.ToTensor()])
+    else:
+        self.transformations = transformations
+
+    return transformations, input_resize
 
 def supported():
     '''
