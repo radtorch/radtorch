@@ -10,14 +10,16 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
 ## Image_Classification
 
-      pipeline.Image_Classification(data_directory, transformations='default',
-      custom_resize='default', device='default', optimizer='Adam', is_dicom=True,
-      label_from_table=False, is_csv=None, table_source=None, path_col='IMAGE_PATH',
-      label_col='IMAGE_LABEL', mode='RAW', wl=None, batch_size=16, test_percent=0.2,
-      valid_percent=0.2, model_arch='vgg16', pre_trained=True, unfreeze_weights=True,
-      train_epochs=20, learning_rate=0.0001, loss_function='CrossEntropyLoss')
+      pipeline.Image_Classification(data_directory, name = None,
+      transformations='default',custom_resize = 'default', device='default',
+      optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None,
+      table_source=None, path_col = 'IMAGE_PATH', label_col = 'IMAGE_LABEL',
+      balance_class = False, predefined_datasets = False, mode='RAW', wl=None,
+      normalize='default', batch_size=16, test_percent = 0.2, valid_percent = 0.2,
+      model_arch='vgg16', pre_trained=True, unfreeze_weights=False,train_epochs=20,
+      learning_rate=0.0001, loss_function='CrossEntropyLoss')
 
-!!! quote ""
+!!! abstract "Description"
 
     The Image Classification pipeline simplifies the process of binary and multi-class image classification into a single line of code.
     Under the hood, the following happens:
@@ -44,21 +46,25 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     8. Trained model can be exported to outside file for future use.
 
 
-####Parameters
+<!-- ####Parameters -->
 
-!!! quote ""
+!!! info  "Parameters"
 
     **data_directory:**
 
-    - _(str)_ target data directory. ***(Required)***
+    - _(str)_ target data directory. **(Required)**
+
+    **name:**
+
+    - _(str)_ preferred name to be given to classifier.
 
     **is_dicom:**
 
-    - _(boolean)_ True for DICOM images, False for regular images.(default=True)
+    - _(boolean)_ True for DICOM images. (default=True)
 
     **label_from_table:**
 
-    - _(boolean)_ True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)
+    - _(boolean)_ True if labels are to extracted from table, False if labels are to be extracted from subfolders names. (default=False)
 
     **is_csv:**
 
@@ -67,6 +73,10 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     **table_source:**
 
     - _(str or pandas dataframe object)_ source for labelling data.This is path to csv file or name of pandas dataframe if pandas to be used. (default=None).
+
+    **predefined_datasets**
+
+    - _(dict)_ dictionary of predefined pandas dataframes for training. This follows the following scheme: {'train': dataframe, 'valid': dataframe, 'test':dataframe }
 
     **path_col:**
 
@@ -85,12 +95,20 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     - _(list)_ list of lists of combinations of window level and widths to be used with WIN and MWIN.In the form of : [[Level,Width], [Level,Width],...].  
     - Only 3 combinations are allowed for MWIN (for now). (default=None)
 
+    **balance_class:**
+
+    - _(boolen)_ balance classes in train/valid/test subsets. Under the hood, oversampling is done for the classes with fewer number of instances. (default=False)
+
+    **normalize:**
+
+    - _(str)_ Normalization algorithm applied to data. Options: 'default' normalizes data with mean of 0.5 and standard deviation of 0.5, 'auto' normalizes the data using mean and standard deviation calculated from the datasets, 'False' applies no normalization. (default='default')
+
     **transformations:**
 
     - _(pytorch transforms list)_ pytroch transforms to be performed on the dataset. (default=Convert to tensor)
 
     **custom_resize:**
-    - _(int)_ by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
+    - _(int)_ by default, a radtorch pipeline will resize the input images into the default training model input image size as demonstrated in the table shown below. This default size can be changed here if needed.
 
     **batch_size:**
 
@@ -114,7 +132,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
     **unfreeze_weights:**
 
-    - _(boolean)_ if True, all model weights will be retrained. (default=True)
+    - _(boolean)_ if True, all model weights will be retrained. This note that if no pre_trained weights are applied, this option will be set to True automatically. (default=False)
 
     **train_epochs:**
 
@@ -137,50 +155,51 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     - _(str)_ device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if CUDA is available and trains on it.
 
 
-####Methods
+<!-- ####Methods -->
 
-!!! quote ""
+!!! info "Methods"
 
 
     **.info()**
 
-    - Display Pandas Dataframe with properties of the Image Classification Pipeline.
+    - Display table with properties of the Image Classification Pipeline.
 
-    **.dataset_info()**
+    **.dataset_info(plot=True, plot_size=(500,300))**
 
     - Display Dataset Information.
 
     - Arguments:
-        - plot: _(boolean)_ displays dataset information in graphical representation. By default, data is shown as table. (default=False)
+        - plot: _(boolean)_ displays dataset information in graphical representation. (default=True)
+        - plot_size: _(tuple)_ figures size.
 
-    **.sample()**
+    **.sample(fig_size=(10,10), show_labels=True, show_file_name=False)**
 
     - Display sample of the training dataset.
 
     - Arguments:
-        - num_of_images_per_row: _(int)_ number of images per column. (default=5)
         - fig_size: _(tuple)_ figure size. (default=(10,10))
-        - show_labels: _(boolean)_ show the image label idx. (default=False)
+        - show_labels: _(boolean)_ show the image label idx. (default=True)
+        - show_file_name: _(boolean)_ show the file name as label. (default=False)
 
-    **.run()**
+    **.run(verbose=True)**
 
     - Start the image classification pipeline training.
 
     - Arguments:
         - verbose: _(boolean)_ Show display progress after each epoch. (default=True)
 
-    **.metrics()**
+    **.metrics(fig_size=(500,300))**
 
     - Display the training metrics.
 
-    **.export_model()**
+    **.export_model(output_path)**
 
     - Export the trained model into a target file.
 
     - Arguments:
         - output_path: _(str)_ path to output file. For example 'foler/folder/model.pth'
 
-    **.export()**
+    **.export(output_path)**
 
     - Exports the whole image classification pipeline for future use
 
@@ -188,7 +207,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
         - target_path: _(str)_ target location for export.
 
 
-    **.set_trained_model()**
+    **.set_trained_model(model_path, mode)**
 
     - Loads a previously trained model into pipeline
 
@@ -197,7 +216,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
         - mode: _(str)_ either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.
 
 
-    **.inference()**
+    **.inference(test_img_path, transformations='default',  all_predictions=False)**
 
     - Performs inference using the trained model on a target image.
 
@@ -206,11 +225,8 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
         - transformations: _(pytorch transforms list)_ list of transforms to be performed on the target image. (default='default' which is the same transforms using for training the pipeline)
         - all_predictions: _(boolean)_  if True , shows table of all prediction classes and accuracy percentages. (default=False)
 
-    - Outputs:
-        - Output: _(tuple)_ tuple of prediction (class idx , accuracy percentage).
 
-
-    **.roc()**
+    **.roc(target_data_set='default', figure_size=(600,400))**
 
     - Display ROC and AUC.
 
@@ -219,7 +235,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
         - figure_size: _(tuple)_ figure size. (default=(600,400))
 
 
-    **.confusion_matrix()**
+    **.confusion_matrix(target_data_set='default', target_classes='default', figure_size=(7,7), cmap=None)**
 
     - Display Confusion Matrix
 
@@ -227,23 +243,24 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
         - target_data_set: _(pytorch dataset object)_ dataset used for predictions to create the confusion matrix. By default, the image classification - pipeline uses the test dataset created to calculate the matrix.
         - target_classes: _(list)_ list of classes. By default, the image classification pipeline uses the training classes.
         - figure_size: _(tuple)_ figure size. (default=(7,7))
+        - cmap: _(str)_ user specific matplotlib cmap.
 
 
-    **.misclassfied()**
+    **.misclassfied(target_data_set='default', num_of_images=16, figure_size=(10,10), show_table=False)**
 
     - Displays sample of misclassfied images from confusion matrix or ROC.
 
     - Arguments:
       - target_data_set: _(pytorch dataset object)_ dataset used for predictions. By default, the image classification pipeline uses the test dataset. If no test dataset was created in the pipeline (e.g. test_percent=0), then an external test dataset is required. (default=default')
       - num_of_images: _(int)_ number of images to be displayed.
-      - figure_size: _(tuple)_ figure size (default=(7,7))
+      - figure_size: _(tuple)_ figure size (default=(10,10))
       - show_table: _(boolean)_ display table of misclassied images. (default=False)
 
 
 
-####Examples
+<!-- ####Examples -->
 
-!!! quote ""
+!!! success "Example"
 
     Full example for Image Classification Pipeline can be found [HERE](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=njIH9PnCLhHp)
 
@@ -260,7 +277,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
     label_col = 'IMAGE_LABEL', mode='RAW', wl=None, model_arch='vgg16',
     pre_trained=True, unfreeze_weights=False, shuffle=True)
 
-!!! quote ""
+!!! abstract "Description"
 
     The feature extraction pipeline utilizes a pre-trained model to extract a set of features that can be used in another machine learning algorithms e.g. Adaboost or KNN.
 
@@ -272,43 +289,45 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
     The number of extracted features depends on the model architecture selected:
 
-    <div align='center'>
+  <div align='center'>
 
-    | Model Architecture | Default Input Image Size | Output Features |
-    |--------------------|:------------------------:|:---------------:|
-    | vgg11              |         224 x 224        |       4096      |
-    | vgg13              |         224 x 224        |       4096      |
-    | vgg16              |         224 x 224        |       4096      |
-    | vgg19              |         224 x 224        |       4096      |
-    | vgg11_bn           |         224 x 224        |       4096      |
-    | vgg13_bn           |         224 x 224        |       4096      |
-    | vgg16_bn           |         224 x 224        |       4096      |
-    | vgg19_bn           |         224 x 224        |       4096      |
-    | resnet18           |         224 x 224        |       512       |
-    | resnet34           |         224 x 224        |       512       |
-    | resnet50           |         224 x 224        |       2048      |
-    | resnet101          |         224 x 224        |       2048      |
-    | resnet152          |         224 x 224        |       2048      |
-    | wide_resnet50_2    |         224 x 224        |       2048      |
-    | wide_resnet101_2   |         224 x 224        |       2048      |
-    | alexnet            |         256 x 256        |       4096      |
+  | Model Architecture | Default Input Image Size | Output Features |
+  |--------------------|:------------------------:|:---------------:|
+  | vgg11              |         224 x 224        |       4096      |
+  | vgg13              |         224 x 224        |       4096      |
+  | vgg16              |         224 x 224        |       4096      |
+  | vgg19              |         224 x 224        |       4096      |
+  | vgg11_bn           |         224 x 224        |       4096      |
+  | vgg13_bn           |         224 x 224        |       4096      |
+  | vgg16_bn           |         224 x 224        |       4096      |
+  | vgg19_bn           |         224 x 224        |       4096      |
+  | resnet18           |         224 x 224        |       512       |
+  | resnet34           |         224 x 224        |       512       |
+  | resnet50           |         224 x 224        |       2048      |
+  | resnet101          |         224 x 224        |       2048      |
+  | resnet152          |         224 x 224        |       2048      |
+  | wide_resnet50_2    |         224 x 224        |       2048      |
+  | wide_resnet101_2   |         224 x 224        |       2048      |
+  | alexnet            |         256 x 256        |       4096      |
 
-    </div>
+  </div>
 
 
-####Parameters
+<!-- ####Parameters -->
 
-!!! quote ""
+!!! info "Parameters"
 
     **data_directory:**
 
-    - _(str)_ target data directory. ***(Required)***
+    - _(str)_ target data directory. **(Required)**
 
     **is_dicom:**
 
     - _(boolean)_  True for DICOM images, False for regular images.(default=True)
 
-    **label_from_table:** [boolean] True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)
+    **label_from_table:**
+
+    - _(boolean)_ True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)
 
     **is_csv:**
 
@@ -359,96 +378,190 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
     - _(boolean)_  Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
 
-    **unfreeze_weights:**
-
-    - _(boolean)_  if True, all model weights, not just final layer, will be retrained. (default=False)
 
     **device:**
 
     - _(str)_ device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
 
 
-####Methods
+<!-- ####Methods -->
 
-!!! quote ""
+!!! info "Methods"
 
 
     **.info()**
 
-    - Display Pandas Dataframe with properties of the Image Classification Pipeline.
+    - Display Pandas Dataframe with properties of the Pipeline.
 
-    **.dataset_info()**
+    **.dataset_info(plot=True)**
 
     - Display Dataset Information.
 
     - Arguments:
-        - plot: _(boolean)_ displays dataset information in graphical representation. By default, data is shown as table. (default=False)
+        - plot: _(boolean)_ displays dataset information in graphical representation. (default=True)
 
-    **.sample()**
+    **.sample(fig_size=(10,10), show_labels=True, show_file_name=False)**
 
     - Display sample of the training dataset.
 
     - Arguments:
-        - num_of_images_per_row: _(int)_ number of images per column. (default=5)
         - fig_size: _(tuple)_ figure size. (default=(10,10))
-        - show_labels: _(boolean)_ show the image label idx. (default=False)
+        - show_labels: _(boolean)_ show the image label idx. (default=True)
+        - show_file_name: _(boolean)_ show the image name as label. (default=False)
 
     **.num_features()**
 
     - Displays number of features to be extracted.
 
-    **.run()**
+    **.run(verbose=True)**
 
     - Extracts features from dataset.
 
     - Arguments:
         - verbose: _(boolean)_ Show the feature table. (default=True)
 
-    **.export_features()**
+    **.export_features(csv_path)**
 
     - Exports the features to csv.
 
     - Arguments:
         - csv_path: _(str)_ Path to output csv file.
 
-    **.export()**
+    **.export(target_path)**
 
     - Exports the whole image classification pipeline for future use
 
     - Arguments:
         - target_path: _(str)_ target location for export.
 
-    **.plot_extracted_features()**
+    **.plot_extracted_features(feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx')**
 
     - Plots a graphical representation of extracted features.
 
     - Arguments:
-      - num_features: _(int)_ number of features to be displayed (default=100)
-      - num_images: _(int)_ number of images to display features for (default=100)
-      - image_path_col: _(str)_ name of column containing image paths in the feature table. (default='img_path')
-      - image_label_col: _(str)_ name of column containing image label idx in the feature table. (default='label_idx')
+        - num_features: _(int)_ number of features to be displayed (default=100)
+        - num_images: _(int)_ number of images to display features for (default=100)
+        - image_path_col: _(str)_ name of column containing image paths in the feature table. (default='img_path')
+        - image_label_col: _(str)_ name of column containing image label idx in the feature table. (default='label_idx')
 
 
-    **.set_trained_model()** : ***Temporarily Disabled for future update.***
 
-
-####Examples
-
-!!! quote ""
+!!! success "Examples"
 
     Full example for Feature Extraction Pipeline can be found [HERE](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=iTAp7Zz6CrJ3)
+
+
+    <hr>
+
+
+## Compare_Image_Classifier
+      pipeline.Compare_Image_Classifier(data_directory,transformations='default',
+      custom_resize = 'default', device='default', optimizer='Adam', is_dicom=True,
+      label_from_table=False, is_csv=None, table_source=None, path_col = 'IMAGE_PATH',
+      label_col = 'IMAGE_LABEL', balance_class =[False], multi_label = False,
+      mode='RAW', wl=None,  normalize=['default'], batch_size=[8],
+      test_percent = [0.2], valid_percent = [0.2], model_arch=['vgg16'],
+      pre_trained=[True], unfreeze_weights=False, train_epochs=[10],
+      learning_rate=[0.0001],loss_function='CrossEntropyLoss')
+
+!!! abstract "Description"
+    The Compare Image Classifier class performs analysis and comparison of different image classification pipelines. This is particularly useful when comparing different model architectures and/or different training parameters.
+
+!!! warning "Important"  
+    Please note that this pipeline performs training from scratch on the selected model architectures. The ability to compared outside trained models will be added in a future release.
+
+!!! warning "Supported Parameters"    
+    The currently supported parameters that can be compared include:
+
+    1. balance_class
+    2. normalize
+    3. batch_size
+    4. test_percent
+    5. valid_percent
+    6. train_epochs
+    7. learning_rate
+    8. model_arch
+    9. self.pre_trained
+
+!!! warning "Use of supported parameters "  
+    Please note that the supported parameters are supplied as **List** e.g. model_arch=['renet50'] or train_epochs=[10,20].
+
+!!! info "Parameters"
+    This pipeline follows the same parameters used for the image classification as above. **Please take note of the warning on how to use the supported parameters above.**
+
+!!! info "Methods"
+    **.info()**
+
+    - Display Pandas Dataframe with properties of the Pipeline.
+
+    **.grid()**
+
+    - Display table with all generated image classifier objects that will be used for comparison.
+
+    **.parameters()**
+
+    - Displays a list of supported comparison parameters.
+
+    **.dataset_info(plot=True)**
+
+    - Display Dataset Information.
+
+    - Arguments:
+        - plot: _(boolean)_ displays dataset information in graphical representation. (default=True)
+
+    **.sample(fig_size=(10,10), show_labels=True, show_file_name=False)**
+
+    - Display sample of the training dataset.
+
+    - Arguments:
+        - fig_size: _(tuple)_ figure size. (default=(10,10))
+        - show_labels: _(boolean)_ show the image label idx. (default=True)
+        - show_file_name: _(boolean)_ show the image name as label. (default=False)
+
+    **.run(verbose=True)**
+
+    - Runs the pipeline.
+
+    **.metrics(fig_size=(650,400)))**
+
+    - Display the training metrics.
+
+
+    **.roc(fig_size=(700,400))**
+
+    - Displays comparison between ROC curves of different classifiers with AUC.
+
+
+    **.best(path=None, export_classifier=False, export_model=False))**
+
+    - Displays the best classifier based on AUC.
+
+    - Arguments:
+        - path: _(str)_ exporting path.
+        - export_classifier: _(boolen)_ export the best classifier.
+        - export_model: _(boolen)_ export the best model.
+
+
+
+!!! success "Examples"
+
+    Full example for Compare_Image_Classifier can be found [HERE](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=HNBKoWg_WyUW&line=1&uniqifier=1)
+
+
+<hr>
+
 
 
 ## load_pipeline
       pipeline.load_pipeline(target_path)
 
-!!! quote ""
+!!! abstract "Description"
     Loads a previously saved pipeline for future use.
 
     **Arguments**
 
     - target_path: _(str)_ target path of the target pipeline.
 
-    **Example**
+!!! success "Examples"
 
         my_classifier = load_pipeline('/path/to/pipeline.dump')

@@ -502,14 +502,14 @@ class Image_Classification():
         if show_table:
             return self.misclassified_instances
 
-    def export(self, target_path):
+    def export(self, output_path):
         '''
         Exports the whole image classification pipelie for future use
 
         ***Arguments**
         - target_path: _(str)_ target location for export.
         '''
-        outfile = open(target_path,'wb')
+        outfile = open(output_path,'wb')
         pickle.dump(self,outfile)
         outfile.close()
 
@@ -629,7 +629,7 @@ class Feature_Extraction():
         extractor_info.columns = ['Property', 'Value']
         return extractor_info
 
-    def dataset_info(self, plot=False):
+    def dataset_info(self, plot=True):
         '''
         Displays Dataset Information.
         '''

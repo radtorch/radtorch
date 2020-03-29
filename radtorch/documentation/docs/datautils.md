@@ -1,6 +1,7 @@
 # Data Module <small> radtorch.datautils </small>
 
 
+!!! bug " Documentation Outdated. Please check again later for update."
 
 
 ## set_random_seed

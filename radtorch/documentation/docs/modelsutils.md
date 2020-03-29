@@ -1,6 +1,8 @@
 # Models Module <small> radtorch.modelsutils </small>
 
 
+!!! bug " Documentation Outdated. Please check again later for update."
+
 ## create_model
     modelsutils.create_model(model_arch, output_classes, mode,
                 pre_trained=True, unfreeze_weights=True)
