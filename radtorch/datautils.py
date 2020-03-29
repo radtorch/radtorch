@@ -19,6 +19,7 @@ from pathlib import Path
 
 from .dicomutils import  *
 from .visutils import *
+from .modelsutils import *
 
 
 
