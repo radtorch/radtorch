@@ -112,7 +112,7 @@ class Image_Classification():
                                         data_directory=self.data_directory,
                                         is_csv=self.is_csv,
                                         is_dicom=self.is_dicom,
-                                        input_source=self.input_source,
+                                        predefined_datasets=self.predefined_datasets,
                                         img_path_column=self.img_path_column,
                                         img_label_column=self.img_label_column,
                                         mode=self.mode,
