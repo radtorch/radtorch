@@ -1,4 +1,7 @@
+import radtorch
+
 from .dicomutils import  *
+
 from .visutils import *
 
 
