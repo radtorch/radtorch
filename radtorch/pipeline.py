@@ -120,7 +120,7 @@ class Image_Classification():
         # else:
         #     self.transformations = transformations
 
-        self.transformations, self.input_resize = set_transformations(model_arch=self.model_arch, custom_resize=self.custom_resize, is_dicom=self.is_dicom, transformations)
+        self.transformations, self.input_resize = set_transformations(model_arch=self.model_arch, custom_resize=self.custom_resize, is_dicom=self.is_dicom, transformations=transformations)
 
 
         # Device
