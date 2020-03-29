@@ -356,14 +356,14 @@ class Image_Classification():
         info_dict = {}
 
         # Display train breakdown by class
-        info_dict['train_dataset'] = show_dataset_info(self.train_data_set)
+        info_dict['train_dataset'] = (show_dataset_info(self.train_data_set)).style.set_caption("train_dataset")
 
         # Display valid breakdown by class
-        info_dict['valid_dataset'] = show_dataset_info(self.valid_data_set)
+        info_dict['valid_dataset'] = (show_dataset_info(self.valid_data_set)).style.set_caption("valid_dataset")
 
         # Display test breakdown by class
         if self.test_percent > 0:
-            info_dict['test_dataset'] = show_dataset_info(self.test_data_set)
+            info_dict['test_dataset'] = (show_dataset_info(self.test_data_set)).style.set_caption("test_dataset")
 
 
 
