@@ -1,5 +1,5 @@
-from .generalutils import *
-from .dicomutils import *
+from radtorch.generalutils import *
+from radtorch.dicomutils import *
 
 
 

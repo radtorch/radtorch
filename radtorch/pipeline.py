@@ -1,8 +1,8 @@
 
-from .modelsutils import *
-from .datautils import *
-from .visutils import *
-from .generalutils import *
+from radtorch.modelsutils import *
+from radtorch.datautils import *
+from radtorch.visutils import *
+from radtorch.generalutils import *
 
 
 

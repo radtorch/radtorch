@@ -1,8 +1,5 @@
-import radtorch
-
-from .dicomutils import  *
-
-from .visutils import *
+from radtorch.dicomutils import  *
+from radtorch.visutils import *
 
 
 

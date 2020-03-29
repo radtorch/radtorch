@@ -1,7 +1,7 @@
 
 
-from .dicomutils import *
-from .datautils import *
+from radtorch.dicomutils import *
+from radtorch.datautils import *
 
 
 
