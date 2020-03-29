@@ -651,13 +651,13 @@ class Feature_Extraction():
             fig_size: _(tuple)_figure size. (default=(10,10))
             show_labels: _(boolean)_ show the image label idx. (default=True)
         '''
-        batch = next(iter(self.data_loader))
+        batch = next(iter(self.train_data_loader))
         images, labels, paths = batch
         images = images.numpy()
         images = [np.moveaxis(x, 0, -1) for x in images]
         if show_labels:
           titles = labels.numpy()
-          titles = [((list(self.data_set.class_to_idx.keys())[list(self.data_set.class_to_idx.values()).index(i)]), i) for i in titles]
+          titles = [((list(self.c.class_to_idx.keys())[list(self.train_data_set.class_to_idx.values()).index(i)]), i) for i in titles]
         if show_file_name:
           titles = [ntpath.basename(x) for x in paths]
         plot_images(images=images, titles=titles, figure_size=fig_size)
