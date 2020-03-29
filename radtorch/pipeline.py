@@ -100,73 +100,59 @@ class Image_Classification():
         self.custom_resize = custom_resize
 
 
-        # Custom Resize
-        # if self.custom_resize=='default':
-        #     self.input_resize = model_dict[model_arch]['input_size']
-        # else:
-        #     self.input_resize = custom_resize
-
         # Transformations
-        # if transformations == 'default':
-        #     if self.is_dicom == True:
-        #         self.transformations = transforms.Compose([
-        #                 transforms.Resize((self.input_resize, self.input_resize)),
-        #                 transforms.transforms.Grayscale(3),
-        #                 transforms.ToTensor()])
-        #     else:
-        #         self.transformations = transforms.Compose([
-        #                 transforms.Resize((self.input_resize, self.input_resize)),
-        #                 transforms.ToTensor()])
-        # else:
-        #     self.transformations = transformations
-
         self.transformations, self.input_resize = set_transformations(model_arch=self.model_arch, custom_resize=self.custom_resize, is_dicom=self.is_dicom, transformations=transformations)
-
 
         # Device
         self.device = set_device(device)
-        # if device == 'default':
-        #     self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        # else:
-        #     self.device == device
-
 
         if self.predefined_datasets:
-            self.train_data_set = dataset_from_table(
-                                                    data_directory=self.data_directory,
-                                                    is_csv=self.is_csv,
-                                                    is_dicom=self.is_dicom,
-                                                    input_source=self.predefined_datasets['train'],
-                                                    img_path_column=self.path_col,
-                                                    img_label_column=self.label_col,
-                                                    multi_label = self.multi_label,
-                                                    mode=self.mode,
-                                                    wl=self.wl,
-                                                    trans=self.transformations)
 
-            self.valid_data_set = dataset_from_table(
-                                                    data_directory=self.data_directory,
-                                                    is_csv=self.is_csv,
-                                                    is_dicom=self.is_dicom,
-                                                    input_source=self.predefined_datasets['valid'],
-                                                    img_path_column=self.path_col,
-                                                    img_label_column=self.label_col,
-                                                    multi_label = self.multi_label,
-                                                    mode=self.mode,
-                                                    wl=self.wl,
-                                                    trans=self.transformations)
-
-            self.test_data_set = dataset_from_table(
-                                                    data_directory=self.data_directory,
-                                                    is_csv=self.is_csv,
-                                                    is_dicom=self.is_dicom,
-                                                    input_source=self.predefined_datasets['test'],
-                                                    img_path_column=self.path_col,
-                                                    img_label_column=self.label_col,
-                                                    multi_label = self.multi_label,
-                                                    mode=self.mode,
-                                                    wl=self.wl,
-                                                    trans=self.transformations)
+            self.train_data_set, self.valid_data_set, self.test_data_set = load_predefined_datatables(
+                                        data_directory=self.data_directory,
+                                        is_csv=self.is_csv,
+                                        is_dicom=self.is_dicom,
+                                        input_source=self.input_source,
+                                        img_path_column=self.img_path_column,
+                                        img_label_column=self.img_label_column,
+                                        mode=self.mode,
+                                        wl=self.wl,
+                                        trans=self.transformations )
+            # self.train_data_set = dataset_from_table(
+            #                                         data_directory=self.data_directory,
+            #                                         is_csv=self.is_csv,
+            #                                         is_dicom=self.is_dicom,
+            #                                         input_source=self.predefined_datasets['train'],
+            #                                         img_path_column=self.path_col,
+            #                                         img_label_column=self.label_col,
+            #                                         multi_label = self.multi_label,
+            #                                         mode=self.mode,
+            #                                         wl=self.wl,
+            #                                         trans=self.transformations)
+            #
+            # self.valid_data_set = dataset_from_table(
+            #                                         data_directory=self.data_directory,
+            #                                         is_csv=self.is_csv,
+            #                                         is_dicom=self.is_dicom,
+            #                                         input_source=self.predefined_datasets['valid'],
+            #                                         img_path_column=self.path_col,
+            #                                         img_label_column=self.label_col,
+            #                                         multi_label = self.multi_label,
+            #                                         mode=self.mode,
+            #                                         wl=self.wl,
+            #                                         trans=self.transformations)
+            #
+            # self.test_data_set = dataset_from_table(
+            #                                         data_directory=self.data_directory,
+            #                                         is_csv=self.is_csv,
+            #                                         is_dicom=self.is_dicom,
+            #                                         input_source=self.predefined_datasets['test'],
+            #                                         img_path_column=self.path_col,
+            #                                         img_label_column=self.label_col,
+            #                                         multi_label = self.multi_label,
+            #                                         mode=self.mode,
+            #                                         wl=self.wl,
+            #                                         trans=self.transformations)
 
             self.num_output_classes = len(self.train_data_set.classes)
             self.train_data_loader = torch.utils.data.DataLoader(
