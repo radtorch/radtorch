@@ -639,7 +639,7 @@ class Feature_Extraction():
         info['data_set'] = show_dataset_info(self.data_set)
 
         if plot:
-            plot_dataset_info(info_dict, plot_size= plot_size)
+            plot_dataset_info(info, plot_size= plot_size)
         else:
             display (show_dataset_info(self.data_set))
 
@@ -651,7 +651,7 @@ class Feature_Extraction():
             fig_size: _(tuple)_figure size. (default=(10,10))
             show_labels: _(boolean)_ show the image label idx. (default=True)
         '''
-        batch = next(iter(self.train_data_loader))
+        batch = next(iter(self.data_loader))
         images, labels, paths = batch
         images = images.numpy()
         images = [np.moveaxis(x, 0, -1) for x in images]
