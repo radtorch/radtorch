@@ -16,6 +16,7 @@ from torchvision import transforms
 from PIL import Image
 from pathlib import Path
 from collections import Counter
+from IPython.display import display
 
 from .modelsutils import *
 from .datautils import *
@@ -373,7 +374,12 @@ class Image_Classification():
             plot_dataset_info(info_dict, plot_size= plot_size)
             # plot_pipline_dataset_info(info, test_percent = self.test_percent)
         else:
-            return [v for k,v in info_dict.items()]
+
+            display (show_dataset_info(self.train_data_set))
+            display (show_dataset_info(self.valid_data_set))
+            display (show_dataset_info(self.test_data_set))
+
+            return info_dict
 
 
     def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
