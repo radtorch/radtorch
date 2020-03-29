@@ -384,7 +384,7 @@ class Image_Classification():
                                                     verbose=verbose)
             self.train_metrics = pd.DataFrame(data=self.train_metrics, columns = ['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
         except:
-            raise TypeError('Could not train image classification pipeline. Please check rpovided parameters.')
+            raise TypeError('Could not train image classification pipeline. Please check provided parameters.')
             pass
 
     def metrics(self, fig_size=(500,300)):
