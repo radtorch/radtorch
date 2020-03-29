@@ -83,7 +83,7 @@ class Image_Classification():
     valid_percent = 0.2,
     model_arch='vgg16',
     pre_trained=True,
-    unfreeze_weights=True,
+    unfreeze_weights=False,
     train_epochs=20,
     learning_rate=0.0001,
     loss_function='CrossEntropyLoss'):
@@ -755,7 +755,7 @@ class Compare_Image_Classifier():
     valid_percent = [0.2],
     model_arch=['vgg16'],
     pre_trained=[True],
-    unfreeze_weights=True,
+    unfreeze_weights=False,
     train_epochs=[10],
     learning_rate=[0.0001],
     loss_function='CrossEntropyLoss'):

@@ -6,7 +6,7 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
     from radtorch import pipeline
 
-    
+
 
 ## Image_Classification
 
@@ -276,14 +276,23 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 
     | Model Architecture | Default Input Image Size | Output Features |
     |--------------------|:------------------------:|:---------------:|
-    | VGG16              |         244 x 244        |       4096      |
-    | VGG19              |         244 x 244        |       4096      |
-    | resnet50           |         244 x 244        |       2048      |
-    | resnet152          |         244 x 244        |       2048      |
-    | resnet101          |         244 x 244        |       2048      |
-    | wide_resnet50_2    |         244 x 244        |       2048      |
-    | wide_resnet101_2   |         244 x 244        |       2048      |
+    | vgg11              |         224 x 224        |       4096      |
+    | vgg13              |         224 x 224        |       4096      |
+    | vgg16              |         224 x 224        |       4096      |
+    | vgg19              |         224 x 224        |       4096      |
+    | vgg11_bn           |         224 x 224        |       4096      |
+    | vgg13_bn           |         224 x 224        |       4096      |
+    | vgg16_bn           |         224 x 224        |       4096      |
+    | vgg19_bn           |         224 x 224        |       4096      |
+    | resnet18           |         224 x 224        |       2048      |
+    | resnet34           |         224 x 224        |       2048      |
+    | resnet50           |         224 x 224        |       2048      |
+    | resnet101          |         224 x 224        |       2048      |
+    | resnet152          |         224 x 224        |       2048      |
+    | wide_resnet50_2    |         224 x 224        |       2048      |
+    | wide_resnet101_2   |         224 x 224        |       2048      |
     | inception_v3       |         299 x 299        |       2048      |
+    | alexnet            |         256 x 256        |       4096      |
 
     </div>
 

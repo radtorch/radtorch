@@ -52,9 +52,6 @@ loss_dict = {
 
 
 
-
-
-
 def set_device(device):
     if device == 'default':
         selected_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -110,7 +107,7 @@ class Identity(nn.Module):
     def forward(self, x):
         return x
 
-def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_weights=True):
+def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_weights=False):
     '''
     .. include:: ./documentation/docs/modelutils.md##create_model
     '''
@@ -120,12 +117,23 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
 
     else:
 
-        if model_arch == 'vgg16' or model_arch == 'vgg19':
+        if 'vgg' in model_arc:
+            if model_arch == 'vgg11':
+                train_model = torchvision.models.vgg11(pretrained=pre_trained)
+            if model_arch == 'vgg13':
+                train_model = torchvision.models.vgg13(pretrained=pre_trained)
             if model_arch == 'vgg16':
                 train_model = torchvision.models.vgg16(pretrained=pre_trained)
             elif model_arch == 'vgg19':
                 train_model = torchvision.models.vgg19(pretrained=pre_trained)
-
+            if model_arch == 'vgg11_bn':
+                train_model = torchvision.models.vgg11_bn(pretrained=pre_trained)
+            if model_arch == 'vgg13_bn':
+                train_model = torchvision.models.vgg13_bn(pretrained=pre_trained)
+            if model_arch == 'vgg16_bn':
+                train_model = torchvision.models.vgg16_bn(pretrained=pre_trained)
+            elif model_arch == 'vgg19_bn':
+                train_model = torchvision.models.vgg19_bn(pretrained=pre_trained)
             if mode == 'feature_extraction':
                 train_model.classifier[6] = Identity()
             elif mode == 'feature_visualization':
@@ -137,7 +145,13 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
                     torch.nn.LogSoftmax(dim=1)
                     )
 
-        elif model_arch == 'resnet50' or model_arch == 'resnet101' or model_arch == 'resnet152' or model_arch == 'wide_resnet50_2' or  model_arch == 'wide_resnet101_2':
+
+
+        elif 'resnet' in model_arch:
+            if model_arch == 'resnet18':
+                train_model = torchvision.models.resnet18(pretrained=pre_trained)
+            elif model_arch == 'resnet34':
+                train_model = torchvision.models.resnet34(pretrained=pre_trained)
             if model_arch == 'resnet50':
                 train_model = torchvision.models.resnet50(pretrained=pre_trained)
             elif model_arch == 'resnet101':
@@ -175,8 +189,27 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
                   torch.nn.LogSoftmax(dim=1)
                   )
 
-        for param in train_model.parameters():
-            param.requires_grad = unfreeze_weights
+        elif model_arch == 'alexnet':
+            train_model = torchvision.models.alexnet(pretrained=pre_trained)
+            if mode == 'feature_extraction':
+                train_model.classifier[6] = Identity()
+            elif mode == 'feature_visualization':
+                train_model.classifier[6] = nn.Sequential(
+                  nn.Linear(in_features=4096, out_features=output_classes, bias=True))
+            else:
+                train_model.classifier[6] = nn.Sequential(
+                  nn.Linear(in_features=4096, out_features=output_classes, bias=True),
+                  torch.nn.LogSoftmax(dim=1)
+                  )
+
+        if pre_trained == False:
+            for param in train_model.parameters():
+                param.requires_grad = unfreeze_weights
+
+        else:
+            if unfreeze_weights:
+                for param in train_model.parameters():
+                    param.requires_grad = unfreeze_weights
 
         return train_model
 
@@ -355,3 +388,11 @@ def model_inference(model, input_image_path, all_predictions = False, inference_
         return prediction_table
     else:
         return final_prediction.item(), prediction_percentages[final_prediction.item()]
+
+
+
+
+
+
+
+##
