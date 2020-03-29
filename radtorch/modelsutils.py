@@ -118,6 +118,7 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
     else:
 
         if 'vgg' in model_arch:
+            in_features = model_dict[model_arch]['output_features']
             if model_arch == 'vgg11':
                 train_model = torchvision.models.vgg11(pretrained=pre_trained)
             if model_arch == 'vgg13':
@@ -138,10 +139,10 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
                 train_model.classifier[6] = Identity()
             elif mode == 'feature_visualization':
                 train_model.classifier[6] = nn.Sequential(
-                    nn.Linear(in_features=4096, out_features=output_classes, bias=True))
+                    nn.Linear(in_features=in_features, out_features=output_classes, bias=True))
             else:
                 train_model.classifier[6] = nn.Sequential(
-                    nn.Linear(in_features=4096, out_features=output_classes, bias=True),
+                    nn.Linear(in_features=in_features, out_features=output_classes, bias=True),
                     torch.nn.LogSoftmax(dim=1)
                     )
 
@@ -191,15 +192,16 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
         #           )
 
         elif model_arch == 'alexnet':
+            in_features = model_dict[model_arch]['output_features']
             train_model = torchvision.models.alexnet(pretrained=pre_trained)
             if mode == 'feature_extraction':
                 train_model.classifier[6] = Identity()
             elif mode == 'feature_visualization':
                 train_model.classifier[6] = nn.Sequential(
-                  nn.Linear(in_features=4096, out_features=output_classes, bias=True))
+                  nn.Linear(in_features=in_features, out_features=output_classes, bias=True))
             else:
                 train_model.classifier[6] = nn.Sequential(
-                  nn.Linear(in_features=4096, out_features=output_classes, bias=True),
+                  nn.Linear(in_features=in_features, out_features=output_classes, bias=True),
                   torch.nn.LogSoftmax(dim=1)
                   )
 
