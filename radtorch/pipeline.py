@@ -101,10 +101,11 @@ class Image_Classification():
         self.num_workers = 0
         self.balance_class = balance_class
         self.predefined_datasets = predefined_datasets
+        self.custom_resize = custom_resize
 
 
         # Custom Resize
-        if custom_resize=='default':
+        if self.custom_resize=='default':
             self.input_resize = model_dict[model_arch]['input_size']
         else:
             self.input_resize = custom_resize
@@ -370,7 +371,7 @@ class Image_Classification():
             plot_dataset_info(info_dict, plot_size= plot_size)
             # plot_pipline_dataset_info(info, test_percent = self.test_percent)
         else:
-            return return [v for k,v in info_dict.items()]
+            return [v for k,v in info_dict.items()]
 
 
     def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
