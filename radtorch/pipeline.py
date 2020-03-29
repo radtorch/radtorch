@@ -361,7 +361,7 @@ class Image_Classification():
         plot_images(images=images, titles=titles, figure_size=fig_size)
 
     def classes(self):
-        return self.train_data_set.class_idx
+        return self.train_data_set.class_to_idx
 
     def run(self, verbose=True):
         '''
@@ -906,7 +906,7 @@ class Compare_Image_Classifier():
         return self.classifiers[0].sample(fig_size=fig_size, show_labels=show_labels, show_file_name=show_file_name)
 
     def classes(self):
-        return self.classifiers[0].data_set.class_idx
+        return self.classifiers[0].data_set.class_to_idx
 
     def parameters(self):
         return self.variables_names
