@@ -682,15 +682,8 @@ class Feature_Extraction():
 
         if plot:
             plot_dataset_info(info_dict, plot_size= plot_size)
-            # plot_pipline_dataset_info(info, test_percent = self.test_percent)
         else:
             display (show_dataset_info(self.data_set))
-        # info = show_dataset_info(self.data_set)
-
-        # if plot:
-        #     plot_pipline_dataset_info(info, test_percent = 0)
-        # else:
-        #     return info
 
     def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
         '''
@@ -701,7 +694,7 @@ class Feature_Extraction():
             show_labels: _(boolean)_ show the image label idx. (default=True)
         '''
         # return show_dataloader_sample(dataloader=self.train_data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
-        batch = next(iter(self.train_data_loader))
+        batch = next(iter(self.data_loader))
         images, labels, paths = batch
         images = images.numpy()
         images = [np.moveaxis(x, 0, -1) for x in images]
