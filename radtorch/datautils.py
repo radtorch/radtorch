@@ -327,7 +327,6 @@ class dataset_from_folder(Dataset):
         return show_dataset_info(self)
 
 
-
 def load_predefined_datatables(*args, **kwargs):
     train_data_set = dataset_from_table(
                                         data_directory=kwargs['data_directory'],
