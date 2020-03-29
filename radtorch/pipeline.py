@@ -113,8 +113,8 @@ class Image_Classification():
                                         is_csv=self.is_csv,
                                         is_dicom=self.is_dicom,
                                         predefined_datasets=self.predefined_datasets,
-                                        path_column=self.path_col,
-                                        label_column=self.label_col,
+                                        path_col=self.path_col,
+                                        label_col=self.label_col,
                                         mode=self.mode,
                                         wl=self.wl,
                                         trans=self.transformations )
