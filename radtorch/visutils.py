@@ -37,15 +37,6 @@ COLORS = ['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716']*100
 
 def plot_images(images, titles=None, figure_size=(10,10)):
     """
-    Display a list of images in a single figure with matplotlib.
-
-    Parameters
-    ---------
-    images: List of np.arrays compatible with plt.imshow.
-
-    titles: List of titles corresponding to each image. Must have
-            the same length as titles.
-
     Source
     ---------
     https://gist.github.com/soply/f3eec2e79c165e39c9d540e916142ae1
@@ -110,19 +101,6 @@ def show_dataloader_sample(dataloader, show_file_name = False, figsize=(10,10), 
 
 def show_dataset_info(dataset):
     """
-    Displays a summary of the pytorch dataset information.
-
-    **Arguments**
-
-    - dataset: _(pytorch dataset object)_ target dataset to inspect.
-
-    **Output**
-
-    -  Output: _(str)_ Dataset information including:
-        - Number of instances
-        - Number of classes
-        - Dictionary of class and class_id
-        - Class frequency breakdown.
     """
 
     input_data = dataset.input_data
@@ -142,17 +120,6 @@ def show_dataset_info(dataset):
 
 def show_dicom_sample(dataloader, figsize=(30,10)):
     """
-    Displays a sample image from a DICOM dataloader. Returns a single image in case of one window and 3 images in case of multiple window.
-
-    **Arguments**
-
-    - dataloader: _(dataloader object)_ selected pytorch dataloader.
-
-    - figsize: _(tuple)_ size of the displayed figure. (default=30,10)
-
-    **Output**
-
-    -  Output: _(figure)_ single image in case of one window and 3 images in case of multiple window.
     """
 
     i, l = next(iter(dataloader))
@@ -213,25 +180,6 @@ def show_confusion_matrix(cm,target_names,title='Confusion Matrix',cmap=None,nor
 
 def show_nn_confusion_matrix(model, target_data_set, target_classes, device, figure_size=(8,6), cmap=None):
     '''
-    Displays Confusion Matrix for Image Classifier Model.
-
-    **Arguments**
-
-    - model: _(pytorch model object)_ target model.
-
-    - target_data_set: _(pytorch dataset object)_ target dataset.
-
-    - target_classes: _(list)_ list of class names.
-
-    - figure_size: _(tuple)_ size of the displayed figure. (default=8,6)
-
-    - cmap: _(str)_ the colormap of the generated figure (default=None, which is Blues)
-
-    - device: _(str)_ device for inference. 'cpu' or 'cuda'
-
-    **Output**
-
-    -  Output: _(figure)_
     '''
     true_labels = []
     pred_labels = []
@@ -367,7 +315,6 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
         color_bar = ColorBar(color_mapper=mapper, major_label_text_font_size="8pt",
                           ticker=BasicTicker(desired_num_ticks=len(colors)),
-                          #  formatter=PrintfTickFormatter(format="%d%%"),
                           label_standoff=6, border_line_color=None, location=(0, 0))
 
 
@@ -375,7 +322,6 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
         tab = Panel(child=p,title=("Class "+str(k)) )
         figures.append(tab)
 
-        # show(p)
     tabs = Tabs(tabs=figures)
 
     show(tabs)
@@ -483,15 +429,9 @@ def show_metrics(classifer_list, fig_size=(500,300)):
 
     output_notebook()
 
-    # TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
     output = []
 
-    # if len(metrics_list) < 2 :
-    #     color_num = 4
-    # else:
-    #     color_num = len(metrics_list)*2
-    # colors = brewer['Accent'][color_num]
 
     for m in ['Accuracy', 'Loss',]:
         ind = 0
@@ -548,25 +488,6 @@ def show_metrics(classifer_list, fig_size=(500,300)):
 
 def calculate_nn_predictions(model, target_data_set,  device):
     """
-    Displays the ROC and AUC of a certain trained model on a target(for example test) dataset.
-
-    **Arguments**
-
-    - model: _(pytorch model object)_ target model.
-
-    - target_data_set: _(pytorch dataset object)_ target dataset.
-
-    - auc: _(boolen)_ True to display AUC. (default=True)
-
-    - figure_size: _(tuple)_ size of the displayed figure. (default=10,10)
-
-    - device: _(str)_ device for inference. 'cpu' or 'cuda'
-
-
-    **Output**
-
-    -  Output: _(figure)_
-
     """
 
     true_labels = []

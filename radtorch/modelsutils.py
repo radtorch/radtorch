@@ -63,13 +63,11 @@ def set_device(device):
     return selected_device
 
 def set_transformations(model_arch, custom_resize, is_dicom, transformations):
-    # Custom Resize
     if custom_resize=='default':
         input_resize = model_dict[model_arch]['input_size']
     else:
         input_resize = custom_resize
 
-    # Transformations
     if transformations == 'default':
         if is_dicom == True:
             self.transformations = transforms.Compose([
@@ -337,7 +335,6 @@ def model_inference(model, input_image_path, all_predictions = False, inference_
         target_img = Image.open(input_image_path).convert('RGB')
 
     target_img_tensor = inference_transformations(target_img)
-    # target_img_tensor = target_img_tensor.unsqueeze(1)
     target_img_tensor = target_img_tensor.unsqueeze(0)
 
 
@@ -360,20 +357,6 @@ def model_inference(model, input_image_path, all_predictions = False, inference_
         return final_prediction.item(), prediction_percentages[final_prediction.item()]
 
 
-
-
-# def efficientNetNetwork(modelarchitecture, output_classes, pretrained=True):
-#
-#     if pretrained:
-#         trainingNetwork = EfficientNet.from_pretrained('efficientnet-b'+str(modelarchitecture))
-#     else:
-#         trainingNetwork = EfficientNet.from_name('efficientnet-b'+str(modelarchitecture))
-#
-#     in_features = trainingNetwork._fc.in_features
-#     trainingNetwork._fc =  nn.Linear(in_features=in_features, out_features=output_classes, bias=True)
-#
-#                                       )
-#     return trainingNetwork
 
 
 

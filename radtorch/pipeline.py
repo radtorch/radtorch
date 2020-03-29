@@ -107,7 +107,6 @@ class Image_Classification():
         self.device = set_device(device)
 
         if self.predefined_datasets:
-
             self.train_data_set, self.valid_data_set, self.test_data_set = load_predefined_datatables(
                                         data_directory=self.data_directory,
                                         is_csv=self.is_csv,
@@ -118,42 +117,6 @@ class Image_Classification():
                                         mode=self.mode,
                                         wl=self.wl,
                                         transformations=self.transformations )
-            # self.train_data_set = dataset_from_table(
-            #                                         data_directory=self.data_directory,
-            #                                         is_csv=self.is_csv,
-            #                                         is_dicom=self.is_dicom,
-            #                                         input_source=self.predefined_datasets['train'],
-            #                                         img_path_column=self.path_col,
-            #                                         img_label_column=self.label_col,
-            #                                         multi_label = self.multi_label,
-            #                                         mode=self.mode,
-            #                                         wl=self.wl,
-            #                                         trans=self.transformations)
-            #
-            # self.valid_data_set = dataset_from_table(
-            #                                         data_directory=self.data_directory,
-            #                                         is_csv=self.is_csv,
-            #                                         is_dicom=self.is_dicom,
-            #                                         input_source=self.predefined_datasets['valid'],
-            #                                         img_path_column=self.path_col,
-            #                                         img_label_column=self.label_col,
-            #                                         multi_label = self.multi_label,
-            #                                         mode=self.mode,
-            #                                         wl=self.wl,
-            #                                         trans=self.transformations)
-            #
-            # self.test_data_set = dataset_from_table(
-            #                                         data_directory=self.data_directory,
-            #                                         is_csv=self.is_csv,
-            #                                         is_dicom=self.is_dicom,
-            #                                         input_source=self.predefined_datasets['test'],
-            #                                         img_path_column=self.path_col,
-            #                                         img_label_column=self.label_col,
-            #                                         multi_label = self.multi_label,
-            #                                         mode=self.mode,
-            #                                         wl=self.wl,
-            #                                         trans=self.transformations)
-
             self.num_output_classes = len(self.train_data_set.classes)
             self.train_data_loader = torch.utils.data.DataLoader(
                                                     self.train_data_set,
@@ -372,7 +335,6 @@ class Image_Classification():
             fig_size: _(tuple)_figure size. (default=(10,10))
             show_labels: _(boolean)_ show the image label idx. (default=True)
         '''
-        # return show_dataloader_sample(dataloader=self.train_data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
         batch = next(iter(self.train_data_loader))
         images, labels, paths = batch
         images = images.numpy()
@@ -415,8 +377,6 @@ class Image_Classification():
         '''
         Display the training metrics.
         '''
-        # show_metrics(self.train_metrics, fig_size=fig_size)
-        # show_metrics(self.train_metrics, metric=metrics, show_points = show_points, fig_size = fig_size)
         show_metrics([self], fig_size=(fig_size))
 
     def export_model(self,output_path):
@@ -677,7 +637,6 @@ class Feature_Extraction():
             fig_size: _(tuple)_figure size. (default=(10,10))
             show_labels: _(boolean)_ show the image label idx. (default=True)
         '''
-        # return show_dataloader_sample(dataloader=self.train_data_loader, num_of_images_per_row=num_of_images_per_row, figsize=fig_size, show_labels=show_labels)
         batch = next(iter(self.data_loader))
         images, labels, paths = batch
         images = images.numpy()
