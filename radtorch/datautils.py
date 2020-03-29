@@ -1,13 +1,12 @@
+"""
+Functions and Classes for Data Handling and PreProcessing
+"""
+
+
 from radtorch.dicomutils import  *
 from radtorch.visutils import *
 from radtorch.settings import *
 from torch.utils.data.dataset import Dataset
-
-
-
-
-
-# IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
 
 
 

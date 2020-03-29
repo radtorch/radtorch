@@ -1,3 +1,7 @@
+"""
+Functions and Classes for General Purpose
+"""
+
 
 def getDuplicatesWithCount(listOfElems):
     """

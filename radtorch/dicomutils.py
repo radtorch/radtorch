@@ -1,3 +1,7 @@
+"""
+Functions and Classes for DICOM Handling
+"""
+
 
 
 def window_dicom(filepath, level, width):
