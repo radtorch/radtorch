@@ -6,7 +6,7 @@ Functions and Classes for Data Visulaization
 from radtorch.generalutils import *
 from radtorch.dicomutils import *
 from radtorch.settings import *
-
+import copy
 
 
 
