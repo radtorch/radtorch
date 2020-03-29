@@ -370,7 +370,7 @@ class Image_Classification():
             plot_dataset_info(info_dict, plot_size= plot_size)
             # plot_pipline_dataset_info(info, test_percent = self.test_percent)
         else:
-            return info_dict
+            return return [v for k,v in info_dict.items()]
 
 
     def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
@@ -677,7 +677,7 @@ class Feature_Extraction():
             plot_dataset_info(info_dict, plot_size= plot_size)
             # plot_pipline_dataset_info(info, test_percent = self.test_percent)
         else:
-            return info
+            return [v for k,v in info.items()]
         # info = show_dataset_info(self.data_set)
 
         # if plot:
