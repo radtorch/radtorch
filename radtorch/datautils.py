@@ -2,12 +2,12 @@
 Functions and Classes for Data Handling and PreProcessing
 """
 
-
 from radtorch.dicomutils import  *
 from radtorch.visutils import *
 from radtorch.settings import *
-from torch.utils.data.dataset import Dataset
 
+from torch.utils.data.dataset import Dataset
+from torchvision import transforms
 
 
 def over_sample(shuffle=True, **kwargs):
@@ -157,7 +157,8 @@ class dataset_from_table(Dataset):
                 img_label_column='IMAGE_LABEL',
                 multi_label = False,
                 mode='RAW',
-                wl=None, trans=transforms.Compose([transforms.ToTensor()])):
+                wl=None,
+                trans=transforms.Compose([transforms.ToTensor()])):
 
         self.data_directory = data_directory
         self.is_csv = is_csv
