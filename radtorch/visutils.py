@@ -85,7 +85,7 @@ def show_misclassified(misclassified_dictionary, transforms, class_to_idx_dict, 
         imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
     else:
         imgs = [np.array(transforms(Image.open(i).convert('RGB'))) for i in sample]
-        imgs = [np.moveaxis(i, 0, -1) for i imgs]
+        imgs = [np.moveaxis(i, 0, -1) for i in imgs]
 
     titles = [(
                 [k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['true_label']][0],
