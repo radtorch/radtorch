@@ -326,9 +326,3 @@ def model_inference(model, input_image_path, all_predictions = False, inference_
         return prediction_table
     else:
         return final_prediction.item(), prediction_percentages[final_prediction.item()]
-
-
-
-
-
-##

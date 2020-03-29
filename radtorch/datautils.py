@@ -10,8 +10,14 @@ from torch.utils.data.dataset import Dataset
 
 
 
-def over_sample(dataset, shuffle=True):
-    balanced_dataset = copy.deepcopy(dataset)
+def over_sample(shuffle=True, **kwargs):
+    '''
+    Arguments:
+    ----------
+    dataset: target dataset.
+    shuffle: True to shuffle.
+    '''
+    balanced_dataset = copy.deepcopy(kwargs['dataset'])
     max_size = balanced_dataset.input_data[balanced_dataset.image_label_col].value_counts().max()
     lst = [balanced_dataset.input_data]
     for class_index, group in balanced_dataset.input_data.groupby(balanced_dataset.image_label_col):
