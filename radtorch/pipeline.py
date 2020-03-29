@@ -117,7 +117,7 @@ class Image_Classification():
                                         label_col=self.label_col,
                                         mode=self.mode,
                                         wl=self.wl,
-                                        trans=self.transformations )
+                                        transformations=self.transformations )
             # self.train_data_set = dataset_from_table(
             #                                         data_directory=self.data_directory,
             #                                         is_csv=self.is_csv,
