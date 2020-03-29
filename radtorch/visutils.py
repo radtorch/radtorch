@@ -24,8 +24,12 @@ from bokeh.layouts import row, gridplot, column
 from bokeh.transform import factor_cmap, cumsum
 from bokeh.palettes import viridis, Paired, inferno, brewer, d3, Turbo256
 
-from radtorch.generalutils import getDuplicatesWithCount
-from radtorch.dicomutils import dicom_to_narray
+from .generalutils import *
+from .dicomutils import *
+#
+# from radtorch.generalutils import getDuplicatesWithCount
+# from radtorch.dicomutils import dicom_to_narray
+
 
 TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 COLORS = ['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716']*100

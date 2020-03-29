@@ -16,9 +16,12 @@ from torchvision import transforms
 from PIL import Image
 from pathlib import Path
 
+from .dicomutils import *
+from .datautils import *
 
-from radtorch.dicomutils import dicom_to_pil
-from radtorch.datautils import IMG_EXTENSIONS, set_random_seed
+
+# from radtorch.dicomutils import dicom_to_pil
+# from radtorch.datautils import IMG_EXTENSIONS, set_random_seed
 
 
 

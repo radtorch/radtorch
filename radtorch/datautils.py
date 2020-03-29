@@ -17,9 +17,11 @@ from PIL import Image
 from pathlib import Path
 
 
-from radtorch.dicomutils import  dicom_to_narray, window_dicom, dicom_to_pil
-from radtorch.visutils import show_dataset_info
+from .dicomutils import  *
+from .visutils import *
 
+# from radtorch.dicomutils import  dicom_to_narray, window_dicom, dicom_to_pil
+# from radtorch.visutils import show_dataset_info
 
 IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
 
