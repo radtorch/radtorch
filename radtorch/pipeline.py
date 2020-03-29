@@ -379,8 +379,6 @@ class Image_Classification():
             display (show_dataset_info(self.valid_data_set))
             display (show_dataset_info(self.test_data_set))
 
-            return info_dict
-
 
     def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
         '''
