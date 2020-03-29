@@ -346,20 +346,6 @@ class Image_Classification():
 
         info_dict = {}
 
-        # # Display the train/valid/test size
-        # master_dataset_info = pd.DataFrame()
-        # master_dataset_info = master_dataset_info.append({'Classes':'Train Dataset Size','Number of Instances':len(self.train_data_set)}, ignore_index=True )
-        # master_dataset_info = master_dataset_info.append({'Classes':'Valid Dataset Size','Number of Instances':len(self.valid_data_set)}, ignore_index=True )
-        #
-        # if self.test_percent > 0:
-        #     master_dataset_info = master_dataset_info.append({'Classes':'Test Dataset Size', 'Class Idx': '', 'Number of Instances':len(self.test_data_set)}, ignore_index=True )
-        # else:
-        #     self.test_percent = []
-        #
-        # master_dataset_info = master_dataset_info.append({'Classes':'Full Dataset Size','Number of Instances':(len(self.train_data_set)+len(self.valid_data_set)+len(self.test_data_set))}, ignore_index=True )
-        # info_dict['full_dataset'] = master_dataset_info
-
-
         # Display train breakdown by class
         info_dict['train_dataset'] = show_dataset_info(self.train_data_set)
 
@@ -397,6 +383,9 @@ class Image_Classification():
         if show_file_name:
           titles = [ntpath.basename(x) for x in paths]
         plot_images(images=images, titles=titles, figure_size=fig_size)
+
+    def classes(self):
+        return self.data_set.class_idx
 
     def run(self, verbose=True):
         '''
@@ -538,7 +527,6 @@ class Image_Classification():
 
         if show_table:
             return self.misclassified_instances
-
 
     def export(self, target_path):
         '''
@@ -926,6 +914,9 @@ class Compare_Image_Classifier():
 
     def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
         return self.classifiers[0].sample(fig_size=fig_size, show_labels=show_labels, show_file_name=show_file_name)
+
+    def classes(self):
+        return self.classifiers[0].data_set.class_idx
 
     def parameters(self):
         return self.variables_names
