@@ -1,3 +1,5 @@
+from radtorch import *
+
 
 # visutils
 TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
