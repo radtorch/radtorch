@@ -25,7 +25,7 @@ model_dict = {'vgg11':{'name':'vgg11','input_size':224, 'output_features':4096},
               'resnet152':{'name':'resnet152','input_size':224, 'output_features':2048},
               'wide_resnet50_2':{'name':'wide_resnet50_2','input_size':224, 'output_features':2048},
               'wide_resnet101_2':{'name':'wide_resnet101_2','input_size':224, 'output_features':2048},
-              'inception_v3':{'name':'inception_v3','input_size':299, 'output_features':2048},
+              # 'inception_v3':{'name':'inception_v3','input_size':299, 'output_features':2048},
               'alexnet':{'name':'alexnet','input_size':256, 'output_features':4096},
               }
 

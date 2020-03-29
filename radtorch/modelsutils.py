@@ -176,18 +176,18 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
                   )
 
 
-        elif model_arch == 'inception_v3':
-            train_model = torchvision.models.inception_v3(pretrained=pre_trained)
-            if mode == 'feature_extraction':
-                train_model.fc = Identity()
-            elif mode == 'feature_visualization':
-                train_model.fc = nn.Sequential(
-                  nn.Linear(in_features=2048, out_features=output_classes, bias=True))
-            else:
-                train_model.fc = nn.Sequential(
-                  nn.Linear(in_features=2048, out_features=output_classes, bias=True),
-                  torch.nn.LogSoftmax(dim=1)
-                  )
+        # elif model_arch == 'inception_v3':
+        #     train_model = torchvision.models.inception_v3(pretrained=pre_trained)
+        #     if mode == 'feature_extraction':
+        #         train_model.fc = Identity()
+        #     elif mode == 'feature_visualization':
+        #         train_model.fc = nn.Sequential(
+        #           nn.Linear(in_features=2048, out_features=output_classes, bias=True))
+        #     else:
+        #         train_model.fc = nn.Sequential(
+        #           nn.Linear(in_features=2048, out_features=output_classes, bias=True),
+        #           torch.nn.LogSoftmax(dim=1)
+        #           )
 
         elif model_arch == 'alexnet':
             train_model = torchvision.models.alexnet(pretrained=pre_trained)
