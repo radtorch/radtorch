@@ -684,7 +684,7 @@ class Feature_Extraction():
             plot_dataset_info(info_dict, plot_size= plot_size)
             # plot_pipline_dataset_info(info, test_percent = self.test_percent)
         else:
-            return [v for k,v in info.items()]
+            display (show_dataset_info(self.data_set))
         # info = show_dataset_info(self.data_set)
 
         # if plot:
