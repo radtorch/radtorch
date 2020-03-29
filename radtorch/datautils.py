@@ -1,4 +1,8 @@
-import torch, torchvision, datetime, time, pickle, pydicom, os
+"""
+Functions and Classes for Data Handling and PreProcessing
+"""
+
+import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools, ntpath, copy
 import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim
@@ -8,20 +12,98 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-
 from sklearn import metrics
 from tqdm import tqdm_notebook as tqdm
+from tqdm.notebook import tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
 from pathlib import Path
+from collections import Counter
+from IPython.display import display
 
 
-from radtorch.dicomutils import  dicom_to_narray, window_dicom, dicom_to_pil
-from radtorch.visutils import show_dataset_info
+from bokeh.io import output_notebook, show
+from math import pi
+from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource, Legend
+from bokeh.plotting import figure, show
+from bokeh.sampledata.unemployment1948 import data
+from bokeh.layouts import row, gridplot, column
+from bokeh.transform import factor_cmap, cumsum
+from bokeh.palettes import viridis, Paired, inferno, brewer, d3, Turbo256
 
 
-IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
+from radtorch.dicomutils import  *
+from radtorch.visutils import *
+from radtorch.settings import *
+
+
+
+def over_sample(dataset, shuffle=True):
+    balanced_dataset = copy.deepcopy(dataset)
+    max_size = balanced_dataset.input_data[balanced_dataset.image_label_col].value_counts().max()
+    lst = [balanced_dataset.input_data]
+    for class_index, group in balanced_dataset.input_data.groupby(balanced_dataset.image_label_col):
+      lst.append(group.sample(max_size-len(group), replace=True))
+    balanced_dataframe = pd.concat(lst)
+    if shuffle:
+        balanced_dataframe = balanced_dataframe.sample(frac=1).reset_index(drop=True)
+    balanced_dataset.input_data = balanced_dataframe
+    return balanced_dataset
+
+
+def calculate_mean_std(dataloader):
+    '''
+    Source
+    -------
+    https://discuss.pytorch.org/t/about-normalization-using-pre-trained-vgg16-networks/23560/6
+    '''
+    mean = 0.
+    std = 0.
+    nb_samples = 0.
+    for data, labels, paths in dataloader:
+        batch_samples = data.size(0)
+        data = data.view(batch_samples, data.size(1), -1)
+        mean += data.mean(2).sum(0)
+        std += data.std(2).sum(0)
+        nb_samples += batch_samples
+    mean /= nb_samples
+    std /= nb_samples
+    return (mean, std)
+
+
+def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_split=True, shuffle=True):
+    num_all = len(dataset)
+    train_percent = 1.0 - (valid_percent+test_percent)
+
+    num_classes = dataset.input_data[dataset.image_label_col].unique()
+
+    classes_df = []
+    for i in num_classes:
+        temp_df = dataset.input_data.loc[dataset.input_data[dataset.image_label_col]==i]
+        if shuffle:
+          temp_df = temp_df.sample(frac=1).reset_index(drop=True)
+        train, validate, test = np.split(temp_df.sample(frac=1), [int(train_percent*len(temp_df)), int((train_percent+valid_percent)*len(temp_df))])
+        classes_df.append((train, validate, test))
+
+    if test_percent != 0:
+        train_df = (pd.concat([i[0] for i in classes_df])).sample(frac=1).reset_index(drop=True)
+        valid_df = (pd.concat([i[1] for i in classes_df])).sample(frac=1).reset_index(drop=True)
+        test_df = (pd.concat([i[2] for i in classes_df])).sample(frac=1).reset_index(drop=True)
+
+        train_ds = dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, is_csv=False, input_source=train_df, mode=dataset.mode, wl=dataset.wl, trans=dataset.trans)
+        valid_ds = dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, is_csv=False, input_source=valid_df, mode=dataset.mode, wl=dataset.wl, trans=dataset.trans)
+        test_ds = dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, is_csv=False, input_source=test_df, mode=dataset.mode, wl=dataset.wl, trans=dataset.trans)
+
+        return  train_ds, valid_ds, test_ds
+    else:
+        train_df = (pd.concat([i[0] for i in classes_df])).sample(frac=1).reset_index(drop=True)
+        valid_df = (pd.concat([i[1] for i in classes_df])).sample(frac=1).reset_index(drop=True)
+
+        train_ds = dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, is_csv=False, input_source=train_df, mode=dataset.mode, wl=dataset.wl, trans=dataset.trans)
+        valid_ds = dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, is_csv=False, input_source=valid_df, mode=dataset.mode, wl=dataset.wl, trans=dataset.trans)
+
+        return  train_ds, valid_ds
 
 
 def set_random_seed(seed):
@@ -31,10 +113,11 @@ def set_random_seed(seed):
     try:
         torch.manual_seed(seed)
         np.random.seed(seed)
-        print ('random seed set successfully')
+        print ('Random Seed Set Successfully')
     except:
         raise TypeError('Error. Could not set Random Seed. Please check again.')
         pass
+
 
 def list_of_files(root):
     """
@@ -51,6 +134,7 @@ def list_of_files(root):
             allFiles.append(fullPath)
     return allFiles
 
+
 def path_to_class(filepath):
     """
     .. include:: ./documentation/docs/datautils.md##path_to_class
@@ -58,6 +142,7 @@ def path_to_class(filepath):
 
     item_class = (Path(filepath)).parts
     return item_class[-2]
+
 
 def root_to_class(root):
 
@@ -70,6 +155,7 @@ def root_to_class(root):
     class_to_idx = {classes[i]: i for i in range(len(classes))}
     return classes, class_to_idx
 
+
 def class_to_idx(classes):
     """
     .. include:: ./documentation/docs/datautils.md##class_to_idx
@@ -78,6 +164,7 @@ def class_to_idx(classes):
     classes.sort()
     class_to_idx = {classes[i]: i for i in range(len(classes))}
     return class_to_idx
+
 
 class dataset_from_table(Dataset):
     """
@@ -93,7 +180,8 @@ class dataset_from_table(Dataset):
                 img_label_column='IMAGE_LABEL',
                 multi_label = False,
                 mode='RAW',
-                wl=None, trans=transforms.Compose([transforms.ToTensor()])):
+                wl=None,
+                trans=transforms.Compose([transforms.ToTensor()])):
 
         self.data_directory = data_directory
         self.is_csv = is_csv
@@ -184,6 +272,7 @@ class dataset_from_table(Dataset):
     def info(self):
         return show_dataset_info(self)
 
+
 class dataset_from_folder(Dataset):
     """
     .. include:: ./documentation/docs/datautils.md##dataset_from_folder
@@ -250,7 +339,41 @@ class dataset_from_folder(Dataset):
         return show_dataset_info(self)
 
 
+def load_predefined_datatables(*args, **kwargs):
+    train_data_set = dataset_from_table(
+                                        data_directory=kwargs['data_directory'],
+                                        is_csv=kwargs['is_csv'],
+                                        is_dicom=kwargs['is_dicom'],
+                                        input_source=kwargs['predefined_datasets']['train'],
+                                        img_path_column=kwargs['path_col'],
+                                        img_label_column=kwargs['label_col'],
+                                        mode=kwargs['mode'],
+                                        wl=kwargs['wl'],
+                                        trans=kwargs['transformations'])
 
+    valid_data_set = dataset_from_table(
+                                        data_directory=kwargs['data_directory'],
+                                        is_csv=kwargs['is_csv'],
+                                        is_dicom=kwargs['is_dicom'],
+                                        input_source=kwargs['predefined_datasets']['valid'],
+                                        img_path_column=kwargs['path_col'],
+                                        img_label_column=kwargs['label_col'],
+                                        mode=kwargs['mode'],
+                                        wl=kwargs['wl'],
+                                        trans=kwargs['transformations'])
+
+    test_data_set = dataset_from_table(
+                                        data_directory=kwargs['data_directory'],
+                                        is_csv=kwargs['is_csv'],
+                                        is_dicom=kwargs['is_dicom'],
+                                        input_source=kwargs['predefined_datasets']['test'],
+                                        img_path_column=kwargs['path_col'],
+                                        img_label_column=kwargs['label_col'],
+                                        mode=kwargs['mode'],
+                                        wl=kwargs['wl'],
+                                        trans=kwargs['transformations'])
+
+    return train_data_set, valid_data_set, test_data_set
 
 
 

@@ -3,10 +3,20 @@
 <small>
 
 
-## Nightly
 
 
 ## Official Releases
+### [v.0.1.3-beta](https://github.com/radtorch/radtorch/releases)
+    - Release Date: 3-30-2020
+    - New Features
+      - New Pipeline for Comparison of Image Classifiers.
+      - Allow user to solve class imbalance problem in training subsets through oversampling.
+      - Allow data normalization for training.
+      - Add titles to samples displayed.
+      - Add titles including true label/prediction/accuracy% on misclassified images.
+      _ New Model architecture are now supported. Check pipeline documentation for comprehensive list.
+
+
 ### [v.0.1.2-beta](https://github.com/radtorch/radtorch/releases)
     - Release Date: 3-17-2020
     - Fixes

@@ -2,6 +2,10 @@
 
 # Visualization Module <small> radtorch.visutils </small>
 
+!!! bug " Documentation Outdated. Please check again later for update."
+
+
+
 Different tools and utilities for data visualization. Based upon Matplotlib and Bokeh.
 
     from radtorch import visutils

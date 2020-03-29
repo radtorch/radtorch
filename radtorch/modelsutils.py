@@ -1,4 +1,8 @@
-import torch, torchvision, datetime, time, pickle, pydicom, os
+"""
+Functions and Classes for Model Creation and Training
+"""
+
+import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools, ntpath, copy
 import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim
@@ -8,29 +12,31 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-
 from sklearn import metrics
 from tqdm import tqdm_notebook as tqdm
+from tqdm.notebook import tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
 from pathlib import Path
+from collections import Counter
+from IPython.display import display
 
 
-from radtorch.dicomutils import dicom_to_pil
-from radtorch.datautils import IMG_EXTENSIONS, set_random_seed
+from bokeh.io import output_notebook, show
+from math import pi
+from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource, Legend
+from bokeh.plotting import figure, show
+from bokeh.sampledata.unemployment1948 import data
+from bokeh.layouts import row, gridplot, column
+from bokeh.transform import factor_cmap, cumsum
+from bokeh.palettes import viridis, Paired, inferno, brewer, d3, Turbo256
 
 
+from radtorch.dicomutils import *
+from radtorch.datautils import *
+from radtorch.settings import *
 
-model_dict = {'vgg16':{'name':'vgg16','input_size':244, 'output_features':4096},
-              'vgg19':{'name':'vgg19','input_size':244, 'output_features':4096},
-              'resnet50':{'name':'resnet50','input_size':244, 'output_features':2048},
-              'resnet101':{'name':'resnet101','input_size':244, 'output_features':2048},
-              'resnet152':{'name':'resnet152','input_size':244, 'output_features':2048},
-              'wide_resnet50_2':{'name':'wide_resnet50_2','input_size':244, 'output_features':2048},
-              'wide_resnet101_2':{'name':'wide_resnet101_2','input_size':244, 'output_features':2048},
-              'inception_v3':{'name':'inception_v3','input_size':299, 'output_features':2048},
-              }
 
 loss_dict = {
             'NLLLoss':torch.nn.NLLLoss(),
@@ -44,18 +50,35 @@ loss_dict = {
             'MultiLabelSoftMarginLoss':torch.nn.MultiLabelSoftMarginLoss(),
             }
 
-supported_models = [x for x in model_dict.keys()]
-
-supported_image_classification_losses = ['NLLLoss', 'CrossEntropyLoss']
-
-supported_multi_label_image_classification_losses = []
-
-supported_optimizer = ['Adam', 'ASGD', 'RMSprop', 'SGD']
 
 
+def set_device(device):
+    if device == 'default':
+        selected_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    else:
+        selected_device == device
+    return selected_device
 
+def set_transformations(model_arch, custom_resize, is_dicom, transformations):
+    if custom_resize=='default':
+        input_resize = model_dict[model_arch]['input_size']
+    else:
+        input_resize = custom_resize
 
+    if transformations == 'default':
+        if is_dicom == True:
+            self.transformations = transforms.Compose([
+                    transforms.Resize((input_resize, input_resize)),
+                    transforms.transforms.Grayscale(3),
+                    transforms.ToTensor()])
+        else:
+            transformations = transforms.Compose([
+                    transforms.Resize((input_resize, input_resize)),
+                    transforms.ToTensor()])
+    else:
+        self.transformations = transformations
 
+    return transformations, input_resize
 
 def supported():
     '''
@@ -84,7 +107,7 @@ class Identity(nn.Module):
     def forward(self, x):
         return x
 
-def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_weights=True):
+def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_weights=False):
     '''
     .. include:: ./documentation/docs/modelutils.md##create_model
     '''
@@ -94,22 +117,43 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
 
     else:
 
-        if model_arch == 'vgg16' or model_arch == 'vgg19':
+        if 'vgg' in model_arch:
+            in_features = model_dict[model_arch]['output_features']
+            if model_arch == 'vgg11':
+                train_model = torchvision.models.vgg11(pretrained=pre_trained)
+            if model_arch == 'vgg13':
+                train_model = torchvision.models.vgg13(pretrained=pre_trained)
             if model_arch == 'vgg16':
                 train_model = torchvision.models.vgg16(pretrained=pre_trained)
             elif model_arch == 'vgg19':
                 train_model = torchvision.models.vgg19(pretrained=pre_trained)
-
+            if model_arch == 'vgg11_bn':
+                train_model = torchvision.models.vgg11_bn(pretrained=pre_trained)
+            if model_arch == 'vgg13_bn':
+                train_model = torchvision.models.vgg13_bn(pretrained=pre_trained)
+            if model_arch == 'vgg16_bn':
+                train_model = torchvision.models.vgg16_bn(pretrained=pre_trained)
+            elif model_arch == 'vgg19_bn':
+                train_model = torchvision.models.vgg19_bn(pretrained=pre_trained)
             if mode == 'feature_extraction':
                 train_model.classifier[6] = Identity()
+            elif mode == 'feature_visualization':
+                train_model.classifier[6] = nn.Sequential(
+                    nn.Linear(in_features=in_features, out_features=output_classes, bias=True))
             else:
                 train_model.classifier[6] = nn.Sequential(
-                    nn.Linear(in_features=4096, out_features=output_classes, bias=True),
+                    nn.Linear(in_features=in_features, out_features=output_classes, bias=True),
                     torch.nn.LogSoftmax(dim=1)
                     )
 
 
-        elif model_arch == 'resnet50' or model_arch == 'resnet101' or model_arch == 'resnet152' or model_arch == 'wide_resnet50_2' or  model_arch == 'wide_resnet101_2':
+
+        elif 'resnet' in model_arch:
+            in_features = model_dict[model_arch]['output_features']
+            if model_arch == 'resnet18':
+                train_model = torchvision.models.resnet18(pretrained=pre_trained)
+            elif model_arch == 'resnet34':
+                train_model = torchvision.models.resnet34(pretrained=pre_trained)
             if model_arch == 'resnet50':
                 train_model = torchvision.models.resnet50(pretrained=pre_trained)
             elif model_arch == 'resnet101':
@@ -124,24 +168,51 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
             fc_inputs = train_model.fc.in_features
             if mode == 'feature_extraction':
                 train_model.fc = Identity()
+            elif mode == 'feature_visualization':
+                train_model.fc = nn.Sequential(
+                  nn.Linear(in_features=in_features, out_features=output_classes, bias=True))
             else:
                 train_model.fc = nn.Sequential(
-                  nn.Linear(in_features=2048, out_features=output_classes, bias=True),
+                  nn.Linear(in_features=in_features, out_features=output_classes, bias=True),
                   torch.nn.LogSoftmax(dim=1)
                   )
 
-        elif model_arch == 'inception_v3':
-            train_model = torchvision.models.inception_v3(pretrained=pre_trained)
+
+        # elif model_arch == 'inception_v3':
+        #     train_model = torchvision.models.inception_v3(pretrained=pre_trained)
+        #     if mode == 'feature_extraction':
+        #         train_model.fc = Identity()
+        #     elif mode == 'feature_visualization':
+        #         train_model.fc = nn.Sequential(
+        #           nn.Linear(in_features=2048, out_features=output_classes, bias=True))
+        #     else:
+        #         train_model.fc = nn.Sequential(
+        #           nn.Linear(in_features=2048, out_features=output_classes, bias=True),
+        #           torch.nn.LogSoftmax(dim=1)
+        #           )
+
+        elif model_arch == 'alexnet':
+            in_features = model_dict[model_arch]['output_features']
+            train_model = torchvision.models.alexnet(pretrained=pre_trained)
             if mode == 'feature_extraction':
-                train_model.fc = Identity()
+                train_model.classifier[6] = Identity()
+            elif mode == 'feature_visualization':
+                train_model.classifier[6] = nn.Sequential(
+                  nn.Linear(in_features=in_features, out_features=output_classes, bias=True))
             else:
-                train_model.fc = nn.Sequential(
-                  nn.Linear(in_features=2048, out_features=output_classes, bias=True),
+                train_model.classifier[6] = nn.Sequential(
+                  nn.Linear(in_features=in_features, out_features=output_classes, bias=True),
                   torch.nn.LogSoftmax(dim=1)
                   )
 
-        for param in train_model.parameters():
-            param.requires_grad = unfreeze_weights
+        if pre_trained == False:
+            for param in train_model.parameters():
+                param.requires_grad = unfreeze_weights
+
+        else:
+            if unfreeze_weights:
+                for param in train_model.parameters():
+                    param.requires_grad = unfreeze_weights
 
         return train_model
 
@@ -300,7 +371,6 @@ def model_inference(model, input_image_path, all_predictions = False, inference_
         target_img = Image.open(input_image_path).convert('RGB')
 
     target_img_tensor = inference_transformations(target_img)
-    # target_img_tensor = target_img_tensor.unsqueeze(1)
     target_img_tensor = target_img_tensor.unsqueeze(0)
 
 
@@ -325,18 +395,6 @@ def model_inference(model, input_image_path, all_predictions = False, inference_
 
 
 
-# def efficientNetNetwork(modelarchitecture, output_classes, pretrained=True):
-#
-#     if pretrained:
-#         trainingNetwork = EfficientNet.from_pretrained('efficientnet-b'+str(modelarchitecture))
-#     else:
-#         trainingNetwork = EfficientNet.from_name('efficientnet-b'+str(modelarchitecture))
-#
-#     in_features = trainingNetwork._fc.in_features
-#     trainingNetwork._fc =  nn.Linear(in_features=in_features, out_features=output_classes, bias=True)
-#
-#                                       )
-#     return trainingNetwork
 
 
 

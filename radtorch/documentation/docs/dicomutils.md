@@ -1,5 +1,9 @@
 # DICOM Module <small> radtorch.dicomutils </small>
 
+!!! bug " Documentation Outdated. Please check again later for update."
+
+
+
 Tools and Functions for DICOM images handling and extraction of pixel information.
 
       from radtorch import dicomutils

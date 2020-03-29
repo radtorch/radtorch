@@ -235,33 +235,6 @@
     Image_Classification
   </a>
   
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters" title="Parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#methods" title="Methods" class="md-nav__link">
-    Methods
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#examples" title="Examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -269,32 +242,12 @@
     Feature_Extraction
   </a>
   
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters_1" title="Parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#methods_1" title="Methods" class="md-nav__link">
-    Methods
+      
+        <li class="md-nav__item">
+  <a href="#compare_image_classifier" title="Compare_Image_Classifier" class="md-nav__link">
+    Compare_Image_Classifier
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#examples_1" title="Examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -425,33 +378,6 @@
     Image_Classification
   </a>
   
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters" title="Parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#methods" title="Methods" class="md-nav__link">
-    Methods
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#examples" title="Examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -459,32 +385,12 @@
     Feature_Extraction
   </a>
   
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#parameters_1" title="Parameters" class="md-nav__link">
-    Parameters
-  </a>
-  
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#methods_1" title="Methods" class="md-nav__link">
-    Methods
+      
+        <li class="md-nav__item">
+  <a href="#compare_image_classifier" title="Compare_Image_Classifier" class="md-nav__link">
+    Compare_Image_Classifier
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#examples_1" title="Examples" class="md-nav__link">
-    Examples
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -519,14 +425,17 @@ Pipelines are probably the most exciting feature of RADTorch tool kit. With few 
 <pre><code>from radtorch import pipeline
 </code></pre>
 <h2 id="image_classification">Image_Classification</h2>
-<pre><code>  pipeline.Image_Classification(data_directory, transformations='default',
-  custom_resize='default', device='default', optimizer='Adam', is_dicom=True,
-  label_from_table=False, is_csv=None, table_source=None, path_col='IMAGE_PATH',
-  label_col='IMAGE_LABEL', mode='RAW', wl=None, batch_size=16, test_percent=0.2,
-  valid_percent=0.2, model_arch='vgg16', pre_trained=True, unfreeze_weights=True,
-  train_epochs=20, learning_rate=0.0001, loss_function='CrossEntropyLoss')
+<pre><code>  pipeline.Image_Classification(data_directory, name = None,
+  transformations='default',custom_resize = 'default', device='default',
+  optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None,
+  table_source=None, path_col = 'IMAGE_PATH', label_col = 'IMAGE_LABEL',
+  balance_class = False, predefined_datasets = False, mode='RAW', wl=None,
+  normalize='default', batch_size=16, test_percent = 0.2, valid_percent = 0.2,
+  model_arch='vgg16', pre_trained=True, unfreeze_weights=False,train_epochs=20,
+  learning_rate=0.0001, loss_function='CrossEntropyLoss')
 </code></pre>
-<div class="admonition quote">
+<div class="admonition abstract">
+<p class="admonition-title">Description</p>
 <p>The Image Classification pipeline simplifies the process of binary and multi-class image classification into a single line of code.
 Under the hood, the following happens:</p>
 <ol>
@@ -564,19 +473,25 @@ Under the hood, the following happens:</p>
 </li>
 </ol>
 </div>
-<h4 id="parameters">Parameters</h4>
-<div class="admonition quote">
+<!-- ####Parameters -->
+
+<div class="admonition info">
+<p class="admonition-title">Parameters</p>
 <p><strong>data_directory:</strong></p>
 <ul>
-<li><em>(str)</em> target data directory. <strong><em>(Required)</em></strong></li>
+<li><em>(str)</em> target data directory. <strong>(Required)</strong></li>
+</ul>
+<p><strong>name:</strong></p>
+<ul>
+<li><em>(str)</em> preferred name to be given to classifier.</li>
 </ul>
 <p><strong>is_dicom:</strong></p>
 <ul>
-<li><em>(boolean)</em> True for DICOM images, False for regular images.(default=True)</li>
+<li><em>(boolean)</em> True for DICOM images. (default=True)</li>
 </ul>
 <p><strong>label_from_table:</strong></p>
 <ul>
-<li><em>(boolean)</em> True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)</li>
+<li><em>(boolean)</em> True if labels are to extracted from table, False if labels are to be extracted from subfolders names. (default=False)</li>
 </ul>
 <p><strong>is_csv:</strong></p>
 <ul>
@@ -585,6 +500,10 @@ Under the hood, the following happens:</p>
 <p><strong>table_source:</strong></p>
 <ul>
 <li><em>(str or pandas dataframe object)</em> source for labelling data.This is path to csv file or name of pandas dataframe if pandas to be used. (default=None).</li>
+</ul>
+<p><strong>predefined_datasets</strong></p>
+<ul>
+<li><em>(dict)</em> dictionary of predefined pandas dataframes for training. This follows the following scheme: {'train': dataframe, 'valid': dataframe, 'test':dataframe }</li>
 </ul>
 <p><strong>path_col:</strong></p>
 <ul>
@@ -603,12 +522,20 @@ Under the hood, the following happens:</p>
 <li><em>(list)</em> list of lists of combinations of window level and widths to be used with WIN and MWIN.In the form of : [[Level,Width], [Level,Width],...].  </li>
 <li>Only 3 combinations are allowed for MWIN (for now). (default=None)</li>
 </ul>
+<p><strong>balance_class:</strong></p>
+<ul>
+<li><em>(boolen)</em> balance classes in train/valid/test subsets. Under the hood, oversampling is done for the classes with fewer number of instances. (default=False)</li>
+</ul>
+<p><strong>normalize:</strong></p>
+<ul>
+<li><em>(str)</em> Normalization algorithm applied to data. Options: 'default' normalizes data with mean of 0.5 and standard deviation of 0.5, 'auto' normalizes the data using mean and standard deviation calculated from the datasets, 'False' applies no normalization. (default='default')</li>
+</ul>
 <p><strong>transformations:</strong></p>
 <ul>
 <li><em>(pytorch transforms list)</em> pytroch transforms to be performed on the dataset. (default=Convert to tensor)</li>
 </ul>
 <p><strong>custom_resize:</strong>
-- <em>(int)</em> by default, a radtorch pipeline will resize the input images into the default training model input image size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.</p>
+- <em>(int)</em> by default, a radtorch pipeline will resize the input images into the default training model input image size as demonstrated in the table shown below. This default size can be changed here if needed.</p>
 <p><strong>batch_size:</strong></p>
 <ul>
 <li><em>(int)</em> batch size of the dataset (default=16)</li>
@@ -631,7 +558,7 @@ Under the hood, the following happens:</p>
 </ul>
 <p><strong>unfreeze_weights:</strong></p>
 <ul>
-<li><em>(boolean)</em> if True, all model weights will be retrained. (default=True)</li>
+<li><em>(boolean)</em> if True, all model weights will be retrained. This note that if no pre_trained weights are applied, this option will be set to True automatically. (default=False)</li>
 </ul>
 <p><strong>train_epochs:</strong></p>
 <ul>
@@ -654,13 +581,15 @@ Under the hood, the following happens:</p>
 <li><em>(str)</em> device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if CUDA is available and trains on it.</li>
 </ul>
 </div>
-<h4 id="methods">Methods</h4>
-<div class="admonition quote">
+<!-- ####Methods -->
+
+<div class="admonition info">
+<p class="admonition-title">Methods</p>
 <p><strong>.info()</strong></p>
 <ul>
-<li>Display Pandas Dataframe with properties of the Image Classification Pipeline.</li>
+<li>Display table with properties of the Image Classification Pipeline.</li>
 </ul>
-<p><strong>.dataset_info()</strong></p>
+<p><strong>.dataset_info(plot=True, plot_size=(500,300))</strong></p>
 <ul>
 <li>
 <p>Display Dataset Information.</p>
@@ -668,11 +597,12 @@ Under the hood, the following happens:</p>
 <li>
 <p>Arguments:</p>
 <ul>
-<li>plot: <em>(boolean)</em> displays dataset information in graphical representation. By default, data is shown as table. (default=False)</li>
+<li>plot: <em>(boolean)</em> displays dataset information in graphical representation. (default=True)</li>
+<li>plot_size: <em>(tuple)</em> figures size.</li>
 </ul>
 </li>
 </ul>
-<p><strong>.sample()</strong></p>
+<p><strong>.sample(fig_size=(10,10), show_labels=True, show_file_name=False)</strong></p>
 <ul>
 <li>
 <p>Display sample of the training dataset.</p>
@@ -680,13 +610,13 @@ Under the hood, the following happens:</p>
 <li>
 <p>Arguments:</p>
 <ul>
-<li>num_of_images_per_row: <em>(int)</em> number of images per column. (default=5)</li>
 <li>fig_size: <em>(tuple)</em> figure size. (default=(10,10))</li>
-<li>show_labels: <em>(boolean)</em> show the image label idx. (default=False)</li>
+<li>show_labels: <em>(boolean)</em> show the image label idx. (default=True)</li>
+<li>show_file_name: <em>(boolean)</em> show the file name as label. (default=False)</li>
 </ul>
 </li>
 </ul>
-<p><strong>.run()</strong></p>
+<p><strong>.run(verbose=True)</strong></p>
 <ul>
 <li>
 <p>Start the image classification pipeline training.</p>
@@ -698,11 +628,11 @@ Under the hood, the following happens:</p>
 </ul>
 </li>
 </ul>
-<p><strong>.metrics()</strong></p>
+<p><strong>.metrics(fig_size=(500,300))</strong></p>
 <ul>
 <li>Display the training metrics.</li>
 </ul>
-<p><strong>.export_model()</strong></p>
+<p><strong>.export_model(output_path)</strong></p>
 <ul>
 <li>
 <p>Export the trained model into a target file.</p>
@@ -714,7 +644,7 @@ Under the hood, the following happens:</p>
 </ul>
 </li>
 </ul>
-<p><strong>.export()</strong></p>
+<p><strong>.export(output_path)</strong></p>
 <ul>
 <li>
 <p>Exports the whole image classification pipeline for future use</p>
@@ -726,7 +656,7 @@ Under the hood, the following happens:</p>
 </ul>
 </li>
 </ul>
-<p><strong>.set_trained_model()</strong></p>
+<p><strong>.set_trained_model(model_path, mode)</strong></p>
 <ul>
 <li>
 <p>Loads a previously trained model into pipeline</p>
@@ -739,7 +669,7 @@ Under the hood, the following happens:</p>
 </ul>
 </li>
 </ul>
-<p><strong>.inference()</strong></p>
+<p><strong>.inference(test_img_path, transformations='default',  all_predictions=False)</strong></p>
 <ul>
 <li>
 <p>Performs inference using the trained model on a target image.</p>
@@ -752,14 +682,8 @@ Under the hood, the following happens:</p>
 <li>all_predictions: <em>(boolean)</em>  if True , shows table of all prediction classes and accuracy percentages. (default=False)</li>
 </ul>
 </li>
-<li>
-<p>Outputs:</p>
-<ul>
-<li>Output: <em>(tuple)</em> tuple of prediction (class idx , accuracy percentage).</li>
 </ul>
-</li>
-</ul>
-<p><strong>.roc()</strong></p>
+<p><strong>.roc(target_data_set='default', figure_size=(600,400))</strong></p>
 <ul>
 <li>
 <p>Display ROC and AUC.</p>
@@ -772,7 +696,7 @@ Under the hood, the following happens:</p>
 </ul>
 </li>
 </ul>
-<p><strong>.confusion_matrix()</strong></p>
+<p><strong>.confusion_matrix(target_data_set='default', target_classes='default', figure_size=(7,7), cmap=None)</strong></p>
 <ul>
 <li>
 <p>Display Confusion Matrix</p>
@@ -783,10 +707,11 @@ Under the hood, the following happens:</p>
 <li>target_data_set: <em>(pytorch dataset object)</em> dataset used for predictions to create the confusion matrix. By default, the image classification - pipeline uses the test dataset created to calculate the matrix.</li>
 <li>target_classes: <em>(list)</em> list of classes. By default, the image classification pipeline uses the training classes.</li>
 <li>figure_size: <em>(tuple)</em> figure size. (default=(7,7))</li>
+<li>cmap: <em>(str)</em> user specific matplotlib cmap.</li>
 </ul>
 </li>
 </ul>
-<p><strong>.misclassfied()</strong></p>
+<p><strong>.misclassfied(target_data_set='default', num_of_images=16, figure_size=(10,10), show_table=False)</strong></p>
 <ul>
 <li>
 <p>Displays sample of misclassfied images from confusion matrix or ROC.</p>
@@ -796,12 +721,14 @@ Under the hood, the following happens:</p>
 </li>
 <li>target_data_set: <em>(pytorch dataset object)</em> dataset used for predictions. By default, the image classification pipeline uses the test dataset. If no test dataset was created in the pipeline (e.g. test_percent=0), then an external test dataset is required. (default=default')</li>
 <li>num_of_images: <em>(int)</em> number of images to be displayed.</li>
-<li>figure_size: <em>(tuple)</em> figure size (default=(7,7))</li>
+<li>figure_size: <em>(tuple)</em> figure size (default=(10,10))</li>
 <li>show_table: <em>(boolean)</em> display table of misclassied images. (default=False)</li>
 </ul>
 </div>
-<h4 id="examples">Examples</h4>
-<div class="admonition quote">
+<!-- ####Examples -->
+
+<div class="admonition success">
+<p class="admonition-title">Example</p>
 <p>Full example for Image Classification Pipeline can be found <a href="https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=njIH9PnCLhHp">HERE</a></p>
 </div>
 <hr>
@@ -813,12 +740,14 @@ is_csv=None,table_source=None, device='default', path_col = 'IMAGE_PATH',
 label_col = 'IMAGE_LABEL', mode='RAW', wl=None, model_arch='vgg16',
 pre_trained=True, unfreeze_weights=False, shuffle=True)
 </code></pre>
-<div class="admonition quote">
+<div class="admonition abstract">
+<p class="admonition-title">Description</p>
 <p>The feature extraction pipeline utilizes a pre-trained model to extract a set of features that can be used in another machine learning algorithms e.g. Adaboost or KNN.</p>
 <p>The trained model by default can one of the supported model architectures trained with default weights trained on the ImageNet dataset. (The ability to use a model that has been trained and exported using the image classification pipeline will be added later.)</p>
 <p>The output is a pandas dataframe that has feature columns, label column and file path column.</p>
 <p>Under the hood, the pipeline removes the last FC layer of the pretrained models to output the features.</p>
 <p>The number of extracted features depends on the model architecture selected:</p>
+</div>
 <div align='center'>
 
 <table>
@@ -831,61 +760,105 @@ pre_trained=True, unfreeze_weights=False, shuffle=True)
 </thead>
 <tbody>
 <tr>
-<td>VGG16</td>
-<td align="center">244 x 244</td>
+<td>vgg11</td>
+<td align="center">224 x 224</td>
 <td align="center">4096</td>
 </tr>
 <tr>
-<td>VGG19</td>
-<td align="center">244 x 244</td>
+<td>vgg13</td>
+<td align="center">224 x 224</td>
 <td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg16</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg19</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg11_bn</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg13_bn</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg16_bn</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg19_bn</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>resnet18</td>
+<td align="center">224 x 224</td>
+<td align="center">512</td>
+</tr>
+<tr>
+<td>resnet34</td>
+<td align="center">224 x 224</td>
+<td align="center">512</td>
 </tr>
 <tr>
 <td>resnet50</td>
-<td align="center">244 x 244</td>
-<td align="center">2048</td>
-</tr>
-<tr>
-<td>resnet152</td>
-<td align="center">244 x 244</td>
+<td align="center">224 x 224</td>
 <td align="center">2048</td>
 </tr>
 <tr>
 <td>resnet101</td>
-<td align="center">244 x 244</td>
+<td align="center">224 x 224</td>
+<td align="center">2048</td>
+</tr>
+<tr>
+<td>resnet152</td>
+<td align="center">224 x 224</td>
 <td align="center">2048</td>
 </tr>
 <tr>
 <td>wide_resnet50_2</td>
-<td align="center">244 x 244</td>
+<td align="center">224 x 224</td>
 <td align="center">2048</td>
 </tr>
 <tr>
 <td>wide_resnet101_2</td>
-<td align="center">244 x 244</td>
+<td align="center">224 x 224</td>
 <td align="center">2048</td>
 </tr>
 <tr>
-<td>inception_v3</td>
-<td align="center">299 x 299</td>
-<td align="center">2048</td>
+<td>alexnet</td>
+<td align="center">256 x 256</td>
+<td align="center">4096</td>
 </tr>
 </tbody>
 </table>
 </div>
 
-</div>
-<h4 id="parameters_1">Parameters</h4>
-<div class="admonition quote">
+<!-- ####Parameters -->
+
+<div class="admonition info">
+<p class="admonition-title">Parameters</p>
 <p><strong>data_directory:</strong></p>
 <ul>
-<li><em>(str)</em> target data directory. <strong><em>(Required)</em></strong></li>
+<li><em>(str)</em> target data directory. <strong>(Required)</strong></li>
 </ul>
 <p><strong>is_dicom:</strong></p>
 <ul>
 <li><em>(boolean)</em>  True for DICOM images, False for regular images.(default=True)</li>
 </ul>
-<p><strong>label_from_table:</strong> [boolean] True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)</p>
+<p><strong>label_from_table:</strong></p>
+<ul>
+<li><em>(boolean)</em> True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)</li>
+</ul>
 <p><strong>is_csv:</strong></p>
 <ul>
 <li><em>(boolean)</em>  True for csv, False for pandas dataframe.</li>
@@ -933,22 +906,20 @@ model_arch: [str] PyTorch neural network architecture (default='vgg16')</li>
 <ul>
 <li><em>(boolean)</em>  Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)</li>
 </ul>
-<p><strong>unfreeze_weights:</strong></p>
-<ul>
-<li><em>(boolean)</em>  if True, all model weights, not just final layer, will be retrained. (default=False)</li>
-</ul>
 <p><strong>device:</strong></p>
 <ul>
 <li><em>(str)</em> device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.</li>
 </ul>
 </div>
-<h4 id="methods_1">Methods</h4>
-<div class="admonition quote">
+<!-- ####Methods -->
+
+<div class="admonition info">
+<p class="admonition-title">Methods</p>
 <p><strong>.info()</strong></p>
 <ul>
-<li>Display Pandas Dataframe with properties of the Image Classification Pipeline.</li>
+<li>Display Pandas Dataframe with properties of the Pipeline.</li>
 </ul>
-<p><strong>.dataset_info()</strong></p>
+<p><strong>.dataset_info(plot=True)</strong></p>
 <ul>
 <li>
 <p>Display Dataset Information.</p>
@@ -956,11 +927,11 @@ model_arch: [str] PyTorch neural network architecture (default='vgg16')</li>
 <li>
 <p>Arguments:</p>
 <ul>
-<li>plot: <em>(boolean)</em> displays dataset information in graphical representation. By default, data is shown as table. (default=False)</li>
+<li>plot: <em>(boolean)</em> displays dataset information in graphical representation. (default=True)</li>
 </ul>
 </li>
 </ul>
-<p><strong>.sample()</strong></p>
+<p><strong>.sample(fig_size=(10,10), show_labels=True, show_file_name=False)</strong></p>
 <ul>
 <li>
 <p>Display sample of the training dataset.</p>
@@ -968,9 +939,9 @@ model_arch: [str] PyTorch neural network architecture (default='vgg16')</li>
 <li>
 <p>Arguments:</p>
 <ul>
-<li>num_of_images_per_row: <em>(int)</em> number of images per column. (default=5)</li>
 <li>fig_size: <em>(tuple)</em> figure size. (default=(10,10))</li>
-<li>show_labels: <em>(boolean)</em> show the image label idx. (default=False)</li>
+<li>show_labels: <em>(boolean)</em> show the image label idx. (default=True)</li>
+<li>show_file_name: <em>(boolean)</em> show the image name as label. (default=False)</li>
 </ul>
 </li>
 </ul>
@@ -978,7 +949,7 @@ model_arch: [str] PyTorch neural network architecture (default='vgg16')</li>
 <ul>
 <li>Displays number of features to be extracted.</li>
 </ul>
-<p><strong>.run()</strong></p>
+<p><strong>.run(verbose=True)</strong></p>
 <ul>
 <li>
 <p>Extracts features from dataset.</p>
@@ -990,7 +961,7 @@ model_arch: [str] PyTorch neural network architecture (default='vgg16')</li>
 </ul>
 </li>
 </ul>
-<p><strong>.export_features()</strong></p>
+<p><strong>.export_features(csv_path)</strong></p>
 <ul>
 <li>
 <p>Exports the features to csv.</p>
@@ -1002,7 +973,7 @@ model_arch: [str] PyTorch neural network architecture (default='vgg16')</li>
 </ul>
 </li>
 </ul>
-<p><strong>.export()</strong></p>
+<p><strong>.export(target_path)</strong></p>
 <ul>
 <li>
 <p>Exports the whole image classification pipeline for future use</p>
@@ -1014,37 +985,156 @@ model_arch: [str] PyTorch neural network architecture (default='vgg16')</li>
 </ul>
 </li>
 </ul>
-<p><strong>.plot_extracted_features()</strong></p>
+<p><strong>.plot_extracted_features(feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx')</strong></p>
 <ul>
 <li>
 <p>Plots a graphical representation of extracted features.</p>
 </li>
 <li>
 <p>Arguments:</p>
-</li>
+<ul>
 <li>num_features: <em>(int)</em> number of features to be displayed (default=100)</li>
 <li>num_images: <em>(int)</em> number of images to display features for (default=100)</li>
 <li>image_path_col: <em>(str)</em> name of column containing image paths in the feature table. (default='img_path')</li>
 <li>image_label_col: <em>(str)</em> name of column containing image label idx in the feature table. (default='label_idx')</li>
 </ul>
-<p><strong>.set_trained_model()</strong> : <strong><em>Temporarily Disabled for future update.</em></strong></p>
+</li>
+</ul>
 </div>
-<h4 id="examples_1">Examples</h4>
-<div class="admonition quote">
+<div class="admonition success">
+<p class="admonition-title">Examples</p>
 <p>Full example for Feature Extraction Pipeline can be found <a href="https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=iTAp7Zz6CrJ3">HERE</a></p>
+<hr>
+
 </div>
+<h2 id="compare_image_classifier">Compare_Image_Classifier</h2>
+<pre><code>  pipeline.Compare_Image_Classifier(data_directory,transformations='default',
+  custom_resize = 'default', device='default', optimizer='Adam', is_dicom=True,
+  label_from_table=False, is_csv=None, table_source=None, path_col = 'IMAGE_PATH',
+  label_col = 'IMAGE_LABEL', balance_class =[False], multi_label = False,
+  mode='RAW', wl=None,  normalize=['default'], batch_size=[8],
+  test_percent = [0.2], valid_percent = [0.2], model_arch=['vgg16'],
+  pre_trained=[True], unfreeze_weights=False, train_epochs=[10],
+  learning_rate=[0.0001],loss_function='CrossEntropyLoss')
+</code></pre>
+<div class="admonition abstract">
+<p class="admonition-title">Description</p>
+<p>The Compare Image Classifier class performs analysis and comparison of different image classification pipelines. This is particularly useful when comparing different model architectures and/or different training parameters.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Important</p>
+<p>Please note that this pipeline performs training from scratch on the selected model architectures. The ability to compared outside trained models will be added in a future release.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Supported Parameters</p>
+<p>The currently supported parameters that can be compared include:</p>
+<ol>
+<li>balance_class</li>
+<li>normalize</li>
+<li>batch_size</li>
+<li>test_percent</li>
+<li>valid_percent</li>
+<li>train_epochs</li>
+<li>learning_rate</li>
+<li>model_arch</li>
+<li>self.pre_trained</li>
+</ol>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Use of supported parameters </p>
+<p>Please note that the supported parameters are supplied as <strong>List</strong> e.g. model_arch=['renet50'] or train_epochs=[10,20].</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Parameters</p>
+<p>This pipeline follows the same parameters used for the image classification as above. <strong>Please take note of the warning on how to use the supported parameters above.</strong></p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Methods</p>
+<p><strong>.info()</strong></p>
+<ul>
+<li>Display Pandas Dataframe with properties of the Pipeline.</li>
+</ul>
+<p><strong>.grid()</strong></p>
+<ul>
+<li>Display table with all generated image classifier objects that will be used for comparison.</li>
+</ul>
+<p><strong>.parameters()</strong></p>
+<ul>
+<li>Displays a list of supported comparison parameters.</li>
+</ul>
+<p><strong>.dataset_info(plot=True)</strong></p>
+<ul>
+<li>
+<p>Display Dataset Information.</p>
+</li>
+<li>
+<p>Arguments:</p>
+<ul>
+<li>plot: <em>(boolean)</em> displays dataset information in graphical representation. (default=True)</li>
+</ul>
+</li>
+</ul>
+<p><strong>.sample(fig_size=(10,10), show_labels=True, show_file_name=False)</strong></p>
+<ul>
+<li>
+<p>Display sample of the training dataset.</p>
+</li>
+<li>
+<p>Arguments:</p>
+<ul>
+<li>fig_size: <em>(tuple)</em> figure size. (default=(10,10))</li>
+<li>show_labels: <em>(boolean)</em> show the image label idx. (default=True)</li>
+<li>show_file_name: <em>(boolean)</em> show the image name as label. (default=False)</li>
+</ul>
+</li>
+</ul>
+<p><strong>.run(verbose=True)</strong></p>
+<ul>
+<li>Runs the pipeline.</li>
+</ul>
+<p><strong>.metrics(fig_size=(650,400)))</strong></p>
+<ul>
+<li>Display the training metrics.</li>
+</ul>
+<p><strong>.roc(fig_size=(700,400))</strong></p>
+<ul>
+<li>Displays comparison between ROC curves of different classifiers with AUC.</li>
+</ul>
+<p><strong>.best(path=None, export_classifier=False, export_model=False))</strong></p>
+<ul>
+<li>
+<p>Displays the best classifier based on AUC.</p>
+</li>
+<li>
+<p>Arguments:</p>
+<ul>
+<li>path: <em>(str)</em> exporting path.</li>
+<li>export_classifier: <em>(boolen)</em> export the best classifier.</li>
+<li>export_model: <em>(boolen)</em> export the best model.</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Examples</p>
+<p>Full example for Compare_Image_Classifier can be found <a href="https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=HNBKoWg_WyUW&amp;line=1&amp;uniqifier=1">HERE</a></p>
+</div>
+<hr>
+
 <h2 id="load_pipeline">load_pipeline</h2>
 <pre><code>  pipeline.load_pipeline(target_path)
 </code></pre>
-<div class="admonition quote">
+<div class="admonition abstract">
+<p class="admonition-title">Description</p>
 <p>Loads a previously saved pipeline for future use.</p>
 <p><strong>Arguments</strong></p>
 <ul>
 <li>target_path: <em>(str)</em> target path of the target pipeline.</li>
 </ul>
-<p><strong>Example</strong></p>
-<pre><code>my_classifier = load_pipeline('/path/to/pipeline.dump')
-</code></pre>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Examples<p>my_classifier = load_pipeline('/path/to/pipeline.dump')</p>
+</p>
 </div>
                 
                   

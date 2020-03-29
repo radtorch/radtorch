@@ -1,4 +1,7 @@
-import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools
+"""
+Functions and Classes for Data Visulaization
+"""
+import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools, ntpath, copy
 import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim
@@ -10,196 +13,121 @@ import pandas as pd
 
 from sklearn import metrics
 from tqdm import tqdm_notebook as tqdm
+from tqdm.notebook import tqdm
 from torch.utils.data.dataset import Dataset
 from torchvision import transforms
 from PIL import Image
 from pathlib import Path
+from collections import Counter
+from IPython.display import display
+
 
 from bokeh.io import output_notebook, show
 from math import pi
-from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource
+from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource, Legend
 from bokeh.plotting import figure, show
 from bokeh.sampledata.unemployment1948 import data
-from bokeh.layouts import row, gridplot
+from bokeh.layouts import row, gridplot, column
 from bokeh.transform import factor_cmap, cumsum
+from bokeh.palettes import viridis, Paired, inferno, brewer, d3, Turbo256
 
 
-from radtorch.generalutils import getDuplicatesWithCount
-from radtorch.dicomutils import dicom_to_narray
+from radtorch.generalutils import *
+from radtorch.dicomutils import *
+from radtorch.settings import *
 
 
 
 
-def misclassified(true_labels_list, predicted_labels_list, img_path_list):
+# TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
+# COLORS = ['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716']*100
+
+
+def plot_images(images, titles=None, figure_size=(10,10)):
+    """
+    Source
+    ---------
+    https://gist.github.com/soply/f3eec2e79c165e39c9d540e916142ae1
+    """
+    cols = int(math.sqrt(len(images)))
+    assert((titles is None)or (len(images) == len(titles)))
+    n_images = len(images)
+    if titles is None: titles = ['Image (%d)' % i for i in range(1,n_images + 1)]
+    fig = plt.figure(figsize=figure_size)
+    for n, (image, title) in enumerate(zip(images, titles)):
+        a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
+        if image.ndim == 2:
+            plt.gray()
+        plt.imshow(image)
+        plt.axis('off')
+        a.set_title(title)
+    plt.axis('off')
+    plt.show()
+
+
+def misclassified(true_labels_list, predicted_labels_list, accuracy_list, img_path_list):
     misclassified = {}
     for i in range (len(true_labels_list)):
         if true_labels_list[i] != predicted_labels_list[i]:
-            misclassified[img_path_list[i]] = {'image_path': img_path_list[i], 'true_label': true_labels_list[i], 'predicted_label': predicted_labels_list[i]}
+            misclassified[img_path_list[i]] = {'image_path': img_path_list[i],
+                                                'true_label': true_labels_list[i],
+                                                'predicted_label': predicted_labels_list[i],
+                                                'accuracy':accuracy_list[i]
+                                                }
     return misclassified
 
 
-def show_misclassified(misclassified_dictionary, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
+def show_misclassified(misclassified_dictionary, transforms, class_to_idx_dict, is_dicom = True, num_of_images = 16, figure_size = (5,5), ):
     row = int(math.sqrt(num_of_images))
     sample = random.sample(list(misclassified_dictionary), num_of_images)
-    transform=transforms.Compose([transforms.Resize((244, 244)),transforms.ToTensor()])
     if is_dicom:
         imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
     else:
-        imgs = [transform(Image.open(i).convert('RGB')) for i in sample]
-    grid = torchvision.utils.make_grid(imgs, nrow=row)
-    plt.figure(figsize=(figure_size))
-    plt.imshow(np.transpose(grid, (1,2,0)))
+        imgs = [np.array(transforms(Image.open(i).convert('RGB'))) for i in sample]
+        imgs = [np.moveaxis(i, 0, -1) for i in imgs]
+
+    titles = [(
+                [k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['true_label']][0],
+                [k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['predicted_label']][0],
+                float('{:0.2f}'.format(misclassified_dictionary[i]['accuracy']))
+                )
+               for i in sample]
+    plot_images(images=imgs, titles=titles, figure_size=figure_size)
 
 
-def show_dataloader_sample(dataloader, num_of_images_per_row=10, figsize=(10,10), show_labels=False):
-  """
-    Displays sample of certain dataloader with corresponding class idx
-
-    **Arguments**
-
-    - dataloader: _(dataloader object)_ selected pytorch dataloader.
-
-    - num_of_images_per_row: _(int)_ number of images per row. (default=10)
-
-    - figsize: _(tuple)_ size of displayed figure. (default = (10,10))
-
-    - show_labels: _(boolen)_ display class idx of the sample displayed .(default=False)
-
-    **Output**
-
-    -  Output: _(figure)_
-  """
-
+def show_dataloader_sample(dataloader, show_file_name = False, figsize=(10,10), show_labels=True):
   batch = next(iter(dataloader))
   images, labels, paths = batch
-  grid = torchvision.utils.make_grid(images, nrow=num_of_images_per_row)
-  plt.figure(figsize=(figsize))
-  plt.imshow(np.transpose(grid, (1,2,0)))
+  images = images.numpy()
+  images = [np.moveaxis(x, 0, -1) for x in images]
   if show_labels:
-      print ('labels:', labels)
+      titles = labels.numpy()
+  if show_file_name:
+      titles = [ntpath.basename(x) for x in paths]
+  plot_images(images=images, titles=titles, figure_size=figsize)
 
 
 def show_dataset_info(dataset):
     """
-    Displays a summary of the pytorch dataset information.
-
-    **Arguments**
-
-    - dataset: _(pytorch dataset object)_ target dataset to inspect.
-
-    **Output**
-
-    -  Output: _(str)_ Dataset information including:
-        - Number of instances
-        - Number of classes
-        - Dictionary of class and class_id
-        - Class frequency breakdown.
     """
 
     input_data = dataset.input_data
     image_path_col = dataset.image_path_col
     image_label_col = dataset.image_label_col
 
-
-
     class_names = list(dataset.class_to_idx.keys())+['Total Instances']
     class_idx = list(dataset.class_to_idx.values())+['']
     num_instances = []
     for i in list(dataset.class_to_idx.keys()):
       num_instances.append(input_data[image_label_col].value_counts()[[i]].sum())
-    num_instances =num_instances+[len(dataset)]
+    num_instances.append(sum(num_instances))
     output = pd.DataFrame(list(zip(class_names, class_idx, num_instances)), columns=['Classes', 'Class Idx', 'Number of Instances'])
 
     return output
 
 
-def show_metrics(metric_source, metric='all', show_points = False, fig_size = (600,400)):
-    """
-    Displays metrics created by the training loop.
-
-    **Arguments**
-
-    - source: _(list)_ the metrics generated during the training process as by modelsutils.train_model()
-
-    - fig_size: _(tuple)_ size of the displayed figure. (default=15,5)
-
-    **Output**
-
-    -  Output: _(figure)_ Matplotlib graphs of accuracy and error for training and validation.
-    """
-
-    # metrics = np.array(source)
-    # loss = metrics[:,0:2]
-    # accuracy = metrics[:,2:4]
-    #
-    # fig, (ax1, ax2) = plt.subplots(1, 2, figsize=fig_size)
-    #
-    # ax1.plot(loss)
-    # ax1.legend(['Train Loss', 'Valid Loss'])
-    # ax1.set(xlabel='Epoch Number', ylabel='Loss')
-    # ax1.grid(True)
-    # ax2.plot(accuracy)
-    # ax2.legend(['Train Accuracy', 'Valid Accuracy'])
-    # ax2.set(xlabel='Epoch Number', ylabel='Accuracy')
-    # ax2.grid(True)
-    output_notebook()
-    TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
-
-    metrics = {
-     'Accuracy': metric_source[['Train_Accuracy', 'Valid_Accuracy']].rename(columns={'Train_Accuracy':'train','Valid_Accuracy':'valid'}),
-    'Loss': metric_source[['Train_Loss', 'Valid_Loss']].rename(columns={'Train_Loss':'train','Valid_Loss':'valid'}),
-    }
-
-    output = []
-
-    for k, v in metrics.items():
-        p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Training '+k), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
-        p.line(v.index, v.train, line_width=1.5, line_color= '#2F5EC4',  legend_label='Train')
-        p.line(v.index, v.valid, line_width=1.5, line_color='#93D5ED',  legend_label='Valid')
-        if show_points:
-          p.circle(v.index, v.train,  fill_color= '#2F5EC4', line_color=None, legend_label='Train')
-          p.circle(v.index, v.valid,  fill_color='#93D5ED', line_color=None,  legend_label='Valid')
-        p.legend.location = "center_right"
-        p.legend.click_policy="hide"
-        p.xaxis.axis_line_color = '#D6DBDF'
-        p.yaxis.axis_line_color = '#D6DBDF'
-        p.xgrid.grid_line_color=None
-        p.yaxis.axis_line_width = 2
-        p.xaxis.axis_line_width = 2
-        p.xaxis.major_tick_line_color = '#D6DBDF'
-        p.yaxis.major_tick_line_color = '#D6DBDF'
-        p.xaxis.minor_tick_line_color = '#D6DBDF'
-        p.yaxis.minor_tick_line_color = '#D6DBDF'
-        p.yaxis.major_tick_line_width = 2
-        p.xaxis.major_tick_line_width = 2
-        p.yaxis.minor_tick_line_width = 0
-        p.xaxis.minor_tick_line_width = 0
-        p.xaxis.major_label_text_color = '#99A3A4'
-        p.yaxis.major_label_text_color = '#99A3A4'
-        p.outline_line_color = None
-        output.append(p)
-
-    if metric == 'accuracy':
-        show(row(output[0]))
-    elif metric == 'loss':
-        show(row(output[1]))
-    else:
-        show(row(output))
-
-
 def show_dicom_sample(dataloader, figsize=(30,10)):
     """
-    Displays a sample image from a DICOM dataloader. Returns a single image in case of one window and 3 images in case of multiple window.
-
-    **Arguments**
-
-    - dataloader: _(dataloader object)_ selected pytorch dataloader.
-
-    - figsize: _(tuple)_ size of the displayed figure. (default=30,10)
-
-    **Output**
-
-    -  Output: _(figure)_ single image in case of one window and 3 images in case of multiple window.
     """
 
     i, l = next(iter(dataloader))
@@ -218,117 +146,6 @@ def show_dicom_sample(dataloader, figsize=(30,10)):
     else:
         plt.imshow(i[0][0], cmap='gray');
         plt.title(l[0]);
-
-
-def show_roc(true_labels, predictions, figure_size=(550,400), title='ROC Curve'):
-    """
-    Displays ROC curve and AUC using true and predicted label lists.
-
-    **Arguments**
-
-    - true_labels: _(list)_ list of true labels.
-
-    - predictions: _(list)_ list of predicted labels.
-
-
-    - figure_size: _(tuple)_ size of the displayed figure. (default=10,10)
-
-    - title: _(str)_ title displayed on top of the output figure. (default='ROC Curve')
-
-    **Output**
-
-    -  Output: _(figure)_
-    """
-    fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
-    auc = metrics.roc_auc_score(true_labels, predictions)
-
-    baseline = [0, 0.5, 1.0]
-
-    p = figure(plot_width=figure_size[0], plot_height=figure_size[1])
-    p.line(fpr, tpr, line_width=2, line_color= '#2F5EC4')
-    p.line(baseline, baseline, line_width=1.5, line_color='#93D5ED', line_dash='dashed')
-    p.xaxis.axis_line_color = '#D6DBDF'
-    p.yaxis.axis_line_color = '#D6DBDF'
-    p.xgrid.grid_line_color=None
-    p.yaxis.axis_line_width = 2
-    p.xaxis.axis_line_width = 2
-    p.xaxis.major_tick_line_color = '#D6DBDF'
-    p.yaxis.major_tick_line_color = '#D6DBDF'
-    p.xaxis.minor_tick_line_color = '#D6DBDF'
-    p.yaxis.minor_tick_line_color = '#D6DBDF'
-    p.yaxis.major_tick_line_width = 2
-    p.xaxis.major_tick_line_width = 2
-    p.yaxis.minor_tick_line_width = 0
-    p.xaxis.minor_tick_line_width = 0
-    p.xaxis.major_label_text_color = '#99A3A4'
-    p.yaxis.major_label_text_color = '#99A3A4'
-    p.outline_line_color = None
-    p.yaxis.axis_label = 'TPR (Sensitivity)'
-    p.xaxis.axis_label = ('FPR (1-specficity)\n   AUC={:0.4f}'.format(5))
-    p.xaxis.axis_label_text_color = '#ABB2B9'
-    p.yaxis.axis_label_text_color = '#ABB2B9'
-    p.xaxis.axis_label_text_font_style = None
-    p.yaxis.axis_label_text_font_style = None
-    show(p)
-    return auc
-    # plt.figure(figsize=figure_size)
-    # plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='orange', alpha=.8)
-    # plt.plot(fpr, tpr)
-    # plt.title(title);
-    # plt.xlabel('FPR (1-specficity)');
-    # plt.ylabel('TPR (Sensitivity)');
-    # plt.grid(True)
-    # print (fpr)
-    # print (tpr)
-    # if auc == True:
-    #     plt.xlabel('FPR (1-specficity)\nAUC={:0.4f}'.format(metrics.roc_auc_score(true_labels, predictions)))
-    #     # print ('AUC =',metrics.roc_auc_score(true_labels, predictions))
-    #     return metrics.roc_auc_score(true_labels, predictions)
-
-
-def show_nn_roc(model, target_data_set,  device, figure_size=(600,400)):
-    """
-    Displays the ROC and AUC of a certain trained model on a target(for example test) dataset.
-
-    **Arguments**
-
-    - model: _(pytorch model object)_ target model.
-
-    - target_data_set: _(pytorch dataset object)_ target dataset.
-
-    - auc: _(boolen)_ True to display AUC. (default=True)
-
-    - figure_size: _(tuple)_ size of the displayed figure. (default=10,10)
-
-    - device: _(str)_ device for inference. 'cpu' or 'cuda'
-
-
-    **Output**
-
-    -  Output: _(figure)_
-
-    """
-
-    true_labels = []
-    pred_labels = []
-    model.to(device)
-    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
-
-    for i, (imgs, labels, path) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
-        imgs = imgs.to(device)
-        labels = labels.to(device)
-        true_labels = true_labels+labels.tolist()
-        # print (imgs.shape)
-        with torch.no_grad():
-            model.eval()
-            out = model(imgs)
-            # ps = torch.exp(out)
-            ps = out
-            pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
-            pred_labels = pred_labels+pr
-
-
-    show_roc(true_labels, pred_labels,figure_size=figure_size)
 
 
 def show_confusion_matrix(cm,target_names,title='Confusion Matrix',cmap=None,normalize=False,figure_size=(8,6)):
@@ -371,25 +188,6 @@ def show_confusion_matrix(cm,target_names,title='Confusion Matrix',cmap=None,nor
 
 def show_nn_confusion_matrix(model, target_data_set, target_classes, device, figure_size=(8,6), cmap=None):
     '''
-    Displays Confusion Matrix for Image Classifier Model.
-
-    **Arguments**
-
-    - model: _(pytorch model object)_ target model.
-
-    - target_data_set: _(pytorch dataset object)_ target dataset.
-
-    - target_classes: _(list)_ list of class names.
-
-    - figure_size: _(tuple)_ size of the displayed figure. (default=8,6)
-
-    - cmap: _(str)_ the colormap of the generated figure (default=None, which is Blues)
-
-    - device: _(str)_ device for inference. 'cpu' or 'cuda'
-
-    **Output**
-
-    -  Output: _(figure)_
     '''
     true_labels = []
     pred_labels = []
@@ -419,7 +217,10 @@ def show_nn_confusion_matrix(model, target_data_set, target_classes, device, fig
                           )
 
 
-def show_nn_misclassified(model, target_data_set, num_of_images, device, is_dicom = True, figure_size=(5,5)):
+def show_nn_misclassified(model, target_data_set, num_of_images, device, transforms, is_dicom = True, figure_size=(5,5)):
+
+    class_dictionary = target_data_set.class_to_idx
+
     true_labels = []
     pred_labels = []
     misses_all = {}
@@ -436,12 +237,14 @@ def show_nn_misclassified(model, target_data_set, num_of_images, device, is_dico
             out = model(imgs)
             ps = out
             pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
-            misses = misclassified(true_labels_list=labels.tolist(), predicted_labels_list=pr, img_path_list=list(paths))
-            # misses_all = dict(misses_all.items() + misses.items())
+            softmax = torch.exp(out).cpu()
+            accuracies = [(max(i.tolist())) for i in softmax]
+            misses = misclassified(true_labels_list=labels.tolist(), predicted_labels_list=pr, img_path_list=list(paths), accuracy_list=accuracies)
             misses_all.update(misses)
             pred_labels = pred_labels+pr
 
-    show_misclassified(misclassified_dictionary=misses_all, is_dicom = is_dicom, num_of_images = num_of_images, figure_size = figure_size)
+    show_misclassified(misclassified_dictionary=misses_all, transforms=transforms, class_to_idx_dict=class_dictionary, is_dicom = is_dicom, num_of_images = num_of_images, figure_size = figure_size)
+
     output = pd.DataFrame(misses_all.values())
 
     return output
@@ -520,7 +323,6 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
 
         color_bar = ColorBar(color_mapper=mapper, major_label_text_font_size="8pt",
                           ticker=BasicTicker(desired_num_ticks=len(colors)),
-                          #  formatter=PrintfTickFormatter(format="%d%%"),
                           label_standoff=6, border_line_color=None, location=(0, 0))
 
 
@@ -528,7 +330,6 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
         tab = Panel(child=p,title=("Class "+str(k)) )
         figures.append(tab)
 
-        # show(p)
     tabs = Tabs(tabs=figures)
 
     show(tabs)
@@ -596,3 +397,178 @@ def plot_pipline_dataset_info(dataframe, test_percent):
     output.append(p)
 
     show(row(output))
+
+
+def plot_dataset_info(dataframe_dictionary, plot_size=(500,300)):
+    output_notebook()
+    colors = ['#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1']
+    TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
+    output = []
+    for dataframe_title , dataframe in dataframe_dictionary.items():
+        G = dataframe[['Classes', 'Number of Instances']]
+        G.columns = ['Classes', 'Number']
+        source = ColumnDataSource(G)
+        p = figure(plot_width=plot_size[0], plot_height=plot_size[1], x_range=G['Classes'].tolist(), tools=TOOLS, tooltips=[('','@Classes'), ('','@Number')], title=('Data Breakdown for '+dataframe_title))
+        p.vbar(x='Classes', width=0.4, top = 'Number', line_color=None, source=source, fill_color=factor_cmap('Classes', palette=colors[::-1], factors=(G['Classes'].tolist())))
+        p.xaxis.axis_line_color = '#D6DBDF'
+        p.yaxis.axis_line_color = '#D6DBDF'
+        p.xgrid.grid_line_color=None
+        p.yaxis.axis_line_width = 2
+        p.xaxis.axis_line_width = 2
+        p.xaxis.major_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_color = '#D6DBDF'
+        p.xaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_width = 2
+        p.xaxis.major_tick_line_width = 2
+        p.yaxis.minor_tick_line_width = 0
+        p.xaxis.minor_tick_line_width = 0
+        p.xaxis.major_label_text_color = '#99A3A4'
+        p.yaxis.major_label_text_color = '#99A3A4'
+        p.outline_line_color = None
+        output.append(p)
+
+    show(column(output))
+
+
+def show_metrics(classifer_list, fig_size=(500,300)):
+
+    metrics_list = [x.train_metrics for x in classifer_list]
+
+    output_notebook()
+
+
+    output = []
+
+
+    for m in ['Accuracy', 'Loss',]:
+        ind = 0
+        if m =='Loss':
+          legend_items = []
+          p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+          for i in metrics_list:
+            x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= COLORS[ind])
+            y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= COLORS[-ind], line_dash='dotted')
+            legend_items.append((('Model '+str(ind)+' Train Loss') , [x]))
+            legend_items.append(('Model '+str(ind)+' Valid Loss' , [y]))
+            ind = ind +1
+
+        elif m == "Accuracy":
+          legend_items = []
+          p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+          for i in metrics_list:
+            x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= COLORS[ind])
+            y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= COLORS[-ind], line_dash='dotted')
+            legend_items.append((('Model '+str(ind)+' Train Accuracy') , [x]))
+            legend_items.append(('Model '+str(ind)+' Valid Accuracy' , [y]))
+            ind = ind +1
+
+        legend = Legend(items=legend_items, location=(10, -20))
+        p.add_layout(legend, 'right')
+        # p.legend.location = "top_center"
+        p.legend.inactive_fill_alpha = 0.7
+        p.legend.border_line_width = 0
+        p.legend.click_policy="hide"
+        p.xaxis.axis_line_color = '#D6DBDF'
+        p.yaxis.axis_line_color = '#D6DBDF'
+        p.xgrid.grid_line_color=None
+        p.yaxis.axis_line_width = 2
+        p.xaxis.axis_line_width = 2
+        p.xaxis.major_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_color = '#D6DBDF'
+        p.xaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_width = 2
+        p.xaxis.major_tick_line_width = 2
+        p.yaxis.minor_tick_line_width = 0
+        p.xaxis.minor_tick_line_width = 0
+        p.xaxis.major_label_text_color = '#99A3A4'
+        p.yaxis.major_label_text_color = '#99A3A4'
+        p.outline_line_color = None
+        p.xaxis.axis_label = 'Epoch'
+        p.xaxis.axis_label_text_align = 'right'
+        p.toolbar.autohide = True
+        output.append(p)
+
+
+    show(row(output))
+
+
+def calculate_nn_predictions(model, target_data_set,  device):
+    """
+    """
+
+    true_labels = []
+    pred_labels = []
+    model.to(device)
+    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
+
+    for i, (imgs, labels, path) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
+        imgs = imgs.to(device)
+        labels = labels.to(device)
+        true_labels = true_labels+labels.tolist()
+        with torch.no_grad():
+            model.eval()
+            out = model(imgs)
+            ps = out
+            pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
+            pred_labels = pred_labels+pr
+
+    return (true_labels, pred_labels)
+
+
+def show_roc(classifier_list, fig_size=(700,400)):
+
+    output_notebook()
+
+    TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
+
+    output = []
+    p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('ROC'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+    p.line([0, 0.5, 1.0], [0, 0.5, 1.0], line_width=1.5, line_color='#93D5ED', line_dash='dashed')
+
+    ind = 0
+
+    auc_list = []
+
+    legend_items = []
+
+    for i in classifier_list:
+        true_labels, predictions = calculate_nn_predictions(model=i.trained_model, target_data_set=i.test_data_set, device=i.device)
+        fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
+        auc = metrics.roc_auc_score(true_labels, predictions)
+        x = p.line(fpr, tpr, line_width=2, line_color= COLORS[ind])
+        legend_items.append((('Model '+str(ind)+'. AUC = '+'{:0.4f}'.format((auc))),[x]))
+
+        ind = ind+1
+        auc_list.append(auc)
+
+    legend = Legend(items=legend_items, location=(10, -20))
+    p.add_layout(legend, 'right')
+
+    p.legend.inactive_fill_alpha = 0.7
+    p.legend.border_line_width = 0
+    p.legend.click_policy="hide"
+    p.xaxis.axis_line_color = '#D6DBDF'
+    p.xaxis.axis_label = 'FPR (1-Specificity)'
+    p.yaxis.axis_label = 'TPR (Senstivity)'
+    p.yaxis.axis_line_color = '#D6DBDF'
+    p.xgrid.grid_line_color=None
+    p.yaxis.axis_line_width = 2
+    p.xaxis.axis_line_width = 2
+    p.xaxis.major_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_color = '#D6DBDF'
+    p.xaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_width = 2
+    p.xaxis.major_tick_line_width = 2
+    p.yaxis.minor_tick_line_width = 0
+    p.xaxis.minor_tick_line_width = 0
+    p.xaxis.major_label_text_color = '#99A3A4'
+    p.yaxis.major_label_text_color = '#99A3A4'
+    p.outline_line_color = None
+    p.toolbar.autohide = True
+
+    show(p)
+
+    return auc_list
