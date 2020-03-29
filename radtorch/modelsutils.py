@@ -20,8 +20,6 @@ from .dicomutils import *
 from .datautils import *
 
 
-# from radtorch.dicomutils import dicom_to_pil
-# from radtorch.datautils import IMG_EXTENSIONS, set_random_seed
 
 
 
@@ -57,7 +55,12 @@ supported_optimizer = ['Adam', 'ASGD', 'RMSprop', 'SGD']
 
 
 
-
+def set_device(device):
+    if device == 'default':
+        selected_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    else:
+        selected_device == device
+    return selected_device
 
 
 def supported():

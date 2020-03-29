@@ -20,8 +20,9 @@ from pathlib import Path
 from .dicomutils import  *
 from .visutils import *
 
-# from radtorch.dicomutils import  dicom_to_narray, window_dicom, dicom_to_pil
-# from radtorch.visutils import show_dataset_info
+
+
+
 
 IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
 
@@ -152,6 +153,30 @@ def class_to_idx(classes):
     classes.sort()
     class_to_idx = {classes[i]: i for i in range(len(classes))}
     return class_to_idx
+
+
+def set_transformations(model_arch, custom_resize, is_dicom, transformations):
+    # Custom Resize
+    if custom_resize=='default':
+        input_resize = model_dict[model_arch]['input_size']
+    else:
+        input_resize = custom_resize
+
+    # Transformations
+    if transformations == 'default':
+        if is_dicom == True:
+            self.transformations = transforms.Compose([
+                    transforms.Resize((input_resize, input_resize)),
+                    transforms.transforms.Grayscale(3),
+                    transforms.ToTensor()])
+        else:
+            transformations = transforms.Compose([
+                    transforms.Resize((input_resize, input_resize)),
+                    transforms.ToTensor()])
+    else:
+        self.transformations = transformations
+
+    return transformations, input_resize
 
 
 class dataset_from_table(Dataset):

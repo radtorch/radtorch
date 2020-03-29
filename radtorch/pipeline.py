@@ -24,11 +24,6 @@ from .visutils import *
 from .generalutils import *
 
 
-# from radtorch.modelsutils import create_model, create_loss_function, train_model, model_inference, model_dict, create_optimizer, supported_image_classification_losses , supported_optimizer
-# from radtorch.datautils import dataset_from_folder, dataset_from_table, split_dataset, calculate_mean_std, over_sample
-# from radtorch.visutils import show_dataset_info, show_dataloader_sample, show_metrics, show_nn_confusion_matrix, show_roc, show_nn_misclassified, plot_features, plot_pipline_dataset_info, plot_images ,plot_dataset_info
-# from radtorch.generalutils import export
-
 
 
 def load_pipeline(target_path):
@@ -105,31 +100,35 @@ class Image_Classification():
         self.custom_resize = custom_resize
 
 
-        # Custom Resize
-        if self.custom_resize=='default':
-            self.input_resize = model_dict[model_arch]['input_size']
-        else:
-            self.input_resize = custom_resize
+        # # Custom Resize
+        # if self.custom_resize=='default':
+        #     self.input_resize = model_dict[model_arch]['input_size']
+        # else:
+        #     self.input_resize = custom_resize
+        #
+        # # Transformations
+        # if transformations == 'default':
+        #     if self.is_dicom == True:
+        #         self.transformations = transforms.Compose([
+        #                 transforms.Resize((self.input_resize, self.input_resize)),
+        #                 transforms.transforms.Grayscale(3),
+        #                 transforms.ToTensor()])
+        #     else:
+        #         self.transformations = transforms.Compose([
+        #                 transforms.Resize((self.input_resize, self.input_resize)),
+        #                 transforms.ToTensor()])
+        # else:
+        #     self.transformations = transformations
 
-        # Transformations
-        if transformations == 'default':
-            if self.is_dicom == True:
-                self.transformations = transforms.Compose([
-                        transforms.Resize((self.input_resize, self.input_resize)),
-                        transforms.transforms.Grayscale(3),
-                        transforms.ToTensor()])
-            else:
-                self.transformations = transforms.Compose([
-                        transforms.Resize((self.input_resize, self.input_resize)),
-                        transforms.ToTensor()])
-        else:
-            self.transformations = transformations
+        self.transformations, self.input_resize = set_transformations(model_arch=self.model_arch, custom_resize=self.custom_resize, is_dicom=self.is_dicom, transformations)
+
 
         # Device
-        if device == 'default':
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        else:
-            self.device == device
+        self.device = set_device(device)
+        # if device == 'default':
+        #     self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        # else:
+        #     self.device == device
 
 
         if self.predefined_datasets:
@@ -378,7 +377,6 @@ class Image_Classification():
             display (show_dataset_info(self.train_data_set))
             display (show_dataset_info(self.valid_data_set))
             display (show_dataset_info(self.test_data_set))
-
 
     def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
         '''
