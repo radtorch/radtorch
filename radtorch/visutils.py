@@ -1,12 +1,13 @@
 from radtorch.generalutils import *
 from radtorch.dicomutils import *
+from radtorch.settings import *
 
 
 
 
 
-TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
-COLORS = ['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716']*100
+# TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
+# COLORS = ['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716']*100
 
 
 def plot_images(images, titles=None, figure_size=(10,10)):
