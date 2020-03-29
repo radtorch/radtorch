@@ -328,7 +328,7 @@ class dataset_from_folder(Dataset):
 
 
 
-def load_predefined_datatables(**kwargs):
+def load_predefined_datatables(*args, **kwargs):
     train_data_set = dataset_from_table(
                                         data_directory=data_directory,
                                         is_csv=is_csv,
