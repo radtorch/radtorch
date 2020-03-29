@@ -117,7 +117,7 @@ def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_we
 
     else:
 
-        if 'vgg' in model_arc:
+        if 'vgg' in model_arch:
             if model_arch == 'vgg11':
                 train_model = torchvision.models.vgg11(pretrained=pre_trained)
             if model_arch == 'vgg13':
