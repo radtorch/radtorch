@@ -407,7 +407,7 @@ def plot_dataset_info(dataframe_dictionary, plot_size=(500,300)):
         G.columns = ['Classes', 'Number']
         source = ColumnDataSource(G)
         p = figure(plot_width=plot_size[0], plot_height=plot_size[1], x_range=G['Classes'].tolist(), tools=TOOLS, tooltips=[('','@Classes'), ('','@Number')], title=('Data Breakdown for '+dataframe_title))
-        p.vbar(x='Classes', width=0.4, top = 'Number', line_color=None, source=source, fill_color=factor_cmap('Classes', palette=colors[::-1], factors=(G['Classes'].tolist())))
+        p.vbar(x='Classes', width=0.4, top = 'Number', line_color=None, source=source, fill_color=factor_cmap('Classes', palette=COLORS[::-1], factors=(G['Classes'].tolist())))
         p.xaxis.axis_line_color = '#D6DBDF'
         p.yaxis.axis_line_color = '#D6DBDF'
         p.xgrid.grid_line_color=None
