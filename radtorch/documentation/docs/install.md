@@ -3,7 +3,7 @@
 RADTorch tool kit and its dependencies can be installed using the following terminal commands:
 
 ```
-pip3 install https://repo.radtorch.com/archive/v0.1.3-beta.zip
+pip3 install https://download.radtorch.com/0.1.3b/0.1.3b.zip
 
 ```
 
