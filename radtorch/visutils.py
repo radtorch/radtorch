@@ -401,8 +401,6 @@ def plot_pipline_dataset_info(dataframe, test_percent):
 
 def plot_dataset_info(dataframe_dictionary, plot_size=(500,300)):
     output_notebook()
-    colors = ['#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1']
-    TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
     output = []
     for dataframe_title , dataframe in dataframe_dictionary.items():
         G = dataframe[['Classes', 'Number of Instances']]
