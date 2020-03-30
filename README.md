@@ -4,7 +4,7 @@
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
 
 # RADTorch
-## Medical Imaging Computer Vision and Machine Learning Framework
+## PyTorch based Medical Imaging Machine Learning Framework
 
 Official repository for RADTorch - The Radiology Machine Learning Tool Kit
 
