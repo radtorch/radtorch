@@ -23,6 +23,10 @@ RADTorch was developed and is currently maintained by Mohamed Elbanan, MD: a Rad
 </p>
 
 
+## Develpoment Team
+
+1. [Mohamed Elbanan, MD](https://github.com/elbanan)
+2. [Kareem Elfatairy, MD](https://github.com/kareemelfatairy)
 
 
 
