@@ -19,7 +19,7 @@ RADTorch provides a package of higher level functions and classes that significa
 
 ## Who
 <p style='text-align: justify;'>
-RADTorch was developed and is currently maintained by Mohamed Elbanan, MD: a Radiology Resident at Yale New Haven Health System, Clinical Research Affiliate at Yale School of Medicine and a Machine-learning enthusiast.
+RADTorch was developed by Mohamed Elbanan, MD: a Radiology Resident at Yale New Haven Health System, Clinical Research Affiliate at Yale School of Medicine and a Machine-learning enthusiast.
 </p>
 
 
