@@ -135,6 +135,26 @@ def list_of_files(root):
     return allFiles
 
 
+def datatable_from_filepath(*filelist,classes:list): #KareemElFatairy
+    ''' purpose: Create dataframe of file pathes and labels extracted from supplied folders.
+        Argument:
+        *filelist: returns list of paths.
+        classes: a list of desired classes as seen in file name.
+    '''
+    file_list = map(datautils.list_of_files,filelist)  #get a list of files from folders
+    data={'image_path':[],'image_label':[]}
+    for i in file_list:
+      for z in i: #create lists of files with the specified label and append to the dictionary
+        for _,item in enumerate(classes):
+          #print(item)
+          if item.casefold() in z.casefold():   #case insensitive match
+            data['image_path'].append(z)
+            data['image_label'].append(item)
+    df=pd.DataFrame(data)
+    return df
+
+
+
 def path_to_class(filepath):
     """
     .. include:: ./documentation/docs/datautils.md##path_to_class
