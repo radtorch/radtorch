@@ -141,7 +141,7 @@ def datatable_from_filepath(*filelist,classes:list): #KareemElFatairy
         *filelist: returns list of paths.
         classes: a list of desired classes as seen in file name.
     '''
-    file_lists = map(datautils.list_of_files,filelist)  #get a list of files from folders
+    file_lists = map(list_of_files,filelist)  #get a list of files from folders
     data={'image_path':[],'image_label':[]}
     for file_list in file_lists:
       for file_path in file_list: #create lists of files with the specified label and append to the dictionary
