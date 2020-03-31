@@ -48,6 +48,7 @@ loss_dict = {
             'MultiLabelMarginLoss':torch.nn.MultiLabelMarginLoss(),
             'SoftMarginLoss':torch.nn.SoftMarginLoss(),
             'MultiLabelSoftMarginLoss':torch.nn.MultiLabelSoftMarginLoss(),
+            'CosineSimilarity':torch.nn.CosineSimilarity(dim=1, eps=1e-08),
             }
 
 
