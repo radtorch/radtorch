@@ -61,4 +61,20 @@ RADTorch was developed by Mohamed Elbanan, MD: a Radiology Resident at Yale New 
 ## Contribute
 Bug reports and pull requests are welcome.
 
+## Cite us
+This framework is provided for free and opensource to anyone who would like to use it and/or update it. 
 
+Please cite us as :
+
+```
+@software{mohamed_elbanan_2020_3732781,
+  author       = {Mohamed Elbanan, MD; Kareem Elfatairy, MD},
+  title        = {radtorch/radtorch: v0.1.3-beta},
+  month        = apr,
+  year         = 2020,
+  publisher    = {Zenodo},
+  version      = {v0.1.4-beta},
+  doi          = {10.5281/zenodo.3732781},
+  url          = {https://doi.org/10.5281/zenodo.3732781}
+}
+```
