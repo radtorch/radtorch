@@ -67,13 +67,13 @@ This framework is provided for free and opensource to anyone who would like to u
 Please cite us as :
 
 ```
-@software{mohamed_elbanan_2020_3732781,
-  author       = {Mohamed Elbanan, MD; Kareem Elfatairy, MD},
-  title        = {radtorch/radtorch: v0.1.3-beta},
-  month        = apr,
+@software{mohamed_elbanan_md_2020_3732781,
+  author       = {Mohamed Elbanan, MD and Kareem Elfatairy, MD},
+  title        = {RADTorch - The Radiology Machine Learning Tool Kit},
+  month        = mar,
   year         = 2020,
   publisher    = {Zenodo},
-  version      = {v0.1.4-beta},
+  version      = {v0.1.3b},
   doi          = {10.5281/zenodo.3732781},
   url          = {https://doi.org/10.5281/zenodo.3732781}
 }
