@@ -147,8 +147,8 @@ def datatable_from_filepath(*filelist,classes:list): #KareemElFatairy
       for file_path in file_list: #create lists of files with the specified label and append to the dictionary
         for item in classes:
           if item.casefold() in file_path.casefold():   #case insensitive match
-            data['image_path'].append(file_path)
-            data['image_label'].append(item)
+            data['IMAGE_PATH'].append(file_path)
+            data['IMAGE_LABEL'].append(item)
     df=pd.DataFrame(data)
     return df
 
