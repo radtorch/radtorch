@@ -135,22 +135,7 @@ def list_of_files(root):
     return allFiles
 
 
-def datatable_from_filepath(*filelist,classes:list): #KareemElFatairy
-    ''' purpose: Create dataframe of file pathes and labels extracted from supplied folders.
-        Argument:
-        *filelist: returns list of paths.
-        classes: a list of desired classes as seen in file name.
-    '''
-    file_lists = map(list_of_files,filelist)  #get a list of files from folders
-    data={'image_path':[],'image_label':[]}
-    for file_list in file_lists:
-      for file_path in file_list: #create lists of files with the specified label and append to the dictionary
-        for item in classes:
-          if item.casefold() in file_path.casefold():   #case insensitive match
-            data['IMAGE_PATH'].append(file_path)
-            data['IMAGE_LABEL'].append(item)
-    df=pd.DataFrame(data)
-    return df
+
 
 
 
@@ -184,6 +169,22 @@ def class_to_idx(classes):
     class_to_idx = {classes[i]: i for i in range(len(classes))}
     return class_to_idx
 
+def datatable_from_filepath(*filelist,classes:list): #KareemElFatairy
+    ''' purpose: Create dataframe of file pathes and labels extracted from supplied folders.
+        Argument:
+        *filelist: returns list of paths.
+        classes: a list of desired classes as seen in file name.
+    '''
+    file_lists = map(list_of_files,filelist)  #get a list of files from folders
+    data={'image_path':[],'image_label':[]}
+    for file_list in file_lists:
+      for file_path in file_list: #create lists of files with the specified label and append to the dictionary
+        for item in classes:
+          if item.casefold() in file_path.casefold():   #case insensitive match
+            data['IMAGE_PATH'].append(file_path)
+            data['IMAGE_LABEL'].append(item)
+    df=pd.DataFrame(data)
+    return df
 
 class dataset_from_table(Dataset):
     """
