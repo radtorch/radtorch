@@ -23,7 +23,10 @@ RADTorch was developed by Mohamed Elbanan, MD: a Radiology Resident at Yale New 
 
 </p>
 
+## Develpoment Team
 
+1. [Mohamed Elbanan, MD](https://github.com/elbanan)
+2. [Kareem Elfatairy, MD](https://github.com/kareemelfatairy)
 
 
 
