@@ -141,14 +141,13 @@ def datatable_from_filepath(*filelist,classes:list): #KareemElFatairy
         *filelist: returns list of paths.
         classes: a list of desired classes as seen in file name.
     '''
-    file_list = map(datautils.list_of_files,filelist)  #get a list of files from folders
+    file_lists = map(datautils.list_of_files,filelist)  #get a list of files from folders
     data={'image_path':[],'image_label':[]}
-    for i in file_list:
-      for z in i: #create lists of files with the specified label and append to the dictionary
-        for _,item in enumerate(classes):
-          #print(item)
-          if item.casefold() in z.casefold():   #case insensitive match
-            data['image_path'].append(z)
+    for file_list in file_lists:
+      for file_path in file_list: #create lists of files with the specified label and append to the dictionary
+        for item in classes:
+          if item.casefold() in file_path.casefold():   #case insensitive match
+            data['image_path'].append(file_path)
             data['image_label'].append(item)
     df=pd.DataFrame(data)
     return df
