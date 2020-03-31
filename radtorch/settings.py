@@ -36,7 +36,7 @@ model_dict = {'vgg11':{'name':'vgg11','input_size':224, 'output_features':4096},
 
 supported_models = [x for x in model_dict.keys()]
 
-supported_image_classification_losses = ['NLLLoss', 'CrossEntropyLoss']
+supported_image_classification_losses = ['NLLLoss', 'CrossEntropyLoss', 'CosineSimilarity']
 
 supported_multi_label_image_classification_losses = []
 
