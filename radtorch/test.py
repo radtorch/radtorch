@@ -193,8 +193,7 @@ def load_pipeline(target_path):
 
 class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.DEFAULTS_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS
+        super().__init__(DEFAULTS_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs)
         self.classifiers = [self]
         if self.loss_function in supported_image_classification_losses:
             self.loss_function = create_loss_function(self.loss_function)
