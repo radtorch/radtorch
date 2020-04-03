@@ -190,6 +190,7 @@ def load_pipeline(target_path):
 class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
         self.DEFAULTS_SETTINGS = IMAGE_CLASSIFICATION_PIPELINE_SETTINGS
+        self.classifiers = [self]
         super().__init__(**kwargs)
 
         if self.loss_function in supported_image_classification_losses:
@@ -203,7 +204,7 @@ class Image_Classification(Pipeline):
         else:
             raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
             pass
-        self.classifiers = [self]  
+
 
     def run(self, verbose=True):
         try:
