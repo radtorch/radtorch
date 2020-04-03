@@ -239,24 +239,24 @@ class Image_Classification(Pipeline):
             raise TypeError('Error! Trained Model could not be exported.')
 
     def inference(self, transformations=None, all_predictions=False, *args, **kwargs):
-        if transformations=None:
-            transformations = self.transformations
+        if transformations==None:
+            transformations=self.transformations
         return model_inference( model=self.trained_model,
                                 input_image_path=target_image_path,
                                 inference_transformations=transformations,
                                 all_predictions=all_predictions)
 
     def confusion_matrix(self, figure_size=(7,7), target_dataset = None, target_classes = None, cmap=None, *args,  **kwargs):
-        if target_dataset=None:
+        if target_dataset==None:
             target_dataset=self.test_dataset
-        if target_classes=None:
+        if target_classes==None:
             target_classes=self.dataset.classes
 
         target_dataset.trans = self.transformations
         show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
 
     def roc(self, target_dataset=None, figure_size=(600,400), *args,  **kwargs):
-        if target_dataset=None:
+        if target_dataset==None:
             target_dataset=self.test_dataset
         num_classes = len(target_dataset.classes)
         if num_classes <= 2:
