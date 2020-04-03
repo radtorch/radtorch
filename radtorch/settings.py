@@ -64,7 +64,7 @@ supported_optimizer = ['Adam', 'ASGD', 'RMSprop', 'SGD']
 IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
 
 #pipeline
-DEFAULTS_PIPELINE_SETTINGS = {
+IMAGE_CLASSIFICATION_PIPELINE_SETTINGS = {
             'device':'default',
             'optimizer':'Adam',
             'is_dicom': True,

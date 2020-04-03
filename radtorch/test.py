@@ -62,7 +62,7 @@ class Pipeline():
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-        for K, V in DEFAULTS_PIPELINE_SETTINGS.items():
+        for K, V in self.DEFAULTS_SETTINGS.items():
             if K not in kwargs.keys():
                 setattr(self, K, V)
 
@@ -179,6 +179,7 @@ class Pipeline():
 
 class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
+        self.DEFAULTS_SETTINGS = IMAGE_CLASSIFICATION_PIPELINE_SETTINGS
         super().__init__(**kwargs)
 
         if self.loss_function in supported_image_classification_losses:
