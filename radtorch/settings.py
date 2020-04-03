@@ -105,7 +105,7 @@ COMPARE_CLASSIFIER_PIPELINE_SETTINGS = {
             'load_predefined_datatables' : False,
             'mode' : ['RAW'],
             'wl' : [None],
-            'normalize' : [[[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]],
+            'normalize' : [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]],
             'batch_size' : [16],
             'test_percent' : [0.2],
             'valid_percent' : [0.2],
