@@ -65,7 +65,6 @@ IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tif
 
 #pipeline
 IMAGE_CLASSIFICATION_PIPELINE_SETTINGS = {
-            'device':'default',
             'optimizer':'Adam',
             'is_dicom': True,
             'label_from_table': False,
@@ -114,6 +113,34 @@ COMPARE_CLASSIFIER_PIPELINE_SETTINGS = {
             'train_epochs' : [20],
             'learning_rate' : [0.0001],
             'loss_function' : ['CrossEntropyLoss'],
+            'num_workers' : 0,
+            'multi_label':False
+            }
+
+
+
+FEATURE_EXTRACTION_PIPELINE_SETTINGS = {
+            'optimizer':'Adam',
+            'is_dicom': True,
+            'label_from_table': False,
+            'is_csv': None,
+            'table_source': None,
+            'path_col':'IMAGE_PATH',
+            'label_col' : 'IMAGE_LABEL' ,
+            'balance_class' : False,
+            'load_predefined_datatables' : False,
+            'mode' : 'RAW',
+            'wl' : None,
+            'normalize' : [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]],
+            'batch_size' : 16,
+            'test_percent' : 0,
+            'valid_percent' : 0,
+            'model_arch' : 'vgg16',
+            'pre_trained' : True,
+            'unfreeze_weights' : False,
+            'train_epochs' : 0,
+            'learning_rate' : 0,
+            'loss_function' : 'CrossEntropyLoss',
             'num_workers' : 0,
             'multi_label':False
             }
