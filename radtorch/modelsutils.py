@@ -1,3 +1,19 @@
+# Copyright (C) 2020 RADTorch and Mohamed Elbanan, MD
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see https://www.gnu.org/licenses/
+
+
 """
 Functions and Classes for Model Creation and Training
 """
@@ -68,7 +84,7 @@ def set_transformations(model_arch, custom_resize, is_dicom, transformations):
 
     if transformations == 'default':
         if is_dicom == True:
-            self.transformations = transforms.Compose([
+            transformations = transforms.Compose([
                     transforms.Resize((input_resize, input_resize)),
                     transforms.transforms.Grayscale(3),
                     transforms.ToTensor()])
@@ -76,10 +92,9 @@ def set_transformations(model_arch, custom_resize, is_dicom, transformations):
             transformations = transforms.Compose([
                     transforms.Resize((input_resize, input_resize)),
                     transforms.ToTensor()])
-    else:
-        self.transformations = transformations
 
     return transformations, input_resize
+
 
 def supported():
     '''
