@@ -147,7 +147,7 @@ class Pipeline():
             info_dict['test_dataset'].style.set_caption("test_dataset")
 
         if plot:
-            plot_dataset_info(info_dict, plot_size= plot_size)
+            plot_dataset_info(info_dict, plot_size= fig_size)
         else:
 
             display (show_dataset_info(self.train_dataset))
