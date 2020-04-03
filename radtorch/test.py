@@ -103,12 +103,12 @@ class Pipeline():
                 #     raise TypeError('Dataset could not be created from folder structure.')
                 #     pass #Create Master Dataset from Folder
 
-            self.train_dataset, self.valid_dataset, self.test_dataset = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
+            self.train_dataset, self.valid_dataset, self.test_dataset = split_dataset(dataset=self.dataset, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
             if self.balance_class:
                 self.train_dataset = over_sample(self.train_dataset)
                 self.valid_dataset = over_sample(self.valid_dataset)
                 if len(self.test_dataset)>0:self.test_dataset = over_sample(self.test_dataset)
-            self.num_output_classes = len(self.data_set.classes)
+            self.num_output_classes = len(self.dataset.classes)
 
         # DataLoaders
         self.train_dataloader = torch.utils.data.DataLoader(self.train_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
@@ -201,8 +201,8 @@ class Image_Classification(Pipeline):
                                                     model = self.train_model,
                                                     train_data_loader = self.train_dataloader,
                                                     valid_data_loader = self.valid_dataloader,
-                                                    train_data_set = self.train_dataset,
-                                                    valid_data_set = self.valid_dataset,
+                                                    train_dataset = self.train_dataset,
+                                                    valid_dataset = self.valid_dataset,
                                                     loss_criterion = self.loss_function,
                                                     optimizer = self.optimizer,
                                                     epochs = self.train_epochs,
