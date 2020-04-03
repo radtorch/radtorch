@@ -117,7 +117,7 @@ class Pipeline():
 
         if self.normalize == 'auto':
             self.mean, self.std = calculate_mean_std(torch.utils.data.DataLoader(self.dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers))
-        else type(self.normalize) is list:
+        elif type(self.normalize) is list:
             self.mean = self.normalize[0]
             self.std = self.normalize[1]
 
