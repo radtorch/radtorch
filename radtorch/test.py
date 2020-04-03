@@ -263,13 +263,13 @@ class Image_Classification(Pipeline):
             raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
             pass
 
-    def misclassified(self, target_data_set=None, num_of_images=16, figure_size=(10,10), show_table=False, *args,  **kwargs):
+    def misclassified(self, target_dataset=None, num_images=16, figure_size=(10,10), show_table=False, *args,  **kwargs):
         if target_dataset==None:
             target_dataset=self.test_dataset
 
         target_dataset.trans = self.transformations
 
-        self.misclassified_instances = show_nn_misclassified(model=self.trained_model, target_data_set=target_dataset, transforms=self.transformations,   is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
+        self.misclassified_instances = show_nn_misclassified(model=self.trained_model, target_data_set=target_dataset, transforms=self.transformations,   is_dicom=self.is_dicom, num_of_images=num_images, device=self.device, figure_size=figure_size)
 
         if show_table:
             return self.misclassified_instances
