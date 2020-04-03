@@ -128,7 +128,8 @@ class Pipeline():
 
 
     def info(self):
-        info = pd.DataFrame.from_dict(self.__dict__.items())
+        info = {key:str(value) for key, value in self.__dict__.items()}
+        info = pd.DataFrame.from_dict(info.items())
         info.columns = ['Property', 'Value']
         info = info.append({'Property':'Train Dataset Size', 'Value':len(self.train_dataset)}, ignore_index=True)
         info = info.append({'Property':'Valid Dataset Size', 'Value':len(self.valid_dataset)}, ignore_index=True)
