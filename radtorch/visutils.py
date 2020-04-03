@@ -551,7 +551,7 @@ def show_roc(classifier_list, fig_size=(700,400)):
     legend_items = []
 
     for i in classifier_list:
-        true_labels, predictions = calculate_nn_predictions(model=i.trained_model, target_data_set=i.test_data_set, device=i.device)
+        true_labels, predictions = calculate_nn_predictions(model=i.trained_model, target_data_set=i.test_dataset, device=i.device)
         fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
         auc = metrics.roc_auc_score(true_labels, predictions)
         x = p.line(fpr, tpr, line_width=2, line_color= COLORS[ind])
