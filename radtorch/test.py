@@ -177,7 +177,6 @@ class Pipeline():
         except:
             raise TypeError('Error! Pipeline could not be exported.')
 
-
 def load_pipeline(target_path):
     '''
     .. include:: ./documentation/docs/pipeline.md##load_pipeline
@@ -188,7 +187,6 @@ def load_pipeline(target_path):
     infile.close()
 
     return pipeline
-
 
 class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
@@ -273,9 +271,6 @@ class Image_Classification(Pipeline):
         if show_table:
             return self.misclassified_instances
 
-
-
-
 class Compare_Image_Classifier():
     def __init__(self, DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs):
         # self.DEFAULT_SETTINGS=DEFAULT_SETTINGS
@@ -317,7 +312,7 @@ class Compare_Image_Classifier():
       return self.scenarios_df
 
     def dataset_info(self,plot=True, figure_size=(500,300)):
-        return self.classifiers[0].dataset_info(plot=plot, plot_size=figure_size)
+        return self.classifiers[0].dataset_info(plot=plot, fig_size=figure_size)
 
     def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
         return self.classifiers[0].sample(fig_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
@@ -359,6 +354,22 @@ class Compare_Image_Classifier():
                 print (' Best Classifier Pipeline Exported Successfully')
         except:
             raise TypeError('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
+
+    def export(self, output_path):
+        try:
+            outfile = open(output_path,'wb')
+            pickle.dump(self,outfile)
+            outfile.close()
+            print ('Pipeline exported successfully.')
+        except:
+            raise TypeError('Error! Pipeline could not be exported.')
+
+
+
+
+
+
+
 
 
 
