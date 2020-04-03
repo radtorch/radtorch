@@ -278,13 +278,13 @@ class Compare_Image_Classifier():
         # self.DEFAULT_SETTINGS=DEFAULT_SETTINGS
         for k, v in kwargs.items():
             setattr(self, k, v)
-            
+
         for K, V in DEFAULT_SETTINGS.items():
             if K not in kwargs.keys():
                 setattr(self, K, V)
 
-        self.compare_parameters_names = [k for k,v in DEFAULT_SETTINGS.items() if type(v)==list]
-        self.compare_parameters = [v for k,v in DEFAULT_SETTINGS.items() if type(v)==list]
+        self.compare_parameters_names = [k for k,v in self.__dict__.items() if type(v)==list]
+        self.compare_parameters = [v for k,v in self.__dict__.items() if type(v)==list]
         self.scenarios_list = list(itertools.product(*self.compare_parameters))
         self.num_scenarios = len(self.scenarios_list)
         self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
