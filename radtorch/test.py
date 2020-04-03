@@ -285,6 +285,6 @@ class Compare_Image_Classifier():
 
         self.compare_parameters_names = [k for k,v in self.__dict__.items() if type(v)==list]
         self.compare_parameters = [v for k,v in self.__dict__.items() if type(v)==list]
-        self.scenarios_list = list(itertools.product(*self.compare_parameters))
-        self.num_scenarios = len(self.scenarios_list)
-        self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
+        # self.scenarios_list = list(itertools.product(*self.compare_parameters))
+        # self.num_scenarios = len(self.scenarios_list)
+        # self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
