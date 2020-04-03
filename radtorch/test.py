@@ -125,8 +125,6 @@ class Pipeline():
 
         self.train_model = self.train_model.to(self.device)
 
-
-
     def info(self):
         info = {key:str(value) for key, value in self.__dict__.items()}
         info = pd.DataFrame.from_dict(info.items())
@@ -273,3 +271,25 @@ class Image_Classification(Pipeline):
 
         if show_table:
             return self.misclassified_instances
+
+
+class Compare_Image_Classifier(Pipeline):
+    def __init__(self, **kwargs):
+        super().__init__(DEFAULTS_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs)
+
+        self.compare_parameters = [
+                            self.balance_class,
+                            self.normalize,
+                            self.batch_size,
+                            self.test_percent,
+                            self.valid_percent,
+                            self.train_epochs,
+                            self.learning_rate,
+                            self.model_arch,
+                            self.pre_trained]
+
+        self.compare_parameters_names = [k for k,v in self.DEFAULTS_SETTINGS.items() if type(v)==list]
+        self.compare_parameters = [v for k,v in self.DEFAULTS_SETTINGS.items() if type(v)==list]
+        self.scenarios_list = list(itertools.product(*self.compare_parameters))
+        self.num_scenarios = len(self.scenarios_list)
+        self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)

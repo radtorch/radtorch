@@ -92,23 +92,29 @@ IMAGE_CLASSIFICATION_PIPELINE_SETTINGS = {
             }
 
 
-FEATURE_EXTRACTION_PIPELINE_SETTINGS = {
+COMPARE_CLASSIFIER_PIPELINE_SETTINGS = {
             'device':'default',
-            'is_dicom': True,
+            'optimizer':['Adam'],
+            'is_dicom': [True],
             'label_from_table': False,
             'is_csv': None,
             'table_source': None,
             'path_col':'IMAGE_PATH',
             'label_col' : 'IMAGE_LABEL' ,
-            'mode' : 'RAW',
-            'wl' : None,
-            'normalize' : [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]],
-            'batch_size' : 16,
-            'test_percent' : 0.2,
-            'valid_percent' : 0.2,
-            'model_arch' : 'vgg16',
-            'pre_trained' : True,
+            'balance_class' : [False],
+            'load_predefined_datatables' : False,
+            'mode' : ['RAW'],
+            'wl' : [None],
+            'normalize' : [[[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]],
+            'batch_size' : [16],
+            'test_percent' : [0.2],
+            'valid_percent' : [0.2],
+            'model_arch' : ['vgg16'],
+            'pre_trained' : [True],
             'unfreeze_weights' : False,
+            'train_epochs' : [20],
+            'learning_rate' : [0.0001],
+            'loss_function' : ['CrossEntropyLoss'],
             'num_workers' : 0,
             'multi_label':False
             }
