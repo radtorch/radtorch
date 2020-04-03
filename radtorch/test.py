@@ -175,6 +175,16 @@ class Pipeline():
         outfile.close()
 
 
+def load_pipeline(target_path):
+    '''
+    .. include:: ./documentation/docs/pipeline.md##load_pipeline
+    '''
+
+    infile = open(target_path,'rb')
+    pipeline = pickle.load(infile)
+    infile.close()
+
+    return pipeline
 
 
 class Image_Classification(Pipeline):
@@ -193,7 +203,7 @@ class Image_Classification(Pipeline):
         else:
             raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
             pass
-
+        self.classifiers = [self]  
 
     def run(self, verbose=True):
         try:
