@@ -91,17 +91,17 @@ class Pipeline():
         # Load predefined tables if available
         else: # Else create master dataset
             if self.label_from_table == True:
-                # try:
-                self.dataset = dataset_from_table(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,input_source=self.table_source,img_path_column=self.path_col,img_label_column=self.label_col,multi_label = self.multi_label,mode=self.mode,wl=self.wl,trans=self.transformations)
-                # except:
-                #     raise TypeError('Dataset could not be created from table.')
-                #     pass #Create Master Dataset from Table
+                try:
+                    self.dataset = dataset_from_table(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,input_source=self.table_source,img_path_column=self.path_col,img_label_column=self.label_col,multi_label = self.multi_label,mode=self.mode,wl=self.wl,trans=self.transformations)
+                except:
+                    raise TypeError('Dataset could not be created from table.')
+                    pass #Create Master Dataset from Table
             if self.label_from_table == False:
-                # try:
-                self.dataset = dataset_from_folder(data_directory=self.data_directory,is_dicom=self.is_dicom,mode=self.mode,wl=self.wl,trans=self.transformations)
-                # except:
-                #     raise TypeError('Dataset could not be created from folder structure.')
-                #     pass #Create Master Dataset from Folder
+                try:
+                    self.dataset = dataset_from_folder(data_directory=self.data_directory,is_dicom=self.is_dicom,mode=self.mode,wl=self.wl,trans=self.transformations)
+                except:
+                    raise TypeError('Dataset could not be created from folder structure.')
+                    pass #Create Master Dataset from Folder
 
             self.train_dataset, self.valid_dataset, self.test_dataset = split_dataset(dataset=self.dataset, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
             if self.balance_class:
@@ -170,9 +170,13 @@ class Pipeline():
         return show_metrics(self.classifiers,  fig_size=fig_size)
 
     def export(self, output_path):
-        outfile = open(output_path,'wb')
-        pickle.dump(self,outfile)
-        outfile.close()
+        try:
+            outfile = open(output_path,'wb')
+            pickle.dump(self,outfile)
+            outfile.close()
+            print ('Pipeline exported successfully.')
+        except:
+            raise TypeError('Error! Pipeline could not be exported.')
 
 
 def load_pipeline(target_path):
@@ -205,6 +209,8 @@ class Image_Classification(Pipeline):
             raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
             pass
 
+    def classes(self):
+        return self.train_dataset.class_to_idx
 
     def run(self, verbose=True):
         try:
@@ -224,3 +230,29 @@ class Image_Classification(Pipeline):
         except:
             raise TypeError('Could not train image classification pipeline. Please check provided parameters.')
             pass
+
+    def export_model(self,output_path):
+        try:
+            torch.save(self.trained_model, output_path)
+            print ('Trained classifier exported successfully.')
+        except:
+            raise TypeError('Error! Trained Model could not be exported.')
+
+    def inference(self, transformations = self.transformations, all_predictions = False, **kwargs):
+        return model_inference( model=self.trained_model,
+                                input_image_path=target_image_path,
+                                inference_transformations=transformations,
+                                all_predictions=all_predictions)
+
+    def confusion_matrix(self, figure_size=(7,7), target_dataset = self.test_dataset, target_classes = self.data_set.classes, cmap=None, **kwargs):
+        target_dataset.trans = self.transformations
+        show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
+
+    def roc(self, target_dataset=self.test_dataset, figure_size=(600,400), **kwargs):
+        num_classes = len(target_dataset.classes)
+        if num_classes <= 2:
+            show_roc([self], fig_size=figure_size)
+        else:
+            raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
+            pass
+        
