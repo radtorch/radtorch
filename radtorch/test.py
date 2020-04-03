@@ -62,7 +62,7 @@ class Pipeline():
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-        for K, V in self.DEFAULTS_SETTINGS.items():
+        for K, V in self.DEFAULT_SETTINGS.items():
             if K not in kwargs.keys():
                 setattr(self, K, V)
 
@@ -191,7 +191,7 @@ def load_pipeline(target_path):
 
 class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
-        super().__init__(DEFAULTS_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs)
+        super().__init__(DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs)
         self.classifiers = [self]
         if self.loss_function in supported_image_classification_losses:
             self.loss_function = create_loss_function(self.loss_function)
@@ -274,27 +274,16 @@ class Image_Classification(Pipeline):
 
 
 class Compare_Image_Classifier():
-    def __init__(self, DEFAULTS_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs):
+    def __init__(self, DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs):
+        self.DEFAULT_SETTINGS=DEFAULT_SETTINGS
         for k, v in kwargs.items():
             setattr(self, k, v)
-
-        for K, V in DEFAULTS_SETTINGS.items():
+        for K, V in self.DEFAULT_SETTINGS.items():
             if K not in kwargs.keys():
                 setattr(self, K, V)
 
-        self.compare_parameters = [
-                            self.balance_class,
-                            self.normalize,
-                            self.batch_size,
-                            self.test_percent,
-                            self.valid_percent,
-                            self.train_epochs,
-                            self.learning_rate,
-                            self.model_arch,
-                            self.pre_trained]
-
-        self.compare_parameters_names = [k for k,v in self.DEFAULTS_SETTINGS.items() if type(v)==list]
-        self.compare_parameters = [v for k,v in self.DEFAULTS_SETTINGS.items() if type(v)==list]
+        self.compare_parameters_names = [k for k,v in self.DEFAULT_SETTINGS.items() if type(v)==list]
+        self.compare_parameters = [v for k,v in self.DEFAULT_SETTINGS.items() if type(v)==list]
         self.scenarios_list = list(itertools.product(*self.compare_parameters))
         self.num_scenarios = len(self.scenarios_list)
         self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
