@@ -186,8 +186,8 @@ class Image_Classification(Pipeline):
             raise TypeError('Selected loss function is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported loss functions.')
             pass
 
-        if optimizer in supported_optimizer:
-            self.optimizer = create_optimizer(traning_model=self.train_model, optimizer_type=optimizer, learning_rate=self.learning_rate)
+        if self.optimizer in supported_optimizer:
+            self.optimizer = create_optimizer(traning_model=self.train_model, optimizer_type=self.optimizer, learning_rate=self.learning_rate)
         else:
             raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
             pass
