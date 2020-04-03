@@ -74,7 +74,7 @@ DEFAULTS_PIPELINE_SETTINGS = {
             'path_col':'IMAGE_PATH',
             'label_col' : 'IMAGE_LABEL' ,
             'balance_class' : False,
-            'predefined_datasets' : False,
+            'load_predefined_datatables' : False,
             'mode' : 'RAW',
             'wl' : None,
             'normalize' : [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]],
