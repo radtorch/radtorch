@@ -178,8 +178,8 @@ class Pipeline():
 
 class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
-        Pipeline.__init__(self)
-
+        super().__init__(**kwargs)
+        
         if self.loss_function in supported_image_classification_losses:
             self.loss_function = create_loss_function(self.loss_function)
         else:
