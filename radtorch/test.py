@@ -274,11 +274,11 @@ class Image_Classification(Pipeline):
 
 
 class Compare_Image_Classifier():
-    def __init__(self,DEFAULTS_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs):
+    def __init__(self, DEFAULTS_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-        for K, V in self.DEFAULTS_SETTINGS.items():
+        for K, V in DEFAULTS_SETTINGS.items():
             if K not in kwargs.keys():
                 setattr(self, K, V)
 
