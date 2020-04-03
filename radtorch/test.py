@@ -195,15 +195,14 @@ class Image_Classification(Pipeline):
 
 
     def run(self, verbose=True):
-
         try:
             print ('Starting Image Classification Pipeline Training')
             self.trained_model, self.train_metrics = train_model(
                                                     model = self.train_model,
                                                     train_data_loader = self.train_dataloader,
                                                     valid_data_loader = self.valid_dataloader,
-                                                    train_dataset = self.train_dataset,
-                                                    valid_dataset = self.valid_dataset,
+                                                    train_data_set = self.train_dataset,
+                                                    valid_data_set = self.valid_dataset,
                                                     loss_criterion = self.loss_function,
                                                     optimizer = self.optimizer,
                                                     epochs = self.train_epochs,
