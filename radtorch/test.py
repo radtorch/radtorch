@@ -87,6 +87,7 @@ class Pipeline():
         # Load predefined tables or Create Master Dataset and dataloaders
         if self.load_predefined_datatables:
             self.train_dataset, self.valid_dataset, self.test_dataset = load_predefined_datatables(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,path_col=self.path_col,label_col=self.label_col,mode=self.mode,wl=self.wl,transformations=self.transformations )
+            self.num_output_classes = len(self.train_dataset.classes)
 
         # Load predefined tables if available
         else: # Else create master dataset
