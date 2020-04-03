@@ -266,17 +266,12 @@ class Image_Classification(Pipeline):
             pass
 
     def misclassified(self, target_data_set=None, num_of_images=16, figure_size=(10,10), show_table=False, *args,  **kwargs):
-        if target_data_set=='default':
-            if self.test_data_set == 0:
-                raise TypeError('Error. Test Percent set to Zero in image classification pipeline. Please change or set another target testing dataset.')
-                pass
-            else:
-                target_data_set = self.test_data_set
-        else:
-            target_data_set = target_data_set
-            target_data_set.trans = self.transformations
+        if target_dataset=None:
+            target_dataset=self.test_dataset
 
-        self.misclassified_instances = show_nn_misclassified(model=self.trained_model, target_data_set=target_data_set, transforms=self.transformations,   is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
+        target_dataset.trans = self.transformations
+
+        self.misclassified_instances = show_nn_misclassified(model=self.trained_model, target_data_set=target_dataset, transforms=self.transformations,   is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
 
         if show_table:
             return self.misclassified_instances
