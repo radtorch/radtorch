@@ -266,7 +266,7 @@ class Image_Classification(Pipeline):
             pass
 
     def misclassified(self, target_data_set=None, num_of_images=16, figure_size=(10,10), show_table=False, *args,  **kwargs):
-        if target_dataset=None:
+        if target_dataset==None:
             target_dataset=self.test_dataset
 
         target_dataset.trans = self.transformations
