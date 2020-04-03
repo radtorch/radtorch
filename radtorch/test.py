@@ -100,7 +100,7 @@ class Pipeline():
                 try:
                     self.dataset = dataset_from_folder(data_directory=self.data_directory,is_dicom=self.is_dicom,mode=self.mode,wl=self.wl,trans=self.transformations)
                 except:
-                    raise TypeError('Dataset could not be created from table.')
+                    raise TypeError('Dataset could not be created from folder structure.')
                     pass #Create Master Dataset from Folder
 
             self.train_dataset, self.valid_dataset, self.test_dataset = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
@@ -117,11 +117,15 @@ class Pipeline():
 
         if self.normalize == 'auto':
             self.mean, self.std = calculate_mean_std(torch.utils.data.DataLoader(self.dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers))
-        elif self.normalize == 'default':
-            self.mean, self.std = [0.5, 0.5, 0.5], [0.5, 0.5, 0.5]
         else type(self.normalize) is list:
             self.mean = self.normalize[0]
             self.std = self.normalize[1]
+
+        self.train_model = create_model(model_arch=self.model_arch,output_classes=self.num_output_classes,pre_trained=self.pre_trained,unfreeze_weights = self.unfreeze_weights,mode = 'train',)
+
+        self.train_model = self.train_model.to(self.device)
+
+
 
     def info(self):
         info = pd.DataFrame.from_dict(self.__dict__.items())
@@ -163,3 +167,48 @@ class Pipeline():
 
     def metrics(self, fig_size=(500,300)):
         return show_metrics(self.classifiers,  fig_size=fig_size)
+
+    def export(self, output_path):
+        outfile = open(output_path,'wb')
+        pickle.dump(self,outfile)
+        outfile.close()
+
+
+
+
+class Image_Classification(Pipeline):
+    def __init__(self, **kwargs):
+        Pipeline.__init__(self)
+
+        if self.loss_function in supported_image_classification_losses:
+            self.loss_function = create_loss_function(self.loss_function)
+        else:
+            raise TypeError('Selected loss function is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported loss functions.')
+            pass
+
+        if optimizer in supported_optimizer:
+            self.optimizer = create_optimizer(traning_model=self.train_model, optimizer_type=optimizer, learning_rate=self.learning_rate)
+        else:
+            raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
+            pass
+
+
+    def run(self, verbose=True):
+
+        try:
+            print ('Starting Image Classification Pipeline Training')
+            self.trained_model, self.train_metrics = train_model(
+                                                    model = self.train_model,
+                                                    train_data_loader = self.train_dataloader,
+                                                    valid_data_loader = self.valid_dataloader,
+                                                    train_data_set = self.train_dataset,
+                                                    valid_data_set = self.valid_dataset,
+                                                    loss_criterion = self.loss_function,
+                                                    optimizer = self.optimizer,
+                                                    epochs = self.train_epochs,
+                                                    device = self.device,
+                                                    verbose=verbose)
+            self.train_metrics = pd.DataFrame(data=self.train_metrics, columns = ['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
+        except:
+            raise TypeError('Could not train image classification pipeline. Please check provided parameters.')
+            pass
