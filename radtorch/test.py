@@ -273,9 +273,14 @@ class Image_Classification(Pipeline):
             return self.misclassified_instances
 
 
-class Compare_Image_Classifier(Pipeline):
-    def __init__(self, **kwargs):
-        super().__init__(DEFAULTS_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs)
+class Compare_Image_Classifier():
+    def __init__(self,DEFAULTS_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+        for K, V in self.DEFAULTS_SETTINGS.items():
+            if K not in kwargs.keys():
+                setattr(self, K, V)
 
         self.compare_parameters = [
                             self.balance_class,
