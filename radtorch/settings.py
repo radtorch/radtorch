@@ -88,4 +88,5 @@ DEFAULTS_PIPELINE_SETTINGS = {
             'learning_rate' : 0.0001,
             'loss_function' : 'CrossEntropyLoss',
             'num_workers' : 0,
+            'multi_label':False
             }
