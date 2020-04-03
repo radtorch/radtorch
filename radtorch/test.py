@@ -91,17 +91,17 @@ class Pipeline():
         # Load predefined tables if available
         else: # Else create master dataset
             if self.label_from_table == True:
-                try:
-                    self.dataset = dataset_from_table(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,input_source=self.table_source,img_path_column=self.path_col,img_label_column=self.label_col,multi_label = self.multi_label,mode=self.mode,wl=self.wl,trans=self.transformations)
-                except:
-                    raise TypeError('Dataset could not be created from table.')
-                    pass #Create Master Dataset from Table
+                # try:
+                self.dataset = dataset_from_table(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,input_source=self.table_source,img_path_column=self.path_col,img_label_column=self.label_col,multi_label = self.multi_label,mode=self.mode,wl=self.wl,trans=self.transformations)
+                # except:
+                #     raise TypeError('Dataset could not be created from table.')
+                #     pass #Create Master Dataset from Table
             if self.label_from_table == False:
-                try:
-                    self.dataset = dataset_from_folder(data_directory=self.data_directory,is_dicom=self.is_dicom,mode=self.mode,wl=self.wl,trans=self.transformations)
-                except:
-                    raise TypeError('Dataset could not be created from folder structure.')
-                    pass #Create Master Dataset from Folder
+                # try:
+                self.dataset = dataset_from_folder(data_directory=self.data_directory,is_dicom=self.is_dicom,mode=self.mode,wl=self.wl,trans=self.transformations)
+                # except:
+                #     raise TypeError('Dataset could not be created from folder structure.')
+                #     pass #Create Master Dataset from Folder
 
             self.train_dataset, self.valid_dataset, self.test_dataset = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
             if self.balance_class:
@@ -179,7 +179,7 @@ class Pipeline():
 class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        
+
         if self.loss_function in supported_image_classification_losses:
             self.loss_function = create_loss_function(self.loss_function)
         else:
