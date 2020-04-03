@@ -238,20 +238,20 @@ class Image_Classification(Pipeline):
         except:
             raise TypeError('Error! Trained Model could not be exported.')
 
-    def inference(self, transformations = self.transformations, all_predictions = False, *args,  **kwargs):
-        return model_inference( model=self.trained_model,
-                                input_image_path=target_image_path,
-                                inference_transformations=transformations,
-                                all_predictions=all_predictions)
-
-    def confusion_matrix(self, figure_size=(7,7), target_dataset = self.test_dataset, target_classes = self.data_set.classes, cmap=None, *args,  **kwargs):
-        target_dataset.trans = self.transformations
-        show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
-
-    def roc(self, target_dataset=self.test_dataset, figure_size=(600,400), *args,  **kwargs):
-        num_classes = len(target_dataset.classes)
-        if num_classes <= 2:
-            show_roc([self], fig_size=figure_size)
-        else:
-            raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
-            pass
+    # def inference(self, transformations=self.transformations, all_predictions=False, *args, **kwargs):
+    #     return model_inference( model=self.trained_model,
+    #                             input_image_path=target_image_path,
+    #                             inference_transformations=transformations,
+    #                             all_predictions=all_predictions)
+    #
+    # def confusion_matrix(self, figure_size=(7,7), target_dataset = self.test_dataset, target_classes = self.data_set.classes, cmap=None, *args,  **kwargs):
+    #     target_dataset.trans = self.transformations
+    #     show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
+    #
+    # def roc(self, target_dataset=self.test_dataset, figure_size=(600,400), *args,  **kwargs):
+    #     num_classes = len(target_dataset.classes)
+    #     if num_classes <= 2:
+    #         show_roc([self], fig_size=figure_size)
+    #     else:
+    #         raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
+    #         pass
