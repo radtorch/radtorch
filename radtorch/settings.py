@@ -93,19 +93,18 @@ IMAGE_CLASSIFICATION_PIPELINE_SETTINGS = {
 
 
 COMPARE_CLASSIFIER_PIPELINE_SETTINGS = {
-            'device':'default',
             'optimizer':['Adam'],
             'is_dicom': [True],
             'label_from_table': False,
             'is_csv': None,
             'table_source': None,
             'path_col':'IMAGE_PATH',
-            'label_col' : 'IMAGE_LABEL' ,
+            'label_col' : 'IMAGE_LABEL',
             'balance_class' : [False],
             'load_predefined_datatables' : False,
             'mode' : ['RAW'],
             'wl' : [None],
-            'normalize' : [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]],
+            'normalize' : [[[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]],
             'batch_size' : [16],
             'test_percent' : [0.2],
             'valid_percent' : [0.2],
