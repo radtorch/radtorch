@@ -86,7 +86,7 @@ class Pipeline():
 
         # Load predefined tables or Create Master Dataset and dataloaders
         if self.load_predefined_datatables:
-            self.train_dataset, self.valid_dataset, self.test_dataset = load_predefined_datatables(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,predefined_datasets=self.predefined_datasets,path_col=self.path_col,label_col=self.label_col,mode=self.mode,wl=self.wl,transformations=self.transformations )
+            self.train_dataset, self.valid_dataset, self.test_dataset = load_predefined_datatables(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,path_col=self.path_col,label_col=self.label_col,mode=self.mode,wl=self.wl,transformations=self.transformations )
 
         # Load predefined tables if available
         else: # Else create master dataset
@@ -273,9 +273,9 @@ class Image_Classification(Pipeline):
             return self.misclassified_instances
 
 
+
 class Compare_Image_Classifier():
     def __init__(self, DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs):
-        # self.DEFAULT_SETTINGS=DEFAULT_SETTINGS
         for k, v in kwargs.items():
             setattr(self, k, v)
 
@@ -283,8 +283,19 @@ class Compare_Image_Classifier():
             if K not in kwargs.keys():
                 setattr(self, K, V)
 
-        self.compare_parameters_names = [k for k,v in self.__dict__.items() if type(v)==list]
+        compare_parameters_names = [k for k,v in self.__dict__.items() if type(v)==list]
         self.compare_parameters = [v for k,v in self.__dict__.items() if type(v)==list]
-        # self.scenarios_list = list(itertools.product(*self.compare_parameters))
-        # self.num_scenarios = len(self.scenarios_list)
-        # self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
+        self.compare_parameters_names=compare_parameters_names
+        self.scenarios_list = list(itertools.product(*self.compare_parameters))
+        self.num_scenarios = len(self.scenarios_list)
+        self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
+
+
+
+
+
+
+
+
+
+##
