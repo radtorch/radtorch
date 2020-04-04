@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 from radtorch.settings import *
-from radtorch.dataset import Dataset_from_table
 from radtorch.dicom import  *
 from radtorch.vis import *
 from radtorch.settings import *
@@ -67,11 +66,11 @@ def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_spli
     output = {}
     train_df = (pd.concat([i[0] for i in classes_df])).sample(frac=1).reset_index(drop=True)
     valid_df = (pd.concat([i[1] for i in classes_df])).sample(frac=1).reset_index(drop=True)
-    output['train'] =  Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=train_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
-    output['valid'] =  Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=valid_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
+    output['train'] =  radtorch.dataset.Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=train_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
+    output['valid'] =  radtorch.dataset.Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=valid_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
     if test_percent != 0:
         test_df = (pd.concat([i[2] for i in classes_df])).sample(frac=1).reset_index(drop=True)
-        output['test'] =Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=test_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
+        output['test'] =radtorch.dataset.Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=test_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
     return  output
 
 
