@@ -36,13 +36,13 @@ class Pipeline():
         info = pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns = ['Property', 'Value']
         for i in data_subsets:
-            if i in in self.__dict__.keys(): info = info.append({'Property':i, 'Value':len(self.__dict__[i])}, ignore_index=True)
+            if i in self.__dict__.keys(): info = info.append({'Property':i, 'Value':len(self.__dict__[i])}, ignore_index=True)
         return info
 
     def dataset_info(self, plot=True, fig_size=(500,300)):
         info_dict = {}
         for i in data_subsets:
-            if i in in self.__dict__.keys():
+            if i in self.__dict__.keys():
                 info_dict[i] = show_dataset_info(self.__dict__[i])
                 info_dict[i].style.set_caption(i)
         if plot:
