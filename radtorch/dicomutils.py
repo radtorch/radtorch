@@ -14,12 +14,8 @@
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
 
+from radtorch.settings import *
 
-"""
-Functions and Classes for DICOM Handling
-"""
-
-from settings import *
 
 
 def window_dicom(filepath, level, width):

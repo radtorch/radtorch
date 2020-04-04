@@ -15,10 +15,8 @@
 
 
 
-"""
-Functions and Classes for General Purpose
-"""
-from settings import *
+from radtorch.settings import *
+
 
 
 def getDuplicatesWithCount(listOfElems):

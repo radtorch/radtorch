@@ -15,12 +15,7 @@
 
 
 
-
-"""
-Functions and Classes for Data Handling and PreProcessing
-"""
-
-from settings import *
+from radtorch.settings import *
 from radtorch.dicomutils import  *
 from radtorch.visutils import *
 from radtorch.settings import *

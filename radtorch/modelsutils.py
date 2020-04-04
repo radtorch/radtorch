@@ -14,11 +14,7 @@
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
 
-"""
-Functions and Classes for Model Creation and Training
-"""
-
-from settings import *
+from radtorch.settings import *
 from radtorch.dicomutils import *
 from radtorch.datautils import *
 from radtorch.settings import *

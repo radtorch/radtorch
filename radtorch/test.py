@@ -14,13 +14,7 @@
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
 
-
-"""
-Functions and Classes RADTorch Pipelines
-"""
-
-
-from settings import *
+from radtorch.settings import *
 from radtorch.modelsutils import *
 from radtorch.datautils import *
 from radtorch.visutils import *
@@ -404,7 +398,6 @@ class Feature_Extraction(Pipeline):
         if feature_names == None:
             feature_names = self.feature_names
         return plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col)
-
 
 
 
