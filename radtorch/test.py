@@ -265,94 +265,94 @@ class Image_Classification(Pipeline):
         if show_table:
             return self.misclassified_instances
 
-class Compare_Image_Classifier(Pipeline):
-    def __init__(self, **kwargs):
-        super().__init__(DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs)
-
-        # Load predefined tables or Create Master Dataset and dataloaders
-        if self.load_predefined_datatables:
-            self.train_dataset, self.valid_dataset, self.test_dataset = load_predefined_datatables(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,path_col=self.path_col,label_col=self.label_col,mode=self.mode,wl=self.wl,transformations=self.transformations )
-
-        else:
-            self.train_dataset, self.valid_dataset, self.test_dataset = split_dataset(dataset=self.dataset, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
-            if self.balance_class:
-                self.train_dataset = over_sample(self.train_dataset)
-                self.valid_dataset = over_sample(self.valid_dataset)
-                if len(self.test_dataset)>0:self.test_dataset = over_sample(self.test_dataset)
-
-
-        self.train_label_table=clf.train_dataset.input_data
-        self.valid_label_table=clf.valid_dataset.input_data
-        self.test_label_table=clf.test_dataset.input_data
-        self.datasets = {'train':self.train_label_table, 'valid':self.valid_label_table,'test':self.test_label_table}
-
-        # DataLoaders
-        self.train_dataloader = torch.utils.data.DataLoader(self.train_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
-        self.valid_dataloader = torch.utils.data.DataLoader(self.valid_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
-        if len(self.test_dataset)>0: self.test_dataloader = torch.utils.data.DataLoader(self.test_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
-
-        self.compare_parameters = {k:v for k,v in self.__dict__.items() if type(v)==list}
-        self.non_compare_parameters = {k: v for k, v in self.__dict__.items() if k not in self.compare_parameters and k !='compare_parameters'}
-        self.compare_parameters_names= list(self.compare_parameters.keys())
-        self.scenarios_list = list(itertools.product(*list(self.compare_parameters.values())))
-        self.num_scenarios = len(self.scenarios_list)
-        self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
-
-        self.classifiers = []
-        for x in self.scenarios_list:
-            x = list(x)
-            classifier_settings = {self.compare_parameters_names[i]: x[i] for i in range(len(self.compare_parameters_names))}
-            classifier_settings.update(self.non_compare_parameters)
-            classifier_settings['load_predefined_datatables'] = self.datasets
-            clf = Image_Classification(**classifier_settings)
-            self.classifiers.append(clf)
-
-    def grid(self):
-      return self.scenarios_df
-
-    # def dataset_info(self,plot=True, figure_size=(500,300)):
-    #     return self.classifiers[0].dataset_info(plot=plot, fig_size=figure_size)
-    #
-    # def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
-    #     return self.classifiers[0].sample(fig_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
-
-    def classes(self):
-        return self.classifiers[0].train_dataset.class_to_idx
-
-    def parameters(self):
-        return self.compare_parameters_names
-
-    def run(self):
-      self.master_metrics = []
-      self.trained_models = []
-      for i in tqdm(self.classifiers, total=len(self.classifiers)):
-        print ('Starting Training Classifier Number',self.classifiers.index(i))
-        i.run()
-        self.trained_models.append(i.trained_model)
-        self.master_metrics.append(i.train_metrics)
-        torch.cuda.empty_cache()
-
-    def metrics(self, figure_size=(650,400)):
-        return show_metrics(self.classifiers,  fig_size=figure_size)
-
-    def roc(self, figure_size=(700,400)):
-        self.auc_list = show_roc(self.classifiers, fig_size=figure_size)
-        self.best_model_auc = max(self.auc_list)
-        self.best_model_index = (self.auc_list.index(self.best_model_auc))
-        self.best_classifier = self.classifiers[self.best_model_index]
-
-    def best(self, path=None, export_classifier=False, export_model=False):
-        try:
-            print ('Best Classifier = Model', self.best_model_index)
-            print ('Best Classifier AUC =', self.best_model_auc)
-            if export_model:
-                export(self.best_classifier.trained_model, path)
-                print (' Best Model Exported Successfully')
-            if export_classifier:
-                export(self.best_classifier, path)
-                print (' Best Classifier Pipeline Exported Successfully')
-        except:
-            raise TypeError('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
+# class Compare_Image_Classifier(Pipeline):
+#     def __init__(self, **kwargs):
+#         super().__init__(DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs)
+#
+#         # Load predefined tables or Create Master Dataset and dataloaders
+#         if self.load_predefined_datatables:
+#             self.train_dataset, self.valid_dataset, self.test_dataset = load_predefined_datatables(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,path_col=self.path_col,label_col=self.label_col,mode=self.mode,wl=self.wl,transformations=self.transformations )
+#
+#         else:
+#             self.train_dataset, self.valid_dataset, self.test_dataset = split_dataset(dataset=self.dataset, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
+#             if self.balance_class:
+#                 self.train_dataset = over_sample(self.train_dataset)
+#                 self.valid_dataset = over_sample(self.valid_dataset)
+#                 if len(self.test_dataset)>0:self.test_dataset = over_sample(self.test_dataset)
+#
+#
+#         self.train_label_table=clf.train_dataset.input_data
+#         self.valid_label_table=clf.valid_dataset.input_data
+#         self.test_label_table=clf.test_dataset.input_data
+#         self.datasets = {'train':self.train_label_table, 'valid':self.valid_label_table,'test':self.test_label_table}
+#
+#         # DataLoaders
+#         self.train_dataloader = torch.utils.data.DataLoader(self.train_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
+#         self.valid_dataloader = torch.utils.data.DataLoader(self.valid_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
+#         if len(self.test_dataset)>0: self.test_dataloader = torch.utils.data.DataLoader(self.test_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
+#
+#         self.compare_parameters = {k:v for k,v in self.__dict__.items() if type(v)==list}
+#         self.non_compare_parameters = {k: v for k, v in self.__dict__.items() if k not in self.compare_parameters and k !='compare_parameters'}
+#         self.compare_parameters_names= list(self.compare_parameters.keys())
+#         self.scenarios_list = list(itertools.product(*list(self.compare_parameters.values())))
+#         self.num_scenarios = len(self.scenarios_list)
+#         self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
+#
+#         self.classifiers = []
+#         for x in self.scenarios_list:
+#             x = list(x)
+#             classifier_settings = {self.compare_parameters_names[i]: x[i] for i in range(len(self.compare_parameters_names))}
+#             classifier_settings.update(self.non_compare_parameters)
+#             classifier_settings['load_predefined_datatables'] = self.datasets
+#             clf = Image_Classification(**classifier_settings)
+#             self.classifiers.append(clf)
+#
+#     def grid(self):
+#       return self.scenarios_df
+#
+#     # def dataset_info(self,plot=True, figure_size=(500,300)):
+#     #     return self.classifiers[0].dataset_info(plot=plot, fig_size=figure_size)
+#     #
+#     # def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
+#     #     return self.classifiers[0].sample(fig_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
+#
+#     def classes(self):
+#         return self.classifiers[0].train_dataset.class_to_idx
+#
+#     def parameters(self):
+#         return self.compare_parameters_names
+#
+#     def run(self):
+#       self.master_metrics = []
+#       self.trained_models = []
+#       for i in tqdm(self.classifiers, total=len(self.classifiers)):
+#         print ('Starting Training Classifier Number',self.classifiers.index(i))
+#         i.run()
+#         self.trained_models.append(i.trained_model)
+#         self.master_metrics.append(i.train_metrics)
+#         torch.cuda.empty_cache()
+#
+#     def metrics(self, figure_size=(650,400)):
+#         return show_metrics(self.classifiers,  fig_size=figure_size)
+#
+#     def roc(self, figure_size=(700,400)):
+#         self.auc_list = show_roc(self.classifiers, fig_size=figure_size)
+#         self.best_model_auc = max(self.auc_list)
+#         self.best_model_index = (self.auc_list.index(self.best_model_auc))
+#         self.best_classifier = self.classifiers[self.best_model_index]
+#
+#     def best(self, path=None, export_classifier=False, export_model=False):
+#         try:
+#             print ('Best Classifier = Model', self.best_model_index)
+#             print ('Best Classifier AUC =', self.best_model_auc)
+#             if export_model:
+#                 export(self.best_classifier.trained_model, path)
+#                 print (' Best Model Exported Successfully')
+#             if export_classifier:
+#                 export(self.best_classifier, path)
+#                 print (' Best Classifier Pipeline Exported Successfully')
+#         except:
+#             raise TypeError('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
 
 class Feature_Extraction(Pipeline):
 
