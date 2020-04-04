@@ -215,7 +215,7 @@ class Dataset_from_table(RADTorch_Dataset):
                 mode='RAW',
                 wl=None,
                 transformations=transforms.Compose([transforms.ToTensor()])):
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
         for k,v in self.__dict__.items():
             setattr(self, k, v)
@@ -267,7 +267,7 @@ class Dataset_from_folder(RADTorch_Dataset):
                 mode='RAW',
                 wl=None,
                 transformations=transforms.Compose([transforms.ToTensor()])):
-        super().__init__()
+        super().__init__(*args, **kwargs)
 
         for k,v in self.__dict__.items():
             setattr(self, k, v)
