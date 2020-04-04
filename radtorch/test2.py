@@ -76,7 +76,7 @@ class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
         super(Image_Classification, self).__init__(**kwargs, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS)
 
-        if self.table: self.dataset=Dataset_from_table(kwargs)
+        if isinstance(self.table, pd.DataFrame) : self.dataset=Dataset_from_table(kwargs)
         else: self.dataset=Dataset_from_folder(kwargs)
         self.num_output_classes = len(self.dataset.classes)
         self.dataloader = torch.utils.data.DataLoader(kwargs, dataset=self.dataset)
