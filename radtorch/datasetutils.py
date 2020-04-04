@@ -30,7 +30,7 @@ class RADTorch_Dataset(Dataset):
             if k not in kwargs.keys():
                 setattr(self, k, v)
 
-    def __getitem__(self):
+    def __getitem__(self, index):
         image_path = self.input_data.iloc[index][self.image_path_column]
         if self.is_dicom:
             image = dicom_to_narray(image_path, self.mode, self.wl)
@@ -70,8 +70,7 @@ class RADTorch_Dataset(Dataset):
         return split_dataset(dataset=self, **kwargs)
 
     def mean_std(self):
-        loader = torch.utils.data.DataLoader(dataset=self)
-        return calculate_mean_std(loader)
+        return calculate_mean_std(torch.utils.data.DataLoader(dataset=self))
 
 
 class Dataset_from_table(RADTorch_Dataset):
