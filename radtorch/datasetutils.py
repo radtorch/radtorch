@@ -73,7 +73,7 @@ class RADTorch_Dataset(Dataset):
         return over_sample(dataset=self, **kwargs)
 
     def mean_std(self): #calculates mean and standard deviation of dataset.
-        mean, std =  calculate_mean_std(torch.utils.data.DataLoader(dataset=self, batch_size=16))
+        mean, std =  calculate_mean_std(torch.utils.data.DataLoader(dataset=self))
         return tuple(mean.tolist()), tuple(std.tolist())
 
     def normalized(self, **kwargs): #retruns a normalized dataset with either mean/std of the dataset or a user specified mean/std
