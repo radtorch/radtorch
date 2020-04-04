@@ -210,12 +210,12 @@ class RADTorch_Dataset(Dataset):
 class Dataset_from_table(RADTorch_Dataset):
     def __init__(self, **kwargs):
         super(Dataset_from_table, self).__init__(**kwargs)
-        if self.table==None:
-            raise TypeError('Error! No label table was selected. Please check.')
-        elif isinstance(self.table, pd.DataFrame):
+        if isinstance(self.table, pd.DataFrame):
             self.input_data = self.table
-        else:
+        elif self.table != None:
             self.input_data = pd.read_csv(self.input_source)
+        else:
+            raise TypeError('Error! No label table was selected. Please check.')
         if self.is_dicom:
             self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x.lower().endswith('dcm')] # Returns only DICOM files from folder
         else:

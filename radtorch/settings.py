@@ -92,7 +92,6 @@ DEFAULT_DATASET_SETTINGS = {
                                 'is_dicom':True,
                                 'mode':'RAW',
                                 'wl':None,
-                                'table':None,
                                 'img_path_column':'IMAGE_PATH',
                                 'img_label_column':'IMAGE_LABEL',
                                 'transformations':transforms.Compose([transforms.ToTensor()]),
