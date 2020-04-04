@@ -115,7 +115,6 @@ def list_of_files(root):
     return allFiles
 
 
-
 def path_to_class(filepath):
     """
     .. include:: ./documentation/docs/datautils.md##path_to_class
@@ -146,6 +145,7 @@ def class_to_idx(classes):
     class_to_idx = {classes[i]: i for i in range(len(classes))}
     return class_to_idx
 
+
 def datatable_from_filepath(*filelist,classes:list): #KareemElFatairy
     """ purpose: Create dataframe of file pathes and labels extracted from supplied folders.
         Argument:
@@ -163,46 +163,73 @@ def datatable_from_filepath(*filelist,classes:list): #KareemElFatairy
     df=pd.DataFrame(data)
     return df
 
-class dataset_from_table(Dataset):
-    """
-    .. include:: ./documentation/docs/datautils.md##dataset_from_table
-    """
 
+class RADTorch_Dataset(Dataset):
+    def __init__(self,*args, **kwargs):
+        for k,v in self.__dict__.items():
+            setattr(self, k, v)
+
+
+    def __getitem__(self):
+        image_path = self.input_data.iloc[index][self.image_path_col]
+        if self.is_dicom:
+            image = dicom_to_narray(image_path, self.mode, self.wl)
+            image = Image.fromarray(image)
+
+        else:
+            image = Image.open(image_path).convert('RGB')
+
+        image = self.transformations(image)
+
+        if self.multi_label == True:
+            label = self.input_data.iloc[index][self.image_label_col]
+            label_idx = self.input_data.iloc[index]['MULTI_LABEL_IDX']
+
+        else:
+            label = self.input_data.iloc[index][self.image_label_col]
+            label_idx = [v for k, v in self.class_to_idx.items() if k == label][0]
+
+        return image, label_idx, image_path
+
+    def __len__(self):
+        return len(self.dataset_files)
+
+    def classes(self):
+        return self.classes
+
+    def class_to_idx(self):
+        return self.class_to_idx
+
+    def info(self):
+        return show_dataset_info(self)
+
+
+class Dataset_from_table(RADTorch_Dataset):
     def __init__(self,
                 data_directory,
-                is_csv=True,
                 is_dicom=True,
-                input_source=None,
+                table=None,
                 img_path_column='IMAGE_PATH',
                 img_label_column='IMAGE_LABEL',
                 multi_label = False,
                 mode='RAW',
                 wl=None,
-                trans=transforms.Compose([transforms.ToTensor()])):
+                transformations=transforms.Compose([transforms.ToTensor()])):
+        super().__init__()
 
-        self.data_directory = data_directory
-        self.is_csv = is_csv
-        self.is_dicom = is_dicom
-        self.input_source = input_source
-        self.image_path_col = img_path_column
-        self.image_label_col = img_label_column
-        self.mode = mode
-        self.wl = wl
-        self.trans = trans
-        self.multi_label = multi_label
+        for k,v in self.__dict__.items():
+            setattr(self, k, v)
 
-
-        if self.is_csv:
-            if self.input_source == None:
-                print ('Error! No source for csv data was selected. Please use csv_file argument to supply a csv file')
-            else:
-                self.input_data = pd.read_csv(self.input_source)
+        if self.table==None:
+            raise TypeError('Error! No label table was selected. Please check.')
+        elif isinstance(self.table, pd.DataFrame):
+            self.input_data = self.table
         else:
-            self.input_data = self.input_source
+            self.input_data = pd.read_csv(self.input_source)
 
 
         if self.is_dicom:
-            self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x[-3:] == 'dcm'] # Returns only DICOM files from folder
+            self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x.lower().endswith('dcm')] # Returns only DICOM files from folder
         else:
             self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x.lower().endswith(IMG_EXTENSIONS)]
 
@@ -226,7 +253,6 @@ class dataset_from_table(Dataset):
             self.class_to_idx = class_to_idx(self.classes)
 
 
-
         if len(self.dataset_files)==0:
             print ('Error! No data files found in directory:', self.data_directory)
 
@@ -234,72 +260,30 @@ class dataset_from_table(Dataset):
             print ('Error! No classes extracted from directory:', self.data_directory)
 
 
-
-    def __getitem__(self, index):
-        image_path = self.input_data.iloc[index][self.image_path_col]
-        if self.is_dicom:
-            image = dicom_to_narray(image_path, self.mode, self.wl)
-            image = Image.fromarray(image)
-
-        else:
-            image = Image.open(image_path).convert('RGB')
-
-        image = self.trans(image)
-
-        if self.multi_label == True:
-            label = self.input_data.iloc[index][self.image_label_col]
-            label_idx = self.input_data.iloc[index]['MULTI_LABEL_IDX']
-
-        else:
-            label = self.input_data.iloc[index][self.image_label_col]
-            label_idx = [v for k, v in self.class_to_idx.items() if k == label][0]
-
-
-        return image, label_idx, image_path
-
-    def __len__(self):
-        return len(self.dataset_files)
-
-    def classes(self):
-        return self.classes
-
-    def class_to_idx(self):
-        return self.class_to_idx
-
-    def info(self):
-        return show_dataset_info(self)
-
-
-class dataset_from_folder(Dataset):
-    """
-    .. include:: ./documentation/docs/datautils.md##dataset_from_folder
-    """
-
+class Dataset_from_folder(RADTorch_Dataset):
     def __init__(self,
                 data_directory,
                 is_dicom=True,
                 mode='RAW',
                 wl=None,
-                trans=transforms.Compose([transforms.ToTensor()])):
+                transformations=transforms.Compose([transforms.ToTensor()])):
+        super().__init__()
 
-        self.data_directory = data_directory
-        self.is_dicom = is_dicom
-        self.mode = mode
-        self.wl = wl
-        self.trans = trans
+        for k,v in self.__dict__.items():
+            setattr(self, k, v)
+
         self.classes, self.class_to_idx = root_to_class(self.data_directory)
         self.all_files = list_of_files(self.data_directory)
-        self.all_classes = [path_to_class(i) for i in self.all_files]
-        self.image_path_col = 'IMAGE_PATH'
-        self.image_label_col = 'IMAGE_LABEL'
-        self.input_data = pd.DataFrame(list(zip(self.all_files, self.all_classes)), columns=[self.image_path_col, self.image_label_col])
-
 
         if self.is_dicom:
             self.dataset_files = [x for x in self.all_files if x[-3:] == 'dcm'] # Returns only DICOM files from folder
         else:
             self.dataset_files = [x for x in self.all_files]
 
+        self.all_classes = [path_to_class(i) for i in self.dataset_files]
+        self.image_path_col = 'IMAGE_PATH'
+        self.image_label_col = 'IMAGE_LABEL'
+        self.input_data = pd.DataFrame(list(zip(self.dataset_files, self.all_classes)), columns=[self.image_path_col, self.image_label_col])
 
         if len(self.dataset_files)==0:
             print ('Error! No data files found in directory:', self.data_directory)
@@ -307,68 +291,11 @@ class dataset_from_folder(Dataset):
         if len(self.classes)==0:
             print ('Error! No classes extracted from directory:', self.data_directory)
 
-    def __getitem__(self, index):
-        image_path = self.dataset_files[index]
-        if self.is_dicom:
-            image = dicom_to_narray(image_path, self.mode, self.wl)
-            image = Image.fromarray(image)
-
-        else:
-            image = Image.open(image_path).convert('RGB')
-
-        image = self.trans(image)
-
-        label = path_to_class(image_path)
-        label_idx = [v for k, v in self.class_to_idx.items() if k == label][0]
-
-        return image, label_idx, image_path
-
-    def __len__(self):
-        return len(self.dataset_files)
-
-    def classes(self):
-        return self.classes
-
-    def class_to_idx(self):
-        return self.class_to_idx
-
-    def info(self):
-        return show_dataset_info(self)
-
 
 def load_predefined_datatables(*args, **kwargs):
-    train_data_set = dataset_from_table(
-                                        data_directory=kwargs['data_directory'],
-                                        is_csv=kwargs['is_csv'],
-                                        is_dicom=kwargs['is_dicom'],
-                                        input_source=kwargs['predefined_datasets']['train'],
-                                        img_path_column=kwargs['path_col'],
-                                        img_label_column=kwargs['label_col'],
-                                        mode=kwargs['mode'],
-                                        wl=kwargs['wl'],
-                                        trans=kwargs['transformations'])
-
-    valid_data_set = dataset_from_table(
-                                        data_directory=kwargs['data_directory'],
-                                        is_csv=kwargs['is_csv'],
-                                        is_dicom=kwargs['is_dicom'],
-                                        input_source=kwargs['predefined_datasets']['valid'],
-                                        img_path_column=kwargs['path_col'],
-                                        img_label_column=kwargs['label_col'],
-                                        mode=kwargs['mode'],
-                                        wl=kwargs['wl'],
-                                        trans=kwargs['transformations'])
-
-    test_data_set = dataset_from_table(
-                                        data_directory=kwargs['data_directory'],
-                                        is_csv=kwargs['is_csv'],
-                                        is_dicom=kwargs['is_dicom'],
-                                        input_source=kwargs['predefined_datasets']['test'],
-                                        img_path_column=kwargs['path_col'],
-                                        img_label_column=kwargs['label_col'],
-                                        mode=kwargs['mode'],
-                                        wl=kwargs['wl'],
-                                        trans=kwargs['transformations'])
+    train_data_set = dataset_from_table(table=kwargs['predefined_datasets']['train'], kwargs)
+    valid_data_set = dataset_from_table(table=kwargs['predefined_datasets']['valid'], kwargs)
+    test_data_set = dataset_from_table(table=kwargs['predefined_datasets']['test'], kwargs)
 
     return train_data_set, valid_data_set, test_data_set
 
