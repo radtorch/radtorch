@@ -88,6 +88,19 @@ supported_optimizer = ['Adam', 'ASGD', 'RMSprop', 'SGD']
 #datautils
 IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
 
+DEFAULT_DATASET_SETTINGS = {
+                                'is_dicom':True,
+                                'mode':'RAW',
+                                'wl':None,
+                                'table':None,
+                                'img_path_column':'IMAGE_PATH',
+                                'img_label_column':'IMAGE_LABEL',
+                                'transformations':transforms.Compose([transforms.ToTensor()]),
+                                'multi_label':False
+                            }
+
+
+
 #pipeline
 IMAGE_CLASSIFICATION_PIPELINE_SETTINGS = {
             'optimizer':'Adam',

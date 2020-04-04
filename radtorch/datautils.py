@@ -169,23 +169,9 @@ class RADTorch_Dataset(Dataset):
         for k,v in kwargs.items():
             setattr(self, k, v)
 
-        if 'is_dicom' not in kwargs.keys():
-            self.is_dicom=True
-        if 'mode' not in kwargs.keys():
-            self.mode='RAW'
-        if 'wl' not in kwargs.keys():
-            self.wl=None
-        if 'table' not in kwargs.keys():
-            self.table=None
-        if 'img_path_column' not in kwargs.keys():
-            self.img_path_column='IMAGE_PATH'
-        if 'img_label_column' not in kwargs.keys():
-            self.img_label_column='IMAGE_LABEL'
-        if 'transformations ' not in kwargs.keys():
-            self.transformations=transforms.Compose([transforms.ToTensor()])
-        if 'multi_label ' not in kwargs.keys():
-            self.multi_label=False
-
+        for k, v in DEFAULT_DATASET_SETTINGS.items():
+            if k not in kwargs.keys():
+                setattr(self, k, v)
 
 
     def __getitem__(self):
@@ -222,7 +208,7 @@ class RADTorch_Dataset(Dataset):
         return show_dataset_info(self)
 
 class Dataset_from_table(RADTorch_Dataset):
-    def __init__(self):
+    def __init__(self, **kwargs):
         if self.table==None:
             raise TypeError('Error! No label table was selected. Please check.')
         elif isinstance(self.table, pd.DataFrame):
@@ -256,7 +242,7 @@ class Dataset_from_table(RADTorch_Dataset):
             print ('Error! No classes extracted from directory:', self.data_directory)
 
 class Dataset_from_folder(RADTorch_Dataset):
-    def __init__(self):
+    def __init__(self, **kwargs):
         self.classes, self.class_to_idx = root_to_class(self.data_directory)
         self.all_files = list_of_files(self.data_directory)
         if self.is_dicom:
