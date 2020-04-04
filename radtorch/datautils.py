@@ -63,25 +63,15 @@ def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_spli
           temp_df = temp_df.sample(frac=1).reset_index(drop=True)
         train, validate, test = np.split(temp_df.sample(frac=1), [int(train_percent*len(temp_df)), int((train_percent+valid_percent)*len(temp_df))])
         classes_df.append((train, validate, test))
-
+    output = {}
+    train_df = (pd.concat([i[0] for i in classes_df])).sample(frac=1).reset_index(drop=True)
+    valid_df = (pd.concat([i[1] for i in classes_df])).sample(frac=1).reset_index(drop=True)
+    output['train'] =  Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=train_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
+    output['valid'] =  Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=valid_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
     if test_percent != 0:
-        train_df = (pd.concat([i[0] for i in classes_df])).sample(frac=1).reset_index(drop=True)
-        valid_df = (pd.concat([i[1] for i in classes_df])).sample(frac=1).reset_index(drop=True)
         test_df = (pd.concat([i[2] for i in classes_df])).sample(frac=1).reset_index(drop=True)
-
-        train_ds = Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=train_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
-        valid_ds = Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=valid_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
-        test_ds = Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=test_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
-
-        return  train_ds, valid_ds, test_ds
-    else:
-        train_df = (pd.concat([i[0] for i in classes_df])).sample(frac=1).reset_index(drop=True)
-        valid_df = (pd.concat([i[1] for i in classes_df])).sample(frac=1).reset_index(drop=True)
-
-        train_ds = Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=train_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
-        valid_ds = Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=valid_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
-
-        return  train_ds, valid_ds
+        output['test'] =Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=test_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
+    return  output
 
 
 def set_random_seed(seed):
