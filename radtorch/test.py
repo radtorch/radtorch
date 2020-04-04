@@ -71,7 +71,6 @@ class Pipeline():
             self.mean = self.normalize[0]
             self.std = self.normalize[1]
 
-
     def info(self):
         info = {key:str(value) for key, value in self.__dict__.items()}
         info = pd.DataFrame.from_dict(info.items())
@@ -140,6 +139,7 @@ class Pipeline():
         except:
             raise TypeError('Error! Pipeline could not be exported.')
 
+
 def load_pipeline(target_path):
     '''
     .. include:: ./documentation/docs/pipeline.md##load_pipeline
@@ -150,7 +150,6 @@ def load_pipeline(target_path):
     infile.close()
 
     return pipeline
-
 
 
 class Image_Classification(Pipeline):
@@ -262,15 +261,36 @@ class Image_Classification(Pipeline):
         if show_table:
             return self.misclassified_instances
 
-class Compare_Image_Classifier():
+class Compare_Image_Classifier(Pipeline):
     def __init__(self, DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs):
-        # self.DEFAULT_SETTINGS=DEFAULT_SETTINGS
         for k, v in kwargs.items():
             setattr(self, k, v)
 
         for K, V in DEFAULT_SETTINGS.items():
             if K not in kwargs.keys():
                 setattr(self, K, V)
+
+        # Load predefined tables or Create Master Dataset and dataloaders
+        if self.load_predefined_datatables:
+            self.train_dataset, self.valid_dataset, self.test_dataset = load_predefined_datatables(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,path_col=self.path_col,label_col=self.label_col,mode=self.mode,wl=self.wl,transformations=self.transformations )
+
+        else:
+            self.train_dataset, self.valid_dataset, self.test_dataset = split_dataset(dataset=self.dataset, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
+            if self.balance_class:
+                self.train_dataset = over_sample(self.train_dataset)
+                self.valid_dataset = over_sample(self.valid_dataset)
+                if len(self.test_dataset)>0:self.test_dataset = over_sample(self.test_dataset)
+
+
+        self.train_label_table=clf.train_dataset.input_data
+        self.valid_label_table=clf.valid_dataset.input_data
+        self.test_label_table=clf.test_dataset.input_data
+        self.datasets = {'train':self.train_label_table, 'valid':self.valid_label_table,'test':self.test_label_table}
+
+        # DataLoaders
+        self.train_dataloader = torch.utils.data.DataLoader(self.train_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
+        self.valid_dataloader = torch.utils.data.DataLoader(self.valid_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
+        if len(self.test_dataset)>0: self.test_dataloader = torch.utils.data.DataLoader(self.test_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
 
         self.compare_parameters = {k:v for k,v in self.__dict__.items() if type(v)==list}
         self.non_compare_parameters = {k: v for k, v in self.__dict__.items() if k not in self.compare_parameters and k !='compare_parameters'}
@@ -281,17 +301,6 @@ class Compare_Image_Classifier():
 
         self.classifiers = []
         for x in self.scenarios_list:
-          if self.scenarios_list.index(x) == 0:
-            x = list(x)
-            classifier_settings = {self.compare_parameters_names[i]: x[i] for i in range(len(self.compare_parameters_names))}
-            classifier_settings.update(self.non_compare_parameters)
-            clf = Image_Classification(**classifier_settings)
-            self.train_label_table=clf.train_dataset.input_data
-            self.valid_label_table=clf.valid_dataset.input_data
-            self.test_label_table=clf.test_dataset.input_data
-            self.datasets = {'train':self.train_label_table, 'valid':self.valid_label_table,'test':self.test_label_table}
-            self.classifiers.append(clf)
-          else:
             x = list(x)
             classifier_settings = {self.compare_parameters_names[i]: x[i] for i in range(len(self.compare_parameters_names))}
             classifier_settings.update(self.non_compare_parameters)
@@ -302,11 +311,11 @@ class Compare_Image_Classifier():
     def grid(self):
       return self.scenarios_df
 
-    def dataset_info(self,plot=True, figure_size=(500,300)):
-        return self.classifiers[0].dataset_info(plot=plot, fig_size=figure_size)
-
-    def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
-        return self.classifiers[0].sample(fig_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
+    # def dataset_info(self,plot=True, figure_size=(500,300)):
+    #     return self.classifiers[0].dataset_info(plot=plot, fig_size=figure_size)
+    #
+    # def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
+    #     return self.classifiers[0].sample(fig_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
 
     def classes(self):
         return self.classifiers[0].train_dataset.class_to_idx
@@ -346,14 +355,14 @@ class Compare_Image_Classifier():
         except:
             raise TypeError('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
 
-    def export(self, output_path):
-        try:
-            outfile = open(output_path,'wb')
-            pickle.dump(self,outfile)
-            outfile.close()
-            print ('Pipeline exported successfully.')
-        except:
-            raise TypeError('Error! Pipeline could not be exported.')
+    # def export(self, output_path):
+    #     try:
+    #         outfile = open(output_path,'wb')
+    #         pickle.dump(self,outfile)
+    #         outfile.close()
+    #         print ('Pipeline exported successfully.')
+    #     except:
+    #         raise TypeError('Error! Pipeline could not be exported.')
 
 class Feature_Extraction(Pipeline):
 
