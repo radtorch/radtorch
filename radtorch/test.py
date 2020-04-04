@@ -77,8 +77,6 @@ class Pipeline():
                     self.valid_dataset = over_sample(self.valid_dataset)
                     if len(self.test_dataset)>0:self.test_dataset = over_sample(self.test_dataset)
                 self.num_output_classes = len(self.dataset.classes)
-            except Exception:
-                continue
             self.dataloader = torch.utils.data.DataLoader(self.dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
 
         # DataLoaders
