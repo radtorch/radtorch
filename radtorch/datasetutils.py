@@ -77,9 +77,8 @@ class RADTorch_Dataset(Dataset):
         return tuple(self.mean.tolist()), tuple(self.std.tolist())
 
     def normalized(self, **kwargs): #retruns a normalized dataset with either mean/std of the dataset or a user specified mean/std
-        if ['mean'] in kwargs.keys():
+        if ['mean'] in kwargs.keys() and ['std'] in kwargs.keys():
             mean = kwargs['mean']
-        if ['std'] in kwargs.keys():
             std = kwargs['std']
         else:
             mean, std = self.mean_std()
