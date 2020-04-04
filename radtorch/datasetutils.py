@@ -83,7 +83,7 @@ class RADTorch_Dataset(Dataset):
         else:
             mean, std = self.mean_std()
         normalized_dataset = copy.deepcopy(self)
-        normalized_dataset.transformations.transforms.append(transforms.Normalize(mean=mean, std=std)))
+        normalized_dataset.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
         return normalized_dataset
 
 
