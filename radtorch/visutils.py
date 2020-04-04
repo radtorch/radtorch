@@ -90,8 +90,8 @@ def show_dataset_info(dataset):
     """
 
     input_data = dataset.input_data
-    image_path_col = dataset.image_path_col
-    image_label_col = dataset.image_label_col
+    image_path_col = dataset.image_path_column
+    image_label_col = dataset.image_label_column
 
     class_names = list(dataset.class_to_idx.keys())+['Total Instances']
     class_idx = list(dataset.class_to_idx.values())+['']
