@@ -216,8 +216,8 @@ class Dataset_from_table(RADTorch_Dataset):
             self.input_data = pd.read_csv(self.input_source)
         else:
             raise TypeError('Error! No label table was selected. Please check.')
-        if self.is_dicom: self.dataset_files = [x for x in (self.input_data[self.image_label_column].tolist()) if x[-3:] == 'dcm']
-        else: self.dataset_files = [x for x in (self.input_data[self.image_label_column].tolist()) if str(x).endswith(IMG_EXTENSIONS)]
+        if self.is_dicom: self.dataset_files = [x for x in (self.input_data[self.image_path_column].tolist()) if x.endswith('.dcm')]
+        else: self.dataset_files = [x for x in (self.input_data[self.image_path_column].tolist()) if x.endswith(IMG_EXTENSIONS)]
         if self.multi_label == True:
             self.classes = list(np.unique([item for t in self.input_data[self.image_label_column].to_numpy() for item in t]))
             self.class_to_idx = class_to_idx(self.classes)
@@ -245,8 +245,8 @@ class Dataset_from_folder(RADTorch_Dataset):
         super(Dataset_from_folder, self).__init__(**kwargs)
         self.classes, self.class_to_idx = root_to_class(self.data_directory)
         self.all_files = list_of_files(self.data_directory)
-        if self.is_dicom: self.dataset_files = [x for x in self.all_files if x[-3:] == 'dcm']
-        else: self.dataset_files = [x for x in self.all_files]
+        if self.is_dicom: self.dataset_files = [x for x in self.all_files  if x.endswith('.dcm')]
+        else: self.dataset_files = [x for x in self.all_files if x.endswith(IMG_EXTENSIONS)]
         self.all_classes = [path_to_class(i) for i in self.dataset_files]
         self.input_data = pd.DataFrame(list(zip(self.dataset_files, self.all_classes)), columns=[self.image_path_column, self.image_label_column])
         if len(self.dataset_files)==0:
