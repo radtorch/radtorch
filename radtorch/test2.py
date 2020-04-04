@@ -108,18 +108,20 @@ class Image_Classification(Pipeline):
             mean, std = self.normalize
             self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
 
-
+        # Recreate Transformed Master Dataset
         if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
         else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
         self.dataloader = torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
+        # Split Master Dataset
         self.dataset_dictionary = self.dataset.split(valid_percent=self.valid_percent, test_percent=self.test_percent)
 
+        # Create train/valid/test datasets and dataloaders
         for k, v in self.dataset_dictionary.items():
             if self.balance_class:
-                setatrr(self, k+'_dataset', v.balance())
+                setattr(self, k+'_dataset', v.balance())
             else:
-                setatrr(self, k+'_dataset', v)
+                setattr(self, k+'_dataset', v)
             setatrr(self, k+[_dataloader], torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
 
 
