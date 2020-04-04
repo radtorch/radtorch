@@ -12,6 +12,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
+
 from radtorch.settings import *
 from radtorch.model import *
 from radtorch.data import *
@@ -19,15 +20,6 @@ from radtorch.vis import *
 from radtorch.general import *
 from radtorch.dataset import *
 
-def load_pipeline(target_path):
-    '''
-    .. include:: ./documentation/docs/pipeline.md##load_pipeline
-    '''
-    infile = open(target_path,'rb')
-    pipeline = pickle.load(infile)
-    infile.close()
-
-    return pipeline
 
 
 class Pipeline():
@@ -60,18 +52,17 @@ class Pipeline():
         except:
             pass
 
-        if self.label_from_table == True:
-            try:
-                self.dataset = dataset_from_table(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,input_source=self.table_source,img_path_column=self.path_col,img_label_column=self.label_col,multi_label = self.multi_label,mode=self.mode,wl=self.wl,trans=self.transformations)
-            except:
-                raise TypeError('Dataset could not be created from table.')
+        if self.label_from_table:
+            try:self.dataset = Dataset_from_table(data_directory=self.data_directory,table=self.table,is_dicom=self.is_dicom,image_path_column=self.image_path_column,image_label_column=self.image_label_column,multi_label = self.multi_label,mode=self.mode,wl=self.wl,transformations=self.transformations)
+            except:raise TypeError('Dataset could not be created from table.')
                 pass
-        elif self.label_from_table == False:
+        else:
             try:
                 self.dataset = dataset_from_folder(data_directory=self.data_directory,is_dicom=self.is_dicom,mode=self.mode,wl=self.wl,trans=self.transformations)
             except:
                 raise TypeError('Dataset could not be created from folder structure.')
                 pass
+
         self.num_output_classes = len(self.dataset.classes)
         self.dataloader = torch.utils.data.DataLoader(self.dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
 
@@ -423,3 +414,14 @@ class Feature_Extraction(Pipeline):
 
 
 ##
+
+
+def load_pipeline(target_path):
+    '''
+    .. include:: ./documentation/docs/pipeline.md##load_pipeline
+    '''
+    infile = open(target_path,'rb')
+    pipeline = pickle.load(infile)
+    infile.close()
+
+    return pipeline

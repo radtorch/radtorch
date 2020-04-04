@@ -73,16 +73,17 @@ def show_misclassified(misclassified_dictionary, transforms, class_to_idx_dict, 
     plot_images(images=imgs, titles=titles, figure_size=figure_size)
 
 
-def show_dataloader_sample(dataloader, show_file_name = False, figsize=(10,10), show_labels=True):
+def show_dataloader_sample(dataloader, figure_size=(10,10), show_labels=True, show_file_name = False, ):
   batch = next(iter(dataloader))
   images, labels, paths = batch
   images = images.numpy()
   images = [np.moveaxis(x, 0, -1) for x in images]
   if show_labels:
       titles = labels.numpy()
+      titles = [((list(dataloader.dataset.class_to_idx.keys())[list(dataloader.dataset.class_to_idx.values()).index(i)]), i) for i in titles]
   if show_file_name:
       titles = [ntpath.basename(x) for x in paths]
-  plot_images(images=images, titles=titles, figure_size=figsize)
+  plot_images(images=images, titles=titles, figure_size=figure_size)
 
 
 def show_dataset_info(dataset):
