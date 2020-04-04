@@ -55,9 +55,7 @@ def calculate_mean_std(dataloader):
 def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_split=True, shuffle=True, **kwargs):
     num_all = len(dataset)
     train_percent = 1.0 - (valid_percent+test_percent)
-
     num_classes = dataset.input_data[dataset.image_label_column].unique()
-
     classes_df = []
     for i in num_classes:
         temp_df = dataset.input_data.loc[dataset.input_data[dataset.image_label_column]==i]
@@ -71,17 +69,17 @@ def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_spli
         valid_df = (pd.concat([i[1] for i in classes_df])).sample(frac=1).reset_index(drop=True)
         test_df = (pd.concat([i[2] for i in classes_df])).sample(frac=1).reset_index(drop=True)
 
-        train_ds = dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, is_csv=False, input_source=train_df, mode=dataset.mode, wl=dataset.wl, trans=dataset.trans)
-        valid_ds = dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, is_csv=False, input_source=valid_df, mode=dataset.mode, wl=dataset.wl, trans=dataset.trans)
-        test_ds = dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, is_csv=False, input_source=test_df, mode=dataset.mode, wl=dataset.wl, trans=dataset.trans)
+        train_ds = Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=train_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
+        valid_ds = Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=valid_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
+        test_ds = Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=test_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
 
         return  train_ds, valid_ds, test_ds
     else:
         train_df = (pd.concat([i[0] for i in classes_df])).sample(frac=1).reset_index(drop=True)
         valid_df = (pd.concat([i[1] for i in classes_df])).sample(frac=1).reset_index(drop=True)
 
-        train_ds = dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, is_csv=False, input_source=train_df, mode=dataset.mode, wl=dataset.wl, trans=dataset.trans)
-        valid_ds = dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, is_csv=False, input_source=valid_df, mode=dataset.mode, wl=dataset.wl, trans=dataset.trans)
+        train_ds = Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=train_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
+        valid_ds = Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=valid_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
 
         return  train_ds, valid_ds
 
