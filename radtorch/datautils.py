@@ -165,8 +165,8 @@ def datatable_from_filepath(*filelist,classes:list): #KareemElFatairy
 
 
 class RADTorch_Dataset(Dataset):
-    def __init__(self,*args, **kwargs):
-        for k,v in self.__dict__.items():
+    def __init__(self, **kwargs):
+        for k,v in kwargs.items():
             setattr(self, k, v)
 
         if 'is_dicom' not in kwargs.keys():
@@ -222,10 +222,7 @@ class RADTorch_Dataset(Dataset):
         return show_dataset_info(self)
 
 class Dataset_from_table(RADTorch_Dataset):
-    def __init__(self,*args, **kwargs):
-        super().__init__()
-        # for k,v in kwargs.items():
-        #     setattr(self, k, v)
+    def __init__(self):
         if self.table==None:
             raise TypeError('Error! No label table was selected. Please check.')
         elif isinstance(self.table, pd.DataFrame):
@@ -259,12 +256,7 @@ class Dataset_from_table(RADTorch_Dataset):
             print ('Error! No classes extracted from directory:', self.data_directory)
 
 class Dataset_from_folder(RADTorch_Dataset):
-    def __init__(self,*args, **kwargs):
-        super().__init__()
-
-        # for k,v in kwargs.items():
-        #     setattr(self, k, v)
-
+    def __init__(self):
         self.classes, self.class_to_idx = root_to_class(self.data_directory)
         self.all_files = list_of_files(self.data_directory)
         if self.is_dicom:
