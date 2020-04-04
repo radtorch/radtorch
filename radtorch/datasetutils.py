@@ -76,7 +76,7 @@ class RADTorch_Dataset(Dataset):
         self.mean, self.std =  calculate_mean_std(torch.utils.data.DataLoader(dataset=self))
         return tuple(self.mean.tolist()), tuple(self.std.tolist())
 
-    def normalized(self, **kwargs): #retruns a normalized dataset with either mean/std of the dataset or a user specified mean/std
+    def normalize(self, **kwargs): #retruns a normalized dataset with either mean/std of the dataset or a user specified mean/std
         if 'mean' in kwargs.keys() and 'std' in kwargs.keys():
             mean = kwargs['mean']
             std = kwargs['std']
