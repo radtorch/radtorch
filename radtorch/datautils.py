@@ -225,6 +225,7 @@ class Dataset_from_table(RADTorch_Dataset):
     def __init__(self,*args, **kwargs):
         for k,v in kwargs.items():
             setattr(self, k, v)
+        super(Dataset_from_table, self).__init__()
 
         if self.table==None:
             raise TypeError('Error! No label table was selected. Please check.')
@@ -262,7 +263,7 @@ class Dataset_from_folder(RADTorch_Dataset):
     def __init__(self,*args, **kwargs):
         for k,v in kwargs.items():
             setattr(self, k, v)
-
+        super(Dataset_from_folder, self).__init__()
         self.classes, self.class_to_idx = root_to_class(self.data_directory)
         self.all_files = list_of_files(self.data_directory)
         if self.is_dicom:
