@@ -293,6 +293,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
         p.axis.major_label_text_font_size = "4pt"
         p.axis.major_label_standoff = 0
         p.xaxis.major_label_orientation = pi / 3
+        p.toolbar.autohide = True
 
         p.rect(x="features", y="img_path", width=1, height=1,
             source=df,
@@ -351,6 +352,7 @@ def plot_pipline_dataset_info(dataframe, test_percent):
     p.xaxis.major_label_text_color = '#99A3A4'
     p.yaxis.major_label_text_color = '#99A3A4'
     p.outline_line_color = None
+    p.toolbar.autohide = True
 
 
 
@@ -372,6 +374,7 @@ def plot_pipline_dataset_info(dataframe, test_percent):
     p.xaxis.major_label_text_color = '#99A3A4'
     p.yaxis.major_label_text_color = '#99A3A4'
     p.outline_line_color = None
+    p.toolbar.autohide = True
     output.append(p)
 
     show(row(output))
@@ -402,6 +405,7 @@ def plot_dataset_info(dataframe_dictionary, plot_size=(500,300)):
         p.xaxis.major_label_text_color = '#99A3A4'
         p.yaxis.major_label_text_color = '#99A3A4'
         p.outline_line_color = None
+        p.toolbar.autohide = True
         output.append(p)
 
     show(column(output))
@@ -423,8 +427,8 @@ def show_metrics(classifer_list, fig_size=(500,300)):
           legend_items = []
           p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
           for i in metrics_list:
-            x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= COLORS[ind])
-            y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= COLORS[-ind], line_dash='dotted')
+            x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= COLORS2[ind])
+            y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
             legend_items.append((('Model '+str(ind)+' Train Loss') , [x]))
             legend_items.append(('Model '+str(ind)+' Valid Loss' , [y]))
             ind = ind +1
@@ -433,8 +437,8 @@ def show_metrics(classifer_list, fig_size=(500,300)):
           legend_items = []
           p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
           for i in metrics_list:
-            x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= COLORS[ind])
-            y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= COLORS[-ind], line_dash='dotted')
+            x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= COLORS2[ind])
+            y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
             legend_items.append((('Model '+str(ind)+' Train Accuracy') , [x]))
             legend_items.append(('Model '+str(ind)+' Valid Accuracy' , [y]))
             ind = ind +1
@@ -467,7 +471,7 @@ def show_metrics(classifer_list, fig_size=(500,300)):
         output.append(p)
 
 
-    show(row(output))
+    show(column(output))
 
 
 def calculate_nn_predictions(model, target_data_set,  device):
@@ -513,7 +517,7 @@ def show_roc(classifier_list, fig_size=(700,400)):
         true_labels, predictions = calculate_nn_predictions(model=i.trained_model, target_data_set=i.test_dataset, device=i.device)
         fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
         auc = metrics.roc_auc_score(true_labels, predictions)
-        x = p.line(fpr, tpr, line_width=2, line_color= COLORS[ind])
+        x = p.line(fpr, tpr, line_width=2, line_color= COLORS2[ind])
         legend_items.append((('Model '+str(ind)+'. AUC = '+'{:0.4f}'.format((auc))),[x]))
 
         ind = ind+1
