@@ -236,7 +236,7 @@ class Dataset_from_table(RADTorch_Dataset):
                 self.multi_label_idx.append(t)
             self.input_data['MULTI_LABEL_IDX'] = self.multi_label_idx
         else:
-            self.classes =  list(self.self.input_data[self.image_label_column].unique())
+            self.classes =  list(self.input_data[self.image_label_column].unique())
             self.class_to_idx = class_to_idx(self.classes)
         if len(self.dataset_files)==0:
             print ('Error! No data files found in directory:', self.data_directory)
