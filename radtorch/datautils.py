@@ -186,11 +186,7 @@ class RADTorch_Dataset(Dataset):
         if 'multi_label ' not in kwargs.keys():
             self.multi_label=False
 
-        if len(self.dataset_files)==0:
-            print ('Error! No data files found in directory:', self.data_directory)
 
-        if len(self.classes)    ==0:
-            print ('Error! No classes extracted from directory:', self.data_directory)
 
     def __getitem__(self):
         image_path = self.input_data.iloc[index][self.image_path_col]
@@ -257,7 +253,11 @@ class Dataset_from_table(RADTorch_Dataset):
         else:
             self.classes = np.unique(list(self.input_data[self.image_label_col]))
             self.class_to_idx = class_to_idx(self.classes)
+        if len(self.dataset_files)==0:
+            print ('Error! No data files found in directory:', self.data_directory)
 
+        if len(self.classes)    ==0:
+            print ('Error! No classes extracted from directory:', self.data_directory)
 
 class Dataset_from_folder(RADTorch_Dataset):
     def __init__(self, **kwargs):
@@ -274,7 +274,11 @@ class Dataset_from_folder(RADTorch_Dataset):
         self.image_path_col = 'IMAGE_PATH'
         self.image_label_col = 'IMAGE_LABEL'
         self.input_data = pd.DataFrame(list(zip(self.dataset_files, self.all_classes)), columns=[self.image_path_col, self.image_label_col])
+        if len(self.dataset_files)==0:
+            print ('Error! No data files found in directory:', self.data_directory)
 
+        if len(self.classes)    ==0:
+            print ('Error! No classes extracted from directory:', self.data_directory)
 
 
 
