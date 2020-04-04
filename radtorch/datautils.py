@@ -221,11 +221,10 @@ class RADTorch_Dataset(Dataset):
     def info(self):
         return show_dataset_info(self)
 
-
 class Dataset_from_table(RADTorch_Dataset):
     def __init__(self, *args, **kwargs):
 
-        super(Dataset_from_table).__init__(*args, **kwargs)
+        super(Dataset_from_table, self).__init__(*args, **kwargs)
 
         if self.table==None:
             raise TypeError('Error! No label table was selected. Please check.')
@@ -262,7 +261,7 @@ class Dataset_from_table(RADTorch_Dataset):
 class Dataset_from_folder(RADTorch_Dataset):
     def __init__(self, *args, **kwargs):
 
-        super(Dataset_from_folder).__init__(*args, **kwargs)
+        super(Dataset_from_folder, self).__init__(*args, **kwargs)
 
         self.classes, self.class_to_idx = root_to_class(self.data_directory)
         self.all_files = list_of_files(self.data_directory)
