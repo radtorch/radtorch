@@ -154,7 +154,7 @@ class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
         super().__init__(DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs)
 
-        for k, v in __dict__.items():
+        for k, v in self.__dict__.items():
             if type(v) is list:
                 setattr(self, k, v[0])
 
