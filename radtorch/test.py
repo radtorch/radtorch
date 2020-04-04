@@ -96,7 +96,7 @@ class Pipeline():
             return
 
     def dataset_info(self, plot=True, fig_size=(500,300)):
-        if self.train_dataset:
+        if 'train_dataset' in self.__dict__.keys():
             info_dict = {}
             info_dict['train_dataset'] = show_dataset_info(self.train_dataset)
             info_dict['train_dataset'].style.set_caption("train_dataset")
@@ -120,7 +120,7 @@ class Pipeline():
                 display (show_dataset_info(self.dataset))
 
     def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
-        if self.train_dataloader:
+        if 'train_dataloader' in self.__dict__.keys():
             displayed_dataloader=self.train_dataloader
             displayed_dataset=self.train_dataset
         else:
