@@ -262,13 +262,8 @@ class Image_Classification(Pipeline):
             return self.misclassified_instances
 
 class Compare_Image_Classifier(Pipeline):
-    def __init__(self, DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs):
-        for k, v in kwargs.items():
-            setattr(self, k, v)
-
-        for K, V in DEFAULT_SETTINGS.items():
-            if K not in kwargs.keys():
-                setattr(self, K, V)
+    def __init__(self, **kwargs):
+        super().__init__(DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs)
 
         # Load predefined tables or Create Master Dataset and dataloaders
         if self.load_predefined_datatables:
