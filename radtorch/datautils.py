@@ -217,7 +217,7 @@ class Dataset_from_table(RADTorch_Dataset):
         else:
             raise TypeError('Error! No label table was selected. Please check.')
         if self.is_dicom: self.dataset_files = [x for x in (self.input_data[self.image_label_column].tolist()) if x[-3:] == 'dcm']
-        else: self.dataset_files = [x for x in (self.input_data[self.image_label_column].tolist()) if x.endswith(IMG_EXTENSIONS)]
+        else: self.dataset_files = [x for x in (self.input_data[self.image_label_column].tolist()) if str(x).endswith(IMG_EXTENSIONS)]
         if self.multi_label == True:
             self.classes = list(np.unique([item for t in self.input_data[self.image_label_column].to_numpy() for item in t]))
             self.class_to_idx = class_to_idx(self.classes)
