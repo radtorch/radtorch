@@ -21,9 +21,9 @@ from radtorch.settings import *
 
 def over_sample(dataset, shuffle=True):
     balanced_dataset = copy.deepcopy(dataset)
-    max_size = balanced_dataset.input_data[balanced_dataset.image_label_col].value_counts().max()
+    max_size = balanced_dataset.input_data[balanced_dataset.image_label_column].value_counts().max()
     lst = [balanced_dataset.input_data]
-    for class_index, group in balanced_dataset.input_data.groupby(balanced_dataset.image_label_col):
+    for class_index, group in balanced_dataset.input_data.groupby(balanced_dataset.image_label_column):
       lst.append(group.sample(max_size-len(group), replace=True))
     balanced_dataframe = pd.concat(lst)
     if shuffle:
@@ -56,11 +56,11 @@ def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_spli
     num_all = len(dataset)
     train_percent = 1.0 - (valid_percent+test_percent)
 
-    num_classes = dataset.input_data[dataset.image_label_col].unique()
+    num_classes = dataset.input_data[dataset.image_label_column].unique()
 
     classes_df = []
     for i in num_classes:
-        temp_df = dataset.input_data.loc[dataset.input_data[dataset.image_label_col]==i]
+        temp_df = dataset.input_data.loc[dataset.input_data[dataset.image_label_column]==i]
         if shuffle:
           temp_df = temp_df.sample(frac=1).reset_index(drop=True)
         train, validate, test = np.split(temp_df.sample(frac=1), [int(train_percent*len(temp_df)), int((train_percent+valid_percent)*len(temp_df))])
@@ -175,7 +175,7 @@ class RADTorch_Dataset(Dataset):
 
 
     def __getitem__(self):
-        image_path = self.input_data.iloc[index][self.image_path_col]
+        image_path = self.input_data.iloc[index][self.image_path_column]
         if self.is_dicom:
             image = dicom_to_narray(image_path, self.mode, self.wl)
             image = Image.fromarray(image)
@@ -186,11 +186,11 @@ class RADTorch_Dataset(Dataset):
         image = self.transformations(image)
 
         if self.multi_label == True:
-            label = self.input_data.iloc[index][self.image_label_col]
+            label = self.input_data.iloc[index][self.image_label_column]
             label_idx = self.input_data.iloc[index]['MULTI_LABEL_IDX']
 
         else:
-            label = self.input_data.iloc[index][self.image_label_col]
+            label = self.input_data.iloc[index][self.image_label_column]
             label_idx = [v for k, v in self.class_to_idx.items() if k == label][0]
 
         return image, label_idx, image_path
@@ -217,24 +217,24 @@ class Dataset_from_table(RADTorch_Dataset):
         else:
             raise TypeError('Error! No label table was selected. Please check.')
         if self.is_dicom:
-            self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x.lower().endswith('dcm')] # Returns only DICOM files from folder
+            self.dataset_files = [x for x in (self.input_data[self.img_label_column].tolist()) if x.lower().endswith('dcm')] # Returns only DICOM files from folder
         else:
-            self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x.lower().endswith(IMG_EXTENSIONS)]
+            self.dataset_files = [x for x in (self.input_data[self.img_label_column].tolist()) if x.lower().endswith(IMG_EXTENSIONS)]
         if self.multi_label == True:
-            self.classes = list(np.unique([item for t in self.input_data[self.image_label_col].to_numpy() for item in t]))
+            self.classes = list(np.unique([item for t in self.input_data[self.image_label_column].to_numpy() for item in t]))
             self.class_to_idx = class_to_idx(self.classes)
             self.multi_label_idx = []
             for i, row in self.input_data.iterrows():
                 t = []
                 for u in self.classes:
-                    if u in row[self.image_label_col]:
+                    if u in row[self.image_label_column]:
                         t.append(1)
                     else:
                         t.append(0)
                 self.multi_label_idx.append(t)
             self.input_data['MULTI_LABEL_IDX'] = self.multi_label_idx
         else:
-            self.classes = np.unique(list(self.input_data[self.image_label_col]))
+            self.classes = np.unique(list(self.input_data[self.image_label_column]))
             self.class_to_idx = class_to_idx(self.classes)
         if len(self.dataset_files)==0:
             print ('Error! No data files found in directory:', self.data_directory)
@@ -252,9 +252,7 @@ class Dataset_from_folder(RADTorch_Dataset):
         else:
             self.dataset_files = [x for x in self.all_files]
         self.all_classes = [path_to_class(i) for i in self.dataset_files]
-        self.image_path_col = 'IMAGE_PATH'
-        self.image_label_col = 'IMAGE_LABEL'
-        self.input_data = pd.DataFrame(list(zip(self.dataset_files, self.all_classes)), columns=[self.image_path_col, self.image_label_col])
+        self.input_data = pd.DataFrame(list(zip(self.dataset_files, self.all_classes)), columns=[self.image_path_column, self.image_label_column])
         if len(self.dataset_files)==0:
             print ('Error! No data files found in directory:', self.data_directory)
 
