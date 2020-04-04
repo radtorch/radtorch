@@ -22,7 +22,7 @@ from radtorch.datautils import *
 
 
 class RADTorch_Dataset(Dataset):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs): #defines the default parameters for dataset class.
         for k,v in kwargs.items():
             setattr(self, k, v)
 
@@ -30,7 +30,7 @@ class RADTorch_Dataset(Dataset):
             if k not in kwargs.keys():
                 setattr(self, k, v)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index): #handles how to get an image of the dataset.
         image_path = self.input_data.iloc[index][self.image_path_column]
         if self.is_dicom:
             image = dicom_to_narray(image_path, self.mode, self.wl)
@@ -51,28 +51,28 @@ class RADTorch_Dataset(Dataset):
 
         return image, label_idx, image_path
 
-    def __len__(self):
+    def __len__(self): #returns number of images in dataset.
         return len(self.dataset_files)
 
-    def info(self):
+    def info(self): #returns table of dataset information.
         return show_dataset_info(self)
 
-    def classes(self):
+    def classes(self): #returns list of classes in dataset.
         return self.classes
 
-    def class_to_idx(self):
+    def class_to_idx(self): #returns mapping of classes to class id (dictionary).
         return self.class_to_idx
 
-    def parameters(self):
+    def parameters(self): #returns all the parameter names of the dataset.
         return self.__dict__.keys()
 
-    def split(self, **kwargs):
+    def split(self, **kwargs): #splits dataset into train/valid/split, takes test_percent and valid_percent.
         return split_dataset(dataset=self, **kwargs)
 
-    def balance(self, **kwargs):
+    def balance(self, **kwargs): #solves class imbalance in dataset through over-sampling of classes with less images.
         return over_sample(dataset=self, **kwargs)
 
-    def mean_std(self):
+    def mean_std(self): #calculates mean and standard deviation of dataset.
         return calculate_mean_std(torch.utils.data.DataLoader(dataset=self))
 
 
