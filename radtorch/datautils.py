@@ -9,7 +9,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
@@ -20,37 +20,7 @@
 Functions and Classes for Data Handling and PreProcessing
 """
 
-import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools, ntpath, copy
-import torchvision.models as models
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import torchvision.datasets as datasets
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-
-from sklearn import metrics
-from tqdm import tqdm_notebook as tqdm
-from tqdm.notebook import tqdm
-from torch.utils.data.dataset import Dataset
-from torchvision import transforms
-from PIL import Image
-from pathlib import Path
-from collections import Counter
-from IPython.display import display
-
-
-from bokeh.io import output_notebook, show
-from math import pi
-from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource, Legend
-from bokeh.plotting import figure, show
-from bokeh.sampledata.unemployment1948 import data
-from bokeh.layouts import row, gridplot, column
-from bokeh.transform import factor_cmap, cumsum
-from bokeh.palettes import viridis, Paired, inferno, brewer, d3, Turbo256
-
-
+from settings import *
 from radtorch.dicomutils import  *
 from radtorch.visutils import *
 from radtorch.settings import *

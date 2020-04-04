@@ -18,37 +18,9 @@
 """
 Functions and Classes RADTorch Pipelines
 """
-import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools, ntpath, copy
-import torchvision.models as models
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import torchvision.datasets as datasets
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-
-from sklearn import metrics
-from tqdm import tqdm_notebook as tqdm
-from tqdm.notebook import tqdm
-from torch.utils.data.dataset import Dataset
-from torchvision import transforms
-from PIL import Image
-from pathlib import Path
-from collections import Counter
-from IPython.display import display
 
 
-from bokeh.io import output_notebook, show
-from math import pi
-from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource, Legend
-from bokeh.plotting import figure, show
-from bokeh.sampledata.unemployment1948 import data
-from bokeh.layouts import row, gridplot, column
-from bokeh.transform import factor_cmap, cumsum
-from bokeh.palettes import viridis, Paired, inferno, brewer, d3, Turbo256
-
-
+from settings import *
 from radtorch.modelsutils import *
 from radtorch.datautils import *
 from radtorch.visutils import *
@@ -110,6 +82,7 @@ class Pipeline():
                 self.valid_dataset = over_sample(self.valid_dataset)
                 if len(self.test_dataset)>0:self.test_dataset = over_sample(self.test_dataset)
             self.num_output_classes = len(self.dataset.classes)
+            self.dataloader = torch.utils.data.DataLoader(self.dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
 
         # DataLoaders
         self.train_dataloader = torch.utils.data.DataLoader(self.train_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
@@ -127,11 +100,14 @@ class Pipeline():
         info = {key:str(value) for key, value in self.__dict__.items()}
         info = pd.DataFrame.from_dict(info.items())
         info.columns = ['Property', 'Value']
-        info = info.append({'Property':'Train Dataset Size', 'Value':len(self.train_dataset)}, ignore_index=True)
-        info = info.append({'Property':'Valid Dataset Size', 'Value':len(self.valid_dataset)}, ignore_index=True)
-        if self.test_percent > 0:
-            info = info.append({'Property':'Test Dataset Size', 'Value':len(self.test_dataset)}, ignore_index=True)
-        return info
+        try:
+            info = info.append({'Property':'Train Dataset Size', 'Value':len(self.train_dataset)}, ignore_index=True)
+            info = info.append({'Property':'Valid Dataset Size', 'Value':len(self.valid_dataset)}, ignore_index=True)
+            if self.test_percent > 0:
+                info = info.append({'Property':'Test Dataset Size', 'Value':len(self.test_dataset)}, ignore_index=True)
+            return info
+        except:
+            return
 
     def dataset_info(self, plot=True, fig_size=(500,300)):
         info_dict = {}
@@ -373,7 +349,7 @@ class Feature_Extraction(Pipeline):
         super().__init__(DEFAULT_SETTINGS=FEATURE_EXTRACTION_PIPELINE_SETTINGS, **kwargs)
         self.classifiers = [self]
 
-        self.model = create_model(model_arch=self.model_arch,output_classes=self.num_output_classes,pre_trained=self.pre_trained,unfreeze_weights = self.unfreeze_weights,mode = 'feature_extraction',)
+        self.model = create_model(model_arch=self.model_arch,output_classes=self.num_output_classes,pre_trained=self.pre_trained,unfreeze_weights = self.unfreeze_weights, mode = 'feature_extraction')
 
         self.model = self.model.to(self.device)
 
@@ -387,7 +363,7 @@ class Feature_Extraction(Pipeline):
 
         self.model = self.model.to(self.device)
 
-        for i, (imgs, labels, paths) in tqdm(enumerate(self.train_dataloader), total=len(self.train_dataloader)):
+        for i, (imgs, labels, paths) in tqdm(enumerate(self.dataloader), total=len(self.dataloader)):
             self.labels_idx = self.labels_idx+labels.tolist()
             self.img_path_list = self.img_path_list+list(paths)
             with torch.no_grad():
