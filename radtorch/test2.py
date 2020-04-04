@@ -22,6 +22,7 @@ from radtorch.dataset import *
 
 
 class Pipeline():
+
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -30,18 +31,18 @@ class Pipeline():
             if k not in kwargs.keys():
                 setattr(self, k, v)
 
-        data_subsets = ['dataset', 'train_dataset', 'valid_dataset', 'test_dataset']
+        self.data_subsets = ['dataset', 'train_dataset', 'valid_dataset', 'test_dataset']
 
     def info(self):
         info = pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns = ['Property', 'Value']
-        for i in data_subsets:
+        for i in self.data_subsets :
             if i in self.__dict__.keys(): info = info.append({'Property':i, 'Value':len(self.__dict__[i])}, ignore_index=True)
         return info
 
     def dataset_info(self, plot=True, fig_size=(500,300)):
         info_dict = {}
-        for i in data_subsets:
+        for i in self.data_subsets :
             if i in self.__dict__.keys():
                 info_dict[i] = show_dataset_info(self.__dict__[i])
                 info_dict[i].style.set_caption(i)
@@ -73,6 +74,7 @@ class Pipeline():
 
 
 class Image_Classification(Pipeline):
+
     def __init__(self, **kwargs):
         super(Image_Classification, self).__init__(**kwargs, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS)
         self.classifiers = [self]
