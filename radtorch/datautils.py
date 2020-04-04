@@ -52,7 +52,7 @@ def calculate_mean_std(dataloader):
     return (mean, std)
 
 
-def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_split=True, shuffle=True):
+def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_split=True, shuffle=True, **kwargs):
     num_all = len(dataset)
     train_percent = 1.0 - (valid_percent+test_percent)
 
@@ -207,6 +207,10 @@ class RADTorch_Dataset(Dataset):
     def info(self):
         return show_dataset_info(self)
 
+    def split(self, **kwargs):
+        return split_dataset(dataset=self, **kwargs)
+
+
 class Dataset_from_table(RADTorch_Dataset):
     def __init__(self, **kwargs):
         super(Dataset_from_table, self).__init__(**kwargs)
@@ -232,7 +236,7 @@ class Dataset_from_table(RADTorch_Dataset):
                 self.multi_label_idx.append(t)
             self.input_data['MULTI_LABEL_IDX'] = self.multi_label_idx
         else:
-            self.classes = np.unique(list(self.input_data[self.image_label_column]))
+            self.classes =  list(self.self.input_data[self.image_label_column].unique())
             self.class_to_idx = class_to_idx(self.classes)
         if len(self.dataset_files)==0:
             print ('Error! No data files found in directory:', self.data_directory)
