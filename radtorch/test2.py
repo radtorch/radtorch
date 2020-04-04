@@ -86,7 +86,7 @@ class Image_Classification(Pipeline):
         self.dataloader = torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         # Custom Resize Adjustement
-        if isinstance(self.resize, bool): pass
+        if isinstance(self.custom_resize, bool): pass
         elif isinstance(self.custom_resize, int): self.resize = self.custom_resize
         else: self.resize = model_dict[self.model_arch]['input_size']
 
