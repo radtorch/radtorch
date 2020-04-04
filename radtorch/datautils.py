@@ -209,6 +209,7 @@ class RADTorch_Dataset(Dataset):
 
 class Dataset_from_table(RADTorch_Dataset):
     def __init__(self, **kwargs):
+        super().__init__()        
         if self.table==None:
             raise TypeError('Error! No label table was selected. Please check.')
         elif isinstance(self.table, pd.DataFrame):
@@ -243,6 +244,7 @@ class Dataset_from_table(RADTorch_Dataset):
 
 class Dataset_from_folder(RADTorch_Dataset):
     def __init__(self, **kwargs):
+        super().__init__()
         self.classes, self.class_to_idx = root_to_class(self.data_directory)
         self.all_files = list_of_files(self.data_directory)
         if self.is_dicom:
