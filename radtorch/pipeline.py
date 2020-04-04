@@ -16,7 +16,6 @@
 
 
 from radtorch.settings import *
-
 from radtorch.modelsutils import *
 from radtorch.datautils import *
 from radtorch.visutils import *

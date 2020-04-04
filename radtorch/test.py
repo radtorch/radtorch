@@ -70,12 +70,14 @@ class Pipeline():
                     raise TypeError('Dataset could not be created from folder structure.')
                     pass #Create Master Dataset from Folder
 
-            self.train_dataset, self.valid_dataset, self.test_dataset = split_dataset(dataset=self.dataset, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
-            if self.balance_class:
-                self.train_dataset = over_sample(self.train_dataset)
-                self.valid_dataset = over_sample(self.valid_dataset)
-                if len(self.test_dataset)>0:self.test_dataset = over_sample(self.test_dataset)
-            self.num_output_classes = len(self.dataset.classes)
+            try:
+                self.train_dataset, self.valid_dataset, self.test_dataset = split_dataset(dataset=self.dataset, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
+                if self.balance_class:
+                    self.train_dataset = over_sample(self.train_dataset)
+                    self.valid_dataset = over_sample(self.valid_dataset)
+                    if len(self.test_dataset)>0:self.test_dataset = over_sample(self.test_dataset)
+                self.num_output_classes = len(self.dataset.classes)
+            except:continue
             self.dataloader = torch.utils.data.DataLoader(self.dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
 
         # DataLoaders
