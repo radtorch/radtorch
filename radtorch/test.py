@@ -50,48 +50,23 @@ class Pipeline():
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-        # Load predefined tables or Create Master Dataset and dataloaders
-        if self.load_predefined_datatables:
-            self.train_dataset, self.valid_dataset, self.test_dataset = load_predefined_datatables(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,path_col=self.path_col,label_col=self.label_col,mode=self.mode,wl=self.wl,transformations=self.transformations )
-            self.num_output_classes = len(self.train_dataset.classes)
-
-        # Load predefined tables if available
-        else: # Else create master dataset
-            if self.label_from_table == True:
-                try:
-                    self.dataset = dataset_from_table(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,input_source=self.table_source,img_path_column=self.path_col,img_label_column=self.label_col,multi_label = self.multi_label,mode=self.mode,wl=self.wl,trans=self.transformations)
-                except:
-                    raise TypeError('Dataset could not be created from table.')
-                    pass #Create Master Dataset from Table
-            if self.label_from_table == False:
-                try:
-                    self.dataset = dataset_from_folder(data_directory=self.data_directory,is_dicom=self.is_dicom,mode=self.mode,wl=self.wl,trans=self.transformations)
-                except:
-                    raise TypeError('Dataset could not be created from folder structure.')
-                    pass #Create Master Dataset from Folder
-
+        if self.label_from_table == True:
             try:
-                self.train_dataset, self.valid_dataset, self.test_dataset = split_dataset(dataset=self.dataset, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
-                if self.balance_class:
-                    self.train_dataset = over_sample(self.train_dataset)
-                    self.valid_dataset = over_sample(self.valid_dataset)
-                    if len(self.test_dataset)>0:self.test_dataset = over_sample(self.test_dataset)
-
+                self.dataset = dataset_from_table(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,input_source=self.table_source,img_path_column=self.path_col,img_label_column=self.label_col,multi_label = self.multi_label,mode=self.mode,wl=self.wl,trans=self.transformations)
             except:
+                raise TypeError('Dataset could not be created from table.')
                 pass
-            self.num_output_classes = len(self.dataset.classes)
-            self.dataloader = torch.utils.data.DataLoader(self.dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
+        elif self.label_from_table == False:
+            try:
+                self.dataset = dataset_from_folder(data_directory=self.data_directory,is_dicom=self.is_dicom,mode=self.mode,wl=self.wl,trans=self.transformations)
+            except:
+                raise TypeError('Dataset could not be created from folder structure.')
+                pass
+        self.num_output_classes = len(self.dataset.classes)
+        self.dataloader = torch.utils.data.DataLoader(self.dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
 
-        # DataLoaders
-        try:
-            self.train_dataloader = torch.utils.data.DataLoader(self.train_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
-            self.valid_dataloader = torch.utils.data.DataLoader(self.valid_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
-            if len(self.test_dataset)>0: self.test_dataloader = torch.utils.data.DataLoader(self.test_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
-        except:
-            pass
-            
         if self.normalize == 'auto':
-            self.mean, self.std = calculate_mean_std(torch.utils.data.DataLoader(self.dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers))
+            self.mean, self.std = calculate_mean_std(self.dataloader)
         elif type(self.normalize) is list:
             self.mean = self.normalize[0]
             self.std = self.normalize[1]
@@ -111,30 +86,44 @@ class Pipeline():
             return
 
     def dataset_info(self, plot=True, fig_size=(500,300)):
-        info_dict = {}
-        info_dict['train_dataset'] = show_dataset_info(self.train_dataset)
-        info_dict['train_dataset'].style.set_caption("train_dataset")
-        info_dict['valid_dataset'] = show_dataset_info(self.valid_dataset)
-        info_dict['valid_dataset'].style.set_caption("valid_dataset")
-        if self.test_percent > 0:
-            info_dict['test_dataset'] = show_dataset_info(self.test_dataset)
-            info_dict['test_dataset'].style.set_caption("test_dataset")
-
-        if plot:
-            plot_dataset_info(info_dict, plot_size= fig_size)
+        if self.train_dataset:
+            info_dict = {}
+            info_dict['train_dataset'] = show_dataset_info(self.train_dataset)
+            info_dict['train_dataset'].style.set_caption("train_dataset")
+            info_dict['valid_dataset'] = show_dataset_info(self.valid_dataset)
+            info_dict['valid_dataset'].style.set_caption("valid_dataset")
+            if self.test_percent > 0:
+                info_dict['test_dataset'] = show_dataset_info(self.test_dataset)
+                info_dict['test_dataset'].style.set_caption("test_dataset")
+            if plot:
+                plot_dataset_info(info_dict, plot_size= fig_size)
+            else:
+                display (show_dataset_info(self.train_dataset))
+                display (show_dataset_info(self.valid_dataset))
+                display (show_dataset_info(self.test_dataset))
         else:
-
-            display (show_dataset_info(self.train_dataset))
-            display (show_dataset_info(self.valid_dataset))
-            display (show_dataset_info(self.test_dataset))
+            info_dict = {}
+            info_dict['dataset'] = show_dataset_info(self.dataset)
+            if plot:
+                plot_dataset_info(info_dict, plot_size= fig_size)
+            else:
+                display (show_dataset_info(self.dataset))
 
     def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
-        batch = next(iter(self.train_dataloader))
+        if self.train_dataloader:
+            displayed_dataloader=self.train_dataloader
+            displayed_dataset=self.train_dataset
+        else:
+            displayed_dataloader=self.dataloader
+            displayed_dataset=self.dataset
+
+
+        batch = next(iter(displayed_dataloader))
         images, labels, paths = batch
         images = [np.moveaxis(x, 0, -1) for x in images.numpy()]
         if show_labels:
           titles = labels.numpy()
-          titles = [((list(self.train_dataset.class_to_idx.keys())[list(self.train_dataset.class_to_idx.values()).index(i)]), i) for i in titles]
+          titles = [((list(displayed_dataset.class_to_idx.keys())[list(displayed_dataset.class_to_idx.values()).index(i)]), i) for i in titles]
         if show_file_name:
           titles = [ntpath.basename(x) for x in paths]
         plot_images(images=images, titles=titles, figure_size=fig_size)
@@ -162,10 +151,32 @@ def load_pipeline(target_path):
 
     return pipeline
 
+
+
 class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
         super().__init__(DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs)
         self.classifiers = [self]
+
+        # Load predefined tables or Create Master Dataset and dataloaders
+        if self.load_predefined_datatables:
+            self.train_dataset, self.valid_dataset, self.test_dataset = load_predefined_datatables(data_directory=self.data_directory,is_csv=self.is_csv,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,path_col=self.path_col,label_col=self.label_col,mode=self.mode,wl=self.wl,transformations=self.transformations )
+
+        else:
+            self.train_dataset, self.valid_dataset, self.test_dataset = split_dataset(dataset=self.dataset, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
+            if self.balance_class:
+                self.train_dataset = over_sample(self.train_dataset)
+                self.valid_dataset = over_sample(self.valid_dataset)
+                if len(self.test_dataset)>0:self.test_dataset = over_sample(self.test_dataset)
+
+
+        # DataLoaders
+        self.train_dataloader = torch.utils.data.DataLoader(self.train_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
+        self.valid_dataloader = torch.utils.data.DataLoader(self.valid_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
+        if len(self.test_dataset)>0: self.test_dataloader = torch.utils.data.DataLoader(self.test_dataset,batch_size=self.batch_size,shuffle=True,num_workers=self.num_workers)
+
+
+        self.num_output_classes = len(self.train_dataset.classes)
 
         self.train_model = create_model(model_arch=self.model_arch,output_classes=self.num_output_classes,pre_trained=self.pre_trained,unfreeze_weights = self.unfreeze_weights,mode = 'train',)
 
