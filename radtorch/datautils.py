@@ -293,11 +293,11 @@ class Dataset_from_folder(RADTorch_Dataset):
 
 
 def load_predefined_datatables(*args, **kwargs):
-    train_data_set = Dataset_from_table(table=kwargs['predefined_datasets']['train'], kwargs)
-    valid_data_set = Dataset_from_table(table=kwargs['predefined_datasets']['valid'], kwargs)
-    test_data_set = Dataset_from_table(table=kwargs['predefined_datasets']['test'], kwargs)
+    train_dataset = Dataset_from_table(table=kwargs['predefined_datasets']['train'], kwargs)
+    valid_dataset = Dataset_from_table(table=kwargs['predefined_datasets']['valid'], kwargs)
+    test_dataset = Dataset_from_table(table=kwargs['predefined_datasets']['test'], kwargs)
 
-    return train_data_set, valid_data_set, test_data_set
+    return train_dataset, valid_dataset, test_dataset
 
 
 
