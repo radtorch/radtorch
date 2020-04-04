@@ -41,7 +41,7 @@ def calculate_mean_std(dataloader):
     mean = 0.
     std = 0.
     nb_samples = 0.
-    for data, labels, paths in dataloader:
+    for data, labels, paths in tqdm(dataloader, total=len(dataloader)):
         batch_samples = data.size(0)
         data = data.view(batch_samples, data.size(1), -1)
         mean += data.mean(2).sum(0)
