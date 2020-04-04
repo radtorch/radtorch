@@ -34,7 +34,8 @@ def load_pipeline(target_path):
 class Pipeline():
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
-            setattr(self, k, v)
+            if type(v) is not list:
+                setattr(self, k, v)
 
         for K, V in self.DEFAULT_SETTINGS.items():
             if K not in kwargs.keys():
