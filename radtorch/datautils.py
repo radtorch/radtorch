@@ -169,21 +169,21 @@ class RADTorch_Dataset(Dataset):
         for k,v in self.__dict__.items():
             setattr(self, k, v)
 
-        if 'is_dicom' not in **kwargs.keys():
+        if 'is_dicom' not in kwargs.keys():
             self.is_dicom=True
-        if 'mode' not in **kwargs.keys():
+        if 'mode' not in kwargs.keys():
             self.mode='RAW'
-        if 'wl' not in **kwargs.keys():
+        if 'wl' not in kwargs.keys():
             self.wl=None
-        if 'table' not in **kwargs.keys():
+        if 'table' not in kwargs.keys():
             self.table=None
-        if 'img_path_column' not in **kwargs.keys():
+        if 'img_path_column' not in kwargs.keys():
             self.img_path_column='IMAGE_PATH'
-        if 'img_label_column' not in **kwargs.keys():
+        if 'img_label_column' not in kwargs.keys():
             self.img_label_column='IMAGE_LABEL'
-        if 'transformations ' not in **kwargs.keys():
+        if 'transformations ' not in kwargs.keys():
             self.transformations=transforms.Compose([transforms.ToTensor()])
-        if 'multi_label ' not in **kwargs.keys():
+        if 'multi_label ' not in kwargs.keys():
             self.multi_label=False
 
         if len(self.dataset_files)==0:
