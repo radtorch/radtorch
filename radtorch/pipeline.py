@@ -13,10 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 from radtorch.settings import *
-from radtorch.modelsutils import *
-from radtorch.datautils import *
-from radtorch.visutils import *
-from radtorch.generalutils import *
+from radtorch.model import *
+from radtorch.data import *
+from radtorch.vis import *
+from radtorch.general import *
+from radtorch.dataset import *
 
 
 
