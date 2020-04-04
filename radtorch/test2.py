@@ -113,7 +113,7 @@ class Image_Classification(Pipeline):
         else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
         self.dataloader = torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
-        self.dataset_dictionary = self.dataset.split(valid_percent=self.valid_percent, test_percent=test_percent)
+        self.dataset_dictionary = self.dataset.split(valid_percent=self.valid_percent, test_percent=self.test_percent)
 
         for k, v in self.dataset_dictionary.items():
             if self.balance_class:
