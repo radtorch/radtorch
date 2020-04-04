@@ -19,7 +19,7 @@ from radtorch.settings import *
 
 
 
-def over_sample(dataset, shuffle=True):
+def over_sample(dataset, shuffle=True, **kwargs)):
     balanced_dataset = copy.deepcopy(dataset)
     max_size = balanced_dataset.input_data[balanced_dataset.image_label_column].value_counts().max()
     lst = [balanced_dataset.input_data]

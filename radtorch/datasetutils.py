@@ -69,6 +69,9 @@ class RADTorch_Dataset(Dataset):
     def split(self, **kwargs):
         return split_dataset(dataset=self, **kwargs)
 
+    def balance(self, **kwargs):
+        return over_sample(dataset=self, **kwargs))
+
     def mean_std(self):
         return calculate_mean_std(torch.utils.data.DataLoader(dataset=self))
 
