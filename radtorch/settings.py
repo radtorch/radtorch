@@ -162,6 +162,7 @@ FEATURE_EXTRACTION_PIPELINE_SETTINGS = {
             'batch_size' : 100,
             'model_arch' : 'vgg16',
             'pre_trained' : True,
+            'unfreeze_weights' : False,            
             'num_workers' : 0,
             'multi_label':False
             }
