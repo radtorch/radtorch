@@ -105,7 +105,7 @@ class Image_Classification(Pipeline):
 
 
         # Calculate Normalization if required
-        if self.normalize='auto':
+        if self.normalize=='auto':
             mean, std = self.dataset.mean_std()
             self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
         elif isinstance (self.normalize, tuple):
