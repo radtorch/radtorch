@@ -89,8 +89,6 @@ class Image_Classification(Pipeline):
         if isinstance(self.custom_resize, bool): self.resize = model_dict[self.model_arch]['input_size']
         elif isinstance(self.custom_resize, int): self.resize = self.custom_resize
 
-
-
         # Create transformations
         if self.is_dicom:
             self.transformations = transforms.Compose([
@@ -101,7 +99,6 @@ class Image_Classification(Pipeline):
             self.transformations = transforms.Compose([
                 transforms.Resize((self.resize, self.resize)),
                 transforms.ToTensor()])
-
 
         # Calculate Normalization if required
         if self.normalize=='auto':
@@ -114,6 +111,7 @@ class Image_Classification(Pipeline):
 
         if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
         else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
+        self.dataloader = torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
 
 
