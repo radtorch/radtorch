@@ -21,7 +21,15 @@ from radtorch.visutils import *
 from radtorch.generalutils import *
 
 
+def load_pipeline(target_path):
+    '''
+    .. include:: ./documentation/docs/pipeline.md##load_pipeline
+    '''
+    infile = open(target_path,'rb')
+    pipeline = pickle.load(infile)
+    infile.close()
 
+    return pipeline
 
 class Pipeline():
     def __init__(self, **kwargs):
@@ -138,19 +146,6 @@ class Pipeline():
             print ('Pipeline exported successfully.')
         except:
             raise TypeError('Error! Pipeline could not be exported.')
-
-
-def load_pipeline(target_path):
-    '''
-    .. include:: ./documentation/docs/pipeline.md##load_pipeline
-    '''
-
-    infile = open(target_path,'rb')
-    pipeline = pickle.load(infile)
-    infile.close()
-
-    return pipeline
-
 
 class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
@@ -349,15 +344,6 @@ class Compare_Image_Classifier(Pipeline):
                 print (' Best Classifier Pipeline Exported Successfully')
         except:
             raise TypeError('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
-
-    # def export(self, output_path):
-    #     try:
-    #         outfile = open(output_path,'wb')
-    #         pickle.dump(self,outfile)
-    #         outfile.close()
-    #         print ('Pipeline exported successfully.')
-    #     except:
-    #         raise TypeError('Error! Pipeline could not be exported.')
 
 class Feature_Extraction(Pipeline):
 
