@@ -40,24 +40,31 @@ class Pipeline():
         for K, V in self.DEFAULT_SETTINGS.items():
             if K not in kwargs.keys():
                 setattr(self, K, V)
+        try:
+            if 'custom_resize' not in kwargs.keys():
+                self.input_resize = model_dict[self.model_arch]['input_size']
+        except:
+            pass
 
-        if 'custom_resize' not in kwargs.keys():
-            self.input_resize = model_dict[self.model_arch]['input_size']
-
-        if 'transformations' not in kwargs.keys():
-            if self.is_dicom:
-                self.transformations = transforms.Compose([
+        try:
+            if 'transformations' not in kwargs.keys():
+                if self.is_dicom:
+                    self.transformations = transforms.Compose([
+                            transforms.Resize((self.input_resize, self.input_resize)),
+                            transforms.transforms.Grayscale(3),
+                            transforms.ToTensor()])
+                else:
+                    self.transformations = transforms.Compose([
                         transforms.Resize((self.input_resize, self.input_resize)),
-                        transforms.transforms.Grayscale(3),
                         transforms.ToTensor()])
-            else:
-                self.transformations = transforms.Compose([
-                        transforms.Resize((self.input_resize, self.input_resize)),
-                        transforms.ToTensor()])
+        except:
+            pass
 
-        if 'device' not in kwargs.keys():
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+        try:
+            if 'device' not in kwargs.keys():
+                self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        except:
+            pass
 
         if self.label_from_table == True:
             try:
