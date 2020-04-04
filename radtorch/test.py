@@ -151,8 +151,8 @@ class Pipeline():
             raise TypeError('Error! Pipeline could not be exported.')
 
 class Image_Classification(Pipeline):
-    def __init__(self, **kwargs):
-        super().__init__(DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS)
+    def __init__(self, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs):
+        super().__init__()
 
         for k, v in kwargs.items():
             if type(v) is list:
