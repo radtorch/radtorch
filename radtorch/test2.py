@@ -78,4 +78,4 @@ class Image_Classification(Pipeline):
         if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs)
         else: self.dataset=Dataset_from_folder(**kwargs)
         self.num_output_classes = len(self.dataset.classes)
-        self.dataloader = torch.utils.data.DataLoader(kwargs, dataset=self.dataset)
+        self.dataloader = torch.utils.data.DataLoader(**kwargs, dataset=self.dataset)
