@@ -103,7 +103,7 @@ DEFAULT_DATASET_SETTINGS = {
 
 #pipeline
 IMAGE_CLASSIFICATION_PIPELINE_SETTINGS = {
-            'custom_resize':False
+            'custom_resize':False,
             'optimizer':'Adam',
             'is_dicom': True,
             'table': None,
