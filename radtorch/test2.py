@@ -73,8 +73,8 @@ class Pipeline():
 
 
 class Image_Classification(Pipeline):
-    def __init__(self, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs):
-        super(Image_Classification, self).__init__(**kwargs)
+    def __init__(self, **kwargs):
+        super(Image_Classification, self).__init__(**kwargs, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS)
 
         if self.table: self.dataset=Dataset_from_table(kwargs)
         else: self.dataset=Dataset_from_folder(kwargs)
