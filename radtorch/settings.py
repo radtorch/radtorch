@@ -103,9 +103,9 @@ DEFAULT_DATASET_SETTINGS = {
 
 #pipeline
 IMAGE_CLASSIFICATION_PIPELINE_SETTINGS = {
+            'custom_resize':False
             'optimizer':'Adam',
             'is_dicom': True,
-            'label_from_table': False,
             'table': None,
             'image_path_column':'IMAGE_PATH',
             'image_label_column' : 'IMAGE_LABEL' ,
@@ -120,7 +120,7 @@ IMAGE_CLASSIFICATION_PIPELINE_SETTINGS = {
             'model_arch' : 'vgg16',
             'pre_trained' : True,
             'unfreeze_weights' : False,
-            'train_epochs' : 20,
+            'train_epochs' : 10,
             'learning_rate' : 0.0001,
             'loss_function' : 'CrossEntropyLoss',
             'num_workers' : 0,
