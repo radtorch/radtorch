@@ -93,15 +93,15 @@ class Image_Classification(Pipeline):
 
 
         # Create transformations
-            if self.is_dicom:
-                self.transformations = transforms.Compose([
-                        transforms.Resize((self.resize, self.resize)),
-                        transforms.transforms.Grayscale(3),
-                        transforms.ToTensor()])
-            else:
-                self.transformations = transforms.Compose([
+        if self.is_dicom:
+            self.transformations = transforms.Compose([
                     transforms.Resize((self.resize, self.resize)),
+                    transforms.transforms.Grayscale(3),
                     transforms.ToTensor()])
+        else:
+            self.transformations = transforms.Compose([
+                transforms.Resize((self.resize, self.resize)),
+                transforms.ToTensor()])
 
 
         # Calculate Normalization if required
