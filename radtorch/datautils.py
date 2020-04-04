@@ -169,6 +169,28 @@ class RADTorch_Dataset(Dataset):
         for k,v in self.__dict__.items():
             setattr(self, k, v)
 
+        if 'is_dicom' not in **kwargs.keys():
+            self.is_dicom=True
+        if 'mode' not in **kwargs.keys():
+            self.mode='RAW'
+        if 'wl' not in **kwargs.keys():
+            self.wl=None
+        if 'table' not in **kwargs.keys():
+            self.table=None
+        if 'img_path_column' not in **kwargs.keys():
+            self.img_path_column='IMAGE_PATH'
+        if 'img_label_column' not in **kwargs.keys():
+            self.img_label_column='IMAGE_LABEL'
+        if 'transformations ' not in **kwargs.keys():
+            self.transformations=transforms.Compose([transforms.ToTensor()])
+        if 'multi_label ' not in **kwargs.keys():
+            self.multi_label=False
+
+        if len(self.dataset_files)==0:
+            print ('Error! No data files found in directory:', self.data_directory)
+
+        if len(self.classes)    ==0:
+            print ('Error! No classes extracted from directory:', self.data_directory)
 
     def __getitem__(self):
         image_path = self.input_data.iloc[index][self.image_path_col]
@@ -205,20 +227,9 @@ class RADTorch_Dataset(Dataset):
 
 
 class Dataset_from_table(RADTorch_Dataset):
-    def __init__(self,
-                data_directory,
-                is_dicom=True,
-                table=None,
-                img_path_column='IMAGE_PATH',
-                img_label_column='IMAGE_LABEL',
-                multi_label = False,
-                mode='RAW',
-                wl=None,
-                transformations=transforms.Compose([transforms.ToTensor()])):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
 
-        # for k,v in self.__dict__.items():
-        #     setattr(self, k, v)
+        super().__init__(**kwargs)
 
         if self.table==None:
             raise TypeError('Error! No label table was selected. Please check.')
@@ -226,14 +237,10 @@ class Dataset_from_table(RADTorch_Dataset):
             self.input_data = self.table
         else:
             self.input_data = pd.read_csv(self.input_source)
-
-
         if self.is_dicom:
             self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x.lower().endswith('dcm')] # Returns only DICOM files from folder
         else:
             self.dataset_files = [x for x in (self.input_data[self.image_path_col].tolist()) if x.lower().endswith(IMG_EXTENSIONS)]
-
-
         if self.multi_label == True:
             self.classes = list(np.unique([item for t in self.input_data[self.image_label_col].to_numpy() for item in t]))
             self.class_to_idx = class_to_idx(self.classes)
@@ -247,49 +254,28 @@ class Dataset_from_table(RADTorch_Dataset):
                         t.append(0)
                 self.multi_label_idx.append(t)
             self.input_data['MULTI_LABEL_IDX'] = self.multi_label_idx
-
         else:
             self.classes = np.unique(list(self.input_data[self.image_label_col]))
             self.class_to_idx = class_to_idx(self.classes)
 
 
-        if len(self.dataset_files)==0:
-            print ('Error! No data files found in directory:', self.data_directory)
-
-        if len(self.classes)    ==0:
-            print ('Error! No classes extracted from directory:', self.data_directory)
-
-
 class Dataset_from_folder(RADTorch_Dataset):
-    def __init__(self,
-                data_directory,
-                is_dicom=True,
-                mode='RAW',
-                wl=None,
-                transformations=transforms.Compose([transforms.ToTensor()])):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
 
-        # for k,v in self.__dict__.items():
-        #     setattr(self, k, v)
+        super().__init__(**kwargs)
 
         self.classes, self.class_to_idx = root_to_class(self.data_directory)
         self.all_files = list_of_files(self.data_directory)
-
         if self.is_dicom:
             self.dataset_files = [x for x in self.all_files if x[-3:] == 'dcm'] # Returns only DICOM files from folder
         else:
             self.dataset_files = [x for x in self.all_files]
-
         self.all_classes = [path_to_class(i) for i in self.dataset_files]
         self.image_path_col = 'IMAGE_PATH'
         self.image_label_col = 'IMAGE_LABEL'
         self.input_data = pd.DataFrame(list(zip(self.dataset_files, self.all_classes)), columns=[self.image_path_col, self.image_label_col])
 
-        if len(self.dataset_files)==0:
-            print ('Error! No data files found in directory:', self.data_directory)
 
-        if len(self.classes)==0:
-            print ('Error! No classes extracted from directory:', self.data_directory)
 
 
 def load_predefined_datatables(*args, **kwargs):
