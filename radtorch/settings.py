@@ -93,8 +93,8 @@ DEFAULT_DATASET_SETTINGS = {
                                 'mode':'RAW',
                                 'wl':None,
                                 'table':None,
-                                'img_path_column':'IMAGE_PATH',
-                                'img_label_column':'IMAGE_LABEL',
+                                'image_path_column':'IMAGE_PATH',
+                                'image_label_column':'IMAGE_LABEL',
                                 'transformations':transforms.Compose([transforms.ToTensor()]),
                                 'multi_label':False
                             }
