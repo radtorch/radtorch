@@ -78,7 +78,58 @@ class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
         super(Image_Classification, self).__init__(**kwargs, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS)
         self.classifiers = [self]
+
+        # Create Initial Master Dataset
         if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs)
         else: self.dataset=Dataset_from_folder(**kwargs)
         self.num_output_classes = len(self.dataset.classes)
         self.dataloader = torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
+        # Custom Resize Adjustement
+        if isinstance(self.custom_resize, int):
+            self.resize = self.custom_resize
+        else:
+            self.resize = model_dict[self.model_arch]['input_size']
+
+
+        # Create transformations
+            if self.is_dicom:
+                self.transformations = transforms.Compose([
+                        transforms.Resize((self.resize, self.resize)),
+                        transforms.transforms.Grayscale(3),
+                        transforms.ToTensor()])
+            else:
+                self.transformations = transforms.Compose([
+                    transforms.Resize((self.resize, self.resize)),
+                    transforms.ToTensor()])
+
+
+        # Calculate Normalization if required
+        if self.normalize='auto':
+            mean, std = self.dataset.mean_std()
+            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+        elif isinstance (self.normalize, tuple):
+            mean, std = self.normalize
+            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+
+
+        if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
+        else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##
