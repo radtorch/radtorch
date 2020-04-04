@@ -12,8 +12,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
-
-
 from radtorch.settings import *
 from radtorch.modelsutils import *
 from radtorch.datautils import *
@@ -30,6 +28,7 @@ def load_pipeline(target_path):
     infile.close()
 
     return pipeline
+
 
 class Pipeline():
     def __init__(self, **kwargs):
@@ -150,6 +149,7 @@ class Pipeline():
         except:
             raise TypeError('Error! Pipeline could not be exported.')
 
+
 class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
         super().__init__(DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs)
@@ -265,6 +265,71 @@ class Image_Classification(Pipeline):
         if show_table:
             return self.misclassified_instances
 
+
+class Feature_Extraction(Pipeline):
+
+    def __init__(self, **kwargs):
+        super().__init__(DEFAULT_SETTINGS=FEATURE_EXTRACTION_PIPELINE_SETTINGS, **kwargs)
+        self.classifiers = [self]
+
+        self.model = create_model(model_arch=self.model_arch,output_classes=self.num_output_classes,pre_trained=self.pre_trained,unfreeze_weights = self.unfreeze_weights, mode = 'feature_extraction')
+
+        self.model = self.model.to(self.device)
+
+    def num_features(self):
+        return model_dict[self.model_arch]['output_features']
+
+    def run(self, verbose=True):
+        self.features = []
+        self.labels_idx = []
+        self.img_path_list = []
+
+        self.model = self.model.to(self.device)
+
+        for i, (imgs, labels, paths) in tqdm(enumerate(self.dataloader), total=len(self.dataloader)):
+            self.labels_idx = self.labels_idx+labels.tolist()
+            self.img_path_list = self.img_path_list+list(paths)
+            with torch.no_grad():
+                self.model.eval()
+                imgs = imgs.to(self.device)
+                output = (self.model(imgs)).tolist()
+                self.features = self.features+(output)
+
+
+        self.feature_names = ['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
+
+        feature_table = pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['img_path','label_idx', 'features'])
+
+        feature_table[self.feature_names] = pd.DataFrame(feature_table.features.values.tolist(), index= feature_table.index)
+
+        feature_table = feature_table.drop(['features'], axis=1)
+
+        print (' Features extracted successfully.')
+
+        self.feature_table = feature_table
+
+        if verbose:
+            return self.feature_table
+
+        self.features = self.feature_table[self.feature_names]
+
+    def export_features(self,csv_path):
+        try:
+            self.feature_table.to_csv(csv_path, index=False)
+            print ('Features exported to CSV successfully.')
+        except:
+            print ('Error! No features found. Please check again or re-run the extracion pipeline.')
+            pass
+
+    def plot_extracted_features(self, feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx'):
+        if feature_table == None:
+            feature_table = self.feature_table
+        if feature_names == None:
+            feature_names = self.feature_names
+        return plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col)
+
+
+
 # class Compare_Image_Classifier(Pipeline):
 #     def __init__(self, **kwargs):
 #         super().__init__(DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs)
@@ -353,69 +418,6 @@ class Image_Classification(Pipeline):
 #                 print (' Best Classifier Pipeline Exported Successfully')
 #         except:
 #             raise TypeError('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
-
-class Feature_Extraction(Pipeline):
-
-    def __init__(self, **kwargs):
-        super().__init__(DEFAULT_SETTINGS=FEATURE_EXTRACTION_PIPELINE_SETTINGS, **kwargs)
-        self.classifiers = [self]
-
-        self.model = create_model(model_arch=self.model_arch,output_classes=self.num_output_classes,pre_trained=self.pre_trained,unfreeze_weights = self.unfreeze_weights, mode = 'feature_extraction')
-
-        self.model = self.model.to(self.device)
-
-    def num_features(self):
-        return model_dict[self.model_arch]['output_features']
-
-    def run(self, verbose=True):
-        self.features = []
-        self.labels_idx = []
-        self.img_path_list = []
-
-        self.model = self.model.to(self.device)
-
-        for i, (imgs, labels, paths) in tqdm(enumerate(self.dataloader), total=len(self.dataloader)):
-            self.labels_idx = self.labels_idx+labels.tolist()
-            self.img_path_list = self.img_path_list+list(paths)
-            with torch.no_grad():
-                self.model.eval()
-                imgs = imgs.to(self.device)
-                output = (self.model(imgs)).tolist()
-                self.features = self.features+(output)
-
-
-        self.feature_names = ['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
-
-        feature_table = pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['img_path','label_idx', 'features'])
-
-        feature_table[self.feature_names] = pd.DataFrame(feature_table.features.values.tolist(), index= feature_table.index)
-
-        feature_table = feature_table.drop(['features'], axis=1)
-
-        print (' Features extracted successfully.')
-
-        self.feature_table = feature_table
-
-        if verbose:
-            return self.feature_table
-
-        self.features = self.feature_table[self.feature_names]
-
-    def export_features(self,csv_path):
-        try:
-            self.feature_table.to_csv(csv_path, index=False)
-            print ('Features exported to CSV successfully.')
-        except:
-            print ('Error! No features found. Please check again or re-run the extracion pipeline.')
-            pass
-
-    def plot_extracted_features(self, feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx'):
-        if feature_table == None:
-            feature_table = self.feature_table
-        if feature_names == None:
-            feature_names = self.feature_names
-        return plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col)
-
 
 
 

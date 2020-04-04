@@ -52,12 +52,14 @@ RADTOrch settings
 
 # visutils
 TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
-COLORS = ['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716',
-          '#FF7300', '#FBD704', '#10D8B8', '#3C6FAA', '#1C1533',
-          '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716',
-          '#FF7300', '#FBD704', '#10D8B8', '#3C6FAA', '#1C1533',
-          '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716',
-          '#FF7300', '#FBD704', '#10D8B8', '#3C6FAA', '#1C1533']*100
+# COLORS = ['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716',
+#           '#FF7300', '#FBD704', '#10D8B8', '#3C6FAA', '#1C1533',
+#           '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716',
+#           '#FF7300', '#FBD704', '#10D8B8', '#3C6FAA', '#1C1533',
+#           '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716',
+#           '#FF7300', '#FBD704', '#10D8B8', '#3C6FAA', '#1C1533']*100
+
+COLORS =    ['#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1','#2F5EC4', '#4285F4', '#45A5F5',]*100
 
 
 #modelsutils
@@ -159,10 +161,10 @@ FEATURE_EXTRACTION_PIPELINE_SETTINGS = {
             'mode' : 'RAW',
             'wl' : None,
             'normalize' : [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]],
-            'batch_size' : 100,
+            'batch_size' : 16,
             'model_arch' : 'vgg16',
             'pre_trained' : True,
-            'unfreeze_weights' : False,            
+            'unfreeze_weights' : False,
             'num_workers' : 0,
             'multi_label':False
             }
