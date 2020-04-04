@@ -34,31 +34,26 @@ def load_pipeline(target_path):
 class Pipeline():
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
-            if type(v) is not list:
-                setattr(self, k, v)
+            setattr(self, k, v)
 
         for K, V in self.DEFAULT_SETTINGS.items():
             if K not in kwargs.keys():
                 setattr(self, K, V)
-        try:
-            if 'custom_resize' not in kwargs.keys():
-                self.input_resize = model_dict[self.model_arch]['input_size']
-        except:
-            pass
 
-        try:
-            if 'transformations' not in kwargs.keys():
-                if self.is_dicom:
-                    self.transformations = transforms.Compose([
-                            transforms.Resize((self.input_resize, self.input_resize)),
-                            transforms.transforms.Grayscale(3),
-                            transforms.ToTensor()])
-                else:
-                    self.transformations = transforms.Compose([
+        if 'custom_resize' not in kwargs.keys():
+            self.input_resize = model_dict[self.model_arch]['input_size']
+
+        if 'transformations' not in kwargs.keys():
+            if self.is_dicom:
+                self.transformations = transforms.Compose([
                         transforms.Resize((self.input_resize, self.input_resize)),
+                        transforms.transforms.Grayscale(3),
                         transforms.ToTensor()])
-        except:
-            pass
+            else:
+                self.transformations = transforms.Compose([
+                    transforms.Resize((self.input_resize, self.input_resize)),
+                    transforms.ToTensor()])
+
 
         try:
             if 'device' not in kwargs.keys():
@@ -158,6 +153,14 @@ class Pipeline():
 class Image_Classification(Pipeline):
     def __init__(self, **kwargs):
         super().__init__(DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs)
+
+        for k, v in kwargs.items():
+            setattr(self, k, v[0])
+
+        for K, V in self.DEFAULT_SETTINGS.items():
+            if K not in kwargs.keys():
+                setattr(self, K, V[0])
+
         self.classifiers = [self]
 
         # Load predefined tables or Create Master Dataset and dataloaders
