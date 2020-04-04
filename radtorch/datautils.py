@@ -217,8 +217,8 @@ class Dataset_from_table(RADTorch_Dataset):
                 transformations=transforms.Compose([transforms.ToTensor()])):
         super().__init__(*args, **kwargs)
 
-        for k,v in self.__dict__.items():
-            setattr(self, k, v)
+        # for k,v in self.__dict__.items():
+        #     setattr(self, k, v)
 
         if self.table==None:
             raise TypeError('Error! No label table was selected. Please check.')
@@ -269,8 +269,8 @@ class Dataset_from_folder(RADTorch_Dataset):
                 transformations=transforms.Compose([transforms.ToTensor()])):
         super().__init__(*args, **kwargs)
 
-        for k,v in self.__dict__.items():
-            setattr(self, k, v)
+        # for k,v in self.__dict__.items():
+        #     setattr(self, k, v)
 
         self.classes, self.class_to_idx = root_to_class(self.data_directory)
         self.all_files = list_of_files(self.data_directory)
