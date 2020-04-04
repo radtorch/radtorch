@@ -73,7 +73,7 @@ def show_misclassified(misclassified_dictionary, transforms, class_to_idx_dict, 
     plot_images(images=imgs, titles=titles, figure_size=figure_size)
 
 
-def show_dataloader_sample(dataloader, figure_size=(10,10), show_labels=True, show_file_name = False, ):
+def show_dataloader_sample(dataloader, figure_size=(10,10), show_labels=True, show_file_name = False,):
   batch = next(iter(dataloader))
   images, labels, paths = batch
   images = images.numpy()

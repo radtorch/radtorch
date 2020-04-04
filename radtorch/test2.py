@@ -20,28 +20,28 @@ from radtorch.general import *
 from radtorch.dataset import *
 
 
+
 class Pipeline():
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-        for K, V in self.DEFAULT_SETTINGS.items():
-            if K not in kwargs.keys():
-                setattr(self, K, V)
+        for k, v  in self.DEFAULT_SETTINGS.items():
+            if k not in kwargs.keys():
+                setattr(self, k, v)
 
-
+        data_subsets = ['dataset', 'train_dataset', 'valid_dataset', 'test_dataset']
 
     def info(self):
         info = pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns = ['Property', 'Value']
-        for i in ['train_dataset', 'valid_dataset', 'test_dataset']:
+        for i in data_subsets:
             if i in in self.__dict__.keys(): info = info.append({'Property':i, 'Value':len(self.__dict__[i])}, ignore_index=True)
         return info
 
-
     def dataset_info(self, plot=True, fig_size=(500,300)):
         info_dict = {}
-        for i in ['dataset', 'train_dataset', 'valid_dataset', 'test_dataset']:
+        for i in data_subsets:
             if i in in self.__dict__.keys():
                 info_dict[i] = show_dataset_info(self.__dict__[i])
                 info_dict[i].style.set_caption(i)
@@ -51,23 +51,32 @@ class Pipeline():
             for k, v in info_dict.items():
                 display(v)
 
-
-    def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
+    def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
         if 'train_dataloader' in self.__dict__.keys():
             displayed_dataloader=self.train_dataloader
-            displayed_dataset=self.train_dataset
         else:
             displayed_dataloader=self.dataloader
-            displayed_dataset=self.dataset
-            batch = next(iter(displayed_dataloader))
-            images, labels, paths = batch
-            images = [np.moveaxis(x, 0, -1) for x in images.numpy()]
-            if show_labels:
-              titles = labels.numpy()
-              titles = [((list(displayed_dataset.class_to_idx.keys())[list(displayed_dataset.class_to_idx.values()).index(i)]), i) for i in titles]
-            if show_file_name:
-              titles = [ntpath.basename(x) for x in paths]
+            show_dataloader_sample(displayed_dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name = show_file_name)
 
-            show_dataloader_sample
+    def metrics(self, figure_size=(500,300)):
+        return show_metrics(self.classifiers,  fig_size=figure_size)
 
-            plot_images(images=images, titles=titles, figure_size=fig_size)
+    def export(self, output_path):
+        try:
+            outfile = open(output_path,'wb')
+            pickle.dump(self,outfile)
+            outfile.close()
+            print ('Pipeline exported successfully.')
+        except:
+            raise TypeError('Error! Pipeline could not be exported.')
+
+
+
+class Image_Classification(Pipeline):
+    def __init__(self, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs):
+        super(Image_Classification, self).__init__(**kwargs)
+
+        if self.table: self.dataset=Dataset_from_table(kwargs)
+        else: self.dataset=Dataset_from_folder(kwargs)
+        self.num_output_classes = len(self.dataset.classes)
+        self.dataloader = torch.utils.data.DataLoader(dataset=self.dataset,kwargs)
