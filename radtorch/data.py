@@ -16,7 +16,7 @@ from radtorch.settings import *
 from radtorch.dicom import  *
 from radtorch.vis import *
 from radtorch.settings import *
-
+import radtorch
 
 
 def over_sample(dataset, shuffle=True, **kwargs):
