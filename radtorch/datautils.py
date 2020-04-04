@@ -223,7 +223,7 @@ class RADTorch_Dataset(Dataset):
 
 class Dataset_from_table(RADTorch_Dataset):
     def __init__(self,*args, **kwargs):
-        super(Dataset_from_table, self).__init__(kwargs)
+        super().__init__()
         # for k,v in kwargs.items():
         #     setattr(self, k, v)
         if self.table==None:
@@ -260,8 +260,8 @@ class Dataset_from_table(RADTorch_Dataset):
 
 class Dataset_from_folder(RADTorch_Dataset):
     def __init__(self,*args, **kwargs):
-        super(Dataset_from_folder, self).__init__(kwargs)
-        #
+        super().__init__()
+
         # for k,v in kwargs.items():
         #     setattr(self, k, v)
 
