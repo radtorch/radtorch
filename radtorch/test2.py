@@ -74,11 +74,11 @@ class Pipeline():
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns=['Property', 'Value']
-        try:
-            for i in self.data_subsets :
-                if i in self.__dict__.keys(): info=info.append({'Property':i, 'Value':len(self.__dict__[i])}, ignore_index=True)
-            except:
-                pass
+        # try:
+        for i in self.data_subsets :
+            if i in self.__dict__.keys(): info=info.append({'Property':i, 'Value':len(self.__dict__[i])}, ignore_index=True)
+            # except:
+            #     pass
         return info
 
     def dataset_info(self, plot=True, fig_size=(500,300)):
@@ -293,10 +293,11 @@ class Image_Classifier_Selection(Pipeline):
             # x = list(x)
             classifier_settings = {self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             classifier_settings.update(self.non_compare_parameters)
+            if self.scenarios_list.index(x)!=0: classifier_settings['load_predefined_datatables']=self.data_subsets
             clf = Image_Classification(**classifier_settings)
-            if self.scenarios_list.index(x)==0: self.data_subset = {k:v.input_data for k, v in clf.dataset_dictionary.items()}
+            if self.scenarios_list.index(x)==0: self.data_subsets = {k:v.input_data for k, v in clf.dataset_dictionary.items()}
             self.classifiers.append(clf)
-
+            if self.
 
     def grid(self):
         return self.scenarios_df
