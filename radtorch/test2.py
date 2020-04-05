@@ -119,7 +119,7 @@ class Image_Classification(Pipeline):
         self.classifiers=[self]
 
         #Load from predefined datasets or split master dataset
-        if self.load_predefined_datatables: self.dataset_dictionary=load_predefined_datatables(data_directory=self.data_directory,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,path_col=self.path_col,label_col=self.label_col,mode=self.mode,wl=self.wl,transformations=self.transformations )
+        if self.load_predefined_datatables: self.dataset_dictionary=load_predefined_datatables(data_directory=self.data_directory,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,image_path_column=self.image_path_column,image_label_column=self.image_label_column,mode=self.mode,wl=self.wl,transformations=self.transformations )
         else: self.dataset_dictionary=self.dataset.split(valid_percent=self.valid_percent, test_percent=self.test_percent)
 
         # Create train/valid/test datasets and dataloaders
