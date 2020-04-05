@@ -120,7 +120,7 @@ class Image_Classification(Pipeline):
         for k, v in self.dataset_dictionary.items():
             if self.balance_class: setattr(self, k+'_dataset', v.balance())
             else: setattr(self, k+'_dataset', v)
-            setattr(self, k+[_dataloader], torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
+            setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
 
 
 
