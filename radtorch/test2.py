@@ -57,7 +57,7 @@ class Pipeline():
             displayed_dataloader=self.train_dataloader
         else:
             displayed_dataloader=self.dataloader
-            show_dataloader_sample(displayed_dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name = show_file_name)
+        show_dataloader_sample(displayed_dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name = show_file_name)
 
     def metrics(self, figure_size=(500,300)):
         return show_metrics(self.classifiers,  fig_size=figure_size)
