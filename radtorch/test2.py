@@ -274,7 +274,7 @@ class Image_Classifier_Selection(Pipeline):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
-        for k, v in self.DEFAULT_SETTINGS.items():
+        for k, v in DEFAULT_SETTINGS.items():
             if k not in self.__dict__.keys():
                 setattr(self, k, v)
 
