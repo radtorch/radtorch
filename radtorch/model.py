@@ -92,6 +92,7 @@ def create_model(**kwargs):
     model_arch, output_classes, mode, pre_trained=True, unfreeze_weights=False,
     .. include:: ./documentation/docs/modelutils.md##create_model
     '''
+
     model_arch = kwargs['model_arch']
     output_classes = kwargs['output_classes']
     mode = kwargs['mode']
