@@ -87,15 +87,15 @@ class Identity(nn.Module):
     def forward(self, x):
         return x
 
-def create_model(pre_trained=True, unfreeze_weights=False, **kwargs):
+def create_model(**kwargs):
     '''
-    model_arch, output_classes, mode
+    model_arch, output_classes, mode, pre_trained=True, unfreeze_weights=False,
     .. include:: ./documentation/docs/modelutils.md##create_model
     '''
     model_arch = kwargs['model_arch']
     output_classes = kwargs['output_classes']
     mode = kwargs['mode']
-    
+
     if model_arch not in supported_models:
         print ('Error! Provided model architecture is not supported yet. For complete list of supported models please type radtorch.modelsutils.model_list()')
 
