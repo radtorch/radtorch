@@ -212,7 +212,7 @@ class Image_Classification(Pipeline):
 class Feature_Extraction(Pipeline):
 
     def __init__(self, **kwargs):
-        super(Image_Classification, self).__init__(**kwargs, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS)
+        super(Feature_Extraction, self).__init__(**kwargs, DEFAULT_SETTINGS=FEATURE_EXTRACTION_PIPELINE_SETTINGS)
         self.classifiers=[self]
         self.model=create_model(model_arch=self.model_arch,output_classes=self.num_output_classes,pre_trained=self.pre_trained,unfreeze_weights=self.unfreeze_weights, mode='feature_extraction')
 

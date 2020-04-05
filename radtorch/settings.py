@@ -157,14 +157,13 @@ COMPARE_CLASSIFIER_PIPELINE_SETTINGS = {
 
 FEATURE_EXTRACTION_PIPELINE_SETTINGS = {
             'is_dicom': True,
-            'label_from_table': False,
             'table': None,
             'image_path_column':'IMAGE_PATH',
             'image_label_column' : 'IMAGE_LABEL',
             'load_predefined_datatables' : False,
             'mode' : 'RAW',
             'wl' : None,
-            'normalize' : [[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]],
+            'normalize' : ((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
             'batch_size' : 16,
             'model_arch' : 'vgg16',
             'pre_trained' : True,
