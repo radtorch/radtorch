@@ -287,10 +287,9 @@ class Image_Classifier_Selection(Pipeline):
 
         self.classifiers = []
         for x in self.scenarios_list:
-            x = list(x)
-            classifier_settings = {self.compare_parameters_names[i]: x[i] for i in range(len(self.compare_parameters_names))}
+            # x = list(x)
+            classifier_settings = {self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             classifier_settings.update(self.non_compare_parameters)
-            if self.scenarios_list.index(x)!=0: classifier_settings['load_predefined_datatables'] = self.data_subsets
             clf = Image_Classification(**classifier_settings)
             if self.scenarios_list.index(x)==0: self.data_subset = {k:v.input_data for k, v in clf.dataset_dictionary.items()}
             self.classifiers.append(clf)
