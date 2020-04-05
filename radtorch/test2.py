@@ -271,7 +271,7 @@ class Feature_Extraction(Pipeline):
 
 class Image_Classifier_Selection(Pipeline):
     def __init__(self, **kwargs):
-        super(Image_Classifier_Selection, self).__init__(**kwargs, DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS)
+        super(Image_Classifier_Selection, self).__init__(**kwargs, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS)
 
         #Load from predefined datasets or split master dataset
         if self.load_predefined_datatables: self.dataset_dictionary=load_predefined_datatables(data_directory=self.data_directory,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,path_col=self.path_col,label_col=self.label_col,mode=self.mode,wl=self.wl,transformations=self.transformations )
