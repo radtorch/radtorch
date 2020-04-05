@@ -120,7 +120,7 @@ class Image_Classification(Pipeline):
             else: setattr(self, k+'_dataset', v)
             setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
 
-        self.train_model = create_model(output_classes=self.num_output_classes,mode = 'train', **kwargs,)
+        self.train_model = create_model(output_classes=self.num_output_classes,mode = 'train', model_arch=self.model_arch,pre_trained=self.pre_trained, unfreeze_weights=self.unfreeze_weights )
 
         self.train_model = self.train_model.to(self.device)
 
@@ -131,7 +131,7 @@ class Image_Classification(Pipeline):
             pass
 
         if self.optimizer in supported_optimizer:
-            self.optimizer = create_optimizer(traning_model=self.train_model, **kwargs, )
+            self.optimizer = create_optimizer(traning_model=self.train_model, optimizer_type=self.optimizer)
         else:
             raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
             pass

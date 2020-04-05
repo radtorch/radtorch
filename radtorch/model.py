@@ -215,6 +215,8 @@ def create_optimizer(**kwargs):
     '''
     .. include:: ./documentation/docs/modelutils.md##create_optimizer
     '''
+    optimizer_type = kwargs['optimizer_type']
+    traning_model = kwargs['traning_model']
 
     if optimizer_type=='Adam':
         optimizer = torch.optim.Adam(traning_model.parameters(), lr=learning_rate)
