@@ -31,6 +31,9 @@ class Pipeline():
             if k not in kwargs.keys():
                 setattr(self, k, v)
 
+        if 'device' not in kwargs.keys():
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
         self.data_subsets = ['dataset', 'train_dataset', 'valid_dataset', 'test_dataset']
 
     def info(self):
