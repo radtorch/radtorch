@@ -293,19 +293,14 @@ class Image_Classifier_Selection(Pipeline):
             clf = Image_Classification(**classifier_settings)
             if self.scenarios_list.index(x)==0: self.data_subset = {k:v.input_data for k, v in clf.dataset_dictionary.items()}
             self.classifiers.append(clf)
-        #
-        #
-        # #Load from predefined datasets or split master dataset
-        # if self.load_predefined_datatables: self.dataset_dictionary=load_predefined_datatables(data_directory=self.data_directory,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,path_col=self.path_col,label_col=self.label_col,mode=self.mode,wl=self.wl,transformations=self.transformations )
-        # else: self.dataset_dictionary=self.dataset.split(valid_percent=self.valid_percent, test_percent=self.test_percent)
-        #
-        # # Create train/valid/test datasets and dataloaders
-        # for k, v in self.dataset_dictionary.items():
-        #     if self.balance_class: setattr(self, k+'_dataset', v.balance())
-        #     else: setattr(self, k+'_dataset', v)
-        #     setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
-        #
-        # self.data_subsets = {k:v.input_data for k,v in self.dataset_dictionary.items()}
+
 
     def grid(self):
         return self.scenarios_df
+
+    def info(self):
+        info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
+        info.columns=['Property', 'Value']
+        for i in self.classifiers[0].data_subsets :
+            if i in self.__dict__.keys(): info=info.append({'Property':i, 'Value':len(self.__dict__[i])}, ignore_index=True)
+        return info
