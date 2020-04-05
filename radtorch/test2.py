@@ -270,7 +270,7 @@ class Feature_Extraction(Pipeline):
 
 
 class Image_Classifier_Selection(Pipeline):
-    def __init__(self, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs):
+    def __init__(self, DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
 
