@@ -12,6 +12,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
+
 from radtorch.settings import *
 from radtorch.model import *
 from radtorch.data import *
@@ -114,40 +115,6 @@ class Image_Classification(Pipeline):
         super(Image_Classification, self).__init__(**kwargs, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS)
         self.classifiers=[self]
 
-        # # Create Initial Master Dataset
-        # if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs)
-        # else: self.dataset=Dataset_from_folder(**kwargs)
-        # self.num_output_classes=len(self.dataset.classes)
-        # self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-        #
-        # # Custom Resize Adjustement
-        # if isinstance(self.custom_resize, bool): self.resize=model_dict[self.model_arch]['input_size']
-        # elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
-        #
-        # # Create transformations
-        # if self.is_dicom:
-        #     self.transformations=transforms.Compose([
-        #             transforms.Resize((self.resize, self.resize)),
-        #             transforms.transforms.Grayscale(3),
-        #             transforms.ToTensor()])
-        # else:
-        #     self.transformations=transforms.Compose([
-        #         transforms.Resize((self.resize, self.resize)),
-        #         transforms.ToTensor()])
-        #
-        # # Calculate Normalization if required
-        # if self.normalize=='auto':
-        #     mean, std=self.dataset.mean_std()
-        #     self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
-        # elif isinstance (self.normalize, tuple):
-        #     mean, std=self.normalize
-        #     self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
-        #
-        # # Recreate Transformed Master Dataset
-        # if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
-        # else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
-        # self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-
         # Split Master Dataset
         self.dataset_dictionary=self.dataset.split(valid_percent=self.valid_percent, test_percent=self.test_percent)
 
@@ -157,16 +124,19 @@ class Image_Classification(Pipeline):
             else: setattr(self, k+'_dataset', v)
             setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
 
+        # Create Training Model
         self.train_model=create_model(output_classes=self.num_output_classes,mode='train', model_arch=self.model_arch,pre_trained=self.pre_trained, unfreeze_weights=self.unfreeze_weights )
 
         self.train_model=self.train_model.to(self.device)
 
+        # Create Training Loss Function
         if self.loss_function in supported_image_classification_losses:
             self.loss_function=create_loss_function(self.loss_function)
         else:
             raise TypeError('Selected loss function is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported loss functions.')
             pass
 
+        # Create Training Optimizer
         if self.optimizer in supported_optimizer:
             self.optimizer=create_optimizer(traning_model=self.train_model, optimizer_type=self.optimizer, learning_rate=self.learning_rate)
         else:
@@ -214,13 +184,13 @@ class Image_Classification(Pipeline):
         if target_classes==None:
             target_classes=self.dataset.classes
 
-        target_dataset.transformations = self.transformations
+        target_dataset.transformations=self.transformations
         show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_dataset, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
 
     def roc(self, target_dataset=None, figure_size=(600,400), *args,  **kwargs):
         if target_dataset==None:
             target_dataset=self.test_dataset
-        num_classes = len(target_dataset.classes)
+        num_classes=len(target_dataset.classes)
         if num_classes <= 2:
             show_roc([self], fig_size=figure_size)
         else:
@@ -231,19 +201,68 @@ class Image_Classification(Pipeline):
         if target_dataset==None:
             target_dataset=self.test_dataset
 
-        target_dataset.trans = self.transformations
+        target_dataset.trans=self.transformations
 
-        self.misclassified_instances = show_nn_misclassified(model=self.trained_model, target_data_set=target_dataset, transforms=self.transformations,   is_dicom=self.is_dicom, num_of_images=num_images, device=self.device, figure_size=figure_size)
+        self.misclassified_instances=show_nn_misclassified(model=self.trained_model, target_data_set=target_dataset, transforms=self.transformations,   is_dicom=self.is_dicom, num_of_images=num_images, device=self.device, figure_size=figure_size)
 
         if show_table:
             return self.misclassified_instances
 
 
+class Feature_Extraction(Pipeline):
 
+    def __init__(self, **kwargs):
+        super(Image_Classification, self).__init__(**kwargs, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS)
+        self.classifiers=[self]
+        self.model=create_model(model_arch=self.model_arch,output_classes=self.num_output_classes,pre_trained=self.pre_trained,unfreeze_weights=self.unfreeze_weights, mode='feature_extraction')
 
+    def num_features(self):
+        return model_dict[self.model_arch]['output_features']
 
+    def run(self, verbose=True):
+        self.features=[]
+        self.labels_idx=[]
+        self.img_path_list=[]
 
+        self.model=self.model.to(self.device)
 
+        for i, (imgs, labels, paths) in tqdm(enumerate(self.dataloader), total=len(self.dataloader)):
+            self.labels_idx=self.labels_idx+labels.tolist()
+            self.img_path_list=self.img_path_list+list(paths)
+            with torch.no_grad():
+                self.model.eval()
+                imgs=imgs.to(self.device)
+                output=(self.model(imgs)).tolist()
+                self.features=self.features+(output)
 
+        self.feature_names=['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
 
-##
+        feature_table=pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['img_path','label_idx', 'features'])
+
+        feature_table[self.feature_names]=pd.DataFrame(feature_table.features.values.tolist(), index= feature_table.index)
+
+        feature_table=feature_table.drop(['features'], axis=1)
+
+        print (' Features extracted successfully.')
+
+        self.feature_table=feature_table
+
+        if verbose:
+            return self.feature_table
+
+        self.features=self.feature_table[self.feature_names]
+
+    def export_features(self,csv_path):
+        try:
+            self.feature_table.to_csv(csv_path, index=False)
+            print ('Features exported to CSV successfully.')
+        except:
+            print ('Error! No features found. Please check again or re-run the extracion pipeline.')
+            pass
+
+    def plot_extracted_features(self, feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx'):
+        if feature_table==None:
+            feature_table=self.feature_table
+        if feature_names==None:
+            feature_names=self.feature_names
+        return plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col)
