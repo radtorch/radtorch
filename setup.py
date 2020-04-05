@@ -1,10 +1,8 @@
 from setuptools import setup
 
-from radtorch.settings import version
-
 setup(
       name='radtorch',
-      version=version,
+      version='0.1.4b',
       description='RADTorch, The Radiology Machine Learning Tool Kit',
       url='https://radtorch.github.io/radtorch/',
       author='Mohamed Elbanan, MD',
