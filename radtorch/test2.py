@@ -74,8 +74,11 @@ class Pipeline():
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns=['Property', 'Value']
-        for i in self.data_subsets :
-            if i in self.__dict__.keys(): info=info.append({'Property':i, 'Value':len(self.__dict__[i])}, ignore_index=True)
+        try:
+            for i in self.data_subsets :
+                if i in self.__dict__.keys(): info=info.append({'Property':i, 'Value':len(self.__dict__[i])}, ignore_index=True)
+            except:
+                pass
         return info
 
     def dataset_info(self, plot=True, fig_size=(500,300)):
@@ -297,10 +300,3 @@ class Image_Classifier_Selection(Pipeline):
 
     def grid(self):
         return self.scenarios_df
-
-    def info(self):
-        info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
-        info.columns=['Property', 'Value']
-        for i in self.classifiers[0].data_subsets :
-            if i in self.__dict__.keys(): info=info.append({'Property':i, 'Value':len(self.__dict__[i])}, ignore_index=True)
-        return info
