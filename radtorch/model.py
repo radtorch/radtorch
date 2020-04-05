@@ -92,7 +92,10 @@ def create_model(pre_trained=True, unfreeze_weights=False, **kwargs):
     model_arch, output_classes, mode
     .. include:: ./documentation/docs/modelutils.md##create_model
     '''
-
+    model_arch = kwargs['model_arch']
+    output_classes = kwargs['output_classes']
+    mode = kwargs['mode']
+    
     if model_arch not in supported_models:
         print ('Error! Provided model architecture is not supported yet. For complete list of supported models please type radtorch.modelsutils.model_list()')
 
