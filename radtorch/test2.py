@@ -67,6 +67,8 @@ class Pipeline():
         except:
             raise TypeError('Error! Pipeline could not be exported.')
 
+    def classes(self):
+        return self.dataset.class_to_idx
 
 
 class Image_Classification(Pipeline):
@@ -118,8 +120,41 @@ class Image_Classification(Pipeline):
             else: setattr(self, k+'_dataset', v)
             setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
 
+        self.train_model = create_model(**kwargs, output_classes=self.num_output_classes,mode = 'train')
+
+        self.train_model = self.train_model.to(self.device)
+
+        if self.loss_function in supported_image_classification_losses:
+            self.loss_function = create_loss_function(self.loss_function)
+        else:
+            raise TypeError('Selected loss function is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported loss functions.')
+            pass
+
+        if self.optimizer in supported_optimizer:
+            self.optimizer = create_optimizer(**kwargs, traning_model=self.train_model)
+        else:
+            raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
+            pass
 
 
+    def run(self, verbose=True):
+        try:
+            print ('Starting Image Classification Pipeline Training')
+            self.trained_model, self.train_metrics = train_model(
+                                                    model = self.train_model,
+                                                    train_data_loader = self.train_dataloader,
+                                                    valid_data_loader = self.valid_dataloader,
+                                                    train_data_set = self.train_dataset,
+                                                    valid_data_set = self.valid_dataset,
+                                                    loss_criterion = self.loss_function,
+                                                    optimizer = self.optimizer,
+                                                    epochs = self.train_epochs,
+                                                    device = self.device,
+                                                    verbose=verbose)
+            self.train_metrics = pd.DataFrame(data=self.train_metrics, columns = ['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
+        except:
+            raise TypeError('Could not train image classification pipeline. Please check provided parameters.')
+            pass
 
 
 
