@@ -49,6 +49,8 @@ RADTOrch settings
 """
 
 
+version='0.1.4b'
+
 
 # visutils
 TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
@@ -156,6 +158,7 @@ COMPARE_CLASSIFIER_PIPELINE_SETTINGS = {
 
 
 FEATURE_EXTRACTION_PIPELINE_SETTINGS = {
+            'custom_resize':False,
             'is_dicom': True,
             'table': None,
             'image_path_column':'IMAGE_PATH',
