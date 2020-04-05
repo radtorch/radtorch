@@ -36,6 +36,40 @@ class Pipeline():
 
         self.data_subsets=['dataset', 'train_dataset', 'valid_dataset', 'test_dataset']
 
+        # Create Initial Master Dataset
+        if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs)
+        else: self.dataset=Dataset_from_folder(**kwargs)
+        self.num_output_classes=len(self.dataset.classes)
+        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
+        # Custom Resize Adjustement
+        if isinstance(self.custom_resize, bool): self.resize=model_dict[self.model_arch]['input_size']
+        elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
+
+        # Create transformations
+        if self.is_dicom:
+            self.transformations=transforms.Compose([
+                    transforms.Resize((self.resize, self.resize)),
+                    transforms.transforms.Grayscale(3),
+                    transforms.ToTensor()])
+        else:
+            self.transformations=transforms.Compose([
+                transforms.Resize((self.resize, self.resize)),
+                transforms.ToTensor()])
+
+        # Calculate Normalization if required
+        if self.normalize=='auto':
+            mean, std=self.dataset.mean_std()
+            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+        elif isinstance (self.normalize, tuple):
+            mean, std=self.normalize
+            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+
+        # Recreate Transformed Master Dataset
+        if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
+        else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
+        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns=['Property', 'Value']
@@ -80,39 +114,39 @@ class Image_Classification(Pipeline):
         super(Image_Classification, self).__init__(**kwargs, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS)
         self.classifiers=[self]
 
-        # Create Initial Master Dataset
-        if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs)
-        else: self.dataset=Dataset_from_folder(**kwargs)
-        self.num_output_classes=len(self.dataset.classes)
-        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-
-        # Custom Resize Adjustement
-        if isinstance(self.custom_resize, bool): self.resize=model_dict[self.model_arch]['input_size']
-        elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
-
-        # Create transformations
-        if self.is_dicom:
-            self.transformations=transforms.Compose([
-                    transforms.Resize((self.resize, self.resize)),
-                    transforms.transforms.Grayscale(3),
-                    transforms.ToTensor()])
-        else:
-            self.transformations=transforms.Compose([
-                transforms.Resize((self.resize, self.resize)),
-                transforms.ToTensor()])
-
-        # Calculate Normalization if required
-        if self.normalize=='auto':
-            mean, std=self.dataset.mean_std()
-            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
-        elif isinstance (self.normalize, tuple):
-            mean, std=self.normalize
-            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
-
-        # Recreate Transformed Master Dataset
-        if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
-        else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
-        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        # # Create Initial Master Dataset
+        # if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs)
+        # else: self.dataset=Dataset_from_folder(**kwargs)
+        # self.num_output_classes=len(self.dataset.classes)
+        # self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        #
+        # # Custom Resize Adjustement
+        # if isinstance(self.custom_resize, bool): self.resize=model_dict[self.model_arch]['input_size']
+        # elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
+        #
+        # # Create transformations
+        # if self.is_dicom:
+        #     self.transformations=transforms.Compose([
+        #             transforms.Resize((self.resize, self.resize)),
+        #             transforms.transforms.Grayscale(3),
+        #             transforms.ToTensor()])
+        # else:
+        #     self.transformations=transforms.Compose([
+        #         transforms.Resize((self.resize, self.resize)),
+        #         transforms.ToTensor()])
+        #
+        # # Calculate Normalization if required
+        # if self.normalize=='auto':
+        #     mean, std=self.dataset.mean_std()
+        #     self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+        # elif isinstance (self.normalize, tuple):
+        #     mean, std=self.normalize
+        #     self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+        #
+        # # Recreate Transformed Master Dataset
+        # if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
+        # else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
+        # self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         # Split Master Dataset
         self.dataset_dictionary=self.dataset.split(valid_percent=self.valid_percent, test_percent=self.test_percent)
@@ -139,7 +173,6 @@ class Image_Classification(Pipeline):
             raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
             pass
 
-
     def run(self, verbose=True):
         try:
             print ('Starting Image Classification Pipeline Training')
@@ -159,9 +192,51 @@ class Image_Classification(Pipeline):
             raise TypeError('Could not train image classification pipeline. Please check provided parameters.')
             pass
 
+    def export_model(self,output_path):
+        try:
+            torch.save(self.trained_model, output_path)
+            print ('Trained classifier exported successfully.')
+        except:
+            raise TypeError('Error! Trained Model could not be exported.')
 
 
+    def inference(self, transformations=None, all_predictions=False, *args, **kwargs):
+        if transformations==None:
+            transformations=self.transformations
+        return model_inference( model=self.trained_model,
+                                input_image_path=target_image_path,
+                                inference_transformations=transformations,
+                                all_predictions=all_predictions)
 
+    def confusion_matrix(self, figure_size=(7,7), target_dataset=None, target_classes=None, cmap=None, *args,  **kwargs):
+        if target_dataset==None:
+            target_dataset=self.test_dataset
+        if target_classes==None:
+            target_classes=self.dataset.classes
+
+        target_dataset.transformations = self.transformations
+        show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_dataset, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
+
+    def roc(self, target_dataset=None, figure_size=(600,400), *args,  **kwargs):
+        if target_dataset==None:
+            target_dataset=self.test_dataset
+        num_classes = len(target_dataset.classes)
+        if num_classes <= 2:
+            show_roc([self], fig_size=figure_size)
+        else:
+            raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
+            pass
+
+    def misclassified(self, target_dataset=None, num_images=16, figure_size=(10,10), show_table=False, *args,  **kwargs):
+        if target_dataset==None:
+            target_dataset=self.test_dataset
+
+        target_dataset.trans = self.transformations
+
+        self.misclassified_instances = show_nn_misclassified(model=self.trained_model, target_data_set=target_dataset, transforms=self.transformations,   is_dicom=self.is_dicom, num_of_images=num_images, device=self.device, figure_size=figure_size)
+
+        if show_table:
+            return self.misclassified_instances
 
 
 

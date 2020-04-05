@@ -81,7 +81,7 @@ def set_random_seed(seed):
     try:
         torch.manual_seed(seed)
         np.random.seed(seed)
-        print ('Random Seed Set Successfully')
+        print ('Random Seed',seed,'Set Successfully')
     except:
         raise TypeError('Error. Could not set Random Seed. Please check again.')
         pass
