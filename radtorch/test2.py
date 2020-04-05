@@ -289,8 +289,8 @@ class Image_Classifier_Selection(Pipeline):
         self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
 
         self.classifiers = []
+
         for x in self.scenarios_list:
-            # x = list(x)
             classifier_settings = {self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             classifier_settings.update(self.non_compare_parameters)
             if self.scenarios_list.index(x)!=0: classifier_settings['load_predefined_datatables']=self.data_subsets
@@ -301,3 +301,20 @@ class Image_Classifier_Selection(Pipeline):
 
     def grid(self):
         return self.scenarios_df
+
+    def parameters(self):
+        return self.compare_parameters_names
+
+    def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
+        super().sample();
+
+
+    def run(self):
+      self.master_metrics = []
+      self.trained_models = []
+      for i in tqdm(self.classifiers, total=len(self.classifiers)):
+        print ('Starting Training Classifier Number',self.classifiers.index(i))
+        i.run()
+        self.trained_models.append(i.trained_model)
+        self.master_metrics.append(i.train_metrics)
+        torch.cuda.empty_cache()
