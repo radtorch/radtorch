@@ -305,9 +305,12 @@ class Image_Classifier_Selection(Pipeline):
     def parameters(self):
         return self.compare_parameters_names
 
-    def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
-        super().sample();
+    def dataset_info(self, classifier_index=0, **kwargs):
+        self.classifiers[classifier_index].dataset_info()
 
+    def sample(self, classifier_index=0, **kwargs):
+        self.dataloader = self.classifiers[classifier_index].dataloader
+        super().sample(**kwargs);
 
     def run(self):
       self.master_metrics = []
@@ -318,3 +321,23 @@ class Image_Classifier_Selection(Pipeline):
         self.trained_models.append(i.trained_model)
         self.master_metrics.append(i.train_metrics)
         torch.cuda.empty_cache()
+
+
+    def roc(self, fig_size=(700,400)):
+        self.auc_list = show_roc(self.classifiers, fig_size=fig_size)
+        self.best_model_auc = max(self.auc_list)
+        self.best_model_index = (self.auc_list.index(self.best_model_auc))
+        self.best_classifier = self.classifiers[self.best_model_index]
+
+    def best(self, path=None, export_classifier=False, export_model=False):
+        try:
+            print ('Best Classifier = Model', self.best_model_index)
+            print ('Best Classifier AUC =', self.best_model_auc)
+            if export_model:
+                export(self.best_classifier.trained_model, path)
+                print (' Best Model Exported Successfully')
+            if export_classifier:
+                export(self.best_classifier, path)
+                print (' Best Classifier Pipeline Exported Successfully')
+        except:
+            raise TypeError('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
