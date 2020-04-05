@@ -87,8 +87,9 @@ class Identity(nn.Module):
     def forward(self, x):
         return x
 
-def create_model(model_arch, output_classes, mode, pre_trained=True, unfreeze_weights=False):
+def create_model(pre_trained=True, unfreeze_weights=False, **kwargs):
     '''
+    model_arch, output_classes, mode
     .. include:: ./documentation/docs/modelutils.md##create_model
     '''
 
@@ -209,7 +210,7 @@ def create_loss_function(type):
 
         return loss_function
 
-def create_optimizer(traning_model, optimizer_type, learning_rate):
+def create_optimizer(**kwargs):
     '''
     .. include:: ./documentation/docs/modelutils.md##create_optimizer
     '''
