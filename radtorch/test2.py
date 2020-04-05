@@ -297,7 +297,7 @@ class Image_Classifier_Selection(Pipeline):
             clf = Image_Classification(**classifier_settings)
             if self.scenarios_list.index(x)==0: self.data_subsets = {k:v.input_data for k, v in clf.dataset_dictionary.items()}
             self.classifiers.append(clf)
-            if self.
+
 
     def grid(self):
         return self.scenarios_df
