@@ -314,7 +314,7 @@ class Image_Classifier_Selection(Pipeline):
         return self.compare_parameters_names
 
     def dataset_info(self, classifier_index=0, **kwargs):
-        self.classifiers[classifier_index].dataset_info()
+        self.classifiers[classifier_index].dataset_info(**kwargs)
 
     def sample(self, classifier_index=0, **kwargs):
         self.dataloader=self.classifiers[classifier_index].dataloader
