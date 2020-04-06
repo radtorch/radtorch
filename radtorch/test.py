@@ -67,14 +67,14 @@ class Optimizer():
     def __init__(self, **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
-    if self.type=='ASGD':
-        return torch.optim.Adam(self.classifier.parameters(),self.learning_rate)
-    if self.type=='Adam':
-        return torch.optim.ASGD(self.classifier.parameters(), self.learning_rate)
-    if self.type=='RMSprop':
-        return torch.optim.RMSprop(self.classifier.parameters(), self.learning_rate)
-    if self.type=='SGD':
-        return torch.optim.SGD(self.classifier.parameters(), self.learning_rate)
+        if self.type=='ASGD':
+            return torch.optim.Adam(self.classifier.parameters(),self.learning_rate)
+        if self.type=='Adam':
+            return torch.optim.ASGD(self.classifier.parameters(), self.learning_rate)
+        if self.type=='RMSprop':
+            return torch.optim.RMSprop(self.classifier.parameters(), self.learning_rate)
+        if self.type=='SGD':
+            return torch.optim.SGD(self.classifier.parameters(), self.learning_rate)
 
 
 def create_loss_function(type):
