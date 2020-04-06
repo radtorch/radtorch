@@ -240,7 +240,7 @@ def model_inference(model, input_image_path, all_predictions=False, inference_tr
 
 def optimal_lr_finder(model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device):
 
-    lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer=optimizer, 0.1, total_steps=None, epochs=epochs, steps_per_epoch=len(train_data_loader), pct_start=0.3, anneal_strategy='cos', cycle_momentum=True, base_momentum=0.85, max_momentum=0.95, div_factor=25.0, final_div_factor=10000.0, last_epoch=-1)
+    lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(optimizer=optimizer, max_lr=0.1, total_steps=None, epochs=epochs, steps_per_epoch=len(train_data_loader), pct_start=0.3, anneal_strategy='cos', cycle_momentum=True, base_momentum=0.85, max_momentum=0.95, div_factor=25.0, final_div_factor=10000.0, last_epoch=-1)
 
     set_random_seed(100)
     training_metrics=[]
