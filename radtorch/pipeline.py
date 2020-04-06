@@ -138,7 +138,7 @@ class Image_Classification(Pipeline):
 
 
         # Create Training Model
-        self.feature_extractor=Feature_Extractor(self.model_arch, self.pre_trained)
+        self.feature_extractor=Feature_Extractor(model_arch=self.model_arch, pre_trained=self.pre_trained)
         self.train_model=Classifier(feature_extractor=self.feature_extractor, output_classes=self.num_output_classes, type=self.classifier_type)
 
         self.train_model=self.train_model.to(self.device)
@@ -220,7 +220,7 @@ class Feature_Extraction(Pipeline):
     def __init__(self, **kwargs):
         super(Feature_Extraction, self).__init__(**kwargs, DEFAULT_SETTINGS=FEATURE_EXTRACTION_PIPELINE_SETTINGS)
         self.classifiers=[self]
-        self.model=Feature_Extractor(self.model_arch, self.pre_trained)
+        self.model=Feature_Extractor(model_arch=self.model_arch, pre_trained=self.pre_trained)
         # self.model=create_model(model_arch=self.model_arch,output_classes=self.num_output_classes,pre_trained=self.pre_trained,unfreeze_weights=self.unfreeze_weights, mode='feature_extraction')
 
     def num_features(self):
