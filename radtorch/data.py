@@ -52,7 +52,7 @@ def calculate_mean_std(dataloader):
     return (mean, std)
 
 
-def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_split=True, shuffle=True, **kwargs):
+def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_split=True, shuffle=True, fly=False,  **kwargs):
     num_all = len(dataset)
     train_percent = 1.0 - (valid_percent+test_percent)
     num_classes = dataset.input_data[dataset.image_label_column].unique()
