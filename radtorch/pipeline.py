@@ -217,21 +217,6 @@ class Image_Classification(Pipeline):
         if show_table:
             return self.misclassified_instances
 
-    def best_lr(self, figure_size=(500,300)):
-        x, self.lr_find_metrics=optimal_lr_finder(
-                                                model=self.train_model,
-                                                train_data_loader=self.train_dataloader,
-                                                valid_data_loader=self.valid_dataloader,
-                                                train_data_set=self.train_dataset,
-                                                valid_data_set=self.valid_dataset,
-                                                loss_criterion=self.loss_function,
-                                                optimizer=self.optimizer,
-                                                epochs=self.train_epochs,
-                                                device=self.device)
-        self.lr_metrics=pd.DataFrame(data=self.lr_find_metrics, columns=['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
-        return self.lr_metrics
-        # show_metrics(self.classifiers,  fig_size=figure_size)
-
 
 
 class Feature_Extraction(Pipeline):
