@@ -64,7 +64,7 @@ def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_spli
         train, validate, test = np.split(temp_df.sample(frac=1), [int(train_percent*len(temp_df)), int((train_percent+valid_percent)*len(temp_df))])
         if isinstance(sample, float):
             train = train.sample(frac=sample)
-            valid = valid.sample(frac=sample)
+            validate = validate.sample(frac=sample)
             test = test.sample(frac=sample)
         classes_df.append((train, validate, test))
     output = {}
