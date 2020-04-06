@@ -148,6 +148,10 @@ class Image_Classification(Pipeline):
         # Create Training Optimizer
         self.optimizer=Optimizer(type=self.optimizer, classifier=self.train_model, learning_rate=self.learning_rate)
 
+        # Adaptive Learning Rate = Learning Rate Scheduler
+        if self.adaptive_learning_rate:
+            self.lr_scheduler=torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=self.optimizer, mode='min', factor=0.1, patience=10, verbose=False, threshold=0.0001, threshold_mode='rel', cooldown=0, min_lr=0, eps=1e-08)
+
 
     def run(self, verbose=True):
         try:
@@ -162,6 +166,7 @@ class Image_Classification(Pipeline):
                                                     optimizer=self.optimizer,
                                                     epochs=self.train_epochs,
                                                     device=self.device,
+                                                    lr_scheduler=self.lr_scheduler,
                                                     verbose=verbose)
             self.train_metrics=pd.DataFrame(data=self.train_metrics, columns=['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
         except:
