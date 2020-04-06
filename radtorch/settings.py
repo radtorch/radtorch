@@ -164,7 +164,7 @@ COMPARE_CLASSIFIER_PIPELINE_SETTINGS={
             'model_arch' : 'vgg16',
             'pre_trained' : True,
             'unfreeze_weights' : False,
-            'train_epochs' : 20,
+            'train_epochs' : 10,
             'learning_rate' : 0.0001,
             'loss_function' : 'CrossEntropyLoss',
             'num_workers' : 0,
