@@ -143,7 +143,8 @@ IMAGE_CLASSIFICATION_PIPELINE_SETTINGS={
             'loss_function' : 'CrossEntropyLoss',
             'num_workers' : 0,
             'multi_label':False,
-            'classifier_type':'logistic_regression'
+            'classifier_type':'logistic_regression',
+            'fly':False,
             }
 
 COMPARE_CLASSIFIER_PIPELINE_SETTINGS={
@@ -168,7 +169,8 @@ COMPARE_CLASSIFIER_PIPELINE_SETTINGS={
             'loss_function' : 'CrossEntropyLoss',
             'num_workers' : 0,
             'multi_label':False,
-            'classifier_type':'logistic_regression'
+            'classifier_type':'logistic_regression',
+            'fly':False,
             }
 
 FEATURE_EXTRACTION_PIPELINE_SETTINGS={
