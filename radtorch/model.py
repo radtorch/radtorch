@@ -192,8 +192,8 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         epoch_end=time.time()
 
         if lr_scheduler:
-            lr_scheduler.step(avg_valid_loss)
-        
+            lr_scheduler.step(avg_valid_acc)
+
         if verbose:
             print("Epoch : {:03d}/{} : [Training: Loss: {:.4f}, Accuracy: {:.4f}%]  [Validation : Loss : {:.4f}, Accuracy: {:.4f}%] [Time: {:.4f}s]".format(epoch, epochs, avg_train_loss, avg_train_acc*100, avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_start))
 
