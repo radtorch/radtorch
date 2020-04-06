@@ -55,13 +55,13 @@ class Classifier():
         if self.type=='linear_regression':
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch:self.model.classifier[6]=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
-            return self.model
 
         elif self.type==' logistic_regression':
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
-            return self.model
 
+    def __new__(self):
+        return self.model
 
 class Optimizer():
     def __init__(self, **kwargs):
@@ -75,6 +75,8 @@ class Optimizer():
             self.optimizer=torch.optim.RMSprop(self.classifier.parameters(), self.learning_rate)
         if self.type=='SGD':
             self.optimizer=torch.optim.SGD(self.classifier.parameters(), self.learning_rate)
+
+    def __new__(self):
         return self.optimizer
 
 def create_loss_function(type):
