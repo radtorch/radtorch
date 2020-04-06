@@ -61,7 +61,7 @@ class Classifier(object):
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
 
     def __new__(cls,**kwargs):
-        return  object.__new__(cls)
+        return  object.__new__(cls).model
 
 class Optimizer():
     def __init__(self, **kwargs):
@@ -77,7 +77,7 @@ class Optimizer():
             self.optimizer=torch.optim.SGD(self.classifier.parameters(), self.learning_rate)
 
     def __new__(cls,**kwargs):
-        return  object.__new__(cls)
+        return  object.__new__(cls).optimizer
 
 def create_loss_function(type):
     try:
