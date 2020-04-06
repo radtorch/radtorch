@@ -132,15 +132,16 @@ class Image_Classification(Pipeline):
 
         # Create train/valid/test datasets and dataloaders
         for k, v in self.dataset_dictionary.items():
-            sampler=None
-            shuffle=True
             if self.fly: # Use 10% for quick fly testing
                 subset_indices=torch.utils.data.RandomSampler(data_source=v, replacement=True, num_samples=int(len(v)/10))
-                sampler=torch.utils.data.SubsetRandomSampler(subset_indices)
                 shuffle=False
-            if self.balance_class: setattr(self, k+'_dataset', v.balance())
-            else: setattr(self, k+'_dataset', v)
-            setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], sampler=sampler, batch_size=self.batch_size, shuffle=shuffle, num_workers=self.num_workers))
+                if self.balance_class: setattr(self, k+'_dataset', v.balance())
+                else: setattr(self, k+'_dataset', v)
+                setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], sampler=SubsetRandomSampler(subset_indices), batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers))
+            else:
+                if self.balance_class: setattr(self, k+'_dataset', v.balance())
+                else: setattr(self, k+'_dataset', v)
+                setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
 
 
         # Create Training Model
