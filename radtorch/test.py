@@ -83,7 +83,7 @@ def create_loss_function(type):
         pass
 
 
-def train_model(**kwargs):
+def train_model(model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device,verbose):
     '''
     kwargs = model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device,verbose
     .. include:: ./documentation/docs/modelutils.md##train_model
