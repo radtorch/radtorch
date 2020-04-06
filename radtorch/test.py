@@ -60,9 +60,9 @@ class Classifier():
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
 
-    def __new__(cls, **kwargs):
-        super(A, cls).__new__(cls)
-        return  self.model
+    def __new__(cls,**kwargs):
+        instance = super(Classifier, cls).__new__(cls, **kwargs)
+        return instance.model
 
 class Optimizer():
     def __init__(self, **kwargs):
@@ -77,8 +77,9 @@ class Optimizer():
         if self.type=='SGD':
             self.optimizer=torch.optim.SGD(self.classifier.parameters(), self.learning_rate)
 
-    def __new__(self):
-        return self.optimizer
+    def __new__(cls,**kwargs):
+        instance = super(Optimizer, cls).__new__(cls, **kwargs)
+        return instance.optimizer
 
 def create_loss_function(type):
     try:
