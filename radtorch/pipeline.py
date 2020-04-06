@@ -19,7 +19,6 @@ from radtorch.data import *
 from radtorch.vis import *
 from radtorch.general import *
 from radtorch.dataset import *
-from radtorch.test import *
 
 
 def load_pipeline(target_path):
