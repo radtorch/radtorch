@@ -219,7 +219,7 @@ class Feature_Extraction(Pipeline):
     def __init__(self, **kwargs):
         super(Feature_Extraction, self).__init__(**kwargs, DEFAULT_SETTINGS=FEATURE_EXTRACTION_PIPELINE_SETTINGS)
         self.classifiers=[self]
-        self.model=Feature_Extractor(model_arch=self.model_arch, pre_trained=self.pre_trained)
+        self.model=Feature_Extractor(model_arch=self.model_arch, pre_trained=self.pre_trained).model
         # self.model=create_model(model_arch=self.model_arch,output_classes=self.num_output_classes,pre_trained=self.pre_trained,unfreeze_weights=self.unfreeze_weights, mode='feature_extraction')
 
     def num_features(self):
