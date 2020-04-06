@@ -88,6 +88,20 @@ supported_multi_label_image_classification_losses=[]
 
 supported_optimizer=['Adam', 'ASGD', 'RMSprop', 'SGD']
 
+supported_loss={
+            'NLLLoss':torch.nn.NLLLoss(),
+            'CrossEntropyLoss':torch.nn.CrossEntropyLoss(),
+            'MSELoss':torch.nn.MSELoss(),
+            'PoissonNLLLoss': torch.nn.PoissonNLLLoss(),
+            'BCELoss': torch.nn.BCELoss(),
+            'BCEWithLogitsLoss': torch.nn.BCEWithLogitsLoss(),
+            'MultiLabelMarginLoss':torch.nn.MultiLabelMarginLoss(),
+            'SoftMarginLoss':torch.nn.SoftMarginLoss(),
+            'MultiLabelSoftMarginLoss':torch.nn.MultiLabelSoftMarginLoss(),
+            'CosineSimilarity':torch.nn.CosineSimilarity(dim=1, eps=1e-08),
+            }
+
+
 
 #datautils
 IMG_EXTENSIONS=('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
