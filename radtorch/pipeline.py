@@ -139,16 +139,14 @@ class Image_Classification(Pipeline):
 
         # Create Training Model
         self.feature_extractor=Feature_Extractor(model_arch=self.model_arch, pre_trained=self.pre_trained)
-        self.train_model=Classifier(feature_extractor=self.feature_extractor, output_classes=self.num_output_classes, type=self.classifier_type)
-
-        self.train_model=self.train_model.model
+        self.train_model=(Classifier(feature_extractor=self.feature_extractor, output_classes=self.num_output_classes, type=self.classifier_type)).model
         self.train_model=self.train_model.to(self.device)
 
         # Create Training Loss Function
         self.loss_function=create_loss_function(type=self.loss_function)
 
         # Create Training Optimizer
-        self.optimizer=Optimizer(type=self.optimizer, classifier=self.train_model, learning_rate=self.learning_rate)
+        self.optimizer=(Optimizer(type=self.optimizer, classifier=self.train_model, learning_rate=self.learning_rate)).optimizer
 
 
     def run(self, verbose=True):
