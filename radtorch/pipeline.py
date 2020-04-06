@@ -131,7 +131,7 @@ class Image_Classification(Pipeline):
 
         # Use 10% for quick fly testing
         if self.fly:
-            self.dataset_dictionary={k: v.sample(frac=0.1) for k,v in self.dataset_dictionary.items()}
+            self.dataset_dictionary={k:torch.utils.data.RandomSampler(data_source=v, replacement=True, num_samples=int(len(v)/10)) for k,v in self.dataset_dictionary.items()}
 
         # Create train/valid/test datasets and dataloaders
         for k, v in self.dataset_dictionary.items():
