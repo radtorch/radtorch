@@ -52,7 +52,7 @@ class Classifier():
         self.model_arch=self.feature_extractor.model_arch
         self.in_features=model_dict[self.model_arch]['output_features']
 
-        if self.type=='linear_regression'
+        if self.type=='linear_regression':
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch:self.model.classifier[6]=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
             return self.model
