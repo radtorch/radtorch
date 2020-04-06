@@ -53,13 +53,15 @@ version='0.1.4b'
 
 
 # visutils
-TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
-COLORS2 = ['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716','#FF7300', '#FBD704', '#10D8B8', '#3C6FAA']*100
-COLORS =    ['#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1','#2F5EC4', '#4285F4', '#45A5F5',]*100
+TOOLS="hover,save,box_zoom,reset,wheel_zoom, box_select"
+
+COLORS2=['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716','#FF7300', '#FBD704', '#10D8B8', '#3C6FAA']*100
+
+COLORS=   ['#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1','#2F5EC4', '#4285F4', '#45A5F5',]*100
 
 
 #modelsutils
-model_dict = {'vgg11':{'name':'vgg11','input_size':224, 'output_features':4096},
+model_dict={'vgg11':{'name':'vgg11','input_size':224, 'output_features':4096},
               'vgg11_bn':{'name':'vgg11_bn','input_size':224, 'output_features':4096},
               'vgg13':{'name':'vgg13','input_size':224, 'output_features':4096},
               'vgg13_bn':{'name':'vgg13_bn','input_size':224, 'output_features':4096},
@@ -78,19 +80,19 @@ model_dict = {'vgg11':{'name':'vgg11','input_size':224, 'output_features':4096},
               'alexnet':{'name':'alexnet','input_size':256, 'output_features':4096},
               }
 
-supported_models = [x for x in model_dict.keys()]
+supported_models=[x for x in model_dict.keys()]
 
-supported_image_classification_losses = ['NLLLoss', 'CrossEntropyLoss', 'CosineSimilarity']
+supported_image_classification_losses=['NLLLoss', 'CrossEntropyLoss', 'CosineSimilarity']
 
-supported_multi_label_image_classification_losses = []
+supported_multi_label_image_classification_losses=[]
 
-supported_optimizer = ['Adam', 'ASGD', 'RMSprop', 'SGD']
+supported_optimizer=['Adam', 'ASGD', 'RMSprop', 'SGD']
 
 
 #datautils
-IMG_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
+IMG_EXTENSIONS=('.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif', '.tiff', '.webp')
 
-DEFAULT_DATASET_SETTINGS = {
+DEFAULT_DATASET_SETTINGS={
                                 'is_dicom':True,
                                 'mode':'RAW',
                                 'wl':None,
@@ -104,7 +106,7 @@ DEFAULT_DATASET_SETTINGS = {
 
 
 #pipeline
-IMAGE_CLASSIFICATION_PIPELINE_SETTINGS = {
+IMAGE_CLASSIFICATION_PIPELINE_SETTINGS={
             'custom_resize':False,
             'optimizer':'Adam',
             'is_dicom': True,
@@ -129,8 +131,7 @@ IMAGE_CLASSIFICATION_PIPELINE_SETTINGS = {
             'multi_label':False
             }
 
-
-COMPARE_CLASSIFIER_PIPELINE_SETTINGS = {
+COMPARE_CLASSIFIER_PIPELINE_SETTINGS={
             'optimizer':'Adam',
             'is_dicom': True,
             'table': None,
@@ -154,9 +155,7 @@ COMPARE_CLASSIFIER_PIPELINE_SETTINGS = {
             'multi_label':False
             }
 
-
-
-FEATURE_EXTRACTION_PIPELINE_SETTINGS = {
+FEATURE_EXTRACTION_PIPELINE_SETTINGS={
             'custom_resize':False,
             'is_dicom': True,
             'table': None,

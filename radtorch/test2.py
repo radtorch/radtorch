@@ -22,6 +22,17 @@ from radtorch.dataset import *
 
 
 
+def load_pipeline(target_path):
+    '''
+    .. include:: ./documentation/docs/pipeline.md##load_pipeline
+    '''
+    infile = open(target_path,'rb')
+    pipeline = pickle.load(infile)
+    infile.close()
+
+    return pipeline
+
+
 class Pipeline():
 
     def __init__(self, **kwargs):
@@ -173,7 +184,6 @@ class Image_Classification(Pipeline):
         except:
             raise TypeError('Error! Trained Model could not be exported.')
 
-
     def inference(self, transformations=None, all_predictions=False, *args, **kwargs):
         if transformations==None:
             transformations=self.transformations
@@ -273,6 +283,7 @@ class Feature_Extraction(Pipeline):
 
 
 class Image_Classifier_Selection(Pipeline):
+
     def __init__(self, DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -281,23 +292,22 @@ class Image_Classifier_Selection(Pipeline):
             if k not in self.__dict__.keys():
                 setattr(self, k, v)
 
-        self.compare_parameters = {k:v for k,v in self.__dict__.items() if type(v)==list}
-        self.non_compare_parameters = {k:v for k, v in self.__dict__.items() if k not in self.compare_parameters and k !='compare_parameters'}
+        self.compare_parameters={k:v for k,v in self.__dict__.items() if type(v)==list}
+        self.non_compare_parameters={k:v for k, v in self.__dict__.items() if k not in self.compare_parameters and k !='compare_parameters'}
         self.compare_parameters_names= list(self.compare_parameters.keys())
-        self.scenarios_list = list(itertools.product(*list(self.compare_parameters.values())))
-        self.num_scenarios = len(self.scenarios_list)
-        self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
+        self.scenarios_list=list(itertools.product(*list(self.compare_parameters.values())))
+        self.num_scenarios=len(self.scenarios_list)
+        self.scenarios_df=pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
 
-        self.classifiers = []
+        self.classifiers=[]
 
         for x in self.scenarios_list:
-            classifier_settings = {self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
+            classifier_settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             classifier_settings.update(self.non_compare_parameters)
             if self.scenarios_list.index(x)!=0: classifier_settings['load_predefined_datatables']=self.data_subsets
-            clf = Image_Classification(**classifier_settings)
-            if self.scenarios_list.index(x)==0: self.data_subsets = {k:v.input_data for k, v in clf.dataset_dictionary.items()}
+            clf=Image_Classification(**classifier_settings)
+            if self.scenarios_list.index(x)==0: self.data_subsets={k:v.input_data for k, v in clf.dataset_dictionary.items()}
             self.classifiers.append(clf)
-
 
     def grid(self):
         return self.scenarios_df
@@ -309,12 +319,12 @@ class Image_Classifier_Selection(Pipeline):
         self.classifiers[classifier_index].dataset_info()
 
     def sample(self, classifier_index=0, **kwargs):
-        self.dataloader = self.classifiers[classifier_index].dataloader
+        self.dataloader=self.classifiers[classifier_index].dataloader
         super().sample(**kwargs);
 
     def run(self):
-      self.master_metrics = []
-      self.trained_models = []
+      self.master_metrics=[]
+      self.trained_models=[]
       for i in tqdm(self.classifiers, total=len(self.classifiers)):
         print ('Starting Training Classifier Number',self.classifiers.index(i))
         i.run()
@@ -322,16 +332,15 @@ class Image_Classifier_Selection(Pipeline):
         self.master_metrics.append(i.train_metrics)
         torch.cuda.empty_cache()
 
-
     def roc(self, fig_size=(700,400)):
-        self.auc_list = show_roc(self.classifiers, fig_size=fig_size)
-        self.best_model_auc = max(self.auc_list)
-        self.best_model_index = (self.auc_list.index(self.best_model_auc))
-        self.best_classifier = self.classifiers[self.best_model_index]
+        self.auc_list=show_roc(self.classifiers, fig_size=fig_size)
+        self.best_model_auc=max(self.auc_list)
+        self.best_model_index=(self.auc_list.index(self.best_model_auc))
+        self.best_classifier=self.classifiers[self.best_model_index]
 
     def best(self, path=None, export_classifier=False, export_model=False):
         try:
-            print ('Best Classifier = Model', self.best_model_index)
+            print ('Best Classifier=Model', self.best_model_index)
             print ('Best Classifier AUC =', self.best_model_auc)
             if export_model:
                 export(self.best_classifier.trained_model, path)
