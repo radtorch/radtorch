@@ -57,7 +57,7 @@ class Classifier():
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
             return self.model
 
-        elif self.type==' logestic_regression':
+        elif self.type==' logistic_regression':
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
             return self.model
