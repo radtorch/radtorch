@@ -52,7 +52,7 @@ def calculate_mean_std(dataloader):
     return (mean, std)
 
 
-def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_split=True, shuffle=True, fly=False,  **kwargs):
+def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_split=True, shuffle=True, sample=False,  **kwargs):
     num_all = len(dataset)
     train_percent = 1.0 - (valid_percent+test_percent)
     num_classes = dataset.input_data[dataset.image_label_column].unique()
@@ -61,9 +61,11 @@ def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_spli
         temp_df = dataset.input_data.loc[dataset.input_data[dataset.image_label_column]==i]
         if shuffle:
           temp_df = temp_df.sample(frac=1).reset_index(drop=True)
-        if fly:frac=fly
-        else:frac=1
-        train, validate, test = np.split(temp_df.sample(frac=frac), [int(train_percent*len(temp_df)), int((train_percent+valid_percent)*len(temp_df))])
+        train, validate, test = np.split(temp_df.sample(frac=1), [int(train_percent*len(temp_df)), int((train_percent+valid_percent)*len(temp_df))])
+        if isinstance(sample, float):
+            train = train.sample(frac=sample)
+            valid = valid.sample(frac=sample)
+            test = test.sample(frac=sample)
         classes_df.append((train, validate, test))
     output = {}
     train_df = (pd.concat([i[0] for i in classes_df])).sample(frac=1).reset_index(drop=True)
