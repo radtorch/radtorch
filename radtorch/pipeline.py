@@ -136,7 +136,7 @@ class Image_Classification(Pipeline):
             shuffle=True
             if self.fly: # Use 10% for quick fly testing
                 subset_indices=torch.utils.data.RandomSampler(data_source=v, replacement=True, num_samples=int(len(v)/10))
-                sampler=SubsetRandomSampler(subset_indices)
+                sampler=torch.utils.data.SubsetRandomSampler(subset_indices)
                 shuffle=False
             if self.balance_class: setattr(self, k+'_dataset', v.balance())
             else: setattr(self, k+'_dataset', v)
