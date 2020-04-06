@@ -12,6 +12,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
+
 from radtorch.settings import *
 from radtorch.model import *
 from radtorch.data import *
@@ -21,671 +22,245 @@ from radtorch.dataset import *
 
 
 
-
 def load_pipeline(target_path):
-    '''
-    .. include:: ./documentation/docs/pipeline.md##load_pipeline
-    '''
-
-    infile = open(target_path,'rb')
-    pipeline = pickle.load(infile)
+    infile=open(target_path,'rb')
+    pipeline=pickle.load(infile)
     infile.close()
-
     return pipeline
 
 
+class Pipeline():
 
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
+        for k, v  in self.DEFAULT_SETTINGS.items():
+            if k not in kwargs.keys():
+                setattr(self, k, v)
 
-class Image_Classification():
+        if 'device' not in kwargs.keys():
+            self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    '''
-    .. include:: ./documentation/docs/pipeline.md##Image_Classification
-    '''
+        self.data_subsets=['dataset', 'train_dataset', 'valid_dataset', 'test_dataset']
 
-    def __init__(
-    self,
-    data_directory,
-    name = None,
-    transformations='default',
-    custom_resize = 'default',
-    device='default',
-    optimizer='Adam',
-    is_dicom=True,
-    label_from_table=False,
-    is_csv=None,
-    table_source=None,
-    path_col = 'IMAGE_PATH',
-    label_col = 'IMAGE_LABEL' ,
-    balance_class = False,
-    multi_label = False,
-    predefined_datasets = False,
-    mode='RAW',
-    wl=None,
-    normalize='default',
-    batch_size=16,
-    test_percent = 0.2,
-    valid_percent = 0.2,
-    model_arch='vgg16',
-    pre_trained=True,
-    unfreeze_weights=False,
-    train_epochs=20,
-    learning_rate=0.0001,
-    loss_function='CrossEntropyLoss'):
-        self.name = name
-        self.data_directory = data_directory
-        self.label_from_table = label_from_table
-        self.is_csv = is_csv
-        self.is_dicom = is_dicom
-        self.table_source = table_source
-        self.mode = mode
-        self.wl = wl
-        self.normalize = normalize
-        self.batch_size = batch_size
-        self.test_percent = test_percent
-        self.valid_percent = valid_percent
-        self.model_arch = model_arch
-        self.pre_trained = pre_trained
-        self.unfreeze_weights = unfreeze_weights
-        self.train_epochs = train_epochs
-        self.learning_rate = learning_rate
-        self.loss_function = loss_function
-        self.path_col = path_col
-        self.label_col = label_col
-        self.multi_label = multi_label
-        self.num_workers = 0
-        self.balance_class = balance_class
-        self.predefined_datasets = predefined_datasets
-        self.custom_resize = custom_resize
+        # Create Initial Master Dataset
+        if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs)
+        else: self.dataset=Dataset_from_folder(**kwargs)
+        self.num_output_classes=len(self.dataset.classes)
+        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
+        # Custom Resize Adjustement
+        if isinstance(self.custom_resize, bool): self.resize=model_dict[self.model_arch]['input_size']
+        elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
 
-        # Transformations
-        self.transformations, self.input_resize = set_transformations(model_arch=self.model_arch, custom_resize=self.custom_resize, is_dicom=self.is_dicom, transformations=transformations)
-
-        # Device
-        self.device = set_device(device)
-
-        if self.predefined_datasets:
-            self.train_data_set, self.valid_data_set, self.test_data_set = load_predefined_datatables(
-                                        data_directory=self.data_directory,
-                                        is_csv=self.is_csv,
-                                        is_dicom=self.is_dicom,
-                                        predefined_datasets=self.predefined_datasets,
-                                        path_col=self.path_col,
-                                        label_col=self.label_col,
-                                        mode=self.mode,
-                                        wl=self.wl,
-                                        transformations=self.transformations )
-            self.num_output_classes = len(self.train_data_set.classes)
-            self.train_data_loader = torch.utils.data.DataLoader(
-                                                    self.train_data_set,
-                                                    batch_size=self.batch_size,
-                                                    shuffle=True,
-                                                    num_workers=self.num_workers)
-            self.valid_data_loader = torch.utils.data.DataLoader(
-                                                    self.valid_data_set,
-                                                    batch_size=self.batch_size,
-                                                    shuffle=True,
-                                                    num_workers=self.num_workers)
-            self.test_data_loader = torch.utils.data.DataLoader(
-                                                    self.test_data_set,
-                                                    batch_size=self.batch_size,
-                                                    shuffle=True,
-                                                    num_workers=self.num_workers)
-
-
+        # Create transformations
+        if self.is_dicom:
+            self.transformations=transforms.Compose([
+                    transforms.Resize((self.resize, self.resize)),
+                    transforms.transforms.Grayscale(3),
+                    transforms.ToTensor()])
         else:
+            self.transformations=transforms.Compose([
+                transforms.Resize((self.resize, self.resize)),
+                transforms.ToTensor()])
+
+        # Calculate Normalization if required
+        if self.normalize=='auto':
+            mean, std=self.dataset.mean_std()
+            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+        elif isinstance (self.normalize, tuple):
+            mean, std=self.normalize
+            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+
+        # Recreate Transformed Master Dataset
+        if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
+        else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
+        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
+    def info(self):
+        info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
+        info.columns=['Property', 'Value']
+        # try:
+        for i in self.data_subsets :
+            if i in self.__dict__.keys(): info=info.append({'Property':i, 'Value':len(self.__dict__[i])}, ignore_index=True)
+            # except:
+            #     pass
+        return info
+
+    def dataset_info(self, plot=True, fig_size=(500,300)):
+        info_dict={}
+        for i in self.data_subsets :
+            if i in self.__dict__.keys():
+                info_dict[i]=show_dataset_info(self.__dict__[i])
+                info_dict[i].style.set_caption(i)
+        if plot:
+            plot_dataset_info(info_dict, plot_size= fig_size)
+        else:
+            for k, v in info_dict.items():
+                display(v)
+
+    def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
+        show_dataloader_sample(self.dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
+
+    def metrics(self, figure_size=(500,300)):
+        return show_metrics(self.classifiers,  fig_size=figure_size)
+
+    def export(self, output_path):
+        try:
+            outfile=open(output_path,'wb')
+            pickle.dump(self,outfile)
+            outfile.close()
+            print ('Pipeline exported successfully.')
+        except:
+            raise TypeError('Error! Pipeline could not be exported.')
+
+    def classes(self):
+        return self.dataset.class_to_idx
 
 
-            # Create Dataset
-            if self.label_from_table == True:
-                try:
-                    self.data_set = dataset_from_table(
-                            data_directory=self.data_directory,
-                            is_csv=self.is_csv,
-                            is_dicom=self.is_dicom,
-                            input_source=self.table_source,
-                            img_path_column=self.path_col,
-                            img_label_column=self.label_col,
-                            multi_label = self.multi_label,
-                            mode=self.mode,
-                            wl=self.wl,
-                            trans=self.transformations)
-                except:
-                    raise TypeError('Dataset could not be created from table.')
-                    pass
+class Image_Classification(Pipeline):
 
-            else:
-                try:
-                    self.data_set = dataset_from_folder(
-                                data_directory=self.data_directory,
-                                is_dicom=self.is_dicom,
-                                mode=self.mode,
-                                wl=self.wl,
-                                trans=self.transformations)
-                except:
-                    raise TypeError('Dataset could not be created from folder structure.')
-                    pass
+    def __init__(self, **kwargs):
+        super(Image_Classification, self).__init__(**kwargs, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS)
+        self.classifiers=[self]
 
-            if self.normalize:
-                if self.normalize == 'auto':
-                    self.data_loader = torch.utils.data.DataLoader(
-                                                            self.data_set,
-                                                            batch_size=self.batch_size,
-                                                            shuffle=True,
-                                                            num_workers=self.num_workers)
+        #Load from predefined datasets or split master dataset
+        if self.load_predefined_datatables: self.dataset_dictionary=load_predefined_datatables(data_directory=self.data_directory,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,image_path_column=self.image_path_column,image_label_column=self.image_label_column,mode=self.mode,wl=self.wl,transformations=self.transformations )
+        else: self.dataset_dictionary=self.dataset.split(valid_percent=self.valid_percent, test_percent=self.test_percent)
 
-                    self.mean, self.std = calculate_mean_std(self.data_loader)
-                elif self.normalize == 'default':
-                    self.mean = [0.5, 0.5, 0.5]
-                    self.std = [0.5, 0.5, 0.5]
-                else:
-                    self.mean = self.normalize[0]
-                    self.std = self.normalize[1]
+        # Create train/valid/test datasets and dataloaders
+        for k, v in self.dataset_dictionary.items():
+            if self.balance_class: setattr(self, k+'_dataset', v.balance())
+            else: setattr(self, k+'_dataset', v)
+            setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
 
-                if transformations == 'default':
-                    if self.is_dicom == True:
-                        self.transformations = transforms.Compose([
-                                transforms.Resize((self.input_resize, self.input_resize)),
-                                transforms.transforms.Grayscale(3),
-                                transforms.ToTensor(),
-                                transforms.Normalize(mean=self.mean, std=self.std)])
-                    else:
-                        self.transformations = transforms.Compose([
-                                transforms.Resize((self.input_resize, self.input_resize)),
-                                transforms.ToTensor(),
-                                transforms.Normalize(mean=self.mean, std=self.std)])
-                else:
-                    self.transformations = transformations
+        # Create Training Model
+        self.train_model=create_model(output_classes=self.num_output_classes,mode='train', model_arch=self.model_arch,pre_trained=self.pre_trained, unfreeze_weights=self.unfreeze_weights )
 
-                if self.label_from_table == True:
-                    try:
-                        self.data_set = dataset_from_table(
-                                data_directory=self.data_directory,
-                                is_csv=self.is_csv,
-                                is_dicom=self.is_dicom,
-                                input_source=self.table_source,
-                                img_path_column=self.path_col,
-                                img_label_column=self.label_col,
-                                multi_label = self.multi_label,
-                                mode=self.mode,
-                                wl=self.wl,
-                                trans=self.transformations)
-                    except:
-                        raise TypeError('Dataset could not be created from table.')
-                        pass
+        self.train_model=self.train_model.to(self.device)
 
-
-            # Split Data set
-            if self.test_percent == 0:
-                self.train_data_set, self.valid_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
-                if self.balance_class:
-                    self.train_data_set = over_sample(self.train_data_set)
-                    self.valid_data_set = over_sample(self.valid_data_set)
-                self.test_data_set = 0
-            else:
-                self.train_data_set, self.valid_data_set, self.test_data_set = split_dataset(dataset=self.data_set, valid_percent=self.valid_percent, test_percent=self.test_percent, equal_class_split=True, shuffle=True)
-                if self.balance_class:
-                    self.train_data_set = over_sample(self.train_data_set)
-                    self.valid_data_set = over_sample(self.valid_data_set)
-                    self.test_data_set = over_sample(self.test_data_set)
-
-            self.num_output_classes = len(self.data_set.classes)
-
-        # Data Loaders
-            self.train_data_loader = torch.utils.data.DataLoader(
-                                                        self.train_data_set,
-                                                        batch_size=self.batch_size,
-                                                        shuffle=True,
-                                                        num_workers=self.num_workers)
-
-
-            self.valid_data_loader = torch.utils.data.DataLoader(
-                                                        self.valid_data_set,
-                                                        batch_size=self.batch_size,
-                                                        shuffle=True,
-                                                        num_workers=self.num_workers)
-
-
-            if self.test_percent == 0:
-                self.test_data_loader = 0
-            else:
-                self.test_data_loader = torch.utils.data.DataLoader(
-                                                        self.test_data_set,
-                                                        batch_size=self.batch_size,
-                                                        shuffle=True,
-                                                        num_workers=self.num_workers)
-
-        self.train_model = create_model(
-                                    model_arch=self.model_arch,
-                                    output_classes=self.num_output_classes,
-                                    pre_trained=self.pre_trained,
-                                    unfreeze_weights = self.unfreeze_weights,
-                                    mode = 'train',
-                                    )
-
-        self.train_model = self.train_model.to(self.device)
-
+        # Create Training Loss Function
         if self.loss_function in supported_image_classification_losses:
-            self.loss_function = create_loss_function(self.loss_function)
+            self.loss_function=create_loss_function(self.loss_function)
         else:
             raise TypeError('Selected loss function is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported loss functions.')
             pass
 
-        if optimizer in supported_optimizer:
-            self.optimizer = create_optimizer(traning_model=self.train_model, optimizer_type=optimizer, learning_rate=self.learning_rate)
+        # Create Training Optimizer
+        if self.optimizer in supported_optimizer:
+            self.optimizer=create_optimizer(traning_model=self.train_model, optimizer_type=self.optimizer, learning_rate=self.learning_rate)
         else:
             raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
             pass
 
-    def info(self):
-        '''
-        Display Parameters of the Image Classification Pipeline.
-        '''
-
-        print ('RADTorch Image Classification Pipeline Parameters')
-        info = {key:str(value) for key, value in self.__dict__.items()}
-        classifier_info = pd.DataFrame.from_dict(info.items())
-        classifier_info.columns = ['Property', 'Value']
-
-        classifier_info = classifier_info.append({'Property':'Train Dataset Size', 'Value':len(self.train_data_set)}, ignore_index=True)
-        classifier_info = classifier_info.append({'Property':'Valid Dataset Size', 'Value':len(self.valid_data_set)}, ignore_index=True)
-
-        if self.test_percent > 0:
-            classifier_info = classifier_info.append({'Property':'Test Dataset Size', 'Value':len(self.test_data_set)}, ignore_index=True)
-
-        return classifier_info
-
-    def dataset_info(self, plot=True, plot_size=(500,300)):
-        '''
-        Display Dataset Information.
-        '''
-
-        info_dict = {}
-
-        # Display train breakdown by class
-        info_dict['train_dataset'] = show_dataset_info(self.train_data_set)
-        info_dict['train_dataset'].style.set_caption("train_dataset")
-        # Display valid breakdown by class
-        info_dict['valid_dataset'] = show_dataset_info(self.valid_data_set)
-        info_dict['valid_dataset'].style.set_caption("valid_dataset")
-
-        # Display test breakdown by class
-        if self.test_percent > 0:
-            info_dict['test_dataset'] = show_dataset_info(self.test_data_set)
-            info_dict['test_dataset'].style.set_caption("test_dataset")
-
-
-
-        if plot:
-            plot_dataset_info(info_dict, plot_size= plot_size)
-        else:
-
-            display (show_dataset_info(self.train_data_set))
-            display (show_dataset_info(self.valid_data_set))
-            display (show_dataset_info(self.test_data_set))
-
-    def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
-        '''
-        Display sample of the training dataset.
-        Inputs:
-            num_of_images_per_row: _(int)_ number of images per column. (default=5)
-            fig_size: _(tuple)_figure size. (default=(10,10))
-            show_labels: _(boolean)_ show the image label idx. (default=True)
-        '''
-        batch = next(iter(self.train_data_loader))
-        images, labels, paths = batch
-        images = images.numpy()
-        images = [np.moveaxis(x, 0, -1) for x in images]
-        if show_labels:
-          titles = labels.numpy()
-          titles = [((list(self.train_data_set.class_to_idx.keys())[list(self.train_data_set.class_to_idx.values()).index(i)]), i) for i in titles]
-        if show_file_name:
-          titles = [ntpath.basename(x) for x in paths]
-        plot_images(images=images, titles=titles, figure_size=fig_size)
-
-    def classes(self):
-        return self.train_data_set.class_to_idx
-
     def run(self, verbose=True):
-        '''
-        Train the image classification pipeline.
-        Inputs:
-            verbose: _(boolean)_ Show display progress after each epoch. (default=True)
-        '''
         try:
             print ('Starting Image Classification Pipeline Training')
-            self.trained_model, self.train_metrics = train_model(
-                                                    model = self.train_model,
-                                                    train_data_loader = self.train_data_loader,
-                                                    valid_data_loader = self.valid_data_loader,
-                                                    train_data_set = self.train_data_set,
-                                                    valid_data_set = self.valid_data_set,
-                                                    loss_criterion = self.loss_function,
-                                                    optimizer = self.optimizer,
-                                                    epochs = self.train_epochs,
-                                                    device = self.device,
+            self.trained_model, self.train_metrics=train_model(
+                                                    model=self.train_model,
+                                                    train_data_loader=self.train_dataloader,
+                                                    valid_data_loader=self.valid_dataloader,
+                                                    train_data_set=self.train_dataset,
+                                                    valid_data_set=self.valid_dataset,
+                                                    loss_criterion=self.loss_function,
+                                                    optimizer=self.optimizer,
+                                                    epochs=self.train_epochs,
+                                                    device=self.device,
                                                     verbose=verbose)
-            self.train_metrics = pd.DataFrame(data=self.train_metrics, columns = ['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
+            self.train_metrics=pd.DataFrame(data=self.train_metrics, columns=['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
         except:
             raise TypeError('Could not train image classification pipeline. Please check provided parameters.')
             pass
 
-    def metrics(self, fig_size=(500,300)):
-        '''
-        Display the training metrics.
-        '''
-        show_metrics([self], fig_size=(fig_size))
-
     def export_model(self,output_path):
-        '''
-        Export the trained model into a target file.
-        Inputs:
-            output_path: _(str)_ path to output file. For example 'foler/folder/model.pth'
-        '''
+        try:
+            torch.save(self.trained_model, output_path)
+            print ('Trained classifier exported successfully.')
+        except:
+            raise TypeError('Error! Trained Model could not be exported.')
 
-        torch.save(self.trained_model, output_path)
-        print ('Trained classifier exported successfully.')
+    def inference(self, transformations=None, all_predictions=False, *args, **kwargs):
+        if transformations==None:
+            transformations=self.transformations
+        return model_inference( model=self.trained_model,
+                                input_image_path=target_image_path,
+                                inference_transformations=transformations,
+                                all_predictions=all_predictions)
 
-    def set_trained_model(self, model_path, mode):
-        '''
-        Loads a previously trained model into pipeline
-        Inputs:
-            model_path: _(str)_ path to target model
-            mode: _(str)_ either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.
-        '''
+    def confusion_matrix(self, figure_size=(7,7), target_dataset=None, target_classes=None, cmap=None, *args,  **kwargs):
+        if target_dataset==None:
+            target_dataset=self.test_dataset
+        if target_classes==None:
+            target_classes=self.dataset.classes
 
-        if mode == 'train':
-            self.train_model = torch.load(model_path)
-        elif mode == 'infer':
-            self.trained_model = torch.load(model_path)
-        print ('Model Loaded Successfully.')
+        target_dataset.transformations=self.transformations
+        show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_dataset, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
 
-    def inference(self, test_img_path, transformations='default',  all_predictions=False):
-        '''
-        Performs inference on target DICOM image using a trained classifier.
-        Inputs:
-            test_img_path: _(str)_ path to target image.
-            transformations: _(pytorch transforms list)_ pytroch transforms to be performed on the target image. (default='default')
-        Outputs:
-            Output: _(tuple)_ tuple of prediction class idx and accuracy percentage.
-        '''
-        if transformations=='default':
-            transformations = self.transformations
-        else:
-            transformations = transformations
-
-        return model_inference(model=self.trained_model,input_image_path=test_img_path, inference_transformations=transformations, all_predictions=all_predictions)
-
-    def confusion_matrix(self, target_data_set='default', target_classes='default', figure_size=(7,7), cmap=None):
-        '''
-        Display Confusion Matrix
-        Inputs:
-            target_data_set: _(pytorch dataset object)_ dataset used for predictions to create the confusion matrix. By default, the image classification pipeline uses the test dataset created to calculate the matrix.
-            target_classes: _(list)_ list of classes. By default, the image classification pipeline uses the training classes.
-            figure_size: _(tuple)_figure size. (default=(7,7))
-        '''
-
-        if target_data_set=='default':
-            if self.test_data_set == 0:
-                raise TypeError('Error. Test Percent set to Zero in image classification pipeline. Please change or set another target testing dataset.')
-                pass
-            else:
-                target_data_set = self.test_data_set
-        else:
-            target_data_set = target_data_set
-            target_data_set.trans = self.transformations
-
-        if target_classes == 'default':
-            target_classes = self.data_set.classes
-        else:
-            target_classes = target_classes
-
-        show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, figure_size=figure_size, cmap=cmap, device=self.device)
-
-    def roc(self, target_data_set='default', figure_size=(600,400)):
-        '''
-        Display ROC and AUC
-        Inputs:
-            target_data_set: _(pytorch dataset object)_ dataset used for predictions to create the ROC. By default, the image classification pipeline uses the test dataset created to calculate the ROC.
-            auc: _(boolen)_ Display area under curve. (default=True)
-            figure_size: _(tuple)_figure size. (default=(7,7))
-        '''
-
-        if target_data_set=='default':
-            if self.test_data_set == 0:
-                raise TypeError('Error. Test Percent set to Zero in image classification pipeline. Please change or set another target testing dataset.')
-                pass
-            else:
-                target_data_set = self.test_data_set
-                num_classes = len(self.data_set.classes)
-        else:
-            target_data_set = target_data_set
-            num_classes = len(target_data_set.classes)
-            target_data_set.trans = self.transformations
-
+    def roc(self, target_dataset=None, figure_size=(600,400), *args,  **kwargs):
+        if target_dataset==None:
+            target_dataset=self.test_dataset
+        num_classes=len(target_dataset.classes)
         if num_classes <= 2:
             show_roc([self], fig_size=figure_size)
         else:
             raise TypeError('ROC cannot support more than 2 classes at the current time. This will be addressed in an upcoming update.')
             pass
 
-    def misclassified(self, target_data_set='default', num_of_images=16, figure_size=(10,10), show_table=False):
-        if target_data_set=='default':
-            if self.test_data_set == 0:
-                raise TypeError('Error. Test Percent set to Zero in image classification pipeline. Please change or set another target testing dataset.')
-                pass
-            else:
-                target_data_set = self.test_data_set
-        else:
-            target_data_set = target_data_set
-            target_data_set.trans = self.transformations
+    def misclassified(self, target_dataset=None, num_images=16, figure_size=(10,10), show_table=False, *args,  **kwargs):
+        if target_dataset==None:
+            target_dataset=self.test_dataset
 
-        self.misclassified_instances = show_nn_misclassified(model=self.trained_model, target_data_set=target_data_set, transforms=self.transformations,   is_dicom=self.is_dicom, num_of_images=num_of_images, device=self.device, figure_size=figure_size)
+        target_dataset.trans=self.transformations
+
+        self.misclassified_instances=show_nn_misclassified(model=self.trained_model, target_data_set=target_dataset, transforms=self.transformations,   is_dicom=self.is_dicom, num_of_images=num_images, device=self.device, figure_size=figure_size)
 
         if show_table:
             return self.misclassified_instances
 
-    def export(self, output_path):
-        '''
-        Exports the whole image classification pipelie for future use
 
-        ***Arguments**
-        - target_path: _(str)_ target location for export.
-        '''
-        outfile = open(output_path,'wb')
-        pickle.dump(self,outfile)
-        outfile.close()
+class Feature_Extraction(Pipeline):
 
-
-class Feature_Extraction():
-
-    '''
-    .. include:: ./documentation/docs/pipeline.md##Feature_Extraction
-    '''
-
-    def __init__(
-    self,
-    data_directory,
-    transformations='default',
-    custom_resize = 'default',
-    device='default',
-    is_dicom=True,
-    label_from_table=False,
-    is_csv=None,
-    table_source=None,
-    path_col = 'IMAGE_PATH',
-    label_col = 'IMAGE_LABEL' ,
-    mode='RAW',
-    wl=None,
-    model_arch='vgg16',
-    pre_trained=True,
-    batch_size=16,
-    unfreeze_weights=False,
-    shuffle=True
-    ):
-        self.data_directory = data_directory
-        self.label_from_table = label_from_table
-        self.is_csv = is_csv
-        self.is_dicom = is_dicom
-        self.table_source = table_source
-        self.mode = mode
-        self.wl = wl
-        self.batch_size=batch_size
-        self.shuffle=shuffle
-
-        if custom_resize=='default':
-            self.input_resize = model_dict[model_arch]['input_size']
-        else:
-            self.input_resize = custom_resize
-
-        if transformations == 'default':
-            if self.is_dicom == True:
-                self.transformations = transforms.Compose([
-                        transforms.Resize((self.input_resize, self.input_resize)),
-                        transforms.transforms.Grayscale(3),
-                        transforms.ToTensor()])
-            else:
-                self.transformations = transforms.Compose([
-                        transforms.Resize((self.input_resize, self.input_resize)),
-                        transforms.ToTensor()])
-        else:
-            self.transformations = transformations
-
-
-        self.model_arch = model_arch
-        self.pre_trained = pre_trained
-        self.unfreeze_weights = unfreeze_weights
-        self.path_col = path_col
-        self.label_col = label_col
-        if device == 'default':
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        else:
-            self.device == device
-
-        # Create DataSet
-        if self.label_from_table == True:
-            self.data_set = dataset_from_table(
-                    data_directory=self.data_directory,
-                    is_csv=self.is_csv,
-                    is_dicom=self.is_dicom,
-                    input_source=self.table_source,
-                    img_path_column=self.path_col,
-                    img_label_column=self.label_col,
-                    mode=self.mode,
-                    wl=self.wl,
-                    trans=self.transformations)
-
-        else:
-            self.data_set = dataset_from_folder(
-                        data_directory=self.data_directory,
-                        is_dicom=self.is_dicom,
-                        mode=self.mode,
-                        wl=self.wl,
-                        trans=self.transformations)
-
-        self.data_loader = torch.utils.data.DataLoader(
-                                                    self.data_set,
-                                                    batch_size=self.batch_size,
-                                                    shuffle=self.shuffle,
-                                                    num_workers=4)
-
-
-        self.num_output_classes = len(self.data_set.classes)
-
-        self.model = create_model(
-                                    model_arch=self.model_arch,
-                                    output_classes=self.num_output_classes,
-                                    pre_trained=self.pre_trained,
-                                    unfreeze_weights = self.unfreeze_weights,
-                                    mode = 'feature_extraction',
-                                    )
-
-        self.model = self.model.to(self.device)
-
-    def info(self):
-        '''
-        Displays Feature Extraction Pipeline Parameters.
-        '''
-        print ('RADTorch Feature Extraction Pipeline Parameters')
-        info = {key:str(value) for key, value in self.__dict__.items()}
-        extractor_info = pd.DataFrame.from_dict(info.items())
-        extractor_info.columns = ['Property', 'Value']
-        return extractor_info
-
-    def dataset_info(self, plot=True, plot_size=(500,300)):
-        '''
-        Displays Dataset Information.
-        '''
-
-        info = {}
-
-        info['data_set'] = show_dataset_info(self.data_set)
-
-        if plot:
-            plot_dataset_info(info, plot_size= plot_size)
-        else:
-            display (show_dataset_info(self.data_set))
-
-    def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
-        '''
-        Display sample of the training dataset.
-        Inputs:
-            num_of_images_per_row: _(int)_ number of images per column. (default=5)
-            fig_size: _(tuple)_figure size. (default=(10,10))
-            show_labels: _(boolean)_ show the image label idx. (default=True)
-        '''
-        batch = next(iter(self.data_loader))
-        images, labels, paths = batch
-        images = images.numpy()
-        images = [np.moveaxis(x, 0, -1) for x in images]
-        if show_labels:
-          titles = labels.numpy()
-          titles = [((list(self.data_set.class_to_idx.keys())[list(self.data_set.class_to_idx.values()).index(i)]), i) for i in titles]
-        if show_file_name:
-          titles = [ntpath.basename(x) for x in paths]
-        plot_images(images=images, titles=titles, figure_size=fig_size)
+    def __init__(self, **kwargs):
+        super(Feature_Extraction, self).__init__(**kwargs, DEFAULT_SETTINGS=FEATURE_EXTRACTION_PIPELINE_SETTINGS)
+        self.classifiers=[self]
+        self.model=create_model(model_arch=self.model_arch,output_classes=self.num_output_classes,pre_trained=self.pre_trained,unfreeze_weights=self.unfreeze_weights, mode='feature_extraction')
 
     def num_features(self):
-        output = model_dict[self.model_arch]['output_features']
-        return output
+        return model_dict[self.model_arch]['output_features']
 
     def run(self, verbose=True):
-        '''
-        Extract features from the dataset
-        '''
-        self.features = []
-        self.labels_idx = []
-        self.img_path_list = []
+        self.features=[]
+        self.labels_idx=[]
+        self.img_path_list=[]
 
-        self.model = self.model.to(self.device)
+        self.model=self.model.to(self.device)
 
-        for i, (imgs, labels, paths) in tqdm(enumerate(self.data_loader), total=len(self.data_loader)):
-            self.labels_idx = self.labels_idx+labels.tolist()
-            self.img_path_list = self.img_path_list+list(paths)
+        for i, (imgs, labels, paths) in tqdm(enumerate(self.dataloader), total=len(self.dataloader)):
+            self.labels_idx=self.labels_idx+labels.tolist()
+            self.img_path_list=self.img_path_list+list(paths)
             with torch.no_grad():
                 self.model.eval()
-                imgs = imgs.to(self.device)
-                output = (self.model(imgs)).tolist()
-                self.features = self.features+(output)
+                imgs=imgs.to(self.device)
+                output=(self.model(imgs)).tolist()
+                self.features=self.features+(output)
 
+        self.feature_names=['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
 
-        self.feature_names = ['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
+        feature_table=pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['img_path','label_idx', 'features'])
 
-        feature_table = pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['img_path','label_idx', 'features'])
+        feature_table[self.feature_names]=pd.DataFrame(feature_table.features.values.tolist(), index= feature_table.index)
 
-        feature_table[self.feature_names] = pd.DataFrame(feature_table.features.values.tolist(), index= feature_table.index)
-
-        feature_table = feature_table.drop(['features'], axis=1)
+        feature_table=feature_table.drop(['features'], axis=1)
 
         print (' Features extracted successfully.')
 
-        self.feature_table = feature_table
+        self.feature_table=feature_table
 
         if verbose:
             return self.feature_table
 
-        self.features = self.feature_table[self.feature_names]
+        self.features=self.feature_table[self.feature_names]
 
     def export_features(self,csv_path):
         try:
@@ -695,209 +270,57 @@ class Feature_Extraction():
             print ('Error! No features found. Please check again or re-run the extracion pipeline.')
             pass
 
-    def export(self, target_path):
-        '''
-        Exports the whole image classification pipelie for future use
-
-        ***Arguments**
-        - target_path: _(str)_ target location for export.
-        '''
-        outfile = open(target_path,'wb')
-        pickle.dump(self,outfile)
-        outfile.close()
-
     def plot_extracted_features(self, feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx'):
-        if feature_table == None:
-            feature_table = self.feature_table
-        if feature_names == None:
-            feature_names = self.feature_names
+        if feature_table==None:
+            feature_table=self.feature_table
+        if feature_names==None:
+            feature_names=self.feature_names
         return plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col)
 
 
-class Compare_Image_Classifier():
+class Image_Classifier_Selection(Pipeline):
 
-    def __init__(
-    self,
-    data_directory,
-    transformations='default',
-    custom_resize = 'default',
-    device='default',
-    optimizer='Adam',
-    is_dicom=True,
-    label_from_table=False,
-    is_csv=None,
-    table_source=None,
-    path_col = 'IMAGE_PATH',
-    label_col = 'IMAGE_LABEL' ,
-    balance_class =[False],
-    multi_label = False,
-    mode='RAW',
-    wl=None,
-    normalize=['default'],
-    batch_size=[8],
-    test_percent = [0.2],
-    valid_percent = [0.2],
-    model_arch=['vgg16'],
-    pre_trained=[True],
-    unfreeze_weights=False,
-    train_epochs=[10],
-    learning_rate=[0.0001],
-    loss_function='CrossEntropyLoss'):
-        self.data_directory = data_directory
-        self.transformations = transformations
-        self.custom_resize = custom_resize
-        self.device = device
-        self.optimizer = optimizer
-        self.label_from_table = label_from_table
-        self.is_dicom = is_dicom
-        self.is_csv = is_csv
-        self.table_source = table_source
-        self.path_col = path_col
-        self.label_col = label_col
-        self.balance_class = balance_class
-        self.multi_label = multi_label
-        self.mode = mode
-        self.wl = wl
-        self.normalize = normalize
-        self.batch_size = batch_size
-        self.test_percent = test_percent
-        self.valid_percent = valid_percent
-        self.model_arch = model_arch
-        self.pre_trained = pre_trained
-        self.unfreeze_weights = unfreeze_weights
-        self.train_epochs = train_epochs
-        self.learning_rate = learning_rate
-        self.loss_function = loss_function
-        self.num_workers = 0
+    def __init__(self, DEFAULT_SETTINGS=COMPARE_CLASSIFIER_PIPELINE_SETTINGS, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
-        variables = [
-        self.balance_class,
-        self.normalize,
-        self.batch_size,
-        self.test_percent,
-        self.valid_percent,
-        self.train_epochs,
-        self.learning_rate,
-        self.model_arch,
-        self.pre_trained
-        ]
+        for k, v in DEFAULT_SETTINGS.items():
+            if k not in self.__dict__.keys():
+                setattr(self, k, v)
 
-        self.variables_names = ['balance_class', 'normalize', 'batch_size', 'test_percent','valid_percent','train_epochs','learning_rate', 'model_arch','pre_trained']
+        self.compare_parameters={k:v for k,v in self.__dict__.items() if type(v)==list}
+        self.non_compare_parameters={k:v for k, v in self.__dict__.items() if k not in self.compare_parameters and k !='compare_parameters'}
+        self.compare_parameters_names= list(self.compare_parameters.keys())
+        self.scenarios_list=list(itertools.product(*list(self.compare_parameters.values())))
+        self.num_scenarios=len(self.scenarios_list)
+        self.scenarios_df=pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
 
-        self.scenarios_list = list(itertools.product(*variables))
-        self.num_scenarios = len(self.scenarios_list)
-        self.scenarios_df = pd.DataFrame(self.scenarios_list, columns =self.variables_names)
+        self.classifiers=[]
 
-        self.classifiers = []
-
-        for i in self.scenarios_list:
-            balance_class = i[0]
-            normalize = i[1]
-            batch_size = i[2]
-            test_percent = i[3]
-            valid_percent = i[4]
-            train_epochs = i[5]
-            learning_rate = i[6]
-            model_arch = i[7]
-            pre_trained  = i[8]
-
-            if self.scenarios_list.index(i) == 0:
-                clf = Image_Classification(data_directory = self.data_directory,
-                                                      name = None,
-                                                      transformations=self.transformations,
-                                                      custom_resize = self.custom_resize,
-                                                      device=self.device,
-                                                      optimizer=self.optimizer,
-                                                      is_dicom=self.is_dicom,
-                                                      label_from_table=self.label_from_table,
-                                                      is_csv=self.is_csv,
-                                                      table_source=self.table_source,
-                                                      path_col = self.path_col,
-                                                      label_col = self.label_col ,
-                                                      balance_class = balance_class,
-                                                      multi_label = self.multi_label,
-                                                      mode=self.mode,
-                                                      wl=self.wl,
-                                                      normalize=normalize,
-                                                      batch_size=batch_size,
-                                                      test_percent = test_percent,
-                                                      valid_percent = valid_percent,
-                                                      model_arch=model_arch,
-                                                      pre_trained=pre_trained,
-                                                      unfreeze_weights=self.unfreeze_weights,
-                                                      train_epochs=train_epochs,
-                                                      learning_rate=learning_rate,
-                                                      loss_function=self.loss_function,
-                                                      predefined_datasets=None)
-
-                self.train_label_table=clf.train_data_set.input_data
-                self.valid_label_table=clf.valid_data_set.input_data
-                self.test_label_table=clf.test_data_set.input_data
-                self.datasets = {'train':self.train_label_table, 'valid':self.valid_label_table,'test':self.test_label_table}
-                self.classifiers.append(clf)
-
-            else:
-                clf = Image_Classification(data_directory = self.data_directory,
-                                                      name = None,
-                                                      transformations=self.transformations,
-                                                      custom_resize = self.custom_resize,
-                                                      device=self.device,
-                                                      optimizer=self.optimizer,
-                                                      is_dicom=self.is_dicom,
-                                                      label_from_table=self.label_from_table,
-                                                      is_csv=self.is_csv,
-                                                      table_source=self.table_source,
-                                                      path_col = self.path_col,
-                                                      label_col = self.label_col ,
-                                                      balance_class = balance_class,
-                                                      multi_label = self.multi_label,
-                                                      mode=self.mode,
-                                                      wl=self.wl,
-                                                      normalize=normalize,
-                                                      batch_size=batch_size,
-                                                      test_percent = test_percent,
-                                                      valid_percent = valid_percent,
-                                                      model_arch=model_arch,
-                                                      pre_trained=pre_trained,
-                                                      unfreeze_weights=self.unfreeze_weights,
-                                                      train_epochs=train_epochs,
-                                                      learning_rate=learning_rate,
-                                                      loss_function=self.loss_function,
-                                                      predefined_datasets=self.datasets)
-                self.classifiers.append(clf)
-
-
-    def info(self):
-        info = {key:str(value) for key, value in self.__dict__.items()}
-        pipeline_info = pd.DataFrame.from_dict(info.items())
-        pipeline_info.columns = ['Property', 'Value']
-
-        pipeline_info = pipeline_info.append({'Property':'Train Dataset Size', 'Value':len(self.train_label_table)}, ignore_index=True)
-        pipeline_info = pipeline_info.append({'Property':'Valid Dataset Size', 'Value':len(self.valid_label_table)}, ignore_index=True)
-
-        if len(self.test_label_table) > 0:
-            pipeline_info = pipeline_info.append({'Property':'Test Dataset Size', 'Value':len(self.test_label_table)}, ignore_index=True)
-
-        return pipeline_info
+        for x in self.scenarios_list:
+            classifier_settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
+            classifier_settings.update(self.non_compare_parameters)
+            if self.scenarios_list.index(x)!=0: classifier_settings['load_predefined_datatables']=self.data_subsets
+            clf=Image_Classification(**classifier_settings)
+            if self.scenarios_list.index(x)==0: self.data_subsets={k:v.input_data for k, v in clf.dataset_dictionary.items()}
+            self.classifiers.append(clf)
 
     def grid(self):
-      return self.scenarios_df
-
-    def dataset_info(self,plot=True, plot_size=(500,300)):
-        return self.classifiers[0].dataset_info(plot=plot, plot_size=plot_size)
-
-    def sample(self, fig_size=(10,10), show_labels=True, show_file_name=False):
-        return self.classifiers[0].sample(fig_size=fig_size, show_labels=show_labels, show_file_name=show_file_name)
-
-    def classes(self):
-        return self.classifiers[0].data_set.class_to_idx
+        return self.scenarios_df
 
     def parameters(self):
-        return self.variables_names
+        return self.compare_parameters_names
+
+    def dataset_info(self, classifier_index=0, **kwargs):
+        self.classifiers[classifier_index].dataset_info()
+
+    def sample(self, classifier_index=0, **kwargs):
+        self.dataloader=self.classifiers[classifier_index].dataloader
+        super().sample(**kwargs);
 
     def run(self):
-      self.master_metrics = []
-      self.trained_models = []
+      self.master_metrics=[]
+      self.trained_models=[]
       for i in tqdm(self.classifiers, total=len(self.classifiers)):
         print ('Starting Training Classifier Number',self.classifiers.index(i))
         i.run()
@@ -905,18 +328,15 @@ class Compare_Image_Classifier():
         self.master_metrics.append(i.train_metrics)
         torch.cuda.empty_cache()
 
-    def metrics(self, fig_size=(650,400)):
-        return show_metrics(self.classifiers,  fig_size=fig_size)
-
     def roc(self, fig_size=(700,400)):
-        self.auc_list = show_roc(self.classifiers, fig_size=fig_size)
-        self.best_model_auc = max(self.auc_list)
-        self.best_model_index = (self.auc_list.index(self.best_model_auc))
-        self.best_classifier = self.classifiers[self.best_model_index]
+        self.auc_list=show_roc(self.classifiers, fig_size=fig_size)
+        self.best_model_auc=max(self.auc_list)
+        self.best_model_index=(self.auc_list.index(self.best_model_auc))
+        self.best_classifier=self.classifiers[self.best_model_index]
 
     def best(self, path=None, export_classifier=False, export_model=False):
         try:
-            print ('Best Classifier = Model', self.best_model_index)
+            print ('Best Classifier=Model', self.best_model_index)
             print ('Best Classifier AUC =', self.best_model_auc)
             if export_model:
                 export(self.best_classifier.trained_model, path)
