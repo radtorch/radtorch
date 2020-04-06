@@ -61,7 +61,7 @@ def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_spli
         temp_df = dataset.input_data.loc[dataset.input_data[dataset.image_label_column]==i]
         if shuffle:
           temp_df = temp_df.sample(frac=1).reset_index(drop=True)
-        if fly:frac=0.1
+        if fly:frac=fly
         else:frac=1
         train, validate, test = np.split(temp_df.sample(frac=frac), [int(train_percent*len(temp_df)), int((train_percent+valid_percent)*len(temp_df))])
         classes_df.append((train, validate, test))
