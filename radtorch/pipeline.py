@@ -228,8 +228,8 @@ class Image_Classification(Pipeline):
                                                 optimizer=self.optimizer,
                                                 epochs=self.train_epochs,
                                                 device=self.device)
-        return pd.DataFrame(data=self.lr_find_metrics, columns=['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
-
+        self.lr_metrics=pd.DataFrame(data=self.lr_find_metrics, columns=['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
+        return self.lr_metrics
         # show_metrics(self.classifiers,  fig_size=figure_size)
 
 
