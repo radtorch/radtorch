@@ -52,29 +52,28 @@ class Classifier():
         self.model_arch=self.feature_extractor.model_arch
         self.in_features=model_dict[self.model_arch]['output_features']
 
-    def linear_regression(self):
-        if 'vgg' in self.model_arch or 'alexnet' in self.model_arch:self.model.classifier[6]=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
-        elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
-        return self.model
+        if self.type=='linear_regression'
+            if 'vgg' in self.model_arch or 'alexnet' in self.model_arch:self.model.classifier[6]=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
+            elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
+            return self.model
 
-    def logestic_regression(self):
-        if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
-        elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
-
-        return self.model
+        elif self.type==' logestic_regression':
+            if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
+            elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
+            return self.model
 
 
 class Optimizer():
     def __init__(self, **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
-    def Adam(self):
+    if self.type=='ASGD':
         return torch.optim.Adam(self.classifier.parameters(),self.learning_rate)
-    def ASGD(self):
+    if self.type=='Adam':
         return torch.optim.ASGD(self.classifier.parameters(), self.learning_rate)
-    def RMSprop(self):
+    if self.type=='RMSprop':
         return torch.optim.RMSprop(self.classifier.parameters(), self.learning_rate)
-    def SGD(self):
+    if self.type=='SGD':
         return torch.optim.SGD(self.classifier.parameters(), self.learning_rate)
 
 
