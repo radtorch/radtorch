@@ -138,23 +138,17 @@ class Image_Classification(Pipeline):
 
 
         # Create Training Model
-        self.train_model=create_model(output_classes=self.num_output_classes,mode='train', model_arch=self.model_arch,pre_trained=self.pre_trained, unfreeze_weights=self.unfreeze_weights )
+        self.feature_extractor=Feature_Extractor(self.model_arch, self.pre_trained)
+        self.train_model=Classifier(feature_extractor=self.feature_extractor, output_classes=self.num_output_classes)
 
         self.train_model=self.train_model.to(self.device)
 
         # Create Training Loss Function
-        if self.loss_function in supported_image_classification_losses:
-            self.loss_function=create_loss_function(self.loss_function)
-        else:
-            raise TypeError('Selected loss function is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported loss functions.')
-            pass
+        self.loss_function=create_loss_function(self.loss_function)
 
         # Create Training Optimizer
-        if self.optimizer in supported_optimizer:
-            self.optimizer=create_optimizer(traning_model=self.train_model, optimizer_type=self.optimizer, learning_rate=self.learning_rate)
-        else:
-            raise TypeError('Selected optimizer is not supported with image classification pipeline. Please use modelsutils.supported() to view list of supported optimizers.')
-            pass
+        self.optimizer=Optimizer(classifier=self.train_model, learning_rate=self.learning_rate)
+
 
     def run(self, verbose=True):
         try:
