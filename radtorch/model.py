@@ -244,7 +244,7 @@ def optimal_lr_finder(model, train_data_loader, valid_data_loader, train_data_se
 
     set_random_seed(100)
     training_metrics=[]
-    print ('Starting  optimal_lr_finder)
+    print ('Starting Best LR Finding Algorithm')
 
 
     model=model.to(device)
