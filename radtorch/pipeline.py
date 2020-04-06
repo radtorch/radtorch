@@ -133,8 +133,8 @@ class Image_Classification(Pipeline):
         # Create train/valid/test datasets and dataloaders
         for k, v in self.dataset_dictionary.items():
             if self.fly: # Use 10% for quick fly testing
-                samples = torch.utils.data.random_split(dataset=v, lengths=int(len(v)/10))
-                v = samples[0]
+                sample_indices = torch.utils.data.RandomSampler(data_source, replacement=True, num_samples=int(len(v)/10))
+                v = torch.utils.data.Subset(dataset=v, indices=sample_indices)
             if self.balance_class: setattr(self, k+'_dataset', v.balance())
             else: setattr(self, k+'_dataset', v)
             setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
