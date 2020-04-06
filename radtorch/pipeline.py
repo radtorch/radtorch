@@ -129,11 +129,17 @@ class Image_Classification(Pipeline):
         if self.load_predefined_datatables: self.dataset_dictionary=load_predefined_datatables(data_directory=self.data_directory,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,image_path_column=self.image_path_column,image_label_column=self.image_label_column,mode=self.mode,wl=self.wl,transformations=self.transformations )
         else: self.dataset_dictionary=self.dataset.split(valid_percent=self.valid_percent, test_percent=self.test_percent)
 
+        # Use 10% for quick fly testing
+        if self.fly:
+            self.dataset_dictionary={k: v.sample(frac=0.1) for k,v in self.dataset_dictionary}
+
         # Create train/valid/test datasets and dataloaders
         for k, v in self.dataset_dictionary.items():
             if self.balance_class: setattr(self, k+'_dataset', v.balance())
             else: setattr(self, k+'_dataset', v)
             setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
+
+
 
         # Create Training Model
         self.train_model=create_model(output_classes=self.num_output_classes,mode='train', model_arch=self.model_arch,pre_trained=self.pre_trained, unfreeze_weights=self.unfreeze_weights )
