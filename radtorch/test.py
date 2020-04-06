@@ -45,27 +45,22 @@ class Feature_Extractor():
 
 
 class Classifier(object):
-    def __init__(self, **kwargs):
+    def __new__(self, **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
         self.model=self.feature_extractor.model
         self.model_arch=self.feature_extractor.model_arch
         self.in_features=model_dict[self.model_arch]['output_features']
-
         if self.type=='linear_regression':
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch:self.model.classifier[6]=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
-
-        elif self.type==' logistic_regression':
+        elif self.type=='logistic_regression':
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
-
-    def __new__(cls, **kwargs):
-        x = super(Classifier, cls).__new__(**kwargs)
-        return x.model
+        return self.model
 
 class Optimizer():
-    def __init__(self, **kwargs):
+    def __new__(self, **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
         if self.type=='Adam':
@@ -76,10 +71,7 @@ class Optimizer():
             self.optimizer=torch.optim.RMSprop(self.classifier.parameters(), self.learning_rate)
         if self.type=='SGD':
             self.optimizer=torch.optim.SGD(self.classifier.parameters(), self.learning_rate)
-
-    def __new__(cls, **kwargs):
-        x = super(Optimizer, cls).__new__(**kwargs)
-        return x.optimizer
+        return self.optimizer
 
 
 def create_loss_function(type):
