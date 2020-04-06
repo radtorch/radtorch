@@ -127,14 +127,14 @@ class Image_Classification(Pipeline):
 
         #Load from predefined datasets or split master dataset
         if self.load_predefined_datatables: self.dataset_dictionary=load_predefined_datatables(data_directory=self.data_directory,is_dicom=self.is_dicom,predefined_datasets=self.load_predefined_datatables,image_path_column=self.image_path_column,image_label_column=self.image_label_column,mode=self.mode,wl=self.wl,transformations=self.transformations )
-        else: self.dataset_dictionary=self.dataset.split(valid_percent=self.valid_percent, test_percent=self.test_percent)
+        else: self.dataset_dictionary=self.dataset.split(valid_percent=self.valid_percent, test_percent=self.test_percent, fly=True)
 
 
         # Create train/valid/test datasets and dataloaders
         for k, v in self.dataset_dictionary.items():
-            if self.fly: # Use 10% for quick fly testing
-                sample_indices = torch.utils.data.RandomSampler(data_source=v, replacement=True, num_samples=int(len(v)/10))
-                v = torch.utils.data.Subset(dataset=v, indices=sample_indices)
+            # if self.fly: # Use 10% for quick fly testing
+            #     sample_indices = torch.utils.data.RandomSampler(data_source=v, replacement=True, num_samples=int(len(v)/10))
+            #     v = torch.utils.data.Subset(dataset=v, indices=sample_indices)
             if self.balance_class: setattr(self, k+'_dataset', v.balance())
             else: setattr(self, k+'_dataset', v)
             setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
