@@ -18,220 +18,75 @@ from radtorch.data import *
 from radtorch.dataset import *
 
 
-loss_dict={
-            'NLLLoss':torch.nn.NLLLoss(),
-            'CrossEntropyLoss':torch.nn.CrossEntropyLoss(),
-            'MSELoss':torch.nn.MSELoss(),
-            'PoissonNLLLoss': torch.nn.PoissonNLLLoss(),
-            'BCELoss': torch.nn.BCELoss(),
-            'BCEWithLogitsLoss': torch.nn.BCEWithLogitsLoss(),
-            'MultiLabelMarginLoss':torch.nn.MultiLabelMarginLoss(),
-            'SoftMarginLoss':torch.nn.SoftMarginLoss(),
-            'MultiLabelSoftMarginLoss':torch.nn.MultiLabelSoftMarginLoss(),
-            'CosineSimilarity':torch.nn.CosineSimilarity(dim=1, eps=1e-08),
-            }
+
+class Feature_Extractor():
+    def __init__(self, **kwargs):
+        for k,v in kwargs.items():
+            setattr(self,k,v)
+        if self.model_arch=='vgg11': self.model=torchvision.models.vgg11(pretrained=self.pre_trained)
+        elif self.model_arch=='vgg13':  self.model=torchvision.models.vgg13(pretrained=self.pre_trained)
+        elif self.model_arch=='vgg16':  self.model=torchvision.models.vgg16(pretrained=self.pre_trained)
+        elif self.model_arch=='vgg19':  self.model=torchvision.models.vgg19(pretrained=self.pre_trained)
+        elif self.model_arch=='vgg11_bn': self.model=torchvision.models.vgg11_bn(pretrained=self.pre_trained)
+        elif self.model_arch=='vgg13_bn': self.model=torchvision.models.vgg13_bn(pretrained=self.pre_trained)
+        elif self.model_arch=='vgg16_bn': self.model=torchvision.models.vgg16_bn(pretrained=self.pre_trained)
+        elif self.model_arch=='vgg19_bn': self.model=torchvision.models.vgg19_bn(pretrained=self.pre_trained)
+        elif self.model_arch=='resnet18': self.model=torchvision.models.resnet18(pretrained=self.pre_trained)
+        elif self.model_arch=='resnet34': self.model=torchvision.models.resnet34(pretrained=self.pre_trained)
+        elif self.model_arch=='resnet50': self.model=torchvision.models.resnet50(pretrained=self.pre_trained)
+        elif self.model_arch=='resnet101': self.model=torchvision.models.resnet101(pretrained=self.pre_trained)
+        elif self.model_arch=='resnet152': self.model=torchvision.models.resnet152(pretrained=self.pre_trained)
+        elif self.model_arch=='wide_resnet50_2': self.model=torchvision.models.wide_resnet50_2(pretrained=self.pre_trained)
+        elif self.model_arch=='wide_resnet101_2': self.model=torchvision.models.wide_resnet101_2(pretrained=self.pre_trained)
+        elif self.model_arch=='alexnet': self.model=torchvision.models.alexnet(pretrained=self.pre_trained)
+
+        if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Identity()
+        elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Identity()
 
 
-
-def set_device(device):
-    if device=='default':
-        selected_device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    else:
-        selected_device==device
-    return selected_device
-
-def set_transformations(model_arch, custom_resize, is_dicom, transformations):
-    if custom_resize=='default':
-        input_resize=model_dict[model_arch]['input_size']
-    else:
-        input_resize=custom_resize
-
-    if transformations=='default':
-        if is_dicom==True:
-            transformations=transforms.Compose([
-                    transforms.Resize((input_resize, input_resize)),
-                    transforms.transforms.Grayscale(3),
-                    transforms.ToTensor()])
-        else:
-            transformations=transforms.Compose([
-                    transforms.Resize((input_resize, input_resize)),
-                    transforms.ToTensor()])
-
-    return transformations, input_resize
+class Classifier(object):
+    def __new__(self, **kwargs):
+        for k,v in kwargs.items():
+            setattr(self,k,v)
+        self.model=self.feature_extractor.model
+        self.model_arch=self.feature_extractor.model_arch
+        self.in_features=model_dict[self.model_arch]['output_features']
+        if self.type=='linear_regression':
+            if 'vgg' in self.model_arch or 'alexnet' in self.model_arch:self.model.classifier[6]=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
+            elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
+        elif self.type=='logistic_regression':
+            if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
+            elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
+        return self.model
 
 
-def supported():
-    '''
-    .. include:: ./documentation/docs/modelutils.md##supported
+class Optimizer():
+    def __new__(self, **kwargs):
+        for k,v in kwargs.items():
+            setattr(self,k,v)
+        if self.type=='Adam':
+            self.optimizer=torch.optim.Adam(self.classifier.parameters(),self.learning_rate)
+        if self.type=='ASGD':
+            self.optimizer=torch.optim.ASGD(self.classifier.parameters(), self.learning_rate)
+        if self.type=='RMSprop':
+            self.optimizer=torch.optim.RMSprop(self.classifier.parameters(), self.learning_rate)
+        if self.type=='SGD':
+            self.optimizer=torch.optim.SGD(self.classifier.parameters(), self.learning_rate)
+        return self.optimizer
 
-    '''
-    print ('Supported Network Architectures:')
-    for i in supported_models:
-        print (i)
-    print('')
-    print ('Supported Image Classification Loss Functions:')
-    for i in supported_image_classification_losses:
-        print (i)
-    print('')
-    print ('Supported Optimizers:')
-    for i in supported_optimizer:
-        print (i)
-    print ('')
-    print ('Supported non DICOM image file types:')
-    for i in IMG_EXTENSIONS:
-        print (i)
-
-class Identity(nn.Module):
-    def __init__(self):
-        super(Identity, self).__init__()
-    def forward(self, x):
-        return x
-
-def create_model(**kwargs):
-    model_arch=kwargs['model_arch']
-    output_classes=kwargs['output_classes']
-    mode=kwargs['mode']
-    pre_trained=kwargs['pre_trained']
-    unfreeze_weights=kwargs['unfreeze_weights']
-
-    if model_arch not in supported_models:
-        print ('Error! Provided model architecture is not supported yet. For complete list of supported models please type radtorch.modelsutils.model_list()')
-
-    else:
-
-        if 'vgg' in model_arch:
-            in_features=model_dict[model_arch]['output_features']
-            if model_arch=='vgg11':
-                train_model=torchvision.models.vgg11(pretrained=pre_trained)
-            if model_arch=='vgg13':
-                train_model=torchvision.models.vgg13(pretrained=pre_trained)
-            if model_arch=='vgg16':
-                train_model=torchvision.models.vgg16(pretrained=pre_trained)
-            elif model_arch=='vgg19':
-                train_model=torchvision.models.vgg19(pretrained=pre_trained)
-            if model_arch=='vgg11_bn':
-                train_model=torchvision.models.vgg11_bn(pretrained=pre_trained)
-            if model_arch=='vgg13_bn':
-                train_model=torchvision.models.vgg13_bn(pretrained=pre_trained)
-            if model_arch=='vgg16_bn':
-                train_model=torchvision.models.vgg16_bn(pretrained=pre_trained)
-            elif model_arch=='vgg19_bn':
-                train_model=torchvision.models.vgg19_bn(pretrained=pre_trained)
-            if mode=='feature_extraction':
-                train_model.classifier[6]=Identity()
-            elif mode=='feature_visualization':
-                train_model.classifier[6]=nn.Sequential(
-                    nn.Linear(in_features=in_features, out_features=output_classes, bias=True))
-            else:
-                train_model.classifier[6]=nn.Sequential(
-                    nn.Linear(in_features=in_features, out_features=output_classes, bias=True),
-                    torch.nn.LogSoftmax(dim=1)
-                    )
-
-
-
-        elif 'resnet' in model_arch:
-            in_features=model_dict[model_arch]['output_features']
-            if model_arch=='resnet18':
-                train_model=torchvision.models.resnet18(pretrained=pre_trained)
-            elif model_arch=='resnet34':
-                train_model=torchvision.models.resnet34(pretrained=pre_trained)
-            if model_arch=='resnet50':
-                train_model=torchvision.models.resnet50(pretrained=pre_trained)
-            elif model_arch=='resnet101':
-                train_model=torchvision.models.resnet101(pretrained=pre_trained)
-            elif  model_arch=='resnet152':
-                train_model=torchvision.models.resnet152(pretrained=pre_trained)
-            elif  model_arch=='wide_resnet50_2':
-                train_model=torchvision.models.wide_resnet50_2(pretrained=pre_trained)
-            elif  model_arch=='wide_resnet101_2':
-                train_model=torchvision.models.wide_resnet101_2(pretrained=pre_trained)
-
-            fc_inputs=train_model.fc.in_features
-            if mode=='feature_extraction':
-                train_model.fc=Identity()
-            elif mode=='feature_visualization':
-                train_model.fc=nn.Sequential(
-                  nn.Linear(in_features=in_features, out_features=output_classes, bias=True))
-            else:
-                train_model.fc=nn.Sequential(
-                  nn.Linear(in_features=in_features, out_features=output_classes, bias=True),
-                  torch.nn.LogSoftmax(dim=1)
-                  )
-
-
-        # elif model_arch=='inception_v3':
-        #     train_model=torchvision.models.inception_v3(pretrained=pre_trained)
-        #     if mode=='feature_extraction':
-        #         train_model.fc=Identity()
-        #     elif mode=='feature_visualization':
-        #         train_model.fc=nn.Sequential(
-        #           nn.Linear(in_features=2048, out_features=output_classes, bias=True))
-        #     else:
-        #         train_model.fc=nn.Sequential(
-        #           nn.Linear(in_features=2048, out_features=output_classes, bias=True),
-        #           torch.nn.LogSoftmax(dim=1)
-        #           )
-
-        elif model_arch=='alexnet':
-            in_features=model_dict[model_arch]['output_features']
-            train_model=torchvision.models.alexnet(pretrained=pre_trained)
-            if mode=='feature_extraction':
-                train_model.classifier[6]=Identity()
-            elif mode=='feature_visualization':
-                train_model.classifier[6]=nn.Sequential(
-                  nn.Linear(in_features=in_features, out_features=output_classes, bias=True))
-            else:
-                train_model.classifier[6]=nn.Sequential(
-                  nn.Linear(in_features=in_features, out_features=output_classes, bias=True),
-                  torch.nn.LogSoftmax(dim=1)
-                  )
-
-        if pre_trained==False:
-            for param in train_model.parameters():
-                param.requires_grad=unfreeze_weights
-
-        else:
-            if unfreeze_weights:
-                for param in train_model.parameters():
-                    param.requires_grad=unfreeze_weights
-
-        return train_model
 
 def create_loss_function(type):
-    '''
-    .. include:: ./documentation/docs/modelutils.md##create_loss_function
-    '''
-
-    if type not in supported_image_classification_losses:
-        print ('Error! Provided loss function is not supported yet. For complete list of supported models please type radtorch.modelsutils.supported_list()')
-
-    else:
-        loss_function=loss_dict[type]
-
+    try:
+        loss_function=supported_loss[type]
         return loss_function
+    except:
+        raise TypeError('Error! Provided loss function is not supported yet. For complete list of supported models please type radtorch.modelsutils.supported_list()')
+        pass
 
-def create_optimizer(**kwargs):
-    '''
-    .. include:: ./documentation/docs/modelutils.md##create_optimizer
-    '''
-    optimizer_type=kwargs['optimizer_type']
-    traning_model=kwargs['traning_model']
-    learning_rate=kwargs['learning_rate']
-
-    if optimizer_type=='Adam':
-        optimizer=torch.optim.Adam(traning_model.parameters(), lr=learning_rate)
-    elif optimizer_type=='ASGD':
-        optimizer=torch.optim.ASGD(traning_model.parameters(), lr=learning_rate)
-    elif optimizer_type=='RMSprop':
-        optimizer=torch.optim.RMSprop(traning_model.parameters(), lr=learning_rate)
-    elif optimizer_type=='SGD':
-        optimizer=torch.optim.SGD(traning_model.parameters(), lr=learning_rate)
-
-    return optimizer
 
 def train_model(model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device,verbose):
     '''
+    kwargs = model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device,verbose
     .. include:: ./documentation/docs/modelutils.md##train_model
     '''
     set_random_seed(100)
@@ -344,6 +199,7 @@ def train_model(model, train_data_loader, valid_data_loader, train_data_set, val
         print ('Total training time='+ str(total_training_time))
 
     return model, training_metrics
+
 
 def model_inference(model, input_image_path, all_predictions=False, inference_transformations=transforms.Compose([transforms.ToTensor()])):
     '''
