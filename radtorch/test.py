@@ -44,7 +44,7 @@ class Feature_Extractor():
         elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Identity()
 
 
-class Classifier():
+class Classifier(object):
     def __init__(self, **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
@@ -61,8 +61,7 @@ class Classifier():
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
 
     def __new__(cls,**kwargs):
-        instance = super(Classifier, cls).__new__(cls, **kwargs)
-        return instance.model
+        return  object.__new__(cls)
 
 class Optimizer():
     def __init__(self, **kwargs):
@@ -78,8 +77,7 @@ class Optimizer():
             self.optimizer=torch.optim.SGD(self.classifier.parameters(), self.learning_rate)
 
     def __new__(cls,**kwargs):
-        instance = super(Optimizer, cls).__new__(cls, **kwargs)
-        return instance.optimizer
+        return  object.__new__(cls)
 
 def create_loss_function(type):
     try:
