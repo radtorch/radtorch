@@ -149,8 +149,8 @@ class Image_Classification(Pipeline):
 
         # Adaptive Learning Rate = Learning Rate Scheduler
         if self.adaptive_learning_rate:
-            self.lr_scheduler=torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=self.optimizer, mode='min', factor=0.1, patience=10, verbose=False, threshold=0.0001, threshold_mode='rel', cooldown=0, min_lr=0, eps=1e-08)
-
+            self.lr_scheduler=torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer=self.optimizer, mode='min', factor=0.1, patience=5, verbose=True, threshold=0.0001, threshold_mode='rel', cooldown=0, min_lr=0, eps=1e-08)
+            
 
     def run(self, verbose=True):
         try:
