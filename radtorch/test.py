@@ -60,7 +60,7 @@ class Classifier(object):
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
 
-    def __new__(cls, (=**kwargs):
+    def __new__(cls, **kwargs):
         return super(Classifier, cls).__new__(**kwargs).model
 
 class Optimizer():
