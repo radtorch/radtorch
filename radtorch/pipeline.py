@@ -218,7 +218,6 @@ class Image_Classification(Pipeline):
             return self.misclassified_instances
 
 
-
 class Feature_Extraction(Pipeline):
 
     def __init__(self, **kwargs):
