@@ -43,10 +43,11 @@ class Feature_Extractor():
         if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Identity()
         elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Identity()
 
-        if self.output_features: #option to reduce complexity of features supplied to classifier
-            if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Linear(in_features=model_dict[self.model_arch]['output_features'], out_features=self.output_classes, bias=True)
-            elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Linear(in_features=model_dict[self.model_arch]['output_features'], out_features=self.output_classes, bias=True)
+        # if self.output_features: #option to reduce complexity of features supplied to classifier
+        #     if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Linear(in_features=model_dict[self.model_arch]['output_features'], out_features=self.output_classes, bias=True)
+        #     elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Linear(in_features=model_dict[self.model_arch]['output_features'], out_features=self.output_classes, bias=True)
 
+if self.output_features:
 
 class Classifier(object):
     def __new__(self, **kwargs):
@@ -59,8 +60,22 @@ class Classifier(object):
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch:self.model.classifier[6]=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True)
         elif self.type=='logistic_regression':
-            if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
-            elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),torch.nn.LogSoftmax(dim=1))
+            if self.output_features:
+                if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(
+                                    torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True)
+                                    torch.nn.Linear(in_features=self.output_features, out_features=self.output_classes, bias=True),
+                                    torch.nn.LogSoftmax(dim=1))
+                elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(
+                                    torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True)
+                                    torch.nn.Linear(in_features=self.output_features, out_features=self.output_classes, bias=True),
+                                    torch.nn.LogSoftmax(dim=1))
+            else:
+                if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(
+                                    torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),
+                                    torch.nn.LogSoftmax(dim=1))
+                elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(
+                                    torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),
+                                    torch.nn.LogSoftmax(dim=1))
         return self.model
 
 

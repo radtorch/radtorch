@@ -140,8 +140,8 @@ class Image_Classification(Pipeline):
 
 
         # Create Training Model
-        self.feature_extractor=Feature_Extractor(model_arch=self.model_arch, pre_trained=self.pre_trained, output_features=self.output_features)
-        self.train_model=Classifier(feature_extractor=self.feature_extractor, output_classes=self.num_output_classes, type=self.classifier_type)
+        self.feature_extractor=Feature_Extractor(model_arch=self.model_arch, pre_trained=self.pre_trained)
+        self.train_model=Classifier(feature_extractor=self.feature_extractor, output_classes=self.num_output_classes, type=self.classifier_type, output_features=self.output_features)
         self.train_model=self.train_model.to(self.device)
 
         # Create Training Loss Function
