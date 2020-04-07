@@ -43,6 +43,10 @@ class Feature_Extractor():
         if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Identity()
         elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Identity()
 
+        if self.output_features: #option to reduce complexity of features supplied to classifier
+            if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Linear(in_features=model_dict[self.model_arch]['output_features'], out_features=self.output_classes, bias=True)
+            elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Linear(in_features=model_dict[self.model_arch]['output_features'], out_features=self.output_classes, bias=True)
+
 
 class Classifier(object):
     def __new__(self, **kwargs):

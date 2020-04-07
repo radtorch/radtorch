@@ -146,6 +146,7 @@ IMAGE_CLASSIFICATION_PIPELINE_SETTINGS={
             'classifier_type':'logistic_regression',
             'fly':False,
             'adaptive_learning_rate':True,
+            'output_features':False,
             }
 
 COMPARE_CLASSIFIER_PIPELINE_SETTINGS={
@@ -173,6 +174,7 @@ COMPARE_CLASSIFIER_PIPELINE_SETTINGS={
             'classifier_type':'logistic_regression',
             'fly':False,
             'adaptive_learning_rate':True,
+            'output_features':False,
             }
 
 FEATURE_EXTRACTION_PIPELINE_SETTINGS={
