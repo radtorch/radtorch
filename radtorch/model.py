@@ -61,11 +61,11 @@ class Classifier(object):
         elif self.type=='logistic_regression':
             if self.output_features:
                 if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(
-                                    torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True)
+                                    torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True),
                                     torch.nn.Linear(in_features=self.output_features, out_features=self.output_classes, bias=True),
                                     torch.nn.LogSoftmax(dim=1))
                 elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(
-                                    torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True)
+                                    torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True),
                                     torch.nn.Linear(in_features=self.output_features, out_features=self.output_classes, bias=True),
                                     torch.nn.LogSoftmax(dim=1))
             else:
