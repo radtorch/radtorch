@@ -5,7 +5,7 @@ def find_lr(model, train_dataloader, optimizer, device):
     training_losses=[]
     learning_rates=[]
     model=model.to(device)
-    for i, (inputs, labels, image_paths) in enumerate(train_dataloader)
+    for i, (inputs, labels, image_paths) in enumerate(train_dataloader):
         model.train()
         inputs=inputs.to(device)
         labels=labels.to(device)
