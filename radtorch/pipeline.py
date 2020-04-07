@@ -130,8 +130,11 @@ class Image_Classification(Pipeline):
 
 
         # Create train/valid/test datasets and dataloaders
+        # 4/7/2020 update: over-sample only training-dataset: https://stats.stackexchange.com/questions/60180/testing-classification-on-oversampled-imbalance-data
         for k, v in self.dataset_dictionary.items():
-            if self.balance_class: setattr(self, k+'_dataset', v.balance())
+            if self.balance_class:
+                if k=='train': setattr(self, k+'_dataset', v.balance())
+                else: setattr(self, k+'_dataset', v)
             else: setattr(self, k+'_dataset', v)
             setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=self.__dict__[k+'_dataset'], batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
 
