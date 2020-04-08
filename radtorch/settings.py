@@ -147,6 +147,7 @@ IMAGE_CLASSIFICATION_PIPELINE_SETTINGS={
             'fly':False,
             'adaptive_learning_rate':True,
             'output_features':False,
+            'freeze':True
             }
 
 COMPARE_CLASSIFIER_PIPELINE_SETTINGS={
@@ -175,6 +176,7 @@ COMPARE_CLASSIFIER_PIPELINE_SETTINGS={
             'fly':False,
             'adaptive_learning_rate':True,
             'output_features':False,
+            'freeze':True
             }
 
 FEATURE_EXTRACTION_PIPELINE_SETTINGS={
