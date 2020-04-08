@@ -43,7 +43,7 @@ class Feature_Extractor():
         if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Identity()
         elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Identity()
 
-        if self.Freeze:
+        if self.freeze:
             for param in self.model.parameters():
                 param.requires_grad = False
             
