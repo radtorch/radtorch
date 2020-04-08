@@ -83,13 +83,22 @@ class Optimizer():
         for k,v in kwargs.items():
             setattr(self,k,v)
         if self.type=='Adam':
-            self.optimizer=torch.optim.Adam(self.classifier.parameters(),self.learning_rate)
+            self.optimizer=torch.optim.Adam(self.classifier.parameters(),self.learning_rate, **kwargs)
+        if self.type=='AdamW':
+            self.optimizer=torch.optim.AdamW(self.classifier.parameters(), self.learning_rate, **kwargs)
+        if self.type=='SparseAdam':
+            self.optimizer=torch.optim.SparseAdam(self.classifier.parameters(), self.learning_rate, **kwargs)
+        if self.type=='Adamax':
+            self.optimizer=torch.optim.Adamax(self.classifier.parameters(), self.learning_rate, **kwargs)
         if self.type=='ASGD':
-            self.optimizer=torch.optim.ASGD(self.classifier.parameters(), self.learning_rate)
+            self.optimizer=torch.optim.ASGD(self.classifier.parameters(), self.learning_rate, **kwargs)
         if self.type=='RMSprop':
-            self.optimizer=torch.optim.RMSprop(self.classifier.parameters(), self.learning_rate)
+            self.optimizer=torch.optim.RMSprop(self.classifier.parameters(), self.learning_rate, **kwargs)
         if self.type=='SGD':
-            self.optimizer=torch.optim.SGD(self.classifier.parameters(), self.learning_rate)
+            self.optimizer=torch.optim.SGD(self.classifier.parameters(), self.learning_rate, **kwargs)
+
+
+
         return self.optimizer
 
 
