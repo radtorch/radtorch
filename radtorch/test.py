@@ -114,7 +114,7 @@ class Classifier(object):
                           )
 
   def roc(self, **kw):
-    show_roc([self], **kw)
+    vis.show_roc([self], **kw)
 
   # def feature_correlation(self, cmap='Blues', figure_size=(20,15)):
   #   corrmat = self.features.corr()
