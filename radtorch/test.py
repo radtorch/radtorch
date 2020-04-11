@@ -14,7 +14,7 @@
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
 from radtorch.settings import *
-from radtorch import vis
+from radtorch.vis import *
 
 
 
@@ -105,7 +105,7 @@ class Classifier(object):
     pred_labels=self.classifier.predict(self.test_features)
     true_labels=self.test_labels
     cm = metrics.confusion_matrix(true_labels, pred_labels)
-    vis.show_confusion_matrix(cm=cm,
+    show_confusion_matrix(cm=cm,
                           target_names=self.classes,
                           title=title,
                           cmap=cmap,
@@ -114,7 +114,7 @@ class Classifier(object):
                           )
 
   def roc(self, **kw):
-    vis.show_roc([self], **kw)
+    show_roc([self], **kw)
 
   # def feature_correlation(self, cmap='Blues', figure_size=(20,15)):
   #   corrmat = self.features.corr()
