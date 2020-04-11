@@ -116,23 +116,23 @@ class Classifier(object):
   def roc(self, **kw):
     show_roc([self], **kw)
 
-  def feature_correlation(self, cmap='Blues', figure_size=(20,15)):
-    corrmat = self.features.corr()
-    f, ax = plt.subplots(figsize=figure_size)
-    # sns.heatmap(corrmat, ax = ax, cmap ="YlGnBu", linewidths = 0.1)
-    sns.heatmap(corrmat, cmap=cmap, linewidths=.1,ax=ax)
-
-  def optimal_features(self, verbose=1, scoring='accuracy'):
-    rfecv = RFECV(estimator=self.classifier, step=1, cv=self.num_splits,
-                  scoring=scoring)
-    rfecv.fit(self.train_features, self.train_labels)
-    print("Optimal number of features : %d" % rfecv.n_features_)
-    # Plot number of features VS. cross-validation scores
-    plt.figure()
-    plt.xlabel("Number of features selected")
-    plt.ylabel("Cross validation score (nb of correct classifications)")
-    plt.plot(range(1, len(rfecv.grid_scores_) + 1), rfecv.grid_scores_)
-    plt.show()
+  # def feature_correlation(self, cmap='Blues', figure_size=(20,15)):
+  #   corrmat = self.features.corr()
+  #   f, ax = plt.subplots(figsize=figure_size)
+  #   # sns.heatmap(corrmat, ax = ax, cmap ="YlGnBu", linewidths = 0.1)
+  #   sns.heatmap(corrmat, cmap=cmap, linewidths=.1,ax=ax)
+  #
+  # def optimal_features(self, verbose=1, scoring='accuracy'):
+  #   rfecv = RFECV(estimator=self.classifier, step=1, cv=self.num_splits,
+  #                 scoring=scoring)
+  #   rfecv.fit(self.train_features, self.train_labels)
+  #   print("Optimal number of features : %d" % rfecv.n_features_)
+  #   # Plot number of features VS. cross-validation scores
+  #   plt.figure()
+  #   plt.xlabel("Number of features selected")
+  #   plt.ylabel("Cross validation score (nb of correct classifications)")
+  #   plt.plot(range(1, len(rfecv.grid_scores_) + 1), rfecv.grid_scores_)
+  #   plt.show()
 
 
 
