@@ -519,7 +519,6 @@ def show_roc(classifier_list, fig_size=(700,400)):
             true_labels=i.test_labels
             predictions=i.classifier.predict(i.test_features)
         else: true_labels, predictions = calculate_nn_predictions(model=i.trained_model, target_data_set=i.test_dataset, device=i.device)
-        true_labels, predictions = calculate_nn_predictions(model=i.trained_model, target_data_set=i.test_dataset, device=i.device)
         fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
         auc = metrics.roc_auc_score(true_labels, predictions)
         x = p.line(fpr, tpr, line_width=2, line_color= COLORS2[ind])
