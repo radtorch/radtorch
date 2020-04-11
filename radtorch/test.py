@@ -27,7 +27,7 @@ class Classifier(object):
     for k, v  in DEFAULT_SETTINGS.items():
         if k not in kwargs.keys():
             setattr(self, k, v)
-    if isinstance(self.feature_table, csv):
+    if isinstance(self.feature_table, str):
         self.feature_table=pd.read_csv(self.feature_table)
 
     self.features=self.feature_table[self.feature_names]
