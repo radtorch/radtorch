@@ -20,6 +20,7 @@ from radtorch import vis
 
 
 class Classifier(object):
+
   def __init__(self, DEFAULT_SETTINGS=CLASSIFER_DEFAULT_SETTINGS, **kwargs):
     for k,v in kwargs.items():
       setattr(self,k,v)
@@ -35,12 +36,17 @@ class Classifier(object):
     self.classifier=self.create_classifier(**self.parameters)
     self.classifier_type=self.classifier.__class__.__name__
 
-
   def create_classifier(self, **kw):
     if self.type not in SUPPORTED_CLASSIFIER:
       raise TypeError('Error! Classifier type not supported. Please check again.')
+    elif self.type=='linear_regression':
+      classifier=LinearRegression(n_jobs=-1, **kw)
     elif self.type=='logistic_regression':
       classifier=LogisticRegression(max_iter=10000,n_jobs=-1, **kw)
+    elif self.type=='ridge':
+      classifier=RidgeClassifier(max_iter=10000, **kw)
+    elif self.type=='sgd':
+      classifier=SGDClassifier(**kw)
     elif self.type=='knn':
       classifier=KNeighborsClassifier(n_jobs=-1,**kw)
     elif self.type=='decision_trees':
@@ -54,7 +60,6 @@ class Classifier(object):
     elif self.type=='xgboost':
       classifier=XGBClassifier(**kw)
     return classifier
-
 
   def info(self):
     info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
@@ -107,16 +112,15 @@ class Classifier(object):
                           normalize=normalize,
                           figure_size=figure_size
                           )
+
   def roc(self, **kw):
     show_roc([self], **kw)
-
 
   def feature_correlation(self, cmap='Blues', figure_size=(20,15)):
     corrmat = self.features.corr()
     f, ax = plt.subplots(figsize=figure_size)
     # sns.heatmap(corrmat, ax = ax, cmap ="YlGnBu", linewidths = 0.1)
     sns.heatmap(corrmat, cmap=cmap, linewidths=.1,ax=ax)
-
 
   def optimal_features(self, verbose=1, scoring='accuracy'):
     rfecv = RFECV(estimator=self.classifier, step=1, cv=self.num_splits,

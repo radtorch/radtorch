@@ -505,7 +505,7 @@ def show_roc(classifier_list, fig_size=(700,400)):
     TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
     output = []
-    p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Receiver Operating Characteristic''), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+    p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Receiver Operating Characteristic'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
     p.line([0, 0.5, 1.0], [0, 0.5, 1.0], line_width=1.5, line_color='#93D5ED', line_dash='dashed')
 
     ind = 0

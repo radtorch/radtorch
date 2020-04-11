@@ -26,7 +26,7 @@ import seaborn as sns
 
 
 from sklearn import metrics
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LogisticRegression, LinearRegression, RidgeClassifier, SGDClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn import tree, metrics
@@ -124,7 +124,7 @@ CLASSIFER_DEFAULT_SETTINGS={
     'parameters':{},
 }
 
-SUPPORTED_CLASSIFIER=['logistic_regression','knn', 'decision_trees', 'random_forests', 'gradient_boost', 'adaboost', 'xgboost']
+SUPPORTED_CLASSIFIER=['linear_regression','sgd','logistic_regression','ridge', 'knn', 'decision_trees', 'random_forests', 'gradient_boost', 'adaboost', 'xgboost']
 
 
 #datautils
