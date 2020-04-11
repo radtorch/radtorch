@@ -505,7 +505,7 @@ def show_roc(classifier_list, fig_size=(700,400)):
     TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
     output = []
-    p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('ROC'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+    p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Receiver Operating Characteristic''), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
     p.line([0, 0.5, 1.0], [0, 0.5, 1.0], line_width=1.5, line_color='#93D5ED', line_dash='dashed')
 
     ind = 0
@@ -515,6 +515,10 @@ def show_roc(classifier_list, fig_size=(700,400)):
     legend_items = []
 
     for i in classifier_list:
+        if i.type in SUPPORTED_CLASSIFIER:
+            true_labels=i.test_labels
+            predictions=i.classifier.predict(i.test_features)
+        else: true_labels, predictions = calculate_nn_predictions(model=i.trained_model, target_data_set=i.test_dataset, device=i.device)
         true_labels, predictions = calculate_nn_predictions(model=i.trained_model, target_data_set=i.test_dataset, device=i.device)
         fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
         auc = metrics.roc_auc_score(true_labels, predictions)
@@ -531,8 +535,8 @@ def show_roc(classifier_list, fig_size=(700,400)):
     p.legend.border_line_width = 0
     p.legend.click_policy="hide"
     p.xaxis.axis_line_color = '#D6DBDF'
-    p.xaxis.axis_label = 'FPR (1-Specificity)'
-    p.yaxis.axis_label = 'TPR (Senstivity)'
+    p.xaxis.axis_label = 'False Positive Rate (1-Specificity)'
+    p.yaxis.axis_label = 'True Positive Rate (Senstivity)'
     p.yaxis.axis_line_color = '#D6DBDF'
     p.xgrid.grid_line_color=None
     p.yaxis.axis_line_width = 2

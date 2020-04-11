@@ -22,8 +22,21 @@ import torchvision.datasets as datasets
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
+
 
 from sklearn import metrics
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import tree, metrics
+from sklearn.model_selection import StratifiedKFold, KFold
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
+from sklearn.metrics import plot_confusion_matrix, plot_roc_curve
+from sklearn.feature_selection import RFECV, RFE
+from xgboost import XGBClassifier
+
+
 from tqdm import tqdm_notebook as tqdm
 from tqdm.notebook import tqdm
 from torch.utils.data.dataset import Dataset
@@ -101,6 +114,17 @@ supported_loss={
             'CosineSimilarity':torch.nn.CosineSimilarity(dim=1, eps=1e-08),
             }
 
+CLASSIFER_DEFAULT_SETTINGS={
+    'type':'logistic_regression',
+    'test_percent':0.2,
+    'cv':True,
+    'stratified':True,
+    'num_splits':5,
+    'label_column':'label_idx',
+    'parameters':{},
+}
+
+SUPPORTED_CLASSIFIER=['logistic_regression','knn', 'decision_trees', 'random_forests', 'gradient_boost', 'adaboost', 'xgboost']
 
 
 #datautils
