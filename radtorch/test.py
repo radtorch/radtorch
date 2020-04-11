@@ -117,24 +117,53 @@ class Classifier(object):
   def roc(self, **kw):
     show_roc([self], **kw)
 
-  # def feature_correlation(self, cmap='Blues', figure_size=(20,15)):
-  #   corrmat = self.features.corr()
-  #   f, ax = plt.subplots(figsize=figure_size)
-  #   # sns.heatmap(corrmat, ax = ax, cmap ="YlGnBu", linewidths = 0.1)
-  #   sns.heatmap(corrmat, cmap=cmap, linewidths=.1,ax=ax)
-  #
-  # def optimal_features(self, verbose=1, scoring='accuracy'):
-  #   rfecv = RFECV(estimator=self.classifier, step=1, cv=self.num_splits,
-  #                 scoring=scoring)
-  #   rfecv.fit(self.train_features, self.train_labels)
-  #   print("Optimal number of features : %d" % rfecv.n_features_)
-  #   # Plot number of features VS. cross-validation scores
-  #   plt.figure()
-  #   plt.xlabel("Number of features selected")
-  #   plt.ylabel("Cross validation score (nb of correct classifications)")
-  #   plt.plot(range(1, len(rfecv.grid_scores_) + 1), rfecv.grid_scores_)
-  #   plt.show()
 
+
+
+class Feature_selection(Classifier):
+
+  def feature_feature_correlation(self, cmap='Blues', figure_size=(20,15)):
+    corrmat = self.features.corr()
+    f, ax = plt.subplots(figsize=figure_size)
+    sns.heatmap(corrmat, cmap=cmap, linewidths=.1,ax=ax)
+
+  def feature_label_correlation(self, threshold=0.5):
+    corrmat = self.feature_table.corr()
+    corr_target = abs(corrmat[self.label_column])
+    relevant_features = corr_target[corr_target>threshold]
+    df = pd.DataFrame(relevant_features)
+    df.columns=['Score']
+    df.index.rename('Feature')
+    best_features_scores=df.sort_values(by=['Score'], ascending=False)
+    best_features_names=df.index.tolist()
+    best_features_names.remove(self.label_column)
+    best_features_table=self.feature_table[df.index.tolist()]
+    return best_features_scores, best_features_names, best_features_table
+
+  def univariate(self, test='chi2', num_features=20):
+    if test=='chi2':
+      selector = SelectKBest(chi2, k=num_features)
+    elif test=='anova':
+      selector = SelectKBest(f_classif, k=num_features)
+    elif test=='mutual_info':
+      selector = SelectKBest(mutual_info_classif, k=num_features)
+    selector.fit(self.train_features, self.train_labels)
+    feature_score=selector.scores_.tolist()
+    df=pd.DataFrame(list(zip(self.feature_names, feature_score)), columns=['Feature', 'Score'])
+    best_features_scores=df.sort_values(by=['Score'], ascending=False)[:num_features]
+    best_features_names=best_features_scores.Feature.tolist()
+    best_features_table=self.feature_table[best_features_names+[self.label_column]]
+    return best_features_scores, best_features_names, best_features_table
+
+  def variance(self, threshold=0, num_features=20):
+    selector=VarianceThreshold(threshold=threshold)
+    selector.fit(self.train_features, self.train_labels)
+    feature_score=selector.variances_.tolist()
+    df=pd.DataFrame(list(zip(self.feature_names, feature_score)), columns=['Feature', 'Score'])
+    best_features_scores=df.sort_values(by=['Score'], ascending=False)[:num_features]
+    best_features_names=best_features_scores.Feature.tolist()
+    best_features_table=self.feature_table[best_features_names+[self.label_column]]
+    return best_features_scores, best_features_names, best_features_table
 
 
 

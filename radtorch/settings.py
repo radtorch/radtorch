@@ -19,24 +19,21 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import torchvision.datasets as datasets
-import matplotlib.pyplot as plt
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import matplotlib.pyplot as plt
 
-
-from sklearn import metrics
+from sklearn import metrics, tree
 from sklearn.linear_model import LogisticRegression, LinearRegression, RidgeClassifier, SGDClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn import tree, metrics
-from sklearn.model_selection import StratifiedKFold, KFold
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.metrics import plot_confusion_matrix, plot_roc_curve
-from sklearn.feature_selection import RFECV, RFE
+from sklearn.feature_selection import
+from sklearn.feature_selection import SelectKBest, chi2,  f_classif, mutual_info_classif, RFECV, RFE, VarianceThreshold
 from xgboost import XGBClassifier
-
-
 from tqdm import tqdm_notebook as tqdm
 from tqdm.notebook import tqdm
 from torch.utils.data.dataset import Dataset
@@ -45,8 +42,6 @@ from PIL import Image
 from pathlib import Path
 from collections import Counter
 from IPython.display import display
-
-
 from bokeh.io import output_notebook, show
 from math import pi
 from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFormatter, Tabs, Panel, ColumnDataSource, Legend

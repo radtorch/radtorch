@@ -13,7 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 from radtorch.settings import *
-
+import os
+import pandas as pd
+from tqdm import tqdm_notebook as tqdm
+from os import listdir
+from os.path import isfile, join
+import pydicom
+from pathlib import Path
 
 
 def window_dicom(filepath, level, width):
@@ -80,3 +86,83 @@ def dicom_to_pil(filepath):
     pixels = ds.pixel_array
     pil_image = Image.fromarray(np.rollaxis(pixels, 0,1))
     return pil_image
+
+# 3D-Slicer Functions
+def find_coordinates(vol="inputvol",roi="croproi"):
+    roiNode = getNode(roi)
+    volNode = getNode(vol)
+    bounds = [0,0,0,0,0,0]
+    mat = vtk.vtkMatrix4x4()
+    volNode.GetRASToIJKMatrix(mat)
+    roiNode.GetRASBounds(bounds)
+    p1 = [bounds[1], bounds[3], bounds[5], 1]
+    p2 = [bounds[0], bounds[2], bounds[4], 1]
+    i1 = mat.MultiplyFloatPoint(p1)
+    i2 = mat.MultiplyFloatPoint(p2)
+    coordinates = [i1[0], i2[0], i1[1], i2[1], i1[2], i2[2]]
+    coordinates = [int(x) for x in coordinates]
+    print (coordinates)
+
+# Split Multiphasic study
+def split_multiphasic_scan(input_dir, output_dir, modality=''):
+    if modality=='MRI':
+        files = []
+        position = []
+        instance = []
+        print ('Creating file list.')
+        for r, d, f in os.walk(input_dir):
+            for i in f:
+                i_path = os.path.join(r,i)
+                files.append(i)
+                ds = pydicom.read_file(i_path, force=True)
+                position.append(ds.ImagePositionPatient[2])
+                instance.append(ds.InstanceNumber)
+        df = pd.DataFrame({'ImageId':files, 'ImagePositionPatient':position, 'InstanceNumber':instance})
+        number_phases = len(files) / len(df['ImagePositionPatient'].unique())
+        print ('Calculating number of phases.')
+        if number_phases.is_integer():
+            number_phases = int(number_phases)
+        else:
+            print ('Error. Number of images can not be split across the calculated number of phases')
+            return
+        phases = []
+        for i in range(0,number_phases):
+            phases.append('phase_'+str(i))
+        phases_list = phases * len(df['ImagePositionPatient'].unique())
+        df = df.sort_values(by=['ImagePositionPatient', 'InstanceNumber']);
+        df['phase'] = phases_list
+        print ('Splitting into',number_phases,'phases.')
+        for i, r in tqdm(df.iterrows(), total=len(df)):
+            img_path = input_dir+r['ImageId']
+            ds = pydicom.read_file(img_path)
+            ds.SeriesDescription = ds.SeriesDescription+'_'+r['phase']
+            ds.SeriesInstanceUID = ds.SeriesInstanceUID+r['phase'][-1]
+            ds.SeriesNumber =  str(ds.SeriesNumber)+r['phase'][-1]
+            ds.save_as(output_dir+r['ImageId'])
+        print ('Splitting completed successfully')
+
+    elif modality=='CT':
+        files = []
+        slice_location = []
+        aq_time = []
+        print ('Creating file list.')
+        for r,ds, fs in os.walk(input_dir):
+            for f in fs:
+                img_path = input_dir+f
+                dicom_data = pydicom.read_file(img_path)
+                files.append(f)
+                slice_location.append(dicom_data.SliceLocation)
+                aq_time.append(dicom_data.AcquisitionTime)
+        dataframe = pd.DataFrame({'img_id':files, 'slice_location':slice_location, 'aq_time':aq_time})
+        dataframe.sort_values(by=['aq_time', 'slice_location'])
+        print ('Calculating number of phases.')
+        unique_aq_time = dataframe.aq_time.unique().tolist()
+        print ('Splitting into',len(unique_aq_time),'phases.')
+        for i, r in tqdm(dataframe.iterrows(), total=len(dataframe)):
+            img_path = input_dir+r['img_id']
+            ds = pydicom.read_file(img_path)
+            ds.SeriesDescription = ds.SeriesDescription+'_'+ str(unique_aq_time.index(r['aq_time']))
+            ds.SeriesInstanceUID = ds.SeriesInstanceUID+ str(unique_aq_time.index(r['aq_time']))
+            ds.SeriesNumber =  str(ds.SeriesNumber)+str(unique_aq_time.index(r['aq_time']))
+            ds.save_as(output_dir+r['img_id'])
+        print ('Splitting completed successfully')
