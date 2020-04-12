@@ -26,6 +26,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from sklearn import metrics, tree
+from sklearn.manifold import TSNE
 from sklearn.linear_model import LogisticRegression, LinearRegression, RidgeClassifier, SGDClassifier, ElasticNet
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
 from sklearn.neighbors import KNeighborsClassifier
