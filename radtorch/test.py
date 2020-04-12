@@ -213,7 +213,7 @@ class Feature_selection(Classifier):
         show(p)
         return self.optimal_features_names, self.best_features_table
 
-    def tsne(self, feature_table=None, figure_size=(800, 800), colormap=COLOR3, **kwargs):
+    def tsne(self, feature_table=None, figure_size=(800, 800), colormap=COLORS3, **kwargs):
         if isinstance(feature_table, pd.DataFrame):
             y = feature_table
         else:
