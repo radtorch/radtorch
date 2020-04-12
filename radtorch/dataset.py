@@ -18,6 +18,7 @@ from radtorch.dicom import  *
 from radtorch.vis import *
 from radtorch.settings import *
 from radtorch.data import *
+import radtorch
 
 
 
@@ -125,7 +126,7 @@ class Dataset_from_table(RADTorch_Dataset):
 class Dataset_from_folder(RADTorch_Dataset):
     def __init__(self, **kwargs):
         super(Dataset_from_folder, self).__init__(**kwargs)
-        self.classes, self.class_to_idx=root_to_class(self.data_directory)
+        self.classes, self.class_to_idx=radtorch.data.root_to_class(self.data_directory)
         self.all_files=list_of_files(self.data_directory)
         if self.is_dicom: self.dataset_files=[x for x in self.all_files  if x.endswith('.dcm')]
         else: self.dataset_files=[x for x in self.all_files if x.endswith(IMG_EXTENSIONS)]
