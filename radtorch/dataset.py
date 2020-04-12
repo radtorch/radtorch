@@ -17,7 +17,7 @@ from radtorch.settings import *
 from radtorch.dicom import  *
 from radtorch.vis import *
 from radtorch.settings import *
-from radtorch.dataset import *
+from radtorch.data import *
 
 
 
