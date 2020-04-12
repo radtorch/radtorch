@@ -213,8 +213,11 @@ class Feature_selection(Classifier):
         show(p)
         return self.optimal_features_names, self.best_features_table
 
-    def tsne(self, feature_table=self.feature_table, figure_size=(800, 800)):
-        y = feature_table[self.feature_names+[self.label_column]]
+    def tsne(self, figure_size=(800, 800), **kwargs):
+        if feature_table:
+            y = feature_table[self.feature_names+[self.label_column]]
+        else:
+            y = self.feature_table[self.feature_names+[self.label_column]]
         tsne = TSNE(n_components=2, random_state=0)
         X_2d = tsne.fit_transform(y)
         p = figure(tools=TOOLS, plot_width=figure_size[0], plot_height=figure_size[1])
