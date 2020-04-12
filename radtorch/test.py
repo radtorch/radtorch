@@ -220,6 +220,7 @@ class Feature_selection(Classifier):
             y = self.feature_table[self.feature_names+[self.label_column]]
         tsne = TSNE(n_components=2, random_state=0)
         X_2d = tsne.fit_transform(y)
+        output_notebook()
         p = figure(tools=TOOLS, plot_width=figure_size[0], plot_height=figure_size[1])
         for i in y.label_idx.unique().tolist():
             p.scatter(X_2d[y[self.label_column] == i, 0], X_2d[y[self.label_column] == i, 1], radius=0.3, fill_alpha=0.6,line_color=None, fill_color=COLORS2[i])
