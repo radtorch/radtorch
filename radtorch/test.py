@@ -215,7 +215,7 @@ class Feature_selection(Classifier):
 
     def tsne(self, feature_table=None, figure_size=(800, 800), **kwargs):
         if feature_table:
-            y = feature_table[self.feature_names+[self.label_column]]
+            y = feature_table
         else:
             y = self.feature_table[self.feature_names+[self.label_column]]
         tsne = TSNE(n_components=2, random_state=0)
