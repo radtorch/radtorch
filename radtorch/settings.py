@@ -63,7 +63,7 @@ version='0.1.4b'
 # visutils
 TOOLS="hover,save,box_zoom,reset,wheel_zoom, box_select"
 
-COLORS2=["#d11141","#00b159","#00aedb","#f37735","#ffc425","#cccccc","#8c8c8c","#cccccc", "#ffc425","#f37735","#00aedb","#00b159"]
+COLORS3=["#d11141","#00b159","#00aedb","#f37735","#ffc425","#cccccc","#8c8c8c","#cccccc", "#ffc425","#f37735","#00aedb","#00b159"]
 
 COLORS2=['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716','#FF7300', '#FBD704', '#10D8B8', '#3C6FAA']*100
 
