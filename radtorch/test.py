@@ -46,6 +46,8 @@ class Classifier(object):
       classifier=LogisticRegression(max_iter=10000,n_jobs=-1, **kw)
     elif self.type=='ridge':
       classifier=RidgeClassifier(max_iter=10000, **kw)
+    elif self.type=='elasticnet':
+      classifier=ElasticNet(**kw)
     elif self.type=='sgd':
       classifier=SGDClassifier(**kw)
     elif self.type=='knn':
@@ -118,8 +120,6 @@ class Classifier(object):
     show_roc([self], **kw)
 
 
-
-
 class Feature_selection(Classifier):
 
   def feature_feature_correlation(self, cmap='Blues', figure_size=(20,15)):
@@ -128,6 +128,7 @@ class Feature_selection(Classifier):
     sns.heatmap(corrmat, cmap=cmap, linewidths=.1,ax=ax)
 
   def feature_label_correlation(self, threshold=0.5):
+    print ('Running Feature-Label Correlation with',len(self.feature_names),'features.')
     corrmat = self.feature_table.corr()
     corr_target = abs(corrmat[self.label_column])
     relevant_features = corr_target[corr_target>threshold]
@@ -141,6 +142,7 @@ class Feature_selection(Classifier):
     return best_features_scores, best_features_names, best_features_table
 
   def univariate(self, test='chi2', num_features=20):
+    print ('Running Univariate Feature Analysis with',len(self.feature_names),'features.')
     if test=='chi2':
       selector = SelectKBest(chi2, k=num_features)
     elif test=='anova':
@@ -156,6 +158,7 @@ class Feature_selection(Classifier):
     return best_features_scores, best_features_names, best_features_table
 
   def variance(self, threshold=0, num_features=20):
+    print ('Running Feature Variance Analysis with',len(self.feature_names),'features.')
     selector=VarianceThreshold(threshold=threshold)
     selector.fit(self.train_features, self.train_labels)
     feature_score=selector.variances_.tolist()
@@ -165,6 +168,17 @@ class Feature_selection(Classifier):
     best_features_table=self.feature_table[best_features_names+[self.label_column]]
     return best_features_scores, best_features_names, best_features_table
 
+  def rfe(self, step=1, rfe_features=1, num_features=20):
+    if 'rfe_feature_rank' not in self.__dict__.keys():
+      print ('Running Recursive Feature Elimination with',len(self.feature_names),'features. This might take some time. Please wait.')
+      selector=RFE(estimator=self.classifier, n_features_to_select=rfe_features, step=step)
+      selector.fit(self.train_features, self.train_labels)
+      self.rfe_feature_rank=selector.ranking_
+    df= pd.DataFrame(list(zip(self.feature_names, self.rfe_feature_rank.tolist())), columns=['Feature', 'Rank'])
+    best_features_scores=df.sort_values(by=['Rank'], ascending=True)[:num_features]
+    best_features_names=best_features_scores.Feature.tolist()
+    best_features_table=self.feature_table[best_features_names+[self.label_column]]
+    return best_features_scores, best_features_names, best_features_table
 
 
 

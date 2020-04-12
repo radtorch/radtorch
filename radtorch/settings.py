@@ -26,7 +26,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 from sklearn import metrics, tree
-from sklearn.linear_model import LogisticRegression, LinearRegression, RidgeClassifier, SGDClassifier
+from sklearn.linear_model import LogisticRegression, LinearRegression, RidgeClassifier, SGDClassifier, ElasticNet
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
@@ -118,7 +118,7 @@ CLASSIFER_DEFAULT_SETTINGS={
     'parameters':{},
 }
 
-SUPPORTED_CLASSIFIER=['linear_regression','sgd','logistic_regression','ridge', 'knn', 'decision_trees', 'random_forests', 'gradient_boost', 'adaboost', 'xgboost']
+SUPPORTED_CLASSIFIER=['linear_regression','sgd','logistic_regression','ridge', 'knn', 'decision_trees', 'random_forests', 'gradient_boost', 'adaboost', 'xgboost', 'elasticnet']
 
 
 #datautils
