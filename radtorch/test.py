@@ -213,7 +213,7 @@ class Feature_selection(Classifier):
         show(p)
         return self.optimal_features_names, self.best_features_table
 
-    def tsne(self, figure_size=(800, 800), **kwargs):
+    def tsne(self, feature_table=None, figure_size=(800, 800), **kwargs):
         if feature_table:
             y = feature_table[self.feature_names+[self.label_column]]
         else:
@@ -243,6 +243,7 @@ class Feature_selection(Classifier):
         p.title.text='t-distributed Stochastic Neighbor Embedding (t-SNE)'
         p.title_location='above'
         show(p)
+
 
 def find_lr(model, train_dataloader, optimizer, device):
     set_random_seed(100)
