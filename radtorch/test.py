@@ -185,6 +185,7 @@ class Feature_selection(Classifier):
         print ('Optimal Number of Features =', self.optimal_feature_number)
         j = range(1, len(self.rfecv_selector.grid_scores_) + 1)
         i = self.rfecv_selector.grid_scores_
+        output_notebook()
         p = figure(plot_width=600, plot_height=400)
         p.line(j, i, line_width=2, color='#1A5276')
         p.line([self.optimal_feature_number]*len(i),i,line_width=2, color='#F39C12', line_dash='dashed')
