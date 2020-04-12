@@ -214,7 +214,7 @@ class Feature_selection(Classifier):
         return self.optimal_features_names, self.best_features_table
 
     def tsne(self, feature_table=None, figure_size=(800, 800), **kwargs):
-        if feature_table:
+        if feature_table !=None:
             y = feature_table
         else:
             y = self.feature_table[self.feature_names+[self.label_column]]
