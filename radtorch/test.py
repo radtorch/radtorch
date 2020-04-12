@@ -194,7 +194,7 @@ class Feature_selection(Classifier):
         p.xgrid.grid_line_color=None
         p.yaxis.axis_line_width = 2
         p.xaxis.axis_line_width = 2
-        p.xaxis.axis_label = 'Number of features selected. Optimal='+str(self.optimal_feature_number)
+        p.xaxis.axis_label = 'Number of features selected. Optimal = '+str(self.optimal_feature_number)
         p.yaxis.axis_label = 'Cross validation score (nb of correct classifications)'
         p.xaxis.major_tick_line_color = '#D6DBDF'
         p.yaxis.major_tick_line_color = '#D6DBDF'
@@ -213,7 +213,7 @@ class Feature_selection(Classifier):
         show(p)
         return self.optimal_features_names, self.best_features_table
 
-    def tsne(self, feature_table=None, figure_size=(800, 800), **kwargs):
+    def tsne(self, feature_table=None, figure_size=(800, 800), colormap=COLOR3, **kwargs):
         if isinstance(feature_table, pd.DataFrame):
             y = feature_table
         else:
@@ -223,10 +223,11 @@ class Feature_selection(Classifier):
         output_notebook()
         p = figure(tools=TOOLS, plot_width=figure_size[0], plot_height=figure_size[1])
         for i in y.label_idx.unique().tolist():
-            p.scatter(X_2d[y[self.label_column] == i, 0], X_2d[y[self.label_column] == i, 1], radius=0.3, fill_alpha=0.6,line_color=None, fill_color=COLORS2[i])
+            p.scatter(X_2d[y[self.label_column] == i, 0], X_2d[y[self.label_column] == i, 1], radius=0.3, fill_alpha=0.6,line_color=None, fill_color=colormap[i])
         p.xaxis.axis_line_color = '#D6DBDF'
         p.yaxis.axis_line_color = '#D6DBDF'
         p.xgrid.grid_line_color=None
+        p.ygrid.grid_line_color=None
         p.yaxis.axis_line_width = 2
         p.xaxis.axis_line_width = 2
         p.xaxis.major_tick_line_color = '#D6DBDF'
@@ -244,6 +245,8 @@ class Feature_selection(Classifier):
         p.title.text='t-distributed Stochastic Neighbor Embedding (t-SNE)'
         p.title_location='above'
         show(p)
+
+
 
 
 def find_lr(model, train_dataloader, optimizer, device):
