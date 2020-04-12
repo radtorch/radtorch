@@ -122,63 +122,95 @@ class Classifier(object):
 
 class Feature_selection(Classifier):
 
-  def feature_feature_correlation(self, cmap='Blues', figure_size=(20,15)):
-    corrmat = self.features.corr()
-    f, ax = plt.subplots(figsize=figure_size)
-    sns.heatmap(corrmat, cmap=cmap, linewidths=.1,ax=ax)
+    def feature_feature_correlation(self, cmap='Blues', figure_size=(20,15)):
+        corrmat = self.features.corr()
+        f, ax = plt.subplots(figsize=figure_size)
+        sns.heatmap(corrmat, cmap=cmap, linewidths=.1,ax=ax)
 
-  def feature_label_correlation(self, threshold=0.5):
-    print ('Running Feature-Label Correlation with',len(self.feature_names),'features.')
-    corrmat = self.feature_table.corr()
-    corr_target = abs(corrmat[self.label_column])
-    relevant_features = corr_target[corr_target>threshold]
-    df = pd.DataFrame(relevant_features)
-    df.columns=['Score']
-    df.index.rename('Feature')
-    best_features_scores=df.sort_values(by=['Score'], ascending=False)
-    best_features_names=df.index.tolist()
-    best_features_names.remove(self.label_column)
-    best_features_table=self.feature_table[df.index.tolist()]
-    return best_features_scores, best_features_names, best_features_table
+    def feature_label_correlation(self, threshold=0.5):
+        corrmat = self.feature_table.corr()
+        corr_target = abs(corrmat[self.label_column])
+        relevant_features = corr_target[corr_target>threshold]
+        df = pd.DataFrame(relevant_features)
+        df.columns=['Score']
+        df.index.rename('Feature')
+        best_features_scores=df.sort_values(by=['Score'], ascending=False)
+        best_features_names=df.index.tolist()
+        best_features_names.remove(self.label_column)
+        best_features_table=self.feature_table[df.index.tolist()]
+        return best_features_scores, best_features_names, best_features_table
 
-  def univariate(self, test='chi2', num_features=20):
-    print ('Running Univariate Feature Analysis with',len(self.feature_names),'features.')
-    if test=='chi2':
-      selector = SelectKBest(chi2, k=num_features)
-    elif test=='anova':
-      selector = SelectKBest(f_classif, k=num_features)
-    elif test=='mutual_info':
-      selector = SelectKBest(mutual_info_classif, k=num_features)
-    selector.fit(self.train_features, self.train_labels)
-    feature_score=selector.scores_.tolist()
-    df=pd.DataFrame(list(zip(self.feature_names, feature_score)), columns=['Feature', 'Score'])
-    best_features_scores=df.sort_values(by=['Score'], ascending=False)[:num_features]
-    best_features_names=best_features_scores.Feature.tolist()
-    best_features_table=self.feature_table[best_features_names+[self.label_column]]
-    return best_features_scores, best_features_names, best_features_table
+    def univariate(self, test='chi2', num_features=20):
+        if test=='chi2':
+          selector = SelectKBest(chi2, k=num_features)
+        elif test=='anova':
+          selector = SelectKBest(f_classif, k=num_features)
+        elif test=='mutual_info':
+          selector = SelectKBest(mutual_info_classif, k=num_features)
+        selector.fit(self.train_features, self.train_labels)
+        feature_score=selector.scores_.tolist()
+        df=pd.DataFrame(list(zip(self.feature_names, feature_score)), columns=['Feature', 'Score'])
+        best_features_scores=df.sort_values(by=['Score'], ascending=False)[:num_features]
+        best_features_names=best_features_scores.Feature.tolist()
+        best_features_table=self.feature_table[best_features_names+[self.label_column]]
+        return best_features_scores, best_features_names, best_features_table
 
-  def variance(self, threshold=0, num_features=20):
-    print ('Running Feature Variance Analysis with',len(self.feature_names),'features.')
-    selector=VarianceThreshold(threshold=threshold)
-    selector.fit(self.train_features, self.train_labels)
-    feature_score=selector.variances_.tolist()
-    df=pd.DataFrame(list(zip(self.feature_names, feature_score)), columns=['Feature', 'Score'])
-    best_features_scores=df.sort_values(by=['Score'], ascending=False)[:num_features]
-    best_features_names=best_features_scores.Feature.tolist()
-    best_features_table=self.feature_table[best_features_names+[self.label_column]]
-    return best_features_scores, best_features_names, best_features_table
+    def variance(self, threshold=0, num_features=20):
+        selector=VarianceThreshold(threshold=threshold)
+        selector.fit(self.train_features, self.train_labels)
+        feature_score=selector.variances_.tolist()
+        df=pd.DataFrame(list(zip(self.feature_names, feature_score)), columns=['Feature', 'Score'])
+        best_features_scores=df.sort_values(by=['Score'], ascending=False)[:num_features]
+        best_features_names=best_features_scores.Feature.tolist()
+        best_features_table=self.feature_table[best_features_names+[self.label_column]]
+        return best_features_scores, best_features_names, best_features_table
 
-  def rfe(self, step=1, rfe_features=1, num_features=20):
-    if 'rfe_feature_rank' not in self.__dict__.keys():
-      print ('Running Recursive Feature Elimination with',len(self.feature_names),'features. This might take some time. Please wait.')
-      selector=RFE(estimator=self.classifier, n_features_to_select=rfe_features, step=step)
-      selector.fit(self.train_features, self.train_labels)
-      self.rfe_feature_rank=selector.ranking_
-    df= pd.DataFrame(list(zip(self.feature_names, self.rfe_feature_rank.tolist())), columns=['Feature', 'Rank'])
-    best_features_scores=df.sort_values(by=['Rank'], ascending=True)[:num_features]
-    best_features_names=best_features_scores.Feature.tolist()
-    best_features_table=self.feature_table[best_features_names+[self.label_column]]
-    return best_features_scores, best_features_names, best_features_table
+    def rfe(self, step=1, rfe_features=None):
+        if 'rfe_feature_rank' not in self.__dict__.keys():
+          self.selector=RFE(estimator=self.classifier, n_features_to_select=rfe_features, step=step)
+          self.selector.fit(self.train_features, self.train_labels)
+          self.rfe_feature_rank=self.selector.ranking_
+        df= pd.DataFrame(list(zip(self.feature_names, self.rfe_feature_rank.tolist())), columns=['Feature', 'Rank'])
+        best_features_names=[x for x,v in list(zip(G.feature_names, G.selector.support_.tolist())) if v==True]
+        best_features_scores=df.sort_values(by=['Rank'], ascending=True)
+        best_features_table=self.feature_table[best_features_names+[self.label_column]]
+        return best_features_scores, best_features_names, best_features_table
+
+    def rfecv(self, step=1, n_jobs=-1, verbose=0):
+        self.rfecv_selector=RFECV(estimator=self.classifier, step=step, cv=StratifiedKFold(self.num_splits),scoring='accuracy', n_jobs=-1, verbose=verbose)
+        self.rfecv_selector.fit(self.train_features, self.train_labels)
+        self.optimal_feature_number=self.rfecv_selector.n_features_
+        self.optimal_features_names=[x for x,v in list(zip(self.feature_names, self.rfecv_selector.support_.tolist())) if v==True]
+        self.best_features_table=self.feature_table[self.optimal_features_names+[self.label_column]]
+        print ('Optimal Number of Features =', self.optimal_feature_number)
+        j = range(1, len(self.rfecv_selector.grid_scores_) + 1)
+        i = self.rfecv_selector.grid_scores_
+        p = figure(plot_width=600, plot_height=400)
+        p.line(j, i, line_width=2, color='#1A5276')
+        p.line([self.optimal_feature_number]*len(i),i,line_width=2, color='#F39C12', line_dash='dashed')
+        p.xaxis.axis_line_color = '#D6DBDF'
+        p.yaxis.axis_line_color = '#D6DBDF'
+        p.xgrid.grid_line_color=None
+        p.yaxis.axis_line_width = 2
+        p.xaxis.axis_line_width = 2
+        p.xaxis.axis_label = 'Number of features selected. Optimal='+str(self.optimal_feature_number)
+        p.yaxis.axis_label = 'Cross validation score (nb of correct classifications)'
+        p.xaxis.major_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_color = '#D6DBDF'
+        p.xaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_width = 2
+        p.xaxis.major_tick_line_width = 2
+        p.yaxis.minor_tick_line_width = 0
+        p.xaxis.minor_tick_line_width = 0
+        p.xaxis.major_label_text_color = '#99A3A4'
+        p.yaxis.major_label_text_color = '#99A3A4'
+        p.outline_line_color = None
+        p.toolbar.autohide = True
+        p.title.text='Recursive Feature Elimination with '+str(self.num_splits)+'-split Cross Validation'
+        p.title_location='above'
+        show(p)
+        return self.optimal_features_names, self.best_features_table
 
 
 
