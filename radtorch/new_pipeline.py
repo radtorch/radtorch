@@ -62,13 +62,12 @@ class Image_Classification():
             print ('Loading Extracted Features')
             self.feature_table=kw['feature_table']
             self.feature_names=kw['feature_names']
-        # elif 'feature_table' not in self.__dict__.keys():
-        else:
+        elif 'feature_table' not in self.__dict__.keys():
             print ('Running Feature Extraction.')
             self.feature_extractor.run()
             self.feature_table=self.feature_extractor.feature_table
             self.feature_names=self.feature_extractor.feature_names
-        self.classifier=Classifier(feature_table=self.feature_table, feature_names=self.feature_names, **self.classifier_param)
+        self.classifier=Classifier(**self.__dict__)
         print ('Running Classifier Training.')
         self.classifier.run()
         self.trained_model=self.classifier
