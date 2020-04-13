@@ -77,6 +77,7 @@ class Compare_Image_Classifiers():
             if k not in kwargs.keys():
                 setattr(self, k, v)
 
+        if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.compare_parameters={k:v for k,v in self.__dict__.items() if type(v)==list}
         self.non_compare_parameters={k:v for k, v in self.__dict__.items() if k not in self.compare_parameters and k !='compare_parameters'}
         self.compare_parameters_names= list(self.compare_parameters.keys())
