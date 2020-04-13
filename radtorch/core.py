@@ -209,7 +209,7 @@ class Classifier(object):
 
   def run(self):
     self.scores=[]
-    self.training_metrics=[]
+    self.train_metrics=[]
     if self.cv:
       if self.stratified:
         kf=StratifiedKFold(n_splits=self.num_splits, shuffle=True, random_state=100)
@@ -222,19 +222,19 @@ class Classifier(object):
         split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels.iloc[test])
         self.scores.append(split_score)
         print ('Split Accuracy =',split_score)
-        self.training_metrics.append(['','',split_score,''])
+        self.train_metrics.append(['','',split_score,''])
     else:
       print ('Training', self.type, 'classifier without cross validation.')
       self.classifier.fit(self.train_features, self.train_labels)
       score=self.classifier.score(self.test_features, self.test_labels)
       self.scores.append(score)
-      self.training_metrics.append(['','',score,''])
+      self.train_metrics.append(['','',score,''])
 
     self.scores = np.asarray(self.scores )
     self.classes=self.classifier.classes_.tolist()
     print (self.classifier_type, 'model training finished successfully.')
     print(self.classifier_type, "overall accuracy: %0.2f (+/- %0.2f)" % ( self.scores .mean(),  self.scores .std() * 2))
-    return self.classifier, self.training_metrics
+    return self.classifier, self.train_metrics
 
   def average_cv_accuracy(self):
     if self.cv:

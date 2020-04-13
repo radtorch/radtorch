@@ -68,12 +68,12 @@ class Image_Classification():
         print ('Running Classifier Training.')
         self.classifier.run()
         self.trained_model=self.classifier
-        self.train_metrics=self.classfier.training_metrics
+        self.train_metrics=self.classifier.training_metrics
         self.feature_selector=Feature_Selection(type=self.classifier.type, feature_table=self.feature_extractor.feature_table, feature_names=self.feature_extractor.feature_names, **kwargs)
         print ('Classifier Training completed successfully.')
 
     def metrics(self, figure_size=(500,300)):
-        return show_metrics(self.classifiers,  fig_size=figure_size)
+        return show_metrics(self.classifier,  fig_size=figure_size)
 
     def export(self, output_path):
         try:
