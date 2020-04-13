@@ -223,13 +223,13 @@ class Classifier(object):
         split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels.iloc[test])
         self.scores.append(split_score)
         print ('Split Accuracy =',split_score)
-        self.train_metrics.append([0,0,split_score,0])
+        self.train_metrics.append([[0],[0],[split_score],[0]])
     else:
       print ('Training', self.type, 'classifier without cross validation.')
       self.classifier.fit(self.train_features, self.train_labels)
       score=self.classifier.score(self.test_features, self.test_labels)
       self.scores.append(score)
-      self.train_metrics.append([0,0,score,0])
+      self.train_metrics.append([[0],[0],[score],[0]])
 
     self.scores = np.asarray(self.scores )
     self.classes=self.classifier.classes_.tolist()
