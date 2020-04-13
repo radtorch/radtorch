@@ -23,9 +23,6 @@ class Data_Preprocessor(): #device, table, data_directory, is_dicom, normalize, 
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
-        # for k, v  in self.DEFAULT_SETTINGS.items():
-        #     if k not in kwargs.keys():
-        #         setattr(self, k, v)
 
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

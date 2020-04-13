@@ -12,6 +12,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools, ntpath, copy
 import torchvision.models as models
