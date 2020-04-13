@@ -43,7 +43,6 @@ class Image_Classification():
             self.feature_table=kw['feature_table']
             self.feature_names=kw['feature_names']
         elif 'feature_table' not in self.__dict__.keys():
-            print ('Running Feature Extraction.')
             self.feature_extractor.run()
             self.feature_table=self.feature_extractor.feature_table
             self.feature_names=self.feature_extractor.feature_names

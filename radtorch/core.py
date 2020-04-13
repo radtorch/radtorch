@@ -121,6 +121,7 @@ class Feature_Extractor(): # model_arch, pre_trained, unfreeze, device, dataload
         return model_dict[self.model_arch]['output_features']
 
     def run(self, verbose=False):
+        print ('Running Feature Extraction using', self.model_arch, 'model architecture.')
         self.features=[]
         self.labels_idx=[]
         self.img_path_list=[]
