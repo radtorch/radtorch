@@ -32,6 +32,10 @@ class Data_Preprocessor(): #device, table, data_directory, is_dicom, normalize, 
         # Create Initial Master Dataset
         if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs)
         else: self.dataset=Dataset_from_folder(**kwargs)
+
+        if self.balance_class:self.dataset=self.dataset.balance()
+
+
         self.num_output_classes=len(self.dataset.classes)
         self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 

@@ -40,11 +40,7 @@ class Image_Classification():
                 setattr(self, k, v)
 
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        # self.data_processor_params={k:v for k,v in self.__dict__.items() if k in ['device', 'table', 'data_directory', 'is_dicom', 'normalize', 'balance_class', 'batch_size', 'num_workers', 'model_arch' , 'custom_resize']}
-        # self.feature_extractor_params={k:v for k,v in self.__dict__.items() if k in ['device', 'model_arch', 'pre_trained', 'unfreeze']}
-        self.classifier_param={k:v for k,v in self.__dict__.items() if k in ['type', 'test_percent', 'cv', 'stratified', 'num_splits', 'label_column', 'parameters']}
-        # self.data_processor=Data_Preprocessor(**self.data_processor_params)
-        # self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.dataloader, **self.feature_extractor_params)
+
         self.data_processor=Data_Preprocessor(**self.__dict__)
         self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.dataloader, **self.__dict__)
 
@@ -54,8 +50,6 @@ class Image_Classification():
         info.columns=['Property', 'Value']
         return info
 
-    def sample(self, **kw): #figure_size=(10,10), show_labels=True, show_file_name=False
-        self.data_processor.sample(**kw)
 
     def run(self, **kw):
         if 'feature_table' in kw.keys():
