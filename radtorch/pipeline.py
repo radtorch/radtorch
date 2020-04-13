@@ -38,7 +38,7 @@ class Image_Classification():
         return info
 
     def run(self, **kw):
-        if 'feature_table' in kw.keys(): print ('Loading Extracted Features')
+        if 'feature_table' in kw.keys(): print ('Loading Extracted Features'):
             self.feature_table=kw['feature_table']
             self.feature_names=kw['feature_names']
         elif 'feature_table' not in self.__dict__.keys():
