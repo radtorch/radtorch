@@ -109,10 +109,12 @@ class Compare_Image_Classifiers():
         for x in self.scenarios_list:
             settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             settings.update(self.non_compare_parameters)
-            feature_extractor=Feature_Extractor(**settings)
+            data_processor=Data_Processor(**settings)
+            feature_extractor=Feature_Extractor(dataloader=data_processor.dataloader,**settings)
             if feature_extractor.model_arch not in [i.model_arch for i in self.feature_extractors]:
                 feature_extractor.run()
                 self.feature_extractors.append(feature_extractor)
+                self.data_processors.append(data_processor)
 
 
 
