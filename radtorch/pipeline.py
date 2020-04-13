@@ -57,7 +57,7 @@ class Image_Classification():
             raise TypeError('Error! Pipeline could not be exported.')
 
 
-class Image_Classifier_Selection()
+class Compare_Image_Classifiers():
 
     def __init__(self, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs):
 
