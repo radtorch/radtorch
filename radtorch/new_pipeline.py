@@ -7,8 +7,7 @@ from radtorch.dataset import *
 from radtorch.core import *
 
 #device, table, data_directory, is_dicom, normalize, balance_class, batch_size, num_workers, model_arch , custom_resize, pre_trained, unfreeze, classifier_type, 'test_percent', 'cv', 'stratified', 'num_splits', 'label_column', 'parameters'
-DEF =
-{
+DEF = {
 'table':None,
 'is_dicom':True,
 'normalize':((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
