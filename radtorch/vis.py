@@ -18,7 +18,6 @@ from radtorch.settings import *
 from radtorch.general import *
 from radtorch.dicom import *
 from radtorch.dataset import *
-from radtorch.data import *
 
 
 def plot_images(images, titles=None, figure_size=(10,10)):
