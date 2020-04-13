@@ -43,7 +43,7 @@ def log(msg):
     timestamp = now.strftime("%d/%m/%Y %H:%M:%S")
     message='['+timestamp+']: '+msg
     print (message)
-    file_operation=open(logfile)
+    file_operation=open(logfile, 'a')
     file_operation.write('\n')
     file_operation.write(message)
     file_operation.close()
