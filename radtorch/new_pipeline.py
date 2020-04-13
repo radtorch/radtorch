@@ -29,7 +29,7 @@ DEF = {
 
 class Image_Classification():
 
-    def __init__(**kwargs):
+    def __init__(self, **kwargs):
 
         for k, v in kwargs.items():
             setattr(self, k, v)
