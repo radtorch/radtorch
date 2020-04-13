@@ -102,11 +102,11 @@ class Compare_Image_Classifiers():
         return self.scenarios_df
 
     def run(self):
-        print ('Starting Image Classification Model Comparison Pipeline.')
+        log('Starting Image Classification Model Comparison Pipeline.')
         self.master_metrics=[]
         self.trained_models=[]
 
-        print ('Phase 1: Starting Feature Extraction.')
+        log('Phase 1: Feature Extraction.')
         for x in self.scenarios_list:
             settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             settings.update(self.non_compare_parameters)
@@ -117,7 +117,7 @@ class Compare_Image_Classifiers():
                 self.feature_extractors.append(feature_extractor)
                 self.data_processors.append(data_processor)
 
-        print ('Phase 2: Starting Classifier Training.')
+        log('Phase 2: Classifier Training.')
         for x in tqdm(self.scenarios_list, total=len(self.scenarios_list)):
             settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             settings.update(self.non_compare_parameters)
@@ -125,7 +125,7 @@ class Compare_Image_Classifiers():
             feature_table=feature_extractor.feature_table
             feature_names=feature_extractor.feature_names
             classifier=Image_Classification(feature_table=feature_table, feature_names=feature_names, feature_extractor=feature_extractor, **settings)
-            print ('Starting Training Classifier Number',self.scenarios_list.index(x))
+            log('Starting Training Classifier Number',self.scenarios_list.index(x))
             classifier.run()
             self.classifiers.append(classifier)
             self.trained_models.append(classifier.trained_model)
@@ -142,11 +142,11 @@ class Compare_Image_Classifiers():
 
     def best(self, export=False):
         try:
-            print ('Best Classifier=Model', self.best_model_index)
-            print ('Best Classifier AUC =', self.best_model_auc)
+            log('Best Classifier=Model', self.best_model_index)
+            log('Best Classifier AUC =', self.best_model_auc)
             if export:
                 export(self.best_classifier, export)
-                print (' Best Classifier Pipeline Exported Successfully')
+                log(' Best Classifier Pipeline Exported Successfully')
         except:
             raise TypeError('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
 

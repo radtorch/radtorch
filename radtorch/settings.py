@@ -25,6 +25,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+from datetime import datetime
 from sklearn import metrics, tree
 from sklearn.manifold import TSNE
 from sklearn.linear_model import LogisticRegression, LinearRegression, RidgeClassifier, SGDClassifier, ElasticNet
@@ -55,8 +56,11 @@ from bokeh.palettes import viridis, Paired, inferno, brewer, d3, Turbo256
 RADTOrch settings
 """
 
-
+#general
 version='0.1.4b'
+logfile='/content/log.text'
+
+
 
 
 # visutils

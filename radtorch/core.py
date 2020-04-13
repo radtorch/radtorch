@@ -121,7 +121,7 @@ class Feature_Extractor(): # model_arch, pre_trained, unfreeze, device, dataload
         return model_dict[self.model_arch]['output_features']
 
     def run(self, verbose=False):
-        print ('Running Feature Extraction using', self.model_arch, 'model architecture.')
+        log('Running Feature Extraction using', self.model_arch, ' architecture.')
         self.features=[]
         self.labels_idx=[]
         self.img_path_list=[]
@@ -138,7 +138,7 @@ class Feature_Extractor(): # model_arch, pre_trained, unfreeze, device, dataload
         feature_table=pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['img_path','label_idx', 'features'])
         feature_table[self.feature_names]=pd.DataFrame(feature_table.features.values.tolist(), index= feature_table.index)
         feature_table=feature_table.drop(['features'], axis=1)
-        print ('Features extracted successfully.')
+        log('Features extracted successfully.')
         self.feature_table=feature_table
         self.features=self.feature_table[self.feature_names]
         if verbose:
@@ -147,9 +147,9 @@ class Feature_Extractor(): # model_arch, pre_trained, unfreeze, device, dataload
     def export_features(self,csv_path):
         try:
             self.feature_table.to_csv(csv_path, index=False)
-            print ('Features exported to CSV successfully.')
+            log('Features exported to CSV successfully.')
         except:
-            print ('Error! No features found. Please check again or re-run the extracion pipeline.')
+            log('Error! No features found. Please check again or re-run the extracion pipeline.')
             pass
 
     def plot_extracted_features(self, feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx'):
@@ -214,33 +214,33 @@ class Classifier(object):
     if self.cv:
       if self.stratified:
         kf=StratifiedKFold(n_splits=self.num_splits, shuffle=True, random_state=100)
-        print ('Training', self.classifier_type, 'with',self.num_splits,'split stratified cross validation.')
+        log('Training', self.classifier_type, 'with',self.num_splits,'split stratified cross validation.')
       else:
         kf=KFold(n_splits=self.num_splits, shuffle=True, random_state=100)
-        print ('Training', self.classifier_type, 'classifier with',self.num_splits,'splits cross validation.')
+        log('Training', self.classifier_type, 'classifier with',self.num_splits,'splits cross validation.')
       for train, test in tqdm(kf.split(self.train_features, self.train_labels), total=self.num_splits):
         self.classifier.fit(self.train_features.iloc[train], self.train_labels.iloc[train])
         split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels.iloc[test])
         self.scores.append(split_score)
-        print ('Split Accuracy =',split_score)
+        log('Split Accuracy =',split_score)
         self.train_metrics.append([[0],[0],[split_score],[0]])
     else:
-      print ('Training', self.type, 'classifier without cross validation.')
+      log('Training', self.type, 'classifier without cross validation.')
       self.classifier.fit(self.train_features, self.train_labels)
       score=self.classifier.score(self.test_features, self.test_labels)
       self.scores.append(score)
       self.train_metrics.append([[0],[0],[score],[0]])
     self.scores = np.asarray(self.scores )
     self.classes=self.classifier.classes_.tolist()
-    print (self.classifier_type, 'model training finished successfully.')
-    print(self.classifier_type, "overall training accuracy: %0.2f (+/- %0.2f)" % ( self.scores .mean(),  self.scores .std() * 2))
+    log(self.classifier_type, 'model training finished successfully.')
+    log(self.classifier_type, "overall training accuracy: %0.2f (+/- %0.2f)" % ( self.scores .mean(),  self.scores .std() * 2))
     return self.classifier, self.train_metrics
 
   def average_cv_accuracy(self):
     if self.cv:
       return self.scores.mean()
     else:
-      print ('Error! Training was done without cross validation. Please use test_accuracy() instead.')
+      log('Error! Training was done without cross validation. Please use test_accuracy() instead.')
 
   def test_accuracy(self) :
     acc= self.classifier.score(self.test_features, self.test_labels)
@@ -324,7 +324,7 @@ class Feature_Selector(Classifier):
         self.optimal_feature_number=self.rfecv_selector.n_features_
         self.optimal_features_names=[x for x,v in list(zip(self.feature_names, self.rfecv_selector.support_.tolist())) if v==True]
         self.best_features_table=self.feature_table[self.optimal_features_names+[self.label_column]]
-        print ('Optimal Number of Features =', self.optimal_feature_number)
+        log('Optimal Number of Features =', self.optimal_feature_number)
         j = range(1, len(self.rfecv_selector.grid_scores_) + 1)
         i = self.rfecv_selector.grid_scores_
         output_notebook()
@@ -395,7 +395,7 @@ class NN_Classifier(object):
         for k,v in kwargs.items():
             setattr(self,k,v)
         if 'feature_extractor' not in self.__dist__.keys():
-            print ('Error! No Feature Selector Architecture was supplied. Please sepcify which feature extractor you want to use.')
+            log('Error! No Feature Selector Architecture was supplied. Please sepcify which feature extractor you want to use.')
             pass
         else:
             self.classifier_type='Neural Network-FCN with Softmax'

@@ -14,6 +14,7 @@
 # along with this program.  If not, see https://www.gnu.org/licenses/
 from radtorch.settings import *
 
+today = date.today()
 
 
 def getDuplicatesWithCount(listOfElems):
@@ -38,7 +39,22 @@ def export(item, path):
     outfile.close()
 
 
+def log(msg):
+    now = datetime.now()
+    timestamp = now.strftime("%d/%m/%Y %H:%M:%S")
+    message='['+timestamp+']: '+msg
+    print (message)
+    file_operation=open(logfile)
+    file_operation.write('\n')
+    file_operation.write(message)
+    file_operation.close()
 
+
+def showlog():
+    f = open(logfile, 'r')
+    file_contents = f.read()
+    print (file_contents)
+    f.close()
 
 
 # def supported():
