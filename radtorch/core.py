@@ -11,15 +11,85 @@
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
 from radtorch.settings import *
+from radtorch.data import *
 from radtorch.vis import *
-from radtorch.dicom import *
-from radtorch.dataset import *
+from radtorch.general import *
+from radtorch.test import *
 
+
+
+
+class Data_Preprocessor(): #device, table, data_directory, is_dicom, normalize, balance_class, batch_size, num_workers, model_arch , custom_resize,
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+        # for k, v  in self.DEFAULT_SETTINGS.items():
+        #     if k not in kwargs.keys():
+        #         setattr(self, k, v)
+
+        if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        # Create Initial Master Dataset
+        if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs)
+        else: self.dataset=Dataset_from_folder(**kwargs)
+        self.num_output_classes=len(self.dataset.classes)
+        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
+        # Custom Resize Adjustement
+        if isinstance(self.custom_resize, bool): self.resize=model_dict[self.model_arch]['input_size']
+        elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
+
+        # Create transformations
+        if self.is_dicom:
+            self.transformations=transforms.Compose([
+                    transforms.Resize((self.resize, self.resize)),
+                    transforms.transforms.Grayscale(3),
+                    transforms.ToTensor()])
+        else:
+            self.transformations=transforms.Compose([
+                transforms.Resize((self.resize, self.resize)),
+                transforms.ToTensor()])
+
+        # Calculate Normalization if required
+        if self.normalize=='auto':
+            mean, std=self.dataset.mean_std()
+            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+        elif isinstance (self.normalize, tuple):
+            mean, std=self.normalize
+            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+
+        # Recreate Transformed Master Dataset
+        if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
+        else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
+        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
+    def classes(self):
+        return self.dataset.class_to_idx
+
+    def info(self):
+        info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
+        info.columns=['Property', 'Value']
+        info=info.append({'Property':'Dataset', 'Value':len(self.dataset)}, ignore_index=True)
+        return info
+
+    def dataset_info(self, plot=False, fig_size=(500,300)):
+        info_dict={}
+        info_dict['dataset']=show_dataset_info(self.__dict__['dataset'])
+        info_dict['dataset'].style.set_caption('Dataset')
+        if plot:
+            plot_dataset_info(info_dict, plot_size= fig_size)
+        else:
+            for k, v in info_dict.items():
+                display(v)
+
+    def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
+        show_dataloader_sample(self.dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
 
 
 class Feature_Extractor(): # model_arch, pre_trained, unfreeze, device, dataloader,
 
-    def __init__(self, **kwargs):
+    def __new__(self, **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
         if self.model_arch=='vgg11': self.model=torchvision.models.vgg11(pretrained=self.pre_trained)
@@ -138,7 +208,7 @@ class Classifier(object):
     info.columns=['Property', 'Value']
     return info
 
-  def train(self):
+  def run(self):
     self.scores=[]
     self.training_metrics=[]
     if self.cv:
@@ -362,188 +432,3 @@ class NN_Classifier(object):
     def train(self, **kw): #model, train_data_loader, valid_data_loader, train_data_set, valid_data_set, loss_criterion, optimizer, epochs, device, verbose, lr_scheduler
         self.trained_model, self.train_metrics=nn_train(model=self.model, **kw)
         reuturn self.trained_model, self.train_metrics
-
-
-class NN_Optimizer():
-    def __new__(self, **kwargs):
-        for k,v in kwargs.items():
-            setattr(self,k,v)
-        if self.type=='Adam':
-            self.optimizer=torch.optim.Adam(self.classifier.parameters(),self.learning_rate)
-        if self.type=='AdamW':
-            self.optimizer=torch.optim.AdamW(self.classifier.parameters(), self.learning_rate)
-        if self.type=='SparseAdam':
-            self.optimizer=torch.optim.SparseAdam(self.classifier.parameters(), self.learning_rate)
-        if self.type=='Adamax':
-            self.optimizer=torch.optim.Adamax(self.classifier.parameters(), self.learning_rate)
-        if self.type=='ASGD':
-            self.optimizer=torch.optim.ASGD(self.classifier.parameters(), self.learning_rate)
-        if self.type=='RMSprop':
-            self.optimizer=torch.optim.RMSprop(self.classifier.parameters(), self.learning_rate)
-        if self.type=='SGD':
-            self.optimizer=torch.optim.SGD(self.classifier.parameters(), self.learning_rate)
-
-
-
-        return self.optimizer
-
-
-
-def nn_loss_function(type):
-    try:
-        loss_function=supported_loss[type]
-        return loss_function
-    except:
-        raise TypeError('Error! Provided loss function is not supported yet. For complete list of supported models please type radtorch.modelsutils.supported_list()')
-        pass
-
-def nn_train(model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device, verbose, lr_scheduler):
-    '''
-    kwargs = model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device,verbose
-    .. include:: ./documentation/docs/modelutils.md##train_model
-    '''
-    set_random_seed(100)
-    start_time=datetime.datetime.now()
-    training_metrics=[]
-    if verbose:
-        print ('Starting training at '+ str(start_time))
-
-
-    model=model.to(device)
-
-    for epoch in tqdm(range(epochs)):
-        epoch_start=time.time()
-
-        # Set to training mode
-        model.train()
-
-        # Loss and Accuracy within the epoch
-        train_loss=0.0
-        train_acc=0.0
-
-        valid_loss=0.0
-        valid_acc=0.0
-
-        for i, (inputs, labels, image_paths) in enumerate(train_data_loader):
-            # inputs=inputs.float()
-            inputs=inputs.to(device)
-            labels=labels.to(device)
-
-            # Clean existing gradients
-            optimizer.zero_grad()
-
-            # Forward pass - compute outputs on input data using the model
-            outputs=model(inputs)
-
-            # Compute loss
-            loss=loss_criterion(outputs, labels)
-
-            # Backpropagate the gradients
-            loss.backward()
-
-            # Update the parameters
-            optimizer.step()
-
-            # Compute the total loss for the batch and add it to train_loss
-            train_loss += loss.item() * inputs.size(0)
-
-            # Compute the accuracy
-            ret, predictions=torch.max(outputs.data, 1)
-            correct_counts=predictions.eq(labels.data.view_as(predictions))
-
-            # Convert correct_counts to float and then compute the mean
-            acc=torch.mean(correct_counts.type(torch.FloatTensor))
-
-            # Compute total accuracy in the whole batch and add to train_acc
-            train_acc += acc.item() * inputs.size(0)
-
-            # print("Batch number: {:03d}, Training: Loss: {:.4f}, Accuracy: {:.4f}".format(i, loss.item(), acc.item()))
-
-
-        # Validation - No gradient tracking needed
-        with torch.no_grad():
-
-            # Set to evaluation mode
-            model.eval()
-
-            # Validation loop
-            for j, (inputs, labels, image_paths) in enumerate(valid_data_loader):
-                inputs=inputs.to(device)
-                labels=labels.to(device)
-
-                # Forward pass - compute outputs on input data using the model
-                outputs=model(inputs)
-
-                # Compute loss
-                loss=loss_criterion(outputs, labels)
-
-                # Compute the total loss for the batch and add it to valid_loss
-                valid_loss += loss.item() * inputs.size(0)
-
-                # Calculate validation accuracy
-                ret, predictions=torch.max(outputs.data, 1)
-                correct_counts=predictions.eq(labels.data.view_as(predictions))
-
-                # Convert correct_counts to float and then compute the mean
-                acc=torch.mean(correct_counts.type(torch.FloatTensor))
-
-                # Compute total accuracy in the whole batch and add to valid_acc
-                valid_acc += acc.item() * inputs.size(0)
-
-                #print("Validation Batch number: {:03d}, Validation: Loss: {:.4f}, Accuracy: {:.4f}".format(j, loss.item(), acc.item()))
-
-        # Find average training loss and training accuracy
-        avg_train_loss=train_loss/len(train_data_set)
-        avg_train_acc=train_acc/len(train_data_set)
-
-        # Find average validation loss and training accuracy
-        avg_valid_loss=valid_loss/len(valid_data_set)
-        avg_valid_acc=valid_acc/len(valid_data_set)
-
-        training_metrics.append([avg_train_loss, avg_valid_loss, avg_train_acc, avg_valid_acc])
-
-        epoch_end=time.time()
-
-        if lr_scheduler:
-            lr_scheduler.step(avg_valid_loss)
-
-        if verbose:
-            print("Epoch : {:03d}/{} : [Training: Loss: {:.4f}, Accuracy: {:.4f}%]  [Validation : Loss : {:.4f}, Accuracy: {:.4f}%] [Time: {:.4f}s]".format(epoch, epochs, avg_train_loss, avg_train_acc*100, avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_start))
-
-    end_time=datetime.datetime.now()
-    total_training_time=end_time-start_time
-    if verbose:
-        print ('Total training time='+ str(total_training_time))
-
-    return model, training_metrics
-
-def nn_inference(model, input_image_path, all_predictions=False, inference_transformations=transforms.Compose([transforms.ToTensor()])):
-    '''
-    .. include:: ./documentation/docs/modelutils.md##model_inference
-    '''
-    if input_image_path.endswith('dcm'):
-        target_img=dicom_to_pil(input_image_path)
-    else:
-        target_img=Image.open(input_image_path).convert('RGB')
-
-    target_img_tensor=inference_transformations(target_img)
-    target_img_tensor=target_img_tensor.unsqueeze(0)
-
-
-    with torch.no_grad():
-        model.to('cpu')
-        target_img_tensor.to('cpu')
-
-        model.eval()
-
-        out=model(target_img_tensor)
-        softmax=torch.exp(out).cpu()
-        prediction_percentages=softmax.cpu().numpy()[0]
-        prediction_percentages=[i*100 for i in prediction_percentages]
-        _, final_prediction=torch.max(out, 1)
-        prediction_table=pd.DataFrame(list(zip([*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label_idx', 'prediction_percentage'])
-
-    if all_predictions:
-        return prediction_table
-    else:
-        return final_prediction.item(), prediction_percentages[final_prediction.item()]
