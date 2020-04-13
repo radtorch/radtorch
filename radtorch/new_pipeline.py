@@ -58,12 +58,12 @@ class Image_Classification():
         if 'feature_table' in kw.keys():
             self.feature_table=kw['feature_table']
             self.feature_names=kw['feature_names']
-        else:
+        elif 'feature_table' not in self.__dict__.keys():
             self.feature_extractor.run()
             self.feature_table=self.feature_extractor.feature_table
             self.feature_names=self.feature_extractor.feature_names
         self.classifier=Classifier(feature_table=self.feature_table, feature_names=self.feature_names, **self.classifier_param)
-        self.classfier.run()
+        self.classifier.run()
         self.trained_model=self.classifier
         self.train_metrics=self.classfier.training_metrics
         self.feature_selector=Feature_Selection(type=self.classifier.type, feature_table=self.feature_extractor.feature_table, feature_names=self.feature_extractor.feature_names, **kwargs)
