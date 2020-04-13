@@ -125,7 +125,7 @@ class Compare_Image_Classifiers():
             feature_table=feature_extractor.feature_table
             feature_names=feature_extractor.feature_names
             classifier=Image_Classification(feature_table=feature_table, feature_names=feature_names, feature_extractor=feature_extractor, **settings)
-            log('Starting Training Classifier Number',self.scenarios_list.index(x))
+            log('Starting Training Classifier Number'+str(self.scenarios_list.index(x)))
             classifier.run()
             self.classifiers.append(classifier)
             self.trained_models.append(classifier.trained_model)
@@ -142,13 +142,14 @@ class Compare_Image_Classifiers():
 
     def best(self, export=False):
         try:
-            log('Best Classifier=Model', self.best_model_index)
-            log('Best Classifier AUC =', self.best_model_auc)
+            log('Best Classifier=Model '+str(self.best_model_index))
+            log('Best Classifier AUC = '+ str(self.best_model_auc))
             if export:
                 export(self.best_classifier, export)
                 log(' Best Classifier Pipeline Exported Successfully')
         except:
-            raise TypeError('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
+            log('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
+            pass
 
 
 class Feature_Extraction():

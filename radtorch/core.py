@@ -121,7 +121,7 @@ class Feature_Extractor(): # model_arch, pre_trained, unfreeze, device, dataload
         return model_dict[self.model_arch]['output_features']
 
     def run(self, verbose=False):
-        log('Running Feature Extraction using', self.model_arch, ' architecture.')
+        log('Running Feature Extraction using '+str(self.model_arch)+' architecture.')
         self.features=[]
         self.labels_idx=[]
         self.img_path_list=[]
@@ -214,26 +214,26 @@ class Classifier(object):
     if self.cv:
       if self.stratified:
         kf=StratifiedKFold(n_splits=self.num_splits, shuffle=True, random_state=100)
-        log('Training', self.classifier_type, 'with',self.num_splits,'split stratified cross validation.')
+        log('Training '+str(self.classifier_type)+ ' with '+str(self.num_splits)+' split stratified cross validation.')
       else:
         kf=KFold(n_splits=self.num_splits, shuffle=True, random_state=100)
-        log('Training', self.classifier_type, 'classifier with',self.num_splits,'splits cross validation.')
+        log('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.')
       for train, test in tqdm(kf.split(self.train_features, self.train_labels), total=self.num_splits):
         self.classifier.fit(self.train_features.iloc[train], self.train_labels.iloc[train])
         split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels.iloc[test])
         self.scores.append(split_score)
-        log('Split Accuracy =',split_score)
+        log('Split Accuracy =' +str(split_score)))
         self.train_metrics.append([[0],[0],[split_score],[0]])
     else:
-      log('Training', self.type, 'classifier without cross validation.')
+      log('Training '+str(self.type)+' classifier without cross validation.')
       self.classifier.fit(self.train_features, self.train_labels)
       score=self.classifier.score(self.test_features, self.test_labels)
       self.scores.append(score)
       self.train_metrics.append([[0],[0],[score],[0]])
     self.scores = np.asarray(self.scores )
     self.classes=self.classifier.classes_.tolist()
-    log(self.classifier_type, 'model training finished successfully.')
-    log(self.classifier_type, "overall training accuracy: %0.2f (+/- %0.2f)" % ( self.scores .mean(),  self.scores .std() * 2))
+    log(str(self.classifier_type)+ ' model training finished successfully.')
+    log(str(self.classifier_type)+ ' overall training accuracy: %0.2f (+/- %0.2f)' % ( self.scores .mean(),  self.scores .std() * 2))
     return self.classifier, self.train_metrics
 
   def average_cv_accuracy(self):
@@ -324,7 +324,7 @@ class Feature_Selector(Classifier):
         self.optimal_feature_number=self.rfecv_selector.n_features_
         self.optimal_features_names=[x for x,v in list(zip(self.feature_names, self.rfecv_selector.support_.tolist())) if v==True]
         self.best_features_table=self.feature_table[self.optimal_features_names+[self.label_column]]
-        log('Optimal Number of Features =', self.optimal_feature_number)
+        log('Optimal Number of Features = '+ str(self.optimal_feature_number))
         j = range(1, len(self.rfecv_selector.grid_scores_) + 1)
         i = self.rfecv_selector.grid_scores_
         output_notebook()
