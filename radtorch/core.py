@@ -73,12 +73,12 @@ class Data_Preprocessor(): #device, table, data_directory, is_dicom, normalize, 
         info=info.append({'Property':'Dataset', 'Value':len(self.dataset)}, ignore_index=True)
         return info
 
-    def dataset_info(self, plot=False, fig_size=(500,300)):
+    def dataset_info(self, plot=False, figure_size=(500,300)):
         info_dict={}
-        info_dict['dataset']=show_dataset_info(self.__dict__['dataset'])
+        info_dict['dataset']=show_dataset_info(self.dataset)
         info_dict['dataset'].style.set_caption('Dataset')
         if plot:
-            plot_dataset_info(info_dict, plot_size= fig_size)
+            plot_dataset_info(info_dict, plot_size= figure_size)
         else:
             for k, v in info_dict.items():
                 display(v)
