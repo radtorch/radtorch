@@ -105,7 +105,7 @@ class Compare_Image_Classifiers():
         self.master_metrics=[]
         self.trained_models=[]
 
-        for x in self.scenarios_list,
+        for x in self.scenarios_list:
             settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             settings.update(self.non_compare_parameters)
             feature_extractor=Feature_Extractor(**settings)
