@@ -262,7 +262,7 @@ class Classifier(object):
     show_roc([self], **kw)
 
 
-class Feature_Selection(Classifier):
+class Feature_Selector(Classifier):
 
     def feature_feature_correlation(self, cmap='Blues', figure_size=(20,15)):
         corrmat = self.features.corr()
