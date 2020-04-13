@@ -45,8 +45,8 @@ class Image_Classification():
         # self.classifier_param={k:v for k,v in self.__dict__.items() if k in ['type', 'test_percent', 'cv', 'stratified', 'num_splits', 'label_column', 'parameters']}
         # self.data_processor=Data_Preprocessor(**self.data_processor_params)
         # self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.dataloader, **self.feature_extractor_params)
-        self.data_processor=Data_Preprocessor(**kwargs)
-        self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.dataloader, **kwargs)
+        self.data_processor=Data_Preprocessor(**self.passed_arg)
+        self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.dataloader, **self.passed_arg)
 
 
     def info(self):
