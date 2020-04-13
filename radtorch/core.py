@@ -230,7 +230,6 @@ class Classifier(object):
       score=self.classifier.score(self.test_features, self.test_labels)
       self.scores.append(score)
       self.train_metrics.append([[0],[0],[score],[0]])
-
     self.scores = np.asarray(self.scores )
     self.classes=self.classifier.classes_.tolist()
     print (self.classifier_type, 'model training finished successfully.')

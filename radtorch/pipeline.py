@@ -106,6 +106,7 @@ class Compare_Image_Classifiers():
         self.master_metrics=[]
         self.trained_models=[]
 
+        print ('Phase 1: Starting Feature Extraction.')
         for x in self.scenarios_list:
             settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             settings.update(self.non_compare_parameters)
@@ -116,24 +117,21 @@ class Compare_Image_Classifiers():
                 self.feature_extractors.append(feature_extractor)
                 self.data_processors.append(data_processor)
 
-
-
+        print ('Phase 2: Starting Classifier Training.')
         for x in tqdm(self.scenarios_list, total=len(self.scenarios_list)):
             settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             settings.update(self.non_compare_parameters)
-            classifier=Image_Classification(**settings)
-
-            if classifier.feature_extractor.model_arch in [i.model_arch for i in self.feature_extractors]:
-                classifier.feature_extractor=[i for i in self.feature_extractors if classifier.feature_extractor.model_arch==i.model_arch][0]
-            else:
-                classifier.feature_extractor.run()
-                self.feature_extractors.append(classifier.feature_extractor)
+            feature_extractor=[i for i in self.feature_extractors if settings['model_arch']==i.model_arch][0]
+            feature_table=feature_extractor.feature_table
+            feature_names=feature_extractor.feature_names
+            classifier=Image_Classification(feature_table=feature_table, feature_names=feature_names, feature_extractor=feature_extractor, **settings)
             print ('Starting Training Classifier Number',self.scenarios_list.index(x))
             classifier.run()
             self.classifiers.append(classifier)
             self.trained_models.append(classifier.trained_model)
             self.master_metrics.append(classifier.train_metrics)
             torch.cuda.empty_cache()
+            print('')
 
 
     def roc(self, fig_size=(700,400)):
