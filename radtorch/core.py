@@ -430,4 +430,4 @@ class NN_Classifier(object):
 
     def train(self, **kw): #model, train_data_loader, valid_data_loader, train_data_set, valid_data_set, loss_criterion, optimizer, epochs, device, verbose, lr_scheduler
         self.trained_model, self.train_metrics=nn_train(model=self.model, **kw)
-        reuturn self.trained_model, self.train_metrics
+        return self.trained_model, self.train_metrics
