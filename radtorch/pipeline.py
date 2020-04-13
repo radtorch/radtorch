@@ -38,6 +38,7 @@ class Image_Classification():
         return info
 
     def run(self, **kw):
+        set_random_seed(100)
         if 'feature_table' in kw.keys():
             log ('Loading Extracted Features')
             self.feature_table=kw['feature_table']
@@ -103,6 +104,7 @@ class Compare_Image_Classifiers():
         return self.scenarios_df
 
     def run(self):
+        set_random_seed(100)
         log('Starting Image Classification Model Comparison Pipeline.')
         self.master_metrics=[]
         self.trained_models=[]
@@ -126,7 +128,7 @@ class Compare_Image_Classifiers():
             feature_table=feature_extractor.feature_table
             feature_names=feature_extractor.feature_names
             classifier=Image_Classification(feature_table=feature_table, feature_names=feature_names, feature_extractor=feature_extractor, **settings)
-            log('Starting Training Classifier Number'+str(self.scenarios_list.index(x)))
+            log('Starting Training Classifier Number '+str(self.scenarios_list.index(x)))
             classifier.run()
             self.classifiers.append(classifier)
             self.trained_models.append(classifier.trained_model)
@@ -173,6 +175,7 @@ class Feature_Extraction():
         return info
 
     def run(self, **kw):
+        set_random_seed(100)
         if 'feature_table' in kw.keys():
             log('Loading Extracted Features')
             self.feature_table=kw['feature_table']
