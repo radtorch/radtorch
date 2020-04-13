@@ -228,7 +228,7 @@ class Classifier(object):
       self.classifier.fit(self.train_features, self.train_labels)
       score=self.classifier.score(self.test_features, self.test_labels)
       self.scores.append(score)
-      training_metrics.append([,,score,])
+      training_metrics.append([_,_,score,_])
 
     self.scores = np.asarray(self.scores )
     self.classes=self.classifier.classes_.tolist()
