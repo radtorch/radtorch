@@ -11,7 +11,6 @@
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
 from radtorch.settings import *
-from radtorch.data import *
 from radtorch.vis import *
 from radtorch.general import *
 from radtorch.test import *

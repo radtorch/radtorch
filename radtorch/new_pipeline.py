@@ -1,6 +1,5 @@
 from radtorch.settings import *
 from radtorch.model import *
-from radtorch.data import *
 from radtorch.vis import *
 from radtorch.general import *
 from radtorch.dataset import *

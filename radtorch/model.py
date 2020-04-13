@@ -14,7 +14,6 @@
 # along with this program.  If not, see https://www.gnu.org/licenses/
 from radtorch.settings import *
 from radtorch.dicom import *
-from radtorch.data import *
 from radtorch.dataset import *
 
 
