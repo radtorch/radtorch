@@ -38,15 +38,15 @@ class Image_Classification():
         for k, v in DEFAULT_SETTINGS.items():
             if k not in kwargs.keys():
                 setattr(self, k, v)
-        self.passed_arg = kwargs
+
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
         # self.data_processor_params={k:v for k,v in self.__dict__.items() if k in ['device', 'table', 'data_directory', 'is_dicom', 'normalize', 'balance_class', 'batch_size', 'num_workers', 'model_arch' , 'custom_resize']}
         # self.feature_extractor_params={k:v for k,v in self.__dict__.items() if k in ['device', 'model_arch', 'pre_trained', 'unfreeze']}
         # self.classifier_param={k:v for k,v in self.__dict__.items() if k in ['type', 'test_percent', 'cv', 'stratified', 'num_splits', 'label_column', 'parameters']}
         # self.data_processor=Data_Preprocessor(**self.data_processor_params)
         # self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.dataloader, **self.feature_extractor_params)
-        self.data_processor=Data_Preprocessor(**self.passed_arg)
-        self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.dataloader, **self.passed_arg)
+        self.data_processor=Data_Preprocessor(**self.__dict__)
+        self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.dataloader, **self.__dict__)
 
 
     def info(self):
@@ -67,12 +67,12 @@ class Image_Classification():
             self.feature_extractor.run()
             self.feature_table=self.feature_extractor.feature_table
             self.feature_names=self.feature_extractor.feature_names
-        self.classifier=Classifier(feature_table=self.feature_table, feature_names=self.feature_names, **self.passed_arg)
+        self.classifier=Classifier(feature_table=self.feature_table, feature_names=self.feature_names, **self.__dict__)
         print ('Running Classifier Training.')
         self.classifier.run()
         self.trained_model=self.classifier
         self.train_metrics=self.classifier.train_metrics
-        self.feature_selector=Feature_Selection(type=self.classifier.type, feature_table=self.feature_extractor.feature_table, feature_names=self.feature_extractor.feature_names, **self.passed_arg )
+        self.feature_selector=Feature_Selection(type=self.classifier.type, feature_table=self.feature_extractor.feature_table, feature_names=self.feature_extractor.feature_names, **self.__dict__)
         print ('Classifier Training completed successfully.')
 
     def metrics(self, figure_size=(500,300)):
