@@ -77,7 +77,7 @@ class Image_Classification():
         print ('Classifier Training completed successfully.')
 
     def metrics(self, figure_size=(500,300)):
-        return show_metrics(self.classifier,  fig_size=figure_size)
+        return show_metrics([self.classifier],  fig_size=figure_size)
 
     def export(self, output_path):
         try:
