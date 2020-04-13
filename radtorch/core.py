@@ -222,7 +222,7 @@ class Classifier(object):
         self.classifier.fit(self.train_features.iloc[train], self.train_labels.iloc[train])
         split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels.iloc[test])
         self.scores.append(split_score)
-        log('Split Accuracy =' +str(split_score)))
+        log('Split Accuracy =' +str(split_score))
         self.train_metrics.append([[0],[0],[split_score],[0]])
     else:
       log('Training '+str(self.type)+' classifier without cross validation.')
