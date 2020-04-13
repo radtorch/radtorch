@@ -139,7 +139,7 @@ class Feature_Extractor(): # model_arch, pre_trained, unfreeze, device, dataload
         self.feature_table=feature_table
         self.features=self.feature_table[self.feature_names]
         if verbose:
-            print self.feature_table
+            print (self.feature_table)
 
     def export_features(self,csv_path):
         try:
