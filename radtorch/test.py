@@ -70,7 +70,7 @@ class Feature_Extractor(): # model_arch, pre_trained, unfreeze, device, dataload
         self.feature_table=feature_table
         self.features=self.feature_table[self.feature_names]
         if verbose:
-            print self.feature_table
+            print (self.feature_table)
 
     def export_features(self,csv_path):
         try:
@@ -153,13 +153,13 @@ class Classifier(object):
         split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels.iloc[test])
         self.scores.append(split_score)
         print ('Split Accuracy =',split_score)
-        training_metrics.append([,,split_score,])
+        training_metrics.append([_,_,split_score,_])
     else:
       print ('Training', self.type, 'classifier without cross validation.')
       self.classifier.fit(self.train_features, self.train_labels)
       score=self.classifier.score(self.test_features, self.test_labels)
       self.scores.append(score)
-      training_metrics.append([,,score,])
+      training_metrics.append([_,_,score,_])
 
     self.scores = np.asarray(self.scores )
     self.classes=self.classifier.classes_.tolist()
@@ -361,7 +361,7 @@ class NN_Classifier(object):
 
     def train(self, **kw): #model, train_data_loader, valid_data_loader, train_data_set, valid_data_set, loss_criterion, optimizer, epochs, device, verbose, lr_scheduler
         self.trained_model, self.train_metrics=nn_train(model=self.model, **kw)
-        reuturn self.trained_model, self.train_metrics
+        return self.trained_model, self.train_metrics
 
 
 class NN_Optimizer():
