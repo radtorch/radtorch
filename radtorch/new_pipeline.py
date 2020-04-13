@@ -31,11 +31,11 @@ DEF = {
 
 class Image_Classification():
 
-    def __init__(self, **kwargs):
+    def __init__(self, DEFAULT_SETTINGS=DEF, **kwargs):
 
         for k, v in kwargs.items():
             setattr(self, k, v)
-        for k, v  in DEF.items():
+        for k, v in DEFAULT_SETTINGS.items():
             if k not in kwargs.keys():
                 setattr(self, k, v)
         self.passed_arg = kwargs
