@@ -64,7 +64,6 @@ class Image_Classification():
             self.feature_extractor.run()
             self.feature_table=self.feature_extractor.feature_table
             self.feature_names=self.feature_extractor.feature_names
-            print ('Feature Extraction completed successfully.')
         self.classifier=Classifier(feature_table=self.feature_table, feature_names=self.feature_names, **self.classifier_param)
         print ('Running Classifier Training.')
         self.classifier.run()
@@ -72,7 +71,7 @@ class Image_Classification():
         self.train_metrics=self.classfier.training_metrics
         self.feature_selector=Feature_Selection(type=self.classifier.type, feature_table=self.feature_extractor.feature_table, feature_names=self.feature_extractor.feature_names, **kwargs)
         print ('Classifier Training completed successfully.')
-        
+
     def metrics(self, figure_size=(500,300)):
         return show_metrics(self.classifiers,  fig_size=figure_size)
 
