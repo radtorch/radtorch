@@ -40,7 +40,7 @@ class Image_Classification():
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.data_processor_params={k:v for k,v in self.__dict__.items() if k in ['device', 'table', 'data_directory', 'is_dicom', 'normalize', 'balance_class', 'batch_size', 'num_workers', 'model_arch' , 'custom_resize']}
-        self.feature_extractor_params={k:v for k,v in self.__dict__.items() if k in ['model_arch', 'pre_trained', 'unfreeze']}
+        self.feature_extractor_params={k:v for k,v in self.__dict__.items() if k in ['device', 'model_arch', 'pre_trained', 'unfreeze']}
         self.classifier_param={k:v for k,v in self.__dict__.items() if k in ['classifier_type', 'test_percent', 'cv', 'stratified', 'num_splits', 'label_column', 'parameters']}
 
         self.data_processor=Data_Preprocessor(**self.data_processor_params)
