@@ -76,7 +76,7 @@ class Compare_Image_Classifiers():
 
         self.classifiers=[]
 
-        for i in self.scenarios_list:
+        for x in self.scenarios_list:
             classifier_settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             classifier_settings.update(self.non_compare_parameters)
             clf=Image_Classification(**classifier_settings)
