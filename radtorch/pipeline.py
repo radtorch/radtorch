@@ -97,8 +97,6 @@ class Compare_Image_Classifiers():
             classifier.feature_extractor=[i for i in self.feature_extractors if i.model_arch==classifier.model_arch][0]
             self.classifiers.append(classifier)
 
-
-
     def grid(self):
         return self.scenarios_df
 
