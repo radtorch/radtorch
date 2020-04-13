@@ -30,8 +30,6 @@ class Data_Preprocessor(): #device, table, data_directory, is_dicom, normalize, 
         if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs)
         else: self.dataset=Dataset_from_folder(**kwargs)
 
-        if self.balance_class:self.dataset=self.dataset.balance()
-
 
         self.num_output_classes=len(self.dataset.classes)
         self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
@@ -62,6 +60,8 @@ class Data_Preprocessor(): #device, table, data_directory, is_dicom, normalize, 
         # Recreate Transformed Master Dataset
         if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
         else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
+        if self.balance_class:
+            self.dataset=self.dataset.balance()
         self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
     def classes(self):
@@ -234,7 +234,7 @@ class Classifier(object):
     self.scores = np.asarray(self.scores )
     self.classes=self.classifier.classes_.tolist()
     print (self.classifier_type, 'model training finished successfully.')
-    print(self.classifier_type, "overall accuracy: %0.2f (+/- %0.2f)" % ( self.scores .mean(),  self.scores .std() * 2))
+    print(self.classifier_type, "overall training accuracy: %0.2f (+/- %0.2f)" % ( self.scores .mean(),  self.scores .std() * 2))
     return self.classifier, self.train_metrics
 
   def average_cv_accuracy(self):
