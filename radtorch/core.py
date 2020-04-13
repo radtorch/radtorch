@@ -13,12 +13,12 @@
 from radtorch.settings import *
 from radtorch.vis import *
 from radtorch.general import *
-from radtorch.test import *
 
 
 
 
-class Data_Preprocessor(): #device, table, data_directory, is_dicom, normalize, balance_class, batch_size, num_workers, model_arch , custom_resize,
+
+class Data_Processor(): #device, table, data_directory, is_dicom, normalize, balance_class, batch_size, num_workers, model_arch , custom_resize,
 
     def __init__(self, **kwargs):
         for k, v in kwargs.items():
