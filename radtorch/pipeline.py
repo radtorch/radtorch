@@ -39,7 +39,7 @@ class Image_Classification():
 
     def run(self, **kw):
         if 'feature_table' in kw.keys():
-            print ('Loading Extracted Features')
+            log ('Loading Extracted Features')
             self.feature_table=kw['feature_table']
             self.feature_names=kw['feature_names']
         elif 'feature_table' not in self.__dict__.keys():
@@ -47,12 +47,12 @@ class Image_Classification():
             self.feature_table=self.feature_extractor.feature_table
             self.feature_names=self.feature_extractor.feature_names
         self.classifier=Classifier(**self.__dict__)
-        print ('Running Classifier Training.')
+        log ('Running Classifier Training.')
         self.classifier.run()
         self.trained_model=self.classifier
         self.train_metrics=self.classifier.train_metrics
         self.feature_selector=Feature_Selector(type=self.classifier.type, feature_table=self.feature_extractor.feature_table, feature_names=self.feature_extractor.feature_names)
-        print ('Classifier Training completed successfully.')
+        log ('Classifier Training completed successfully.')
 
     def metrics(self, figure_size=(500,300)):
         return show_metrics([self.classifier],  fig_size=figure_size)
@@ -62,9 +62,10 @@ class Image_Classification():
             outfile=open(output_path,'wb')
             pickle.dump(self,outfile)
             outfile.close()
-            print ('Pipeline exported successfully.')
+            log ('Pipeline exported successfully.')
         except:
-            raise TypeError('Error! Pipeline could not be exported.')
+            log ('Error! Pipeline could not be exported.')
+            pass
 
 
 class Compare_Image_Classifiers():
@@ -173,11 +174,11 @@ class Feature_Extraction():
 
     def run(self, **kw):
         if 'feature_table' in kw.keys():
-            print ('Loading Extracted Features')
+            log('Loading Extracted Features')
             self.feature_table=kw['feature_table']
             self.feature_names=kw['feature_names']
         elif 'feature_table' not in self.__dict__.keys():
-            print ('Running Feature Extraction.')
+            log('Running Feature Extraction.')
             self.feature_extractor.run()
             self.feature_table=self.feature_extractor.feature_table
             self.feature_names=self.feature_extractor.feature_names
@@ -188,6 +189,6 @@ class Feature_Extraction():
             outfile=open(output_path,'wb')
             pickle.dump(self,outfile)
             outfile.close()
-            print ('Pipeline exported successfully.')
+            log('Pipeline exported successfully.')
         except:
             raise TypeError('Error! Pipeline could not be exported.')
