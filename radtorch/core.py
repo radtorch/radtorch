@@ -135,7 +135,7 @@ class Feature_Extractor(): # model_arch, pre_trained, unfreeze, device, dataload
         feature_table=pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['img_path','label_idx', 'features'])
         feature_table[self.feature_names]=pd.DataFrame(feature_table.features.values.tolist(), index= feature_table.index)
         feature_table=feature_table.drop(['features'], axis=1)
-        print (' Features extracted successfully.')
+        print ('Features extracted successfully.')
         self.feature_table=feature_table
         self.features=self.feature_table[self.feature_names]
         if verbose:
