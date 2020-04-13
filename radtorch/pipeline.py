@@ -94,7 +94,7 @@ class Compare_Image_Classifiers():
             settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             settings.update(self.non_compare_parameters)
             classifier=Image_Classification(**settings)
-            self.feature_extractors.append(classifier.feature_extractor)
+            if classifier.feature_extractor.model_arch not in [i.model_arch for i in self.feature_extractors]: self.feature_extractors.append(classifier.feature_extractor)
             classifier.feature_extractor=[i for i in self.feature_extractors if i.model_arch==classifier.model_arch][0]
             self.classifiers.append(classifier)
 
