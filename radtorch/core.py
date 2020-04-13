@@ -88,7 +88,7 @@ class Data_Preprocessor(): #device, table, data_directory, is_dicom, normalize, 
 
 class Feature_Extractor(): # model_arch, pre_trained, unfreeze, device, dataloader,
 
-    def __new__(self, **kwargs):
+    def __init__(self, **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
         if self.model_arch=='vgg11': self.model=torchvision.models.vgg11(pretrained=self.pre_trained)
