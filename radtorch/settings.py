@@ -129,7 +129,7 @@ SUPPORTED_CLASSIFIER=[
 'gradient_boost',
 'adaboost',
 'xgboost',
-'elasticnet']
+]
 
 
 #dataset
@@ -176,4 +176,19 @@ IMAGE_CLASSIFICATION_PIPELINE_SETTINGS={
 'num_splits':5,
 'label_column':'label_idx',
 'parameters':{}
+}
+
+
+FEATURE_EXTRACTION_PIPELINE_SETTINGS={
+'table':None,
+'is_dicom':True,
+'normalize':((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+'balance_class':False,
+'batch_size':16,
+'num_workers':1,
+'model_arch':'vgg16',
+'custom_resize':False,
+'pre_trained':True,
+'unfreeze':False,
+'label_column':'label_idx',
 }

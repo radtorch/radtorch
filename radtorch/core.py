@@ -186,8 +186,6 @@ class Classifier(object):
       classifier=LogisticRegression(max_iter=10000,n_jobs=-1, **kw)
     elif self.type=='ridge':
       classifier=RidgeClassifier(max_iter=10000, **kw)
-    elif self.type=='elasticnet':
-      classifier=ElasticNet(**kw)
     elif self.type=='sgd':
       classifier=SGDClassifier(**kw)
     elif self.type=='knn':
