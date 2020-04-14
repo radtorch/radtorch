@@ -318,7 +318,7 @@ class Classifier(object):
     if all_predictions:
         try:
             return self.classifier.predict_proba(image_features)
-        else:
+        except:
             log('All predictions could not be generated. Please set all_predictions to False.')
             pass
     else:
