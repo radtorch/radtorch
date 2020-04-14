@@ -477,19 +477,19 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             log('Error! Optimizer not supported yet. Please check radtorch.settings.supported_nn_optimizers')
             pass
         elif type=='Adam':
-            optimizer=torch.optim.Adam(params=model.parameters(),lr=learning_rate, **kwargs)
+            optimizer=torch.optim.Adam(params=model.parameters(),lr=learning_rate, **kw)
         elif type=='AdamW':
-            optimizer=torch.optim.AdamW(params=model.parameters(), lr=learning_rate, **kwargs)
+            optimizer=torch.optim.AdamW(params=model.parameters(), lr=learning_rate, **kw)
         elif type=='SparseAdam':
-            optimizer=torch.optim.SparseAdam(params=model.parameters(), lr=learning_rate, **kwargs)
+            optimizer=torch.optim.SparseAdam(params=model.parameters(), lr=learning_rate, **kw)
         elif type=='Adamax':
-            optimizer=torch.optim.Adamax(params=model.parameters(), lr=learning_rate, **kwargs)
+            optimizer=torch.optim.Adamax(params=model.parameters(), lr=learning_rate, **kw)
         elif type=='ASGD':
-            optimizer=torch.optim.ASGD(params=model.parameters(), lr=learning_rate, **kwargs)
+            optimizer=torch.optim.ASGD(params=model.parameters(), lr=learning_rate, **kw)
         elif type=='RMSprop':
-            optimizer=torch.optim.RMSprop(params=model.parameters(), lr=learning_rate, **kwargs)
+            optimizer=torch.optim.RMSprop(params=model.parameters(), lr=learning_rate, **kw)
         elif type=='SGD':
-            optimizer=torch.optim.SGD(params=model.parameters(), lr=learning_rate, **kwargs)
+            optimizer=torch.optim.SGD(params=model.parameters(), lr=learning_rate, **kw)
         log('Optimizer selected is '+type)
         return optimizer
 
