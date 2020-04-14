@@ -121,7 +121,10 @@ class Feature_Extractor(): # model_arch, pre_trained, unfreeze, device, dataload
         return model_dict[self.model_arch]['output_features']
 
     def run(self, verbose=False):
-        log('Running Feature Extraction using '+str(self.model_arch)+' architecture.')
+        if['balance_class'] in self.__dict__() and ['normalize'] in self.__dict__():
+            log('Running Feature Extraction using '+str(self.model_arch)+' architecture with balance_class = '+str(self.balance_class)+' and normalize = '+str(self.normalize)+".")
+        else:
+            log('Running Feature Extraction using '+str(self.model_arch)+' architecture')
         self.features=[]
         self.labels_idx=[]
         self.img_path_list=[]
