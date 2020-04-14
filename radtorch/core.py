@@ -65,7 +65,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             self.dataset=self.dataset.balance()
         self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
-        if self.valid_percent==True or self.test_percent==True:
+        if self.valid_percent or self.test_percent:
             data_split=self.dataset.split(**kwargs)
             for k,v in data_split.items():
                 setattr(self, k+'_dataset', v)
@@ -78,6 +78,11 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns=['Property', 'Value']
         info=info.append({'Property':'Dataset', 'Value':len(self.dataset)}, ignore_index=True)
+        if self.valid_percent or self.test_percent:
+            for i in ['train_dataset', 'valid_dataset','test_dataset']:
+                if i in self.__dict__.keys():
+                    info.append({'Property':i+' size', 'Value':len(self.__dict__[i])}, ignore_index=True)
+            
         return info
 
     def dataset_info(self, plot=False, figure_size=(500,300)):
