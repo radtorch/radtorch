@@ -310,7 +310,9 @@ class Classifier(object):
         model.to('cpu')
         target_img_tensor.to('cpu')
         model.eval()
-        image_features=model(target_img_tensor)
+        out=model(target_img_tensor)
+    image_features=pd.DataFrame(out, columns=self.feature_names)
+
     if all_predictions:
         return self.classifier.predict_proba(image_features)
     else:
