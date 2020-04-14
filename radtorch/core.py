@@ -313,10 +313,18 @@ class Classifier(object):
         out=model(target_img_tensor)
     image_features=pd.DataFrame(out, columns=self.feature_names)
 
+    class_to_idx = self.data_processor.classes()
+
     if all_predictions:
-        return self.classifier.predict_proba(image_features)
+        try:
+            return self.classifier.predict_proba(image_features)
+        else:
+            log('All predictions could not be generated. Please set all_predictions to False.')
+            pass
     else:
-        return self.classifier.predict(image_features)
+        prediction=self.classifier.predict(image_features)
+
+        return (prediction, [k for k,v in class_to_idx.items() if v==prediction][0])
 
 
 class Feature_Selector(Classifier):
