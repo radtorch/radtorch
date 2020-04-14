@@ -39,19 +39,19 @@ class Image_Classification():
 
     def run(self, **kw):
         set_random_seed(100)
-        log('Phase 1: Feature Extraction.')
-        if 'feature_table' in kw.keys():
-            log('Loading Extracted Features')
-            self.feature_table=kw['feature_table']
-            self.feature_names=kw['feature_names']
-        elif 'feature_table' not in self.__dict__.keys():
-            self.feature_extractor.run()
-            self.feature_table=self.feature_extractor.feature_table
-            self.feature_names=self.feature_extractor.feature_names
+        if self.type!='nn_classifier':
+            log('Phase 1: Feature Extraction.')
+            if 'feature_table' in kw.keys():
+                log('Loading Extracted Features')
+                self.feature_table=kw['feature_table']
+                self.feature_names=kw['feature_names']
+            elif 'feature_table' not in self.__dict__.keys():
+                self.feature_extractor.run()
+                self.feature_table=self.feature_extractor.feature_table
+                self.feature_names=self.feature_extractor.feature_names
 
-        log('Phase 2: Classifier Training.')
-        log ('Running Classifier Training.')
-        if self.type != 'nn_classifier':
+            log('Phase 2: Classifier Training.')
+            log ('Running Classifier Training.')
             self.classifier=Classifier(**self.__dict__)
             self.classifier.run()
             self.trained_model=self.classifier
