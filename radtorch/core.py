@@ -534,7 +534,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         if 'lr_scheduler' in self.__dict__.keys(): lr_scheduler=self.lr_scheduler
 
         set_random_seed(100)
-        start_time=datetime.datetime.now()
+        start_time=datetime.now()
         training_metrics=[]
         log('Starting training at '+ str(start_time))
         model=model.to(device)
@@ -604,7 +604,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             if lr_scheduler:
                 lr_scheduler.step(avg_valid_loss)
             log("Epoch : {:03d}/{} : [Training: Loss: {:.4f}, Accuracy: {:.4f}%]  [Validation : Loss : {:.4f}, Accuracy: {:.4f}%] [Time: {:.4f}s]".format(epoch, epochs, avg_train_loss, avg_train_acc*100, avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_start))
-        end_time=datetime.datetime.now()
+        end_time=datetime.now()
         total_training_time=end_time-start_time
         log('Total training time='+ str(total_training_time))
         self.trained_model=model
