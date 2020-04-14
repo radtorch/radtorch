@@ -324,7 +324,7 @@ class Classifier(object):
     else:
         prediction=self.classifier.predict(image_features)
 
-        return (prediction, [k for k,v in class_to_idx.items() if v==prediction][0])
+        return (prediction[0], [k for k,v in class_to_idx.items() if v==prediction][0])
 
 
 class Feature_Selector(Classifier):
