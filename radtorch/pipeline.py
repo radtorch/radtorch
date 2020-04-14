@@ -110,9 +110,9 @@ class Compare_Image_Classifiers():
             feature_extractor=Feature_Extractor(dataloader=data_processor.dataloader,**settings)
             if feature_extractor.model_arch not in [i.model_arch for i in self.feature_extractors]:
                 # if (feature_extractor.balance_class, feature_extractor.normalize) not in [(i.balance_class,i.normalize) for i in self.feature_extractors]:
-                #     feature_extractor.run()
-                #     self.feature_extractors.append(feature_extractor)
-                #     self.data_processors.append(data_processor)
+                feature_extractor.run()
+                self.feature_extractors.append(feature_extractor)
+                self.data_processors.append(data_processor)
             else:
                 if (feature_extractor.balance_class, feature_extractor.normalize) not in [(i.balance_class,i.normalize) for i in self.feature_extractors]:
                     feature_extractor.run()
