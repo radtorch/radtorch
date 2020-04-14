@@ -112,16 +112,20 @@ class Compare_Image_Classifiers():
         for x in self.scenarios_list:
             settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             settings.update(self.non_compare_parameters)
-            if settings['type']=='nn_classifier':
-                pass
-            else:
-                log('Phase 1: Feature Extraction.')
-                data_processor=Data_Processor(**settings)
-                feature_extractor=Feature_Extractor(dataloader=data_processor.dataloader,**settings)
-                if (feature_extractor.model_arch, feature_extractor.balance_class, feature_extractor.normalize) not in [(i.model_arch, i.balance_class,i.normalize )for i in self.feature_extractors]:
-                    feature_extractor.run()
+
+
+            log('Phase 1: Feature Extraction.')
+            data_processor=Data_Processor(**settings)
+            feature_extractor=Feature_Extractor(dataloader=data_processor.dataloader,**settings)
+            if (feature_extractor.model_arch, feature_extractor.balance_class, feature_extractor.normalize) not in [(i.model_arch, i.balance_class,i.normalize )for i in self.feature_extractors]:
+                if settings['type']=='nn_classifier':
                     self.feature_extractors.append(feature_extractor)
                     self.data_processors.append(data_processor)
+                else:
+                log('Phase 1: Feature Extraction.')
+                feature_extractor.run()
+                self.feature_extractors.append(feature_extractor)
+                self.data_processors.append(data_processor)
 
 
         log('Phase 2: Classifier Training.')
