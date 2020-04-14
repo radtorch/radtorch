@@ -93,7 +93,7 @@ class Compare_Image_Classifiers():
         self.compare_parameters_names= list(self.compare_parameters.keys())
         # self.scenarios_list=list(itertools.product(*list(self.compare_parameters.values())))
         self.scenarios_list=[]
-        keys, values = zip(*self.compare_parameters_names.items()) #http://stephantul.github.io/python/2019/07/20/product-dict/
+        keys, values = zip(*self.compare_parameters.items()) #http://stephantul.github.io/python/2019/07/20/product-dict/
         for bundle in itertools.product(*values):
             d = dict(zip(keys, bundle))
             d.update(self.non_compare_parameters)
