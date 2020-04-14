@@ -169,8 +169,11 @@ DEFAULT_DATASET_SETTINGS={
 'table':None,
 'image_path_column':'IMAGE_PATH',
 'image_label_column':'IMAGE_LABEL',
+'valid_percent':0.2,
+'test_percent':0.2,
 'transformations':transforms.Compose([transforms.ToTensor()]),
-'multi_label':False
+'multi_label':False,
+
 }
 
 ################################################################################################################################################
