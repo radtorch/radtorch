@@ -144,6 +144,7 @@ NN_CLASSIFIER_DEFAULT_SETTINGS={
 'epochs':10,
 'optimizer':'adam',
 'loss_function':'BCELoss',
+'output_features':False,
 'optimizer_parameters':{},
 'loss_function_parameters':{}
 }
