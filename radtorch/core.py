@@ -65,7 +65,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
         if self.valid_percent or self.test_percent:
             data_split=self.dataset.split(**kwargs)
             for k,v in data_split.items():
-                if self.balance:
+                if self.balance_class:
                     ds=v.balance()
                     setattr(self, k+'_dataset', ds)
                     setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
