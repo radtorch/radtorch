@@ -69,8 +69,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             data_split=self.dataset.split(**kwargs)
             for k,v in data_split.items():
                 setattr(self, k+'_dataset', v)
-                setattr(self, k+_'dataloader', torch.utils.data.DataLoader(dataset=v, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
-
+                setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=v, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
 
     def classes(self):
         return self.dataset.class_to_idx
