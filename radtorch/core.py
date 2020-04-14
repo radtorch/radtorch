@@ -82,7 +82,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             for i in ['train_dataset', 'valid_dataset','test_dataset']:
                 if i in self.__dict__.keys():
                     info.append({'Property':i+' size', 'Value':len(self.__dict__[i])}, ignore_index=True)
-            
+
         return info
 
     def dataset_info(self, plot=False, figure_size=(500,300)):
@@ -417,7 +417,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
                 setattr(self, k, v)
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        if 'feature_extractor' not in self.__dist__.keys() or 'data_processor' not in self.__dist__.keys():
+        if 'feature_extractor' not in self.__dict__.keys() or 'data_processor' not in self.__dict__.keys():
             log('Error! No  Data Processor and/or Feature Selector was supplied. Please Check.')
             pass
 
