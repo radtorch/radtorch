@@ -109,7 +109,7 @@ class Compare_Image_Classifiers():
         self.feature_extractors=[]
 
     def grid(self, full=False):
-        summary_columns=[i for i in self.scenarios_df.columns if len(self.scenarios_df[i].unique().tolist() > 1)]
+        summary_columns=[i for i in self.scenarios_df.columns if len(self.scenarios_df[i].unique().tolist()) > 1]
         if full:
             return self.scenarios_df
         else:
