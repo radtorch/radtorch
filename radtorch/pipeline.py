@@ -39,6 +39,7 @@ class Image_Classification():
 
     def run(self, **kw):
         set_random_seed(100)
+        log('Phase 1: Feature Extraction.')
         if 'feature_table' in kw.keys():
             log ('Loading Extracted Features')
             self.feature_table=kw['feature_table']
@@ -48,6 +49,7 @@ class Image_Classification():
             self.feature_table=self.feature_extractor.feature_table
             self.feature_names=self.feature_extractor.feature_names
         self.classifier=Classifier(**self.__dict__)
+        log('Phase 2: Classifier Training.')
         log ('Running Classifier Training.')
         self.classifier.run()
         self.trained_model=self.classifier
@@ -63,7 +65,7 @@ class Image_Classification():
             outfile=open(output_path,'wb')
             pickle.dump(self,outfile)
             outfile.close()
-            log ('Pipeline exported successfully.')
+            log ('Pipeline exported successfully to '+output_path)
         except:
             log ('Error! Pipeline could not be exported.')
             pass
@@ -90,7 +92,6 @@ class Compare_Image_Classifiers():
         self.classifiers=[]
         self.data_processors=[]
         self.feature_extractors=[]
-
 
     def grid(self):
         return self.scenarios_df
@@ -128,7 +129,6 @@ class Compare_Image_Classifiers():
             torch.cuda.empty_cache()
             print('')
 
-
     def roc(self, fig_size=(700,400)):
         self.auc_list=show_roc([i.classifier for i in self.classifiers], fig_size=fig_size)
         self.best_model_auc=max(self.auc_list)
@@ -141,7 +141,7 @@ class Compare_Image_Classifiers():
             log('Best Classifier AUC = '+ str(self.best_model_auc))
             if export:
                 self.best_classifier.export(output_path=export)
-                log(' Best Classifier Pipeline Exported Successfully')
+                log('Best Classifier Pipeline Exported Successfully to '+export)
         except:
             log('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
             pass
@@ -151,7 +151,7 @@ class Compare_Image_Classifiers():
             outfile=open(output_path,'wb')
             pickle.dump(self,outfile)
             outfile.close()
-            log ('Pipeline exported successfully.')
+            log ('Pipeline exported successfully to '+output_path)
         except:
             log ('Error! Pipeline could not be exported.')
             pass
