@@ -421,6 +421,18 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             log('Error! No  Data Processor and/or Feature Selector was supplied. Please Check.')
             pass
 
+        # DATA
+        self.output_classes=self.data_processor.num_output_classes
+        self.train_dataset=self.data_processor.train_dataset
+        self.train_datalader=self.data_processor.train_dataloader
+        self.valid_dataset=self.data_processor.valid_dataset
+        self.valid_dataloader=self.data_processor.valid_dataloader
+        if self.test_percent>0:
+            self.test_dataset=self.data_processor.test_dataset
+            self.test_datalader=self.data_processor.test_datalader
+        self.tranformations=self.data_processor.transformations
+
+
         # MODEL
         self.model=self.feature_extractor.model
         self.model_arch=self.feature_extractor.model_arch
@@ -446,16 +458,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
                 param.requires_grad = False
 
 
-        # DATA
-        self.output_classes=self.data_processor.num_output_classes
-        self.train_dataset=self.data_processor.train_dataset
-        self.train_datalader=self.data_processor.train_dataloader
-        self.valid_dataset=self.data_processor.valid_dataset
-        self.valid_dataloader=self.data_processor.valid_dataloader
-        if self.test_percent>0:
-            self.test_dataset=self.data_processor.test_dataset
-            self.test_datalader=self.data_processor.test_datalader
-        self.tranformations=self.data_processor.transformations
+
 
         # Optimizer and Loss Function
         self.loss_function=self.nn_loss_function(type=self.loss_function, **self.loss_function_parameters)
