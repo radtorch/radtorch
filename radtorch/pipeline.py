@@ -114,7 +114,6 @@ class Compare_Image_Classifiers():
             settings.update(self.non_compare_parameters)
 
 
-            log('Phase 1: Feature Extraction.')
             data_processor=Data_Processor(**settings)
             feature_extractor=Feature_Extractor(dataloader=data_processor.dataloader,**settings)
             if (feature_extractor.model_arch, feature_extractor.balance_class, feature_extractor.normalize) not in [(i.model_arch, i.balance_class,i.normalize )for i in self.feature_extractors]:
