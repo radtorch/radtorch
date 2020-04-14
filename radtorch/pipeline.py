@@ -108,11 +108,16 @@ class Compare_Image_Classifiers():
         self.data_processors=[]
         self.feature_extractors=[]
 
-    def grid(self, full=True):
+    def grid(self, full=False):
         if full:
             return self.scenarios_df
         else:
-            summary_columns=[i for i in self.scenarios_df.columns.tolist() if len(self.scenarios_df[[i]].unique().tolist()) > 1]
+            summary_columns=[]
+            df=copy.deepcopy(self.scenarios_df)
+            df=df.drop('parameters', axis=1)
+            for col in df.columns:
+                if len(df[col].unique()) > 1:
+                    summary_columns.append(col)
             return self.scenarios_df[summary_columns]
 
     def run(self):
