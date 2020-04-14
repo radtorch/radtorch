@@ -461,7 +461,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         info.columns=['Property', 'Value']
         for i in ['train_dataset', 'valid_dataset','test_dataset']:
             if i in self.__dict__.keys():
-                info.append({'Property':i+' size', 'Value':len(self.__dict__[i]), ignore_index=True)
+                info.append({'Property':i+' size', 'Value':len(self.__dict__[i])}, ignore_index=True)
         return info
 
     def nn_optimizer(self, type, model, learning_rate, **kw):
