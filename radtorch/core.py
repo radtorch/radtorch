@@ -424,12 +424,12 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         # DATA
         self.output_classes=self.data_processor.num_output_classes
         self.train_dataset=self.data_processor.train_dataset
-        self.train_datalader=self.data_processor.train_dataloader
+        self.train_dataloader=self.data_processor.train_dataloader
         self.valid_dataset=self.data_processor.valid_dataset
         self.valid_dataloader=self.data_processor.valid_dataloader
         if self.test_percent>0:
             self.test_dataset=self.data_processor.test_dataset
-            self.test_datalader=self.data_processor.test_datalader
+            self.test_dataloader=self.data_processor.test_dataloader
         self.tranformations=self.data_processor.transformations
 
 
