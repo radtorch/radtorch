@@ -197,3 +197,10 @@ class Feature_Extraction():
             log('Pipeline exported successfully.')
         except:
             raise TypeError('Error! Pipeline could not be exported.')
+
+
+def load_pipeline(target_path):
+    infile=open(target_path,'rb')
+    pipeline=pickle.load(infile)
+    infile.close()
+    return pipeline
