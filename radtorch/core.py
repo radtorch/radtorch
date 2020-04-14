@@ -99,7 +99,7 @@ class Feature_Extractor(): #args: model_arch, pre_trained, unfreeze, device, dat
     def __init__(self, **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
-        if self.model_arch not in suppored_models:
+        if self.model_arch not in supported_models:
             log('Error! Provided model architecture is not yet suported. Please use radtorch.settings.supported_models to see full list of supported models.')
             pass
         elif self.model_arch=='vgg11': self.model=torchvision.models.vgg11(pretrained=self.pre_trained)
