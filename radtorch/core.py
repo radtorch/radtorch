@@ -61,15 +61,21 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
         # Recreate Transformed Master Dataset
         if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
         else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
-        if self.balance_class:
-            self.dataset=self.dataset.balance()
-        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         if self.valid_percent or self.test_percent:
             data_split=self.dataset.split(**kwargs)
             for k,v in data_split.items():
-                setattr(self, k+'_dataset', v)
-                setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=v, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
+                if self.balance:
+                    ds=v.balance()
+                    setattr(self, k+'_dataset', ds)
+                    setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
+                else:
+                    setattr(self, k+'_dataset', v)
+                    setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=v, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
+
+        if self.balance_class:
+            self.dataset=self.dataset.balance()
+        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
     def classes(self):
         return self.dataset.class_to_idx
