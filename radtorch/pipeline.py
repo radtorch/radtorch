@@ -41,11 +41,11 @@ class Image_Classification():
         set_random_seed(100)
         if self.type!='nn_classifier':
             log('Phase 1: Feature Extraction.')
-            if 'feature_table' in kw.keys():
+            if 'feature_table' in self.__dict__.keys():
                 log('Loading Extracted Features')
-                self.feature_table=kw['feature_table']
-                self.feature_names=kw['feature_names']
-            elif 'feature_table' not in self.__dict__.keys():
+                self.feature_table=self.__dict__['feature_table']
+                self.feature_names=self.__dict__['feature_names']
+            elif:
                 self.feature_extractor.run()
                 self.feature_table=self.feature_extractor.feature_table
                 self.feature_names=self.feature_extractor.feature_names
