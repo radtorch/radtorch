@@ -142,7 +142,7 @@ NN_CLASSIFIER_DEFAULT_SETTINGS={
 'test_percent':0.2,
 'learning_rate':0.0001,
 'epochs':10,
-'optimizer':'adam',
+'optimizer':'Adam',
 'loss_function':'BCELoss',
 'output_features':False,
 'optimizer_parameters':{},
