@@ -498,25 +498,25 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             log('Error! Loss functions not supported yet. Please check radtorch.settings.supported_nn_loss_functions')
             pass
         elif type== 'NLLLoss':
-            loss_function=torch.nn.NLLLoss(),
+            loss_function=torch.nn.NLLLoss(**kw),
         elif type== 'CrossEntropyLoss':
-            loss_function=torch.nn.CrossEntropyLoss()
+            loss_function=torch.nn.CrossEntropyLoss(**kw)
         elif type== 'MSELoss':
-            loss_function=torch.nn.MSELoss()
+            loss_function=torch.nn.MSELoss(**kw)
         elif type== 'PoissonNLLLoss':
-            loss_function=torch.nn.PoissonNLLLoss()
+            loss_function=torch.nn.PoissonNLLLoss(**kw)
         elif type== 'BCELoss':
-            loss_function=torch.nn.BCELoss()
+            loss_function=torch.nn.BCELoss(**kw)
         elif type== 'BCEWithLogitsLoss':
-            loss_function=torch.nn.BCEWithLogitsLoss()
+            loss_function=torch.nn.BCEWithLogitsLoss(**kw)
         elif type== 'MultiLabelMarginLoss':
-            loss_function=torch.nn.MultiLabelMarginLoss()
+            loss_function=torch.nn.MultiLabelMarginLoss(**kw)
         elif type== 'SoftMarginLoss':
-            loss_function=torch.nn.SoftMarginLoss()
+            loss_function=torch.nn.SoftMarginLoss(**kw)
         elif type== 'MultiLabelSoftMarginLoss':
-            loss_function=torch.nn.MultiLabelSoftMarginLoss()
+            loss_function=torch.nn.MultiLabelSoftMarginLoss(**kw)
         elif type== 'CosineSimilarity':
-            loss_function=torch.nn.CosineSimilarity()
+            loss_function=torch.nn.CosineSimilarity(**kw)
         log('Loss function selected is '+type)
         return loss_function
 
@@ -531,7 +531,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         optimizer=self.optimizer
         epochs=self.epochs
         device=self.device
-        if lr_scheduler in self.__dict__.keys(): lr_scheduler=self.lr_scheduler
+        if 'lr_scheduler' in self.__dict__.keys(): lr_scheduler=self.lr_scheduler
 
         set_random_seed(100)
         start_time=datetime.datetime.now()
