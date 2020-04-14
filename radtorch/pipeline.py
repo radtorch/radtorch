@@ -92,14 +92,6 @@ class Compare_Image_Classifiers():
         self.feature_extractors=[]
 
 
-        # for x in self.scenarios_list:
-        #     settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
-        #     settings.update(self.non_compare_parameters)
-        #     classifier=Image_Classification(**settings)
-        #     if classifier.feature_extractor.model_arch not in [i.model_arch for i in self.feature_extractors]: self.feature_extractors.append(classifier.feature_extractor)
-        #     classifier.feature_extractor=[i for i in self.feature_extractors if i.model_arch==classifier.model_arch][0]
-        #     self.classifiers.append(classifier)
-
     def grid(self):
         return self.scenarios_df
 
@@ -145,13 +137,23 @@ class Compare_Image_Classifiers():
 
     def best(self, export=False):
         try:
-            log('Best Classifier=Model '+str(self.best_model_index))
+            log('Best Classifier = Model '+str(self.best_model_index))
             log('Best Classifier AUC = '+ str(self.best_model_auc))
             if export:
-                export(self.best_classifier, export)
+                self.best_classifier.export(output_path=export)
                 log(' Best Classifier Pipeline Exported Successfully')
         except:
             log('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
+            pass
+
+    def export(self, output_path):
+        try:
+            outfile=open(output_path,'wb')
+            pickle.dump(self,outfile)
+            outfile.close()
+            log ('Pipeline exported successfully.')
+        except:
+            log ('Error! Pipeline could not be exported.')
             pass
 
 
