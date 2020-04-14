@@ -118,8 +118,9 @@ class Compare_Image_Classifiers():
 
 
         for x in self.scenarios_list:
-            settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
-            settings.update(self.non_compare_parameters)
+            # settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
+            # settings.update(self.non_compare_parameters)
+            settings=x
             data_processor=Data_Processor(**settings)
             feature_extractor=Feature_Extractor(dataloader=data_processor.dataloader,**settings)
             if (feature_extractor.model_arch, feature_extractor.balance_class, feature_extractor.normalize) not in [(i.model_arch, i.balance_class,i.normalize )for i in self.feature_extractors]:
@@ -136,8 +137,9 @@ class Compare_Image_Classifiers():
 
         log('Phase 2: Classifier Training.')
         for x in tqdm(self.scenarios_list, total=len(self.scenarios_list)):
-            settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
-            settings.update(self.non_compare_parameters)
+            # settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
+            # settings.update(self.non_compare_parameters)
+            settings=x
             feature_extractor=[i for i in self.feature_extractors if settings['model_arch']==i.model_arch and settings['normalize']==i.normalize and settings['balance_class']==i.balance_class][0]
             if settings['type']!='nn_classifier':
                 feature_table=feature_extractor.feature_table
