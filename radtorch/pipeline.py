@@ -91,9 +91,18 @@ class Compare_Image_Classifiers():
         self.compare_parameters={k:v for k,v in self.__dict__.items() if type(v)==list}
         self.non_compare_parameters={k:v for k, v in self.__dict__.items() if k not in self.compare_parameters and k !='compare_parameters'}
         self.compare_parameters_names= list(self.compare_parameters.keys())
-        self.scenarios_list=list(itertools.product(*list(self.compare_parameters.values())))
+        # self.scenarios_list=list(itertools.product(*list(self.compare_parameters.values())))
+        self.scenarios_list=[]
+        keys, values = zip(*self.compare_parameters_names.items()) #http://stephantul.github.io/python/2019/07/20/product-dict/
+        for bundle in itertools.product(*values):
+            d = dict(zip(keys, bundle))
+            d.update(self.non_compare_parameters)
+            self.scenarios_list.append(d)
         self.num_scenarios=len(self.scenarios_list)
-        self.scenarios_df=pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
+        self.scenarios_list.sort(key = lambda x: x['type'], reverse=True)
+        # self.scenarios_df=pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
+        self.scenarios_df=pd.DataFrame(self.scenarios_list)
+
 
         self.classifiers=[]
         self.data_processors=[]
@@ -103,7 +112,6 @@ class Compare_Image_Classifiers():
         return self.scenarios_df
 
     def run(self):
-        set_random_seed(100)
         log('Starting Image Classification Model Comparison Pipeline.')
         self.master_metrics=[]
         self.trained_models=[]
