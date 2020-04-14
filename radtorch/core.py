@@ -288,6 +288,34 @@ class Classifier(object):
   def roc(self, **kw):
     show_roc([self], **kw)
 
+  def predict(self, input_image_path, classifier=None, tranformations=None, all_predictions=False, **kw):
+
+    if classifier==None:
+        classifier=self.classifier
+
+    if transformations==None:
+        transformations=self.data_processor.transformations
+
+    model=self.feature_extractor.model
+
+    if input_image_path.endswith('dcm'):
+        target_img=dicom_to_pil(input_image_path)
+    else:
+        target_img=Image.open(input_image_path).convert('RGB')
+
+    target_img_tensor=transformations(target_img)
+    target_img_tensor=target_img_tensor.unsqueeze(0)
+
+    with torch.no_grad():
+        model.to('cpu')
+        target_img_tensor.to('cpu')
+        model.eval()
+        image_features=model(target_img_tensor)
+    if all_predictions:
+        return self.classifier.predict_proba(image_features)
+    else:
+        return self.classifier.predict(image_features)
+
 
 class Feature_Selector(Classifier):
 
@@ -621,6 +649,9 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         self.trained_model=model
         self.train_metrics=training_metrics
         return self.trained_model, self.train_metrics
+
+    def roc(self, **kw):
+      show_roc([self], **kw)
 
     def predict(self,  input_image_path, model=None, transformations=None, all_predictions=False, **kw): #input_image_path
         if model==None:

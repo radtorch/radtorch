@@ -164,7 +164,7 @@ class Compare_Image_Classifiers():
             torch.cuda.empty_cache()
             print('')
 
-    def roc(self, fig_size=(700,400)):
+    def roc(self, figure_size=(700,400)):
         self.auc_list=show_roc([i.classifier for i in self.classifiers], fig_size=fig_size)
         self.best_model_auc=max(self.auc_list)
         self.best_model_index=(self.auc_list.index(self.best_model_auc))
