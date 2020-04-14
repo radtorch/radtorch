@@ -13,7 +13,7 @@
 from radtorch.settings import *
 from radtorch.vis import *
 from radtorch.general import *
-from radtorch.dataset import *
+from radtorch.data import *
 
 
 

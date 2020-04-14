@@ -57,21 +57,3 @@ def showlog():
 
 def clearlog():
     open(logfile, 'w').close()
-
-
-# def supported():
-#     print ('Supported Network Architectures:')
-#     for i in supported_models:
-#         print (i)
-#     print('')
-#     print ('Supported Image Classification Loss Functions:')
-#     for i in supported_image_classification_losses:
-#         print (i)
-#     print('')
-#     print ('Supported Optimizers:')
-#     for i in supported_optimizer:
-#         print (i)
-#     print ('')
-#     print ('Supported non DICOM image file types:')
-#     for i in IMG_EXTENSIONS:
-#         print (i)
