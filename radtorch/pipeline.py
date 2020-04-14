@@ -41,7 +41,7 @@ class Image_Classification():
         set_random_seed(100)
         log('Phase 1: Feature Extraction.')
         if 'feature_table' in kw.keys():
-            log ('Loading Extracted Features')
+            log('Loading Extracted Features')
             self.feature_table=kw['feature_table']
             self.feature_names=kw['feature_names']
         elif 'feature_table' not in self.__dict__.keys():
@@ -109,9 +109,10 @@ class Compare_Image_Classifiers():
             data_processor=Data_Processor(**settings)
             feature_extractor=Feature_Extractor(dataloader=data_processor.dataloader,**settings)
             if feature_extractor.model_arch not in [i.model_arch for i in self.feature_extractors]:
-                feature_extractor.run()
-                self.feature_extractors.append(feature_extractor)
-                self.data_processors.append(data_processor)
+                if (feature_extractor.balance_class, feature_extractor.normalize) not in [(i.balance_class,i.normalize) for i in self.feature_extractors]:
+                    feature_extractor.run()
+                    self.feature_extractors.append(feature_extractor)
+                    self.data_processors.append(data_processor)
 
         log('Phase 2: Classifier Training.')
         for x in tqdm(self.scenarios_list, total=len(self.scenarios_list)):
