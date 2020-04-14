@@ -118,6 +118,7 @@ class Compare_Image_Classifiers():
                 if settings['type']=='nn_classifier':
                     self.feature_extractors.append(feature_extractor)
                     self.data_processors.append(data_processor)
+                    log('Skipping Phase 1: Feature Extraction. For NN-Classifiers feature extraction is performed during model training.')
                 else:
                     log('Phase 1: Feature Extraction.')
                     feature_extractor.run()
