@@ -532,6 +532,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         epochs=self.epochs
         device=self.device
         if 'lr_scheduler' in self.__dict__.keys(): lr_scheduler=self.lr_scheduler
+        else: lr_scheduler=False
 
         set_random_seed(100)
         start_time=datetime.now()
