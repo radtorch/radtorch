@@ -131,9 +131,12 @@ class Compare_Image_Classifiers():
             settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
             settings.update(self.non_compare_parameters)
             feature_extractor=[i for i in self.feature_extractors if settings['model_arch']==i.model_arch and settings['normalize']==i.normalize and settings['balance_class']==i.balance_class][0]
-            feature_table=feature_extractor.feature_table
-            feature_names=feature_extractor.feature_names
-            classifier=Image_Classification(feature_table=feature_table, feature_names=feature_names, feature_extractor=feature_extractor, **settings)
+            if settings['type']!='nn_classifier':
+                feature_table=feature_extractor.feature_table
+                feature_names=feature_extractor.feature_names
+                classifier=Image_Classification(feature_table=feature_table, feature_names=feature_names, feature_extractor=feature_extractor, **settings)
+            else:
+                classifier=Image_Classification(feature_extractor=feature_extractor, **settings)
             log('Starting Training Classifier Number '+str(self.scenarios_list.index(x)))
             classifier.run()
             self.classifiers.append(classifier)
