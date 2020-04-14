@@ -109,11 +109,11 @@ class Compare_Image_Classifiers():
         self.feature_extractors=[]
 
     def grid(self, full=True):
-        # summary_columns=[i for i in self.scenarios_df.columns if len(self.scenarios_df[[i]].unique().tolist()) > 1]
+        summary_columns=[i for i in self.scenarios_df.columns.tolist() if len(self.scenarios_df[i].unique().tolist()) > 1]
         if full:
             return self.scenarios_df
-        # else:
-        #     return self.scenarios_df[summary_columns]
+        else:
+            return self.scenarios_df[summary_columns]
 
     def run(self):
         log('Starting Image Classification Model Comparison Pipeline.')
