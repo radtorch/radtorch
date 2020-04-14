@@ -45,7 +45,7 @@ class Image_Classification():
                 log('Loading Extracted Features')
                 self.feature_table=self.__dict__['feature_table']
                 self.feature_names=self.__dict__['feature_names']
-            elif:
+            else:
                 self.feature_extractor.run()
                 self.feature_table=self.feature_extractor.feature_table
                 self.feature_names=self.feature_extractor.feature_names
@@ -108,8 +108,12 @@ class Compare_Image_Classifiers():
         self.data_processors=[]
         self.feature_extractors=[]
 
-    def grid(self):
-        return self.scenarios_df
+    def grid(self, full=False):
+        summary_columns=[i for i in self.scenarios_df.columns if len(i.unique().tolist() > 1)]
+        if full:
+            return self.scenarios_df
+        else:
+            return self.scenarios_df[summary_columns]
 
     def run(self):
         log('Starting Image Classification Model Comparison Pipeline.')
