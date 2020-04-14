@@ -55,6 +55,9 @@ def showlog():
     print (file_contents)
     f.close()
 
+def clearlog():
+    open(logfile, 'w').close()
+
 
 # def supported():
 #     print ('Supported Network Architectures:')
