@@ -21,7 +21,6 @@ import radtorch
 
 
 
-
 class RADTorch_Dataset(Dataset):
     def __init__(self, **kwargs): #defines the default parameters for dataset class.
         for k,v in kwargs.items():

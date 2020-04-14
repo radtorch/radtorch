@@ -12,14 +12,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
+
 from radtorch.settings import *
-import os
-import pandas as pd
-from tqdm import tqdm_notebook as tqdm
-from os import listdir
-from os.path import isfile, join
-import pydicom
-from pathlib import Path
 
 
 def window_dicom(filepath, level, width):

@@ -48,14 +48,20 @@ class Image_Classification():
             self.feature_extractor.run()
             self.feature_table=self.feature_extractor.feature_table
             self.feature_names=self.feature_extractor.feature_names
-        self.classifier=Classifier(**self.__dict__)
+
         log('Phase 2: Classifier Training.')
         log ('Running Classifier Training.')
-        self.classifier.run()
-        self.trained_model=self.classifier
-        self.train_metrics=self.classifier.train_metrics
-        self.feature_selector=Feature_Selector(type=self.classifier.type, feature_table=self.feature_extractor.feature_table, feature_names=self.feature_extractor.feature_names)
-        log ('Classifier Training completed successfully.')
+        if self.type != 'nn_classifier':
+            self.classifier=Classifier(**self.__dict__)
+            self.classifier.run()
+            self.trained_model=self.classifier
+            self.train_metrics=self.classifier.train_metrics
+            self.feature_selector=Feature_Selector(type=self.classifier.type, feature_table=self.feature_extractor.feature_table, feature_names=self.feature_extractor.feature_names)
+            log ('Classifier Training completed successfully.')
+        else:
+            self.classifier=NN_Classifier(data_processor=self.data_processor, feature_extractor=self.feature_extractor, **self.__dict__)
+            self.trained_model, self.train_metrics=self.classifier.run()
+            log ('Classifier Training completed successfully.')
 
     def metrics(self, figure_size=(500,300)):
         return show_metrics([self.classifier],  fig_size=figure_size)

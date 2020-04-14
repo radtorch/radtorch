@@ -25,6 +25,9 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+from os import listdir
+from os.path import isfile, join
+from pathlib import Path
 from datetime import datetime
 from sklearn import metrics, tree
 from sklearn.manifold import TSNE
@@ -52,25 +55,26 @@ from bokeh.transform import factor_cmap, cumsum
 from bokeh.palettes import viridis, Paired, inferno, brewer, d3, Turbo256
 
 
-"""
-RADTOrch settings
-"""
+# RADTOrch settings
 
-#general
+
+################################################################################################################################################
+
+# GENERAL
 version='0.1.4b'
 logfile='/content/log.text'
 
+################################################################################################################################################
 
-
-
-# visutils
+# VIS
 TOOLS="hover,save,box_zoom,reset,wheel_zoom, box_select"
 COLORS3=["#d11141","#00b159","#00aedb","#f37735","#ffc425","#cccccc","#8c8c8c","#cccccc", "#ffc425","#f37735","#00aedb","#00b159"]
 COLORS2=['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716','#FF7300', '#FBD704', '#10D8B8', '#3C6FAA']*100
 COLORS=['#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1','#2F5EC4', '#4285F4', '#45A5F5',]*100
 
+################################################################################################################################################
 
-#modelsutils
+# CORE
 model_dict={
 'vgg11':{'name':'vgg11','input_size':224, 'output_features':4096},
 'vgg11_bn':{'name':'vgg11_bn','input_size':224, 'output_features':4096},
@@ -93,24 +97,29 @@ model_dict={
 
 supported_models=[x for x in model_dict.keys()]
 
-supported_image_classification_losses=['NLLLoss', 'CrossEntropyLoss', 'CosineSimilarity']
-
 supported_multi_label_image_classification_losses=[]
 
-supported_optimizer=['Adam', 'ASGD', 'RMSprop', 'SGD']
+supported_nn_optimizers=[
+'Adam',
+'AdamW',
+'SparseAdam',
+'Adamax',
+'ASGD',
+'RMSprop',
+'SGD']
 
-supported_loss={
-'NLLLoss':torch.nn.NLLLoss(),
-'CrossEntropyLoss':torch.nn.CrossEntropyLoss(),
-'MSELoss':torch.nn.MSELoss(),
-'PoissonNLLLoss': torch.nn.PoissonNLLLoss(),
-'BCELoss': torch.nn.BCELoss(),
-'BCEWithLogitsLoss': torch.nn.BCEWithLogitsLoss(),
-'MultiLabelMarginLoss':torch.nn.MultiLabelMarginLoss(),
-'SoftMarginLoss':torch.nn.SoftMarginLoss(),
-'MultiLabelSoftMarginLoss':torch.nn.MultiLabelSoftMarginLoss(),
-'CosineSimilarity':torch.nn.CosineSimilarity(dim=1, eps=1e-08),
-}
+supported_nn_loss_functions=[
+'NLLLoss',
+'CrossEntropyLoss',
+'MSELoss',
+'PoissonNLLLoss',
+'BCELoss',
+'BCEWithLogitsLoss',
+'MultiLabelMarginLoss',
+'SoftMarginLoss',
+'MultiLabelSoftMarginLoss',
+'CosineSimilarity',
+]
 
 CLASSIFER_DEFAULT_SETTINGS={
 'type':'logistic_regression',
@@ -121,6 +130,24 @@ CLASSIFER_DEFAULT_SETTINGS={
 'label_column':'label_idx',
 'parameters':{},
 }
+
+
+NN_CLASSIFIER_DEFAULT_SETTINGS={
+'type':'nn_classifier',
+'classifier_type':'NN-FCN with Softmax',
+'batch_size':16,
+'num_workers':1,
+'unfreeze':False,
+'valid_percent':0.2,
+'test_percent':0.2,
+'learning_rate':0.0001,
+'epochs':10,
+'optimizer':'adam',
+'loss_function':'BCELoss',
+'optimizer_parameters':{},
+'loss_function_parameters':{}
+}
+
 
 SUPPORTED_CLASSIFIER=[
 'linear_regression',
@@ -135,19 +162,6 @@ SUPPORTED_CLASSIFIER=[
 'xgboost',
 ]
 
-
-#dataset
-IMG_EXTENSIONS=(
-'.jpg',
-'.jpeg',
-'.png',
-'.ppm',
-'.bmp',
-'.pgm',
-'.tif',
-'.tiff',
-'.webp')
-
 DEFAULT_DATASET_SETTINGS={
 'is_dicom':True,
 'mode':'RAW',
@@ -159,7 +173,21 @@ DEFAULT_DATASET_SETTINGS={
 'multi_label':False
 }
 
+################################################################################################################################################
 
+# DATA
+IMG_EXTENSIONS=(
+'.jpg',
+'.jpeg',
+'.png',
+'.ppm',
+'.bmp',
+'.pgm',
+'.tif',
+'.tiff',
+'.webp')
+
+################################################################################################################################################
 
 #pipeline
 IMAGE_CLASSIFICATION_PIPELINE_SETTINGS={
@@ -169,7 +197,7 @@ IMAGE_CLASSIFICATION_PIPELINE_SETTINGS={
 'balance_class':False,
 'batch_size':16,
 'num_workers':1,
-'model_arch':'vgg16',
+'model_arch':'alexnet',
 'custom_resize':False,
 'pre_trained':True,
 'unfreeze':False,

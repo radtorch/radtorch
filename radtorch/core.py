@@ -17,14 +17,14 @@ from radtorch.data import *
 
 
 
-
-
 class Data_Processor(): #device, table, data_directory, is_dicom, normalize, balance_class, batch_size, num_workers, model_arch , custom_resize,
 
-    def __init__(self, **kwargs):
+    def __init__(self, DEFAULT_SETTINGS=DEFAULT_DATASET_SETTINGS, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
-
+        for k, v  in DEFAULT_SETTINGS.items():
+            if k not in kwargs.keys():
+                setattr(self, k, v)
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # Create Initial Master Dataset
@@ -65,6 +65,13 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             self.dataset=self.dataset.balance()
         self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
+        if self.valid_percent==True or self.test_percent==True:
+            data_split=self.dataset.split(**kwargs)
+            for k,v in data_split.items():
+                setattr(self, k+'_dataset', v)
+                setattr(self, k+_'dataloader', torch.utils.data.DataLoader(dataset=v, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
+
+
     def classes(self):
         return self.dataset.class_to_idx
 
@@ -88,12 +95,15 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
         show_dataloader_sample(self.dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
 
 
-class Feature_Extractor(): # model_arch, pre_trained, unfreeze, device, dataloader,
+class Feature_Extractor(): #args: model_arch, pre_trained, unfreeze, device, dataloader
 
     def __init__(self, **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
-        if self.model_arch=='vgg11': self.model=torchvision.models.vgg11(pretrained=self.pre_trained)
+        if self.model_arch not in suppored_models:
+            log('Error! Provided model architecture is not yet suported. Please use radtorch.settings.supported_models to see full list of supported models.')
+            pass
+        elif self.model_arch=='vgg11': self.model=torchvision.models.vgg11(pretrained=self.pre_trained)
         elif self.model_arch=='vgg13':  self.model=torchvision.models.vgg13(pretrained=self.pre_trained)
         elif self.model_arch=='vgg16':  self.model=torchvision.models.vgg16(pretrained=self.pre_trained)
         elif self.model_arch=='vgg19':  self.model=torchvision.models.vgg19(pretrained=self.pre_trained)
@@ -392,19 +402,25 @@ class Feature_Selector(Classifier):
         show(p)
 
 
-class NN_Classifier(object):
+class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUIRED) , unfreeze, learning_rate, epochs, optimizer, loss_function, lr_schedules, batch_size, device
 
-    def __new__(self, **kwargs):
+    def __init__(self, DEFAULT_SETTINGS=NN_CLASSIFIER_DEFAULT_SETTINGS, **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
-        if 'feature_extractor' not in self.__dist__.keys():
-            log('Error! No Feature Selector Architecture was supplied. Please sepcify which feature extractor you want to use.')
+
+        for k, v in DEFAULT_SETTINGS.items():
+            if k not in kwargs.keys():
+                setattr(self, k, v)
+        if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        if 'feature_extractor' not in self.__dist__.keys() or 'data_processor' not in self.__dist__.keys():
+            log('Error! No  Data Processor and/or Feature Selector was supplied. Please Check.')
             pass
-        else:
-            self.classifier_type='Neural Network-FCN with Softmax'
-            self.model=self.feature_extractor.model
-            self.model_arch=self.feature_extractor.model_arch
-            self.in_features=model_dict[self.model_arch]['output_features']
+
+        # MODEL
+        self.model=self.feature_extractor.model
+        self.model_arch=self.feature_extractor.model_arch
+        self.in_features=model_dict[self.model_arch]['output_features']
         if self.output_features:
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(
                                 torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True),
@@ -424,13 +440,196 @@ class NN_Classifier(object):
         if self.unfreeze: # This will result in unfreezing and retrain all model layers weight again.
             for param in self.model.parameters():
                 param.requires_grad = False
-        return self.model
+
+
+        # DATA
+        self.output_classes=self.data_processor.num_output_classes
+        self.train_dataset=self.data_processor.train_dataset
+        self.train_datalader=self.data_processor.train_dataloader
+        self.valid_dataset=self.data_processor.valid_dataset
+        self.valid_dataloader=self.data_processor.valid_dataloader
+        if self.test_percent>0:
+            self.test_dataset=self.data_processor.test_dataset
+            self.test_datalader=self.data_processor.test_datalader
+        self.tranformations=self.data_processor.transformations
+
+        # Optimizer and Loss Function
+        self.loss_function=self.nn_loss_function(type=self.loss_function, **self.loss_function_parameters)
+        self.optimizer=self.nn_optimizer(type=self.optimizer, model=self.model, learning_rate=self.learning_rate,  **self.optimizer_parameters)
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns=['Property', 'Value']
+        for i in ['train_dataset', 'valid_dataset','test_dataset']:
+            if i in self.__dict__.keys():
+                info.append({'Property':i+' size', 'Value':len(self.__dict__[i]) ignore_index=True)
         return info
 
-    def train(self, **kw): #model, train_data_loader, valid_data_loader, train_data_set, valid_data_set, loss_criterion, optimizer, epochs, device, verbose, lr_scheduler
-        self.trained_model, self.train_metrics=nn_train(model=self.model, **kw)
+    def nn_optimizer(self, type, model, learning_rate, **kw):
+        if type not in supported_nn_optimizers:
+            log('Error! Optimizer not supported yet. Please check radtorch.settings.supported_nn_optimizers')
+            pass
+        elif type=='Adam':
+            optimizer=torch.optim.Adam(params=model.parameters(),lr=learning_rate, **kwargs)
+        elif type=='AdamW':
+            optimizer=torch.optim.AdamW(params=model.parameters(), lr=learning_rate, **kwargs)
+        elif type=='SparseAdam':
+            optimizer=torch.optim.SparseAdam(params=model.parameters(), lr=learning_rate, **kwargs)
+        elif type=='Adamax':
+            optimizer=torch.optim.Adamax(params=model.parameters(), lr=learning_rate, **kwargs)
+        elif type=='ASGD':
+            optimizer=torch.optim.ASGD(params=model.parameters(), lr=learning_rate, **kwargs)
+        elif type=='RMSprop':
+            optimizer=torch.optim.RMSprop(params=model.parameters(), lr=learning_rate, **kwargs)
+        elif type=='SGD':
+            optimizer=torch.optim.SGD(params=model.parameters(), lr=learning_rate, **kwargs)
+        log('Optimizer selected is '+type)
+        return optimizer
+
+    def nn_loss_function(self, type, **kw):
+        if type not in supported_nn_loss_functions:
+            log('Error! Loss functions not supported yet. Please check radtorch.settings.supported_nn_loss_functions')
+            pass
+        elif type== 'NLLLoss':
+            loss_function=torch.nn.NLLLoss(),
+        elif type== 'CrossEntropyLoss':
+            loss_function=torch.nn.CrossEntropyLoss()
+        elif type== 'MSELoss':
+            loss_function=torch.nn.MSELoss()
+        elif type== 'PoissonNLLLoss':
+            loss_function=torch.nn.PoissonNLLLoss()
+        elif type== 'BCELoss':
+            loss_function=torch.nn.BCELoss()
+        elif type== 'BCEWithLogitsLoss':
+            loss_function=torch.nn.BCEWithLogitsLoss()
+        elif type== 'MultiLabelMarginLoss':
+            loss_function=torch.nn.MultiLabelMarginLoss()
+        elif type== 'SoftMarginLoss':
+            loss_function=torch.nn.SoftMarginLoss()
+        elif type== 'MultiLabelSoftMarginLoss':
+            loss_function=torch.nn.MultiLabelSoftMarginLoss()
+        elif type== 'CosineSimilarity':
+            loss_function=torch.nn.CosineSimilarity()
+        log('Loss function selected is '+type)
+        return loss_function
+
+    def run(self, **kw):
+        #args: model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device, verbose, lr_scheduler,
+        model=self.model
+        train_data_loader=self.train_dataloader
+        valid_data_loader=self.valid_dataloader
+        train_data_set=self.train_dataset
+        valid_data_set=self.valid_dataset
+        loss_criterion=self.loss_function
+        optimizer=self.optimizer
+        epochs=self.epochs
+        device=self.device
+        if lr_scheduler in self.__dict__.keys(): lr_scheduler=self.lr_scheduler
+
+        set_random_seed(100)
+        start_time=datetime.datetime.now()
+        training_metrics=[]
+        log('Starting training at '+ str(start_time))
+        model=model.to(device)
+        for epoch in tqdm(range(epochs)):
+            epoch_start=time.time()
+            # Set to training mode
+            model.train()
+            # Loss and Accuracy within the epoch
+            train_loss=0.0
+            train_acc=0.0
+            valid_loss=0.0
+            valid_acc=0.0
+            for i, (inputs, labels, image_paths) in enumerate(train_data_loader):
+                # inputs=inputs.float()
+                inputs=inputs.to(device)
+                labels=labels.to(device)
+                # Clean existing gradients
+                optimizer.zero_grad()
+                # Forward pass - compute outputs on input data using the model
+                outputs=model(inputs)
+                # Compute loss
+                loss=loss_criterion(outputs, labels)
+                # Backpropagate the gradients
+                loss.backward()
+                # Update the parameters
+                optimizer.step()
+                # Compute the total loss for the batch and add it to train_loss
+                train_loss += loss.item() * inputs.size(0)
+                # Compute the accuracy
+                ret, predictions=torch.max(outputs.data, 1)
+                correct_counts=predictions.eq(labels.data.view_as(predictions))
+                # Convert correct_counts to float and then compute the mean
+                acc=torch.mean(correct_counts.type(torch.FloatTensor))
+                # Compute total accuracy in the whole batch and add to train_acc
+                train_acc += acc.item() * inputs.size(0)
+                # print("Batch number: {:03d}, Training: Loss: {:.4f}, Accuracy: {:.4f}".format(i, loss.item(), acc.item()))
+            # Validation - No gradient tracking needed
+            with torch.no_grad():
+                # Set to evaluation mode
+                model.eval()
+                # Validation loop
+                for j, (inputs, labels, image_paths) in enumerate(valid_data_loader):
+                    inputs=inputs.to(device)
+                    labels=labels.to(device)
+                    # Forward pass - compute outputs on input data using the model
+                    outputs=model(inputs)
+                    # Compute loss
+                    loss=loss_criterion(outputs, labels)
+                    # Compute the total loss for the batch and add it to valid_loss
+                    valid_loss += loss.item() * inputs.size(0)
+                    # Calculate validation accuracy
+                    ret, predictions=torch.max(outputs.data, 1)
+                    correct_counts=predictions.eq(labels.data.view_as(predictions))
+                    # Convert correct_counts to float and then compute the mean
+                    acc=torch.mean(correct_counts.type(torch.FloatTensor))
+                    # Compute total accuracy in the whole batch and add to valid_acc
+                    valid_acc += acc.item() * inputs.size(0)
+                    #print("Validation Batch number: {:03d}, Validation: Loss: {:.4f}, Accuracy: {:.4f}".format(j, loss.item(), acc.item()))
+            # Find average training loss and training accuracy
+            avg_train_loss=train_loss/len(train_data_set)
+            avg_train_acc=train_acc/len(train_data_set)
+            # Find average validation loss and training accuracy
+            avg_valid_loss=valid_loss/len(valid_data_set)
+            avg_valid_acc=valid_acc/len(valid_data_set)
+            training_metrics.append([avg_train_loss, avg_valid_loss, avg_train_acc, avg_valid_acc])
+            epoch_end=time.time()
+            if lr_scheduler:
+                lr_scheduler.step(avg_valid_loss)
+            log("Epoch : {:03d}/{} : [Training: Loss: {:.4f}, Accuracy: {:.4f}%]  [Validation : Loss : {:.4f}, Accuracy: {:.4f}%] [Time: {:.4f}s]".format(epoch, epochs, avg_train_loss, avg_train_acc*100, avg_valid_loss, avg_valid_acc*100, epoch_end-epoch_start))
+        end_time=datetime.datetime.now()
+        total_training_time=end_time-start_time
+        log('Total training time='+ str(total_training_time))
+        self.trained_model=model
+        self.train_metrics=training_metrics
         return self.trained_model, self.train_metrics
+
+    def predict(self,  input_image_path, model=None, transformations=None, all_predictions=False, **kw): #input_image_path
+        if model==None:
+            model=self.trained_model
+        if tranformations==None:
+            transformations=self.transformations
+
+        if input_image_path.endswith('dcm'):
+            target_img=dicom_to_pil(input_image_path)
+        else:
+            target_img=Image.open(input_image_path).convert('RGB')
+
+        target_img_tensor=inference_transformations(target_img)
+        target_img_tensor=target_img_tensor.unsqueeze(0)
+
+        with torch.no_grad():
+            model.to('cpu')
+            target_img_tensor.to('cpu')
+            model.eval()
+            out=model(target_img_tensor)
+            softmax=torch.exp(out).cpu()
+            prediction_percentages=softmax.cpu().numpy()[0]
+            prediction_percentages=[i*100 for i in prediction_percentages]
+            _, final_prediction=torch.max(out, 1)
+            prediction_table=pd.DataFrame(list(zip([*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label_idx', 'prediction_percentage'])
+
+        if all_predictions:
+            return prediction_table
+        else:
+            return final_prediction.item(), prediction_percentages[final_prediction.item()]
