@@ -288,7 +288,7 @@ class Classifier(object):
   def roc(self, **kw):
     show_roc([self], **kw)
 
-  def predict(self, input_image_path, classifier=None, tranformations=None, all_predictions=False, **kw):
+  def predict(self, input_image_path, classifier=None, transformations=None, all_predictions=False, **kw):
 
     if classifier==None:
         classifier=self.classifier
