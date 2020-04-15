@@ -321,7 +321,7 @@ class Classifier(object):
         try:
             A = self.data_processor.classes().keys()
             B = self.data_processor.classes().values()
-            C = self.classifier.predict_proba(image_features)[0]
+            C = [float('{:0.4f}'.format(x) for x in (self.classifier.predict_proba(image_features)[0])]
             return pd.DataFrame(list(zip(A, B, C)), columns=['label', 'label_idx', 'prediction_accuracy'])
         except:
             log('All predictions could not be generated. Please set all_predictions to False.')
