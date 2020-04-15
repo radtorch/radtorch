@@ -57,26 +57,25 @@ def show_misclassified(misclassified_dictionary, transforms, class_to_idx_dict, 
     row = int(math.sqrt(num_of_images))
     try:
         sample = random.sample(list(misclassified_dictionary), num_of_images)
+        if is_dicom:
+            imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
+        else:
+            imgs = [np.array(transforms(Image.open(i).convert('RGB'))) for i in sample]
+            imgs = [np.moveaxis(i, 0, -1) for i in imgs]
+
+        titles = [
+                    ', '.join([
+                    ['Truth: '+k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['true_label']][0],
+                    ['Pred: '+k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['predicted_label']][0],
+                    'Acc = '+str(float('{:0.2f}'.format(misclassified_dictionary[i]['accuracy'])))
+                    ])
+
+                   for i in sample]
+
+        plot_images(images=imgs, titles=titles, figure_size=figure_size)
     except:
         log("Error! Number of misclassified images is less than 16. Please use a smaller num_of_images to display.")
         pass
-    if is_dicom:
-        imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
-    else:
-        imgs = [np.array(transforms(Image.open(i).convert('RGB'))) for i in sample]
-        imgs = [np.moveaxis(i, 0, -1) for i in imgs]
-
-    titles = [
-                ', '.join([
-                ['Truth: '+k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['true_label']][0],
-                ['Pred: '+k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['predicted_label']][0],
-                'Acc = '+str(float('{:0.2f}'.format(misclassified_dictionary[i]['accuracy'])))
-                ])
-
-               for i in sample]
-
-    plot_images(images=imgs, titles=titles, figure_size=figure_size)
-
 
 def show_dataloader_sample(dataloader, figure_size=(10,10), show_labels=True, show_file_name = False,):
   batch = next(iter(dataloader))
