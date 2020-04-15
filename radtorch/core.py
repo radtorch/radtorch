@@ -209,7 +209,8 @@ class Classifier(object):
 
   def create_classifier(self, **kw):
     if self.type not in SUPPORTED_CLASSIFIER:
-      raise TypeError('Error! Classifier type not supported. Please check again.')
+      log('Error! Classifier type not supported. Please check again.')
+      pass
     elif self.type=='linear_regression':
       classifier=LinearRegression(n_jobs=-1, **kw)
     elif self.type=='logistic_regression':
@@ -677,6 +678,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         log('Total training time='+ str(total_training_time))
         self.trained_model=model
         self.train_metrics=training_metrics
+        self.train_metrics = pd.DataFrame(data=self.train_metrics, columns = ['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
         return self.trained_model, self.train_metrics
 
     def confusion_matrix(self, target_dataset=None, figure_size=(8,6), cmap=None):

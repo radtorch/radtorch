@@ -77,6 +77,7 @@ def show_misclassified(misclassified_dictionary, transforms, class_to_idx_dict, 
         log("Error! Number of misclassified images is less than 16. Please use a smaller num_of_images to display.")
         pass
 
+
 def show_dataloader_sample(dataloader, figure_size=(10,10), show_labels=True, show_file_name = False,):
   batch = next(iter(dataloader))
   images, labels, paths = batch
@@ -405,15 +406,9 @@ def plot_dataset_info(dataframe_dictionary, plot_size=(500,300)):
 
 
 def show_metrics(classifer_list, fig_size=(500,300)):
-
     metrics_list = [x.train_metrics for x in classifer_list]
-
     output_notebook()
-
-
     output = []
-
-
     for m in ['Accuracy', 'Loss',]:
         ind = 0
         if m =='Loss':
