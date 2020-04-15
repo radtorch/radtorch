@@ -96,7 +96,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
         info_dict['dataset']=show_dataset_info(self.dataset)
         info_dict['dataset'].style.set_caption('Dataset')
         if 'type' in self.__dict__.keys():
-            if self.type='nn_classifier':
+            if self.type=='nn_classifier':
                 for i in ['train_dataset', 'valid_dataset','test_dataset']:
                     if i in self.__dict__.keys():
                         info_dict[i]= show_dataset_info(self.__dict__[i])
@@ -702,3 +702,5 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             return prediction_table
         else:
             return final_prediction.item(), prediction_percentages[final_prediction.item()]
+
+    def misclassified(self)
