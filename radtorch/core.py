@@ -661,7 +661,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         return self.trained_model, self.train_metrics
 
     def confusion_matrix(self, target_dataset=None, figure_size=(8,6), cmap=None):
-        if target_dataset=None:
+        if target_dataset==None:
             target_dataset=self.test_dataset
         target_classes=self.data_processor.classes.keys()
 
