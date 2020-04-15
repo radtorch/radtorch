@@ -288,7 +288,7 @@ class Classifier(object):
   def roc(self, **kw):
     show_roc([self], **kw)
 
-  def predict(self, input_image_path, classifier=None, transformations=None, all_predictions=False, **kw):
+  def predict(self, input_image_path, classifier=None, transformations=None, all_predictions=True, **kw):
 
     if classifier==None:
         classifier=self.classifier
@@ -318,6 +318,10 @@ class Classifier(object):
     if all_predictions:
         try:
             return self.classifier.predict_proba(image_features)
+            A = self.data_processor.classes().keys()
+            B = self.data_processor.classes().values()
+            C = self.classifier.predict_proba(image_features)[0]
+            return pd.DataFrame(list(zip(A, B, C)), columns=['label', 'label_idx', 'prediction_accuracy'])
         except:
             log('All predictions could not be generated. Please set all_predictions to False.')
             pass
@@ -693,7 +697,8 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             prediction_percentages=softmax.cpu().numpy()[0]
             prediction_percentages=[i*100 for i in prediction_percentages]
             _, final_prediction=torch.max(out, 1)
-            prediction_table=pd.DataFrame(list(zip([*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label_idx', 'prediction_percentage'])
+
+            prediction_table=pd.DataFrame(list(zip([*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label_idx', 'prediction_accuracy'])
 
         if all_predictions:
             return prediction_table
