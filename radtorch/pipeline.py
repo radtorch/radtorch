@@ -114,7 +114,7 @@ class Compare_Image_Classifiers():
         else:
             summary_columns=[]
             df=copy.deepcopy(self.scenarios_df)
-            df=df.drop('parameters', axis=1)
+            df=df.drop(['parameters', 'table'], axis=1)
             for col in df.columns:
                 if len(df[col].unique()) > 1:
                     summary_columns.append(col)
