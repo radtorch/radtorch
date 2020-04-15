@@ -317,7 +317,7 @@ class Classifier(object):
 
     if all_predictions:
         try:
-            return self.classifier.predict_proba(image_features)
+            # return self.classifier.predict_proba(image_features)
             A = self.data_processor.classes().keys()
             B = self.data_processor.classes().values()
             C = self.classifier.predict_proba(image_features)[0]
@@ -674,7 +674,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
     def roc(self, **kw):
       show_roc([self], **kw)
 
-    def predict(self,  input_image_path, model=None, transformations=None, all_predictions=False, **kw): #input_image_path
+    def predict(self,  input_image_path, model=None, transformations=None, all_predictions=True, **kw): #input_image_path
         if model==None:
             model=self.trained_model
         if transformations==None:
