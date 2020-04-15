@@ -336,9 +336,9 @@ class Classifier(object):
       true_labels=self.test_labels
       accuracy_list=['NA']*len(true_labels)
 
-      y = copy.deepcopy(self.classifier.test_features)
+      y = copy.deepcopy(self.test_features)
       paths=[]
-      for i in y.index.tolist():paths.append(self.classifier.feature_table.iloc[i]['img_path'])
+      for i in y.index.tolist():paths.append(self.feature_table.iloc[i]['img_path'])
 
       misclassified_dict=misclassified(true_labels_list=true_labels, predicted_labels_list=pred_labels, accuracy_list=accuracy_list, img_path_list=paths)
       show_misclassified(misclassified_dictionary=misclassified_dict, transforms=self.data_processor.tranformations, class_to_idx_dict=self.data_transformations.classes(), is_dicom = self.is_dicom, num_of_images = num_of_images, figure_size =figure_size)
