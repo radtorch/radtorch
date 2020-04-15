@@ -55,7 +55,11 @@ def misclassified(true_labels_list, predicted_labels_list, accuracy_list, img_pa
 
 def show_misclassified(misclassified_dictionary, transforms, class_to_idx_dict, is_dicom = True, num_of_images = 16, figure_size = (5,5), ):
     row = int(math.sqrt(num_of_images))
-    sample = random.sample(list(misclassified_dictionary), num_of_images)
+    try:
+        sample = random.sample(list(misclassified_dictionary), num_of_images)
+    except:
+        log("Error! Number of misclassified images is less than 16. Please use a smaller num_of_images to display.")
+        pass
     if is_dicom:
         imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
     else:
