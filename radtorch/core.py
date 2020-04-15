@@ -665,7 +665,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             target_dataset=self.test_dataset
         target_classes=(self.data_processor.classes()).keys()
 
-        show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, device=self.device, figure_size=figure_size, cmap=cmap)
+        show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_dataset, target_classes=target_classes, device=self.device, figure_size=figure_size, cmap=cmap)
 
     def roc(self, **kw):
       show_roc([self], **kw)
