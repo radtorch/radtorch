@@ -698,7 +698,8 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             prediction_percentages=[i*100 for i in prediction_percentages]
             _, final_prediction=torch.max(out, 1)
 
-            prediction_table=pd.DataFrame(list(zip([*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label_idx', 'prediction_accuracy'])
+            # prediction_table=pd.DataFrame(list(zip([*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label_idx', 'prediction_accuracy'])
+            prediction_table=pd.DataFrame(list(zip(self.data_processor.classes().keys(), [*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label','label_idx', 'prediction_accuracy'])
 
         if all_predictions:
             return prediction_table
