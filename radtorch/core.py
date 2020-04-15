@@ -264,6 +264,7 @@ class Classifier(object):
     self.classes=self.classifier.classes_.tolist()
     log(str(self.classifier_type)+ ' model training finished successfully.')
     log(str(self.classifier_type)+ ' overall training accuracy: %0.2f (+/- %0.2f)' % ( self.scores .mean(),  self.scores .std() * 2))
+    self.train_metrics = pd.DataFrame(data=self.train_metrics, columns = ['Train_Accuracy'])
     return self.classifier, self.train_metrics
 
   def average_cv_accuracy(self):
