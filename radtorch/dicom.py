@@ -17,10 +17,6 @@ from radtorch.settings import *
 
 
 def window_dicom(filepath, level, width):
-    '''
-    .. include:: ./documentation/docs/dicomutils.md##window_dicom
-    '''
-
     ds = pydicom.read_file(filepath)
     pixels = ds.pixel_array
     if ds.Modality == 'CT':
@@ -34,10 +30,6 @@ def window_dicom(filepath, level, width):
         return (pixels)
 
 def dicom_to_narray(filepath, mode='RAW', wl=None):
-    """
-    .. include:: ./documentation/docs/dicomutils.md##dicom_to_narray
-    """
-
     if mode == 'RAW':
         ds = pydicom.read_file(filepath)
         img = ds.pixel_array

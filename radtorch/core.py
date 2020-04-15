@@ -317,7 +317,6 @@ class Classifier(object):
 
     if all_predictions:
         try:
-            # return self.classifier.predict_proba(image_features)
             A = self.data_processor.classes().keys()
             B = self.data_processor.classes().values()
             C = self.classifier.predict_proba(image_features)[0]
@@ -505,7 +504,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(
                                 torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),
                                 torch.nn.LogSoftmax(dim=1))
-        if self.unfreeze: # This will result in unfreezing and retrain all model layers weight again.
+        if self.unfreeze: # This will result in unfreezing and retrain all model layers weights again.
             for param in self.model.parameters():
                 param.requires_grad = False
 
@@ -623,7 +622,6 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
                 acc=torch.mean(correct_counts.type(torch.FloatTensor))
                 # Compute total accuracy in the whole batch and add to train_acc
                 train_acc += acc.item() * inputs.size(0)
-                # print("Batch number: {:03d}, Training: Loss: {:.4f}, Accuracy: {:.4f}".format(i, loss.item(), acc.item()))
             # Validation - No gradient tracking needed
             with torch.no_grad():
                 # Set to evaluation mode
@@ -645,7 +643,6 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
                     acc=torch.mean(correct_counts.type(torch.FloatTensor))
                     # Compute total accuracy in the whole batch and add to valid_acc
                     valid_acc += acc.item() * inputs.size(0)
-                    #print("Validation Batch number: {:03d}, Validation: Loss: {:.4f}, Accuracy: {:.4f}".format(j, loss.item(), acc.item()))
             # Find average training loss and training accuracy
             avg_train_loss=train_loss/len(train_data_set)
             avg_train_acc=train_acc/len(train_data_set)
@@ -697,8 +694,6 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             prediction_percentages=softmax.cpu().numpy()[0]
             prediction_percentages=[i*100 for i in prediction_percentages]
             _, final_prediction=torch.max(out, 1)
-
-            # prediction_table=pd.DataFrame(list(zip([*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label_idx', 'prediction_accuracy'])
             prediction_table=pd.DataFrame(list(zip(self.data_processor.classes().keys(), [*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label','label_idx', 'prediction_accuracy'])
 
         if all_predictions:

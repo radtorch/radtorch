@@ -100,7 +100,6 @@ class Compare_Image_Classifiers():
             self.scenarios_list.append(d)
         self.num_scenarios=len(self.scenarios_list)
         self.scenarios_list.sort(key = lambda x: x['type'], reverse=True)
-        # self.scenarios_df=pd.DataFrame(self.scenarios_list, columns =self.compare_parameters_names)
         self.scenarios_df=pd.DataFrame(self.scenarios_list)
 
 
@@ -127,8 +126,6 @@ class Compare_Image_Classifiers():
 
 
         for x in self.scenarios_list:
-            # settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
-            # settings.update(self.non_compare_parameters)
             settings=x
             data_processor=Data_Processor(**settings)
             feature_extractor=Feature_Extractor(dataloader=data_processor.dataloader,**settings)
@@ -146,8 +143,6 @@ class Compare_Image_Classifiers():
 
         log('Phase 2: Classifier Training.')
         for x in tqdm(self.scenarios_list, total=len(self.scenarios_list)):
-            # settings={self.compare_parameters_names[i]: (list(x))[i] for i in range(len(self.compare_parameters_names))}
-            # settings.update(self.non_compare_parameters)
             settings=x
             feature_extractor=[i for i in self.feature_extractors if settings['model_arch']==i.model_arch and settings['normalize']==i.normalize and settings['balance_class']==i.balance_class][0]
             if settings['type']!='nn_classifier':

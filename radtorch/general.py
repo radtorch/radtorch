@@ -33,7 +33,6 @@ def getDuplicatesWithCount(listOfElems):
     return dictOfElems
 
 
-
 def export(item, path):
     outfile = open(path,'wb')
     pickle.dump(item,outfile)
@@ -56,6 +55,7 @@ def showlog():
     file_contents = f.read()
     print (file_contents)
     f.close()
+
 
 def clearlog():
     open(logfile, 'w').close()

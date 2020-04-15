@@ -203,9 +203,6 @@ def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_spli
 
 
 def set_random_seed(seed):
-    """
-    .. include:: ./documentation/docs/datautils.md##set_random_seed
-    """
     try:
         torch.manual_seed(seed)
         np.random.seed(seed)
@@ -216,10 +213,6 @@ def set_random_seed(seed):
 
 
 def list_of_files(root):
-    """
-    .. include:: ./documentation/docs/datautils.md##list_of_files
-    """
-
     listOfFile = os.listdir(root)
     allFiles = list()
     for entry in listOfFile:
@@ -232,20 +225,11 @@ def list_of_files(root):
 
 
 def path_to_class(filepath):
-    """
-    .. include:: ./documentation/docs/datautils.md##path_to_class
-    """
-
     item_class = (Path(filepath)).parts
     return item_class[-2]
 
 
 def root_to_class(root):
-
-    """
-    .. include:: ./documentation/docs/datautils.md##root_to_class
-    """
-
     classes = [d.name for d in os.scandir(root) if d.is_dir()]
     classes.sort()
     class_to_idx = {classes[i]: i for i in range(len(classes))}
@@ -253,10 +237,6 @@ def root_to_class(root):
 
 
 def class_to_idx(classes):
-    """
-    .. include:: ./documentation/docs/datautils.md##class_to_idx
-    """
-
     classes.sort()
     class_to_idx = {classes[i]: i for i in range(len(classes))}
     return class_to_idx

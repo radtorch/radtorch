@@ -85,9 +85,6 @@ def show_dataloader_sample(dataloader, figure_size=(10,10), show_labels=True, sh
 
 
 def show_dataset_info(dataset):
-    """
-    """
-
     input_data = dataset.input_data
     image_path_col = dataset.image_path_column
     image_label_col = dataset.image_label_column
@@ -99,14 +96,10 @@ def show_dataset_info(dataset):
       num_instances.append(input_data[image_label_col].value_counts()[[i]].sum())
     num_instances.append(sum(num_instances))
     output = pd.DataFrame(list(zip(class_names, class_idx, num_instances)), columns=['Classes', 'Class Idx', 'Number of Instances'])
-
     return output
 
 
 def show_dicom_sample(dataloader, figsize=(30,10)):
-    """
-    """
-
     i, l = next(iter(dataloader))
     l = l.detach().cpu().numpy();
     if i[0].shape[0] == 3:
@@ -164,8 +157,6 @@ def show_confusion_matrix(cm,target_names,title='Confusion Matrix',cmap=None,nor
 
 
 def show_nn_confusion_matrix(model, target_data_set, target_classes, device, figure_size=(8,6), cmap=None):
-    '''
-    '''
     true_labels = []
     pred_labels = []
 
@@ -228,9 +219,6 @@ def show_nn_misclassified(model, target_data_set, num_of_images, device, transfo
 
 
 def plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col):
-    '''
-    .. include:: ./documentation/docs/visutils.md##plot_features
-    '''
 
     output_notebook()
 
