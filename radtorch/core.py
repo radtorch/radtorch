@@ -703,5 +703,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         else:
             return final_prediction.item(), prediction_percentages[final_prediction.item()]
 
-    def misclassified(self, num_of_images=4, figure_size=(5,5),**kw):
-        show_nn_misclassified(model=self.trained_model, target_data_set=self.test_dataset, num_of_images=num_of_images, device=self.device, transforms=self.data_processor.transformations, is_dicom = self.is_dicom, figure_size=figure_size)
+    def misclassified(self, num_of_images=4, figure_size=(5,5), table=False, **kw):
+        misclassified_table = show_nn_misclassified(model=self.trained_model, target_data_set=self.test_dataset, num_of_images=num_of_images, device=self.device, transforms=self.data_processor.transformations, is_dicom = self.is_dicom, figure_size=figure_size)
+        if table:
+            return misclassified_table
