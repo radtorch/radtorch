@@ -663,7 +663,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
     def confusion_matrix(self, target_dataset=None, figure_size=(8,6), cmap=None):
         if target_dataset==None:
             target_dataset=self.test_dataset
-        target_classes=self.data_processor.classes.keys()
+        target_classes=(self.data_processor.classes()).keys()
 
         show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_data_set, target_classes=target_classes, device=self.device, figure_size=figure_size, cmap=cmap)
 
@@ -681,7 +681,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         else:
             target_img=Image.open(input_image_path).convert('RGB')
 
-        target_img_tensor=inference_transformations(target_img)
+        target_img_tensor=transformations(target_img)
         target_img_tensor=target_img_tensor.unsqueeze(0)
 
         with torch.no_grad():
