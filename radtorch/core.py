@@ -703,4 +703,4 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         else:
             return final_prediction.item(), prediction_percentages[final_prediction.item()]
 
-    def misclassified(self)
+    # def misclassified(self)
