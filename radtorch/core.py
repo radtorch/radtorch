@@ -322,7 +322,7 @@ class Classifier(object):
             A = self.data_processor.classes().keys()
             B = self.data_processor.classes().values()
             C = self.classifier.predict_proba(image_features)[0]
-            C = [("%.2f" % x) for x in C]
+            C = [("%.4f" % x) for x in C]
             return pd.DataFrame(list(zip(A, B, C)), columns=['label', 'label_idx', 'prediction_accuracy'])
         except:
             log('All predictions could not be generated. Please set all_predictions to False.')
@@ -711,6 +711,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             softmax=torch.exp(out).cpu()
             prediction_percentages=softmax.cpu().numpy()[0]
             prediction_percentages=[i*100 for i in prediction_percentages]
+            prediction_percentages = [("%.4f" % x) for x in prediction_percentages]
             _, final_prediction=torch.max(out, 1)
             prediction_table=pd.DataFrame(list(zip(self.data_processor.classes().keys(), [*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label','label_idx', 'prediction_accuracy'])
 
