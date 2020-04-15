@@ -482,7 +482,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
 
 
         # MODEL
-        self.model=self.feature_extractor.model
+        self.model=copy.deepcopy(self.feature_extractor.model)
         self.model_arch=self.feature_extractor.model_arch
         self.in_features=model_dict[self.model_arch]['output_features']
         if self.output_features:
