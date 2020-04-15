@@ -710,7 +710,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             out=model(target_img_tensor)
             softmax=torch.exp(out).cpu()
             prediction_percentages=softmax.cpu().numpy()[0]
-            prediction_percentages=[i*100 for i in prediction_percentages]
+            # prediction_percentages=[i*100 for i in prediction_percentages]
             prediction_percentages = [("%.4f" % x) for x in prediction_percentages]
             _, final_prediction=torch.max(out, 1)
             prediction_table=pd.DataFrame(list(zip(self.data_processor.classes().keys(), [*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label','label_idx', 'prediction_accuracy'])
