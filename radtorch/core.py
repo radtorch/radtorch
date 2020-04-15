@@ -478,7 +478,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         if self.test_percent>0:
             self.test_dataset=self.data_processor.test_dataset
             self.test_dataloader=self.data_processor.test_dataloader
-        self.tranformations=self.data_processor.transformations
+        self.transformations=self.data_processor.transformations
 
 
         # MODEL
@@ -666,7 +666,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
     def predict(self,  input_image_path, model=None, transformations=None, all_predictions=False, **kw): #input_image_path
         if model==None:
             model=self.trained_model
-        if tranformations==None:
+        if transformations==None:
             transformations=self.transformations
 
         if input_image_path.endswith('dcm'):
