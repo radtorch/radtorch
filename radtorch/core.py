@@ -95,10 +95,12 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
         info_dict={}
         info_dict['dataset']=show_dataset_info(self.dataset)
         info_dict['dataset'].style.set_caption('Dataset')
-        for i in ['train_dataset', 'valid_dataset','test_dataset']:
-            if i in self.__dict__.keys():
-                info_dict[i]= show_dataset_info(self.__dict__[i])
-                info_dict[i].style.set_caption(i)
+        if 'type' in self.__dict__.keys():
+            if self.type='nn_classifier':
+                for i in ['train_dataset', 'valid_dataset','test_dataset']:
+                    if i in self.__dict__.keys():
+                        info_dict[i]= show_dataset_info(self.__dict__[i])
+                        info_dict[i].style.set_caption(i)
         if plot:
             plot_dataset_info(info_dict, plot_size= figure_size)
         else:
