@@ -334,7 +334,7 @@ class Classifier(object):
   def misclassified(self, num_of_images=4, figure_size=(5,5), table=False, **kw):
       pred_labels=(self.classifier.predict(self.test_features)).tolist()
       true_labels=self.test_labels.tolist()
-      accuracy_list=['NA']*len(true_labels)
+      accuracy_list=[0.0]*len(true_labels)
 
       y = copy.deepcopy(self.test_features)
       paths=[]
