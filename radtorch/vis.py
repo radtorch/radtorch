@@ -63,11 +63,11 @@ def show_misclassified(misclassified_dictionary, transforms, class_to_idx_dict, 
         imgs = [np.moveaxis(i, 0, -1) for i in imgs]
 
     titles = [
-                # [
+                [
                 ['Truth: '+k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['true_label']][0],
                 ['Pred: '+k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['predicted_label']][0],
                 ['Acc = '+str(float('{:0.2f}'.format(misclassified_dictionary[i]['accuracy'])))]
-                # ]
+                ]
 
                for i in sample]
 
