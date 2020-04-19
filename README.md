@@ -52,11 +52,6 @@ Feature requests are more than welcomed on our discussion board [HERE](https://g
 RADTorch was developed by Mohamed Elbanan, MD: a Radiology Resident at Yale New Haven Health System, Clinical Research Affiliate at Yale School of Medicine and a Machine-learning enthusiast.
 </p>
 
-#### Develpoment Team
-
-1. [Mohamed Elbanan, MD](https://github.com/elbanan)
-2. [Kareem Elfatairy, MD](https://github.com/kareemelfatairy)
-
 
 ## Contribute
 Bug reports and pull requests are welcome.
