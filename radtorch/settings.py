@@ -174,7 +174,7 @@ DEFAULT_DATASET_SETTINGS={
 'image_label_column':'IMAGE_LABEL',
 'type':'logistic_regression',
 'model_arch':'alexnet',
-'batch_size:16,
+'batch_size':16,
 'valid_percent':0.2,
 'test_percent':0.2,
 'custom_resize':False,
