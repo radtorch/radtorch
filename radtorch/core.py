@@ -79,7 +79,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
 
 
         if self.type=='nn_classifier':
-            self.train_dataset=Dataset_from_table(table=self.train_table, **dataset_kwargs)
+            self.train_dataset=Dataset_from_table(table=self.train_table, **train_dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
             self.valid_dataset=Dataset_from_table(table=self.valid_table, **dataset_kwargs)
@@ -87,7 +87,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         else:
-            self.train_dataset=Dataset_from_table(table=self.temp_table, **dataset_kwargs)
+            self.train_dataset=Dataset_from_table(table=self.temp_table, **train_dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
             self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
