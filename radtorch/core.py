@@ -66,11 +66,13 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             log('Error! Selected mean and standard deviation are not allowed.')
             pass
 
-        self.master_dataset=Dataset_from_folder(table=self.table, **kwargs, )
-        self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-
         dataset_kwargs=copy.deepcopy(self.__dict__)
         del dataset_kwargs['table']
+
+        self.master_dataset=Dataset_from_folder(table=self.table, **dataset_kwargs)
+        self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
+
 
         if self.type=='nn_classifier':
             self.train_dataset=Dataset_from_folder(table=train_table, **dataset_kwargs)
