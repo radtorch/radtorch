@@ -180,6 +180,7 @@ DEFAULT_DATASET_SETTINGS={
 'custom_resize':False,
 'transformations':transforms.Compose([transforms.ToTensor()]),
 'multi_label':False,
+'num_workers':1,
 
 }
 
