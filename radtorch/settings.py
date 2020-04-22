@@ -218,7 +218,8 @@ IMAGE_CLASSIFICATION_PIPELINE_SETTINGS={
 'stratified':True,
 'num_splits':5,
 'label_column':'label_idx',
-'parameters':{}
+'parameters':{},
+'custom_nn_classifier':False,
 }
 
 
