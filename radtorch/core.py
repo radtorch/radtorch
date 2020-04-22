@@ -97,7 +97,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns=['Property', 'Value']
-        info=info.append({'Property':'Dataset', 'Value':len(self.dataset)}, ignore_index=True)
+        info=info.append({'Property':'Dataset', 'Value':len(self.master_dataset)}, ignore_index=True)
         for i in ['train_dataset', 'valid_dataset','test_dataset']:
             if i in self.__dict__.keys():
                 info.append({'Property':i+' size', 'Value':len(self.__dict__[i])}, ignore_index=True)
@@ -105,7 +105,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
 
     def dataset_info(self, plot=False, figure_size=(500,300)):
         info_dict={}
-        info_dict['dataset']=show_dataset_info(self.dataset)
+        info_dict['dataset']=show_dataset_info(self.master_dataset)
         info_dict['dataset'].style.set_caption('Dataset')
         if 'type' in self.__dict__.keys():
             if self.type=='nn_classifier':
