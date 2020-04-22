@@ -35,7 +35,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             all_files=list_of_files(self.data_directory)
             if self.is_dicom: dataset_files=[x for x in all_files  if x.endswith('.dcm')]
             else: dataset_files=[x for x in all_files if x.endswith(IMG_EXTENSIONS)]
-            all_classes=[path_to_class(i) for i in self.dataset_files]
+            all_classes=[path_to_class(i) for i in dataset_files]
             self.table=pd.DataFrame(list(zip(dataset_files, all_classes)), columns=[self.image_path_column, self.image_label_column])
 
 
@@ -90,7 +90,6 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
 
         self.test_dataset=Dataset_from_folder(**kwargs, table=test_table)
         self.test_dataloader=torch.utils.data.DataLoader(dataset=test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-
 
     def classes(self):
         return self.master_dataset.class_to_idx
