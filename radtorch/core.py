@@ -98,10 +98,10 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns=['Property', 'Value']
-        info=info.append({'Property':'Dataset', 'Value':len(self.master_dataset)}, ignore_index=True)
+        info=info.append({'Property':'master_dataset_size', 'Value':len(self.master_dataset)}, ignore_index=True)
         for i in ['train_dataset', 'valid_dataset','test_dataset']:
             if i in self.__dict__.keys():
-                info.append({'Property':i+' size', 'Value':len(self.__dict__[i])}, ignore_index=True)
+                info.append({'Property':i+'_size', 'Value':len(self.__dict__[i])}, ignore_index=True)
         return info
 
     def dataset_info(self, plot=False, figure_size=(500,300)):
