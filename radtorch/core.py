@@ -29,8 +29,8 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
 
 
         # Create Initial Master Table
-        if isinstance(self.table, str):
-            self.table=pd.read_csv(self.table)
+        if isinstance(self.table, str): self.table=pd.read_csv(self.table)
+        elif isinstance(self.table, pd.DataFrame): self.table=self.table
         else:
             classes, class_to_idx=root_to_class(self.data_directory)
             all_files=list_of_files(self.data_directory)
