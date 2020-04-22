@@ -72,7 +72,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
 
         self.master_dataset=Dataset_from_table(table=self.table, **dataset_kwargs)
         self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-        self.num_output_classes=len(self.master_dataset.classes())
+        self.num_output_classes=len(self.master_dataset.classes)
 
 
         if self.type=='nn_classifier':
