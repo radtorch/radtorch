@@ -64,15 +64,16 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
         del self.dataset_kwargs['table']
 
         if isinstance (self.normalize, tuple):
+            self.train_transformations=copy.deepcopy(self.transformations)
             mean, std=self.normalize
-            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+            self.train_transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
         else:
             log('Error! Selected mean and standard deviation are not allowed.')
             pass
 
         self.train_dataset_kwargs=copy.deepcopy(self.dataset_kwargs)
         del self.train_dataset_kwargs['transformations']
-        self.train_dataset_kwargs['transformations']=self.transformations
+        self.train_dataset_kwargs['transformations']=self.train_transformations
 
         self.master_dataset=Dataset_from_table(table=self.table, **self.dataset_kwargs)
         self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
