@@ -41,13 +41,14 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
 
 
         # Split into test, valid and train
-        temp_table, test_table=train_test_split(self.table, test_size=self.test_percent, random_state=100, shuffle=True)
-        train_table, valid_table=train_test_split(temp_table, test_size=(len(self.table)*self.valid_percent/len(temp_table)), random_state=100, shuffle=True)
+        self.temp_table, self.test_table=train_test_split(self.table, test_size=self.test_percent, random_state=100, shuffle=True)
+        self.train_table, self.valid_table=train_test_split(temp_table, test_size=(len(self.table)*self.valid_percent/len(temp_table)), random_state=100, shuffle=True)
 
 
         # Custom Resize Adjustement
-        if isinstance==False: self.resize=model_dict[self.model_arch]['input_size']
+        if self.custom_resize==False: self.resize=model_dict[self.model_arch]['input_size']
         elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
+
 
         if self.is_dicom:
             self.transformations=transforms.Compose([
@@ -75,20 +76,20 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
 
 
         if self.type=='nn_classifier':
-            self.train_dataset=Dataset_from_table(table=train_table, **dataset_kwargs)
+            self.train_dataset=Dataset_from_table(table=self.train_table, **dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
-            self.valid_dataset=Dataset_from_table(table=valid_table, **dataset_kwargs)
+            self.valid_dataset=Dataset_from_table(table=self.valid_table, **dataset_kwargs)
             self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
             self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         else:
-            self.train_dataset=Dataset_from_table(table=temp_table, **dataset_kwargs)
+            self.train_dataset=Dataset_from_table(table=self.temp_table, **dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
             self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
-        self.test_dataset=Dataset_from_table(table=test_table, **dataset_kwargs)
+        self.test_dataset=Dataset_from_table(table=self.test_table, **dataset_kwargs)
         self.test_dataloader=torch.utils.data.DataLoader(dataset=self.test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
     def classes(self):
