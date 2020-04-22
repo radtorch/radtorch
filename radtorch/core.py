@@ -70,25 +70,25 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
         else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
 
 
-        self.master_dataset=Dataset_from_folder(**kwargs, table=self.table)
+        self.master_dataset=Dataset_from_folder(table=self.table, **kwargs, )
         self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
 
         if self.type=='nn_classifier':
-            self.train_dataset=Dataset_from_folder(**kwargs, table=train_table)
+            self.train_dataset=Dataset_from_folder(table=train_table, **kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
-            self.valid_dataset=Dataset_from_folder(**kwargs, table=valid_table)
+            self.valid_dataset=Dataset_from_folder(table=valid_table, **kwargs)
             self.train_dataloader=torch.utils.data.DataLoader(dataset=train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
             self.valid_dataloader=torch.utils.data.DataLoader(dataset=valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         else:
-            self.train_dataset=Dataset_from_folder(**kwargs, table=temp_table)
+            self.train_dataset=Dataset_from_folder(table=temp_table, **kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
             self.train_dataloader=torch.utils.data.DataLoader(dataset=train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
-        self.test_dataset=Dataset_from_folder(**kwargs, table=test_table)
+        self.test_dataset=Dataset_from_folder(table=test_table, **kwargs)
         self.test_dataloader=torch.utils.data.DataLoader(dataset=test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
     def classes(self):
