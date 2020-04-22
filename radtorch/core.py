@@ -27,19 +27,27 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
                 setattr(self, k, v)
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        # Create Initial Master Dataset
-        if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs)
-        else: self.dataset=Dataset_from_folder(**kwargs)
+        # Create Initial Master Table
+        if isinstance(self.table, str):
+            self.table=pd.read_csv(self.table)
+        else:
+            classes, class_to_idx=root_to_class(self.data_directory)
+            all_files=list_of_files(self.data_directory)
+            if self.is_dicom: dataset_files=[x for x in all_files  if x.endswith('.dcm')]
+            else: dataset_files=[x for x in all_files if x.endswith(IMG_EXTENSIONS)]
+            all_classes=[path_to_class(i) for i in self.dataset_files]
+            self.table=pd.DataFrame(list(zip(dataset_files, all_classes)), columns=[self.image_path_column, self.image_label_column])
 
 
-        self.num_output_classes=len(self.dataset.classes)
-        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        # Split into test, valid and train
+        temp_table, test_table=train_test_split(self.table, test_size=test_percent, random_state=100, shuffle=True)
+        train_table, valid_table=train_test_split(temp_table, test_size=(len(self.table)*valid_percent/len(temp_table)), random_state=100, shuffle=True)
+
 
         # Custom Resize Adjustement
-        if isinstance(self.custom_resize, bool): self.resize=model_dict[self.model_arch]['input_size']
+        if isinstance==False: self.resize=model_dict[self.model_arch]['input_size']
         elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
 
-        # Create transformations
         if self.is_dicom:
             self.transformations=transforms.Compose([
                     transforms.Resize((self.resize, self.resize)),
@@ -50,45 +58,50 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
                 transforms.Resize((self.resize, self.resize)),
                 transforms.ToTensor()])
 
-        # Calculate Normalization if required
-        if self.normalize=='auto':
-            mean, std=self.dataset.mean_std()
-            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
-        elif isinstance (self.normalize, tuple):
+        if isinstance (self.normalize, tuple):
             mean, std=self.normalize
             self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+        else:
+            log('Error! Selected mean and standard deviation are not allowed.')
+            pass
 
         # Recreate Transformed Master Dataset
         if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
         else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
 
-        if self.valid_percent or self.test_percent:
-            data_split=self.dataset.split(**kwargs)
-            for k,v in data_split.items():
-                if self.balance_class:
-                    ds=v.balance()
-                    setattr(self, k+'_dataset', ds)
-                    setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=ds, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
-                else:
-                    setattr(self, k+'_dataset', v)
-                    setattr(self, k+'_dataloader', torch.utils.data.DataLoader(dataset=v, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers))
 
-        if self.balance_class:
-            self.dataset=self.dataset.balance()
-        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        self.master_dataset=Dataset_from_folder(**kwargs, table=self.table)
+        self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
+
+        if self.type=='nn_classifier':
+            self.train_dataset=Dataset_from_folder(**kwargs, table=train_table)
+            if self.balance_class:
+                self.train_dataset=self.train_dataset.balance()
+            self.valid_dataset=Dataset_from_folder(**kwargs, table=valid_table)
+            self.train_dataloader=torch.utils.data.DataLoader(dataset=train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+            self.valid_dataloader=torch.utils.data.DataLoader(dataset=valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
+        else:
+            self.train_dataset=Dataset_from_folder(**kwargs, table=temp_table)
+            if self.balance_class:
+                self.train_dataset=self.train_dataset.balance()
+            self.train_dataloader=torch.utils.data.DataLoader(dataset=train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
+        self.test_dataset=Dataset_from_folder(**kwargs, table=test_table)
+        self.test_dataloader=torch.utils.data.DataLoader(dataset=test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
 
     def classes(self):
-        return self.dataset.class_to_idx
+        return self.master_dataset.class_to_idx
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns=['Property', 'Value']
         info=info.append({'Property':'Dataset', 'Value':len(self.dataset)}, ignore_index=True)
-        if self.valid_percent or self.test_percent:
-            for i in ['train_dataset', 'valid_dataset','test_dataset']:
-                if i in self.__dict__.keys():
-                    info.append({'Property':i+' size', 'Value':len(self.__dict__[i])}, ignore_index=True)
-
+        for i in ['train_dataset', 'valid_dataset','test_dataset']:
+            if i in self.__dict__.keys():
+                info.append({'Property':i+' size', 'Value':len(self.__dict__[i])}, ignore_index=True)
         return info
 
     def dataset_info(self, plot=False, figure_size=(500,300)):
@@ -108,7 +121,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
                 display(v)
 
     def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
-        show_dataloader_sample(self.dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
+        show_dataloader_sample(self.master_dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
 
 
 class Feature_Extractor(): #args: model_arch, pre_trained, unfreeze, device, dataloader
