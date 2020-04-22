@@ -532,7 +532,11 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         self.model=copy.deepcopy(self.feature_extractor.model)
         self.model_arch=self.feature_extractor.model_arch
         self.in_features=model_dict[self.model_arch]['output_features']
-        if self.output_features:
+
+        if self.custom_nn_classifer:
+            if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=self.custom_nn_classifier
+            elif 'resnet' in self.model_arch: self.model.fc=self.custom_nn_classifier
+        elif self.output_features:
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(
                                 torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True),
                                 torch.nn.Linear(in_features=self.output_features, out_features=self.output_classes, bias=True),

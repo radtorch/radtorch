@@ -38,6 +38,7 @@ class Image_Classification():
         return info
 
     def run(self, **kw):
+        log('Starting Image Classification Pipeline')
         set_random_seed(100)
         if self.type!='nn_classifier':
             log('Phase 1: Feature Extraction.')
