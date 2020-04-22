@@ -265,12 +265,14 @@ class Classifier(object):
       else:
         kf=KFold(n_splits=self.num_splits, shuffle=True, random_state=100)
         log('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.')
+      split_id=0
       for train, test in tqdm(kf.split(self.train_features, self.train_labels), total=self.num_splits):
         self.classifier.fit(self.train_features.iloc[train], self.train_labels.iloc[train])
         split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels.iloc[test])
         self.scores.append(split_score)
-        log('Split Accuracy = ' +str(split_score))
+        log('Split '+str(split_id)+' Accuracy = ' +str(split_score))
         self.train_metrics.append([[0],[0],[split_score],[0]])
+        split_id+=1
     else:
       log('Training '+str(self.type)+' classifier without cross validation.')
       self.classifier.fit(self.train_features, self.train_labels)
