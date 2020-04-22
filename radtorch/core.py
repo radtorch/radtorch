@@ -60,6 +60,9 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
                 transforms.Resize((self.resize, self.resize)),
                 transforms.ToTensor()])
 
+        dataset_kwargs=copy.deepcopy(self.__dict__)
+        del dataset_kwargs['table']
+
         if isinstance (self.normalize, tuple):
             mean, std=self.normalize
             self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
@@ -67,8 +70,8 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             log('Error! Selected mean and standard deviation are not allowed.')
             pass
 
-        dataset_kwargs=copy.deepcopy(self.__dict__)
-        del dataset_kwargs['table']
+        train_dataset_kwargs=copy.deepcopy(dataset_kwargs)
+        train_dataset_kwargs['transfromations']=self.transformations
 
         self.master_dataset=Dataset_from_table(table=self.table, **dataset_kwargs)
         self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
