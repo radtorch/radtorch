@@ -27,6 +27,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
                 setattr(self, k, v)
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+
         # Create Initial Master Table
         if isinstance(self.table, str):
             self.table=pd.read_csv(self.table)
@@ -65,30 +66,27 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             log('Error! Selected mean and standard deviation are not allowed.')
             pass
 
-        # Recreate Transformed Master Dataset
-        if isinstance(self.table, pd.DataFrame): self.dataset=Dataset_from_table(**kwargs, transformations=self.transformations)
-        else: self.dataset=Dataset_from_folder(**kwargs, transformations=self.transformations)
-
-
         self.master_dataset=Dataset_from_folder(table=self.table, **kwargs, )
         self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
+        dataset_kwargs=copy.deepcopy(self.__dict__)
+        del dataset_kwargs['table']
 
         if self.type=='nn_classifier':
-            self.train_dataset=Dataset_from_folder(table=train_table, **kwargs)
+            self.train_dataset=Dataset_from_folder(table=train_table, **dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
-            self.valid_dataset=Dataset_from_folder(table=valid_table, **kwargs)
+            self.valid_dataset=Dataset_from_folder(table=valid_table, **dataset_kwargs)
             self.train_dataloader=torch.utils.data.DataLoader(dataset=train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
             self.valid_dataloader=torch.utils.data.DataLoader(dataset=valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         else:
-            self.train_dataset=Dataset_from_folder(table=temp_table, **kwargs)
+            self.train_dataset=Dataset_from_folder(table=temp_table, **dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
             self.train_dataloader=torch.utils.data.DataLoader(dataset=train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
-        self.test_dataset=Dataset_from_folder(table=test_table, **kwargs)
+        self.test_dataset=Dataset_from_folder(table=test_table, **dataset_kwargs)
         self.test_dataloader=torch.utils.data.DataLoader(dataset=test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
     def classes(self):
