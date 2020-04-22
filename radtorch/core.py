@@ -545,20 +545,41 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier=self.custom_nn_classifier
             elif 'resnet' in self.model_arch: self.model.fc=self.custom_nn_classifier
 
-        elif self.output_features:
-            if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(
-                                torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True),
-                                torch.nn.Linear(in_features=self.output_features, out_features=self.output_classes, bias=True),
-                                torch.nn.LogSoftmax(dim=1))
-            elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(
-                                torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True),
-                                torch.nn.Linear(in_features=self.output_features, out_features=self.output_classes, bias=True),
-                                torch.nn.LogSoftmax(dim=1))
+        # elif self.output_features:
+        #     if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(
+        #                         torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True),
+        #                         torch.nn.Linear(in_features=self.output_features, out_features=self.output_classes, bias=True),
+        #                         torch.nn.LogSoftmax(dim=1))
+        #     elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(
+        #                         torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True),
+        #                         torch.nn.Linear(in_features=self.output_features, out_features=self.output_classes, bias=True),
+        #                         torch.nn.LogSoftmax(dim=1))
         else:
-            if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(
-                                torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),
+            if 'alexnet' in self.model_arch:
+                self.model.classifier=torch.nn.Sequential(
+                                torch.nn.Dropout(p=0.5),
+                                torch.nn.Linear(in_features=25088, out_features=4096, bias=True),
+                                torch.nn.ReLU(inplace=True),
+                                torch.nn.Dropout(p=0.5),
+                                torch.nn.Linear(in_features=4096, out_features=4096, bias=True),
+                                torch.nn.ReLU(inplace=True),
+                                torch.nn.Linear(in_features=4096, out_features=self.output_classes, bias=True),
                                 torch.nn.LogSoftmax(dim=1))
-            elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(
+
+            elif 'alexnet' in self.model_arch:
+                self.model.classifier=torch.nn.Sequential(
+                                torch.nn.Dropout(p=0.5),
+                                torch.nn.Linear(in_features=9216, out_features=4096, bias=True),
+                                torch.nn.ReLU(inplace=True),
+                                torch.nn.Dropout(p=0.5),
+                                torch.nn.Linear(in_features=4096, out_features=4096, bias=True),
+                                torch.nn.ReLU(inplace=True),
+                                torch.nn.Linear(in_features=4096, out_features=self.output_classes, bias=True),
+                                torch.nn.LogSoftmax(dim=1))
+
+
+            elif 'resnet' in self.model_arch: 
+                self.model.fc=torch.nn.Sequential(
                                 torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),
                                 torch.nn.LogSoftmax(dim=1))
 
