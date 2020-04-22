@@ -158,7 +158,15 @@ class Feature_Extractor(): #args: model_arch, pre_trained, unfreeze, device, dat
         elif self.model_arch=='wide_resnet101_2': self.model=torchvision.models.wide_resnet101_2(pretrained=self.pre_trained)
         elif self.model_arch=='alexnet': self.model=torchvision.models.alexnet(pretrained=self.pre_trained)
 
-        if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Identity()
+        if 'alexnet' in self.model_arch:
+            self.model.classifier=torch.nn.Sequential(
+                                                torch.nn.Linear(in_features=self.model.classifier[1].in_features, out_features=4096, bias=True),
+                                                torch.nn.Identity())
+        elif 'vgg' in self.model_arch:
+            self.model.classifier=torch.nn.Sequential(
+                                                torch.nn.Linear(in_features=self.model.classifier[0].in_features, out_features=4096, bias=True),
+                                                torch.nn.Identity())
+
         elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Identity()
 
         if self.unfreeze:
@@ -534,8 +542,9 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         self.in_features=model_dict[self.model_arch]['output_features']
 
         if self.custom_nn_classifier:
-            if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=self.custom_nn_classifier
+            if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier=self.custom_nn_classifier
             elif 'resnet' in self.model_arch: self.model.fc=self.custom_nn_classifier
+
         elif self.output_features:
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(
                                 torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True),
@@ -552,6 +561,7 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
             elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(
                                 torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),
                                 torch.nn.LogSoftmax(dim=1))
+
         if self.unfreeze: # This will result in unfreezing and retrain all model layers weights again.
             for param in self.model.parameters():
                 param.requires_grad = False
