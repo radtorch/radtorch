@@ -70,7 +70,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             log('Error! Selected mean and standard deviation are not allowed.')
             pass
 
-        self.train_dataset_kwargs=copy.deepcopy(dataset_kwargs)
+        self.train_dataset_kwargs=copy.deepcopy(self.dataset_kwargs)
         del self.train_dataset_kwargs['transformations']
         self.train_dataset_kwargs['transformations']=self.transformations
 
