@@ -79,17 +79,17 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
             self.valid_dataset=Dataset_from_folder(table=valid_table, **dataset_kwargs)
-            self.train_dataloader=torch.utils.data.DataLoader(dataset=train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-            self.valid_dataloader=torch.utils.data.DataLoader(dataset=valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+            self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+            self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         else:
             self.train_dataset=Dataset_from_folder(table=temp_table, **dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
-            self.train_dataloader=torch.utils.data.DataLoader(dataset=train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+            self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         self.test_dataset=Dataset_from_folder(table=test_table, **dataset_kwargs)
-        self.test_dataloader=torch.utils.data.DataLoader(dataset=test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        self.test_dataloader=torch.utils.data.DataLoader(dataset=self.test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
     def classes(self):
         return self.master_dataset.class_to_idx
