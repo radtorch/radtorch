@@ -40,8 +40,8 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
 
 
         # Split into test, valid and train
-        temp_table, test_table=train_test_split(self.table, test_size=test_percent, random_state=100, shuffle=True)
-        train_table, valid_table=train_test_split(temp_table, test_size=(len(self.table)*valid_percent/len(temp_table)), random_state=100, shuffle=True)
+        temp_table, test_table=train_test_split(self.table, test_size=self.test_percent, random_state=100, shuffle=True)
+        train_table, valid_table=train_test_split(temp_table, test_size=(len(self.table)*self.valid_percent/len(temp_table)), random_state=100, shuffle=True)
 
 
         # Custom Resize Adjustement
