@@ -556,8 +556,9 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         #                         torch.nn.LogSoftmax(dim=1))
 
         else:
-            if 'alexnet' in self.model_arch:
+            if 'vgg' in self.model_arch:
                 self.model.classifier=torch.nn.Sequential(
+                                torch.nn.Dropout(p=0.5),
                                 torch.nn.Linear(in_features=25088, out_features=4096, bias=True),
                                 torch.nn.ReLU(inplace=True),
                                 torch.nn.Dropout(p=0.5),
