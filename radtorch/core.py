@@ -139,7 +139,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
         for i in train_file_list:
             if i in test_file_list:
                 leak_files.append(i)
-        log('Data Leak Check: '+str(len(train_file_list))+' file checked. '+str(len(leak_files)+' files were found in train and test datasets.'))
+        log('Data Leak Check: '+str(len(train_file_list))+' file checked. '+str(len(leak_files))+' files were found in train and test datasets.')
         if show_file:
             return pd.DataFrame(leak_files, columns='leaked_files')
 
