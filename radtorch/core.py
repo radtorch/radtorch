@@ -241,6 +241,8 @@ class Classifier(object):
         self.feature_table=pd.read_csv(self.feature_table)
 
     self.features=self.feature_table[self.feature_names]
+    if self.interaction_terms:
+        self.features=self.create_interaction_terms()
     self.labels=self.feature_table[self.label_column]
     self.train_features,  self.test_features, self.train_labels, self.test_labels=train_test_split(self.features, self.labels, test_size=self.test_percent, random_state=100)
 
@@ -390,6 +392,27 @@ class Classifier(object):
       misclassified_table = pd.DataFrame(misclassified_dict.values())
       if table:
           return misclassified_table
+
+  def coef(self, figure_size=(8,6), plot=False):
+      coeffs = pd.DataFrame(data = self.classifier.coef_, columns = self.train_features.columns)
+      if plot:
+          coeffs.T.plot.bar(legend=None, figsize=figure_size);
+      else:
+          return coeffs
+
+  def create_interaction_terms(self):
+        self.interaction_features=self.features.copy(deep=True)
+        int_feature_names = self.interaction_features.columns
+        m=len(int_feature_names)
+        for i in range(m):
+            feature_i_name = int_feature_names[i]
+            feature_i_data = self.interaction_features[feature_i_name]
+            for j in range(i+1, m):
+                feature_j_name = int_feature_names[j]
+                feature_j_data = self.interaction_features[feature_j_name]
+                feature_i_j_name = feature_i_name+'_x_'+feature_j_name
+                self.interaction_features[feature_i_j_name] = feature_i_data*feature_j_data
+        return self.interaction_features
 
 
 class Feature_Selector(Classifier):
@@ -604,6 +627,8 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         # Optimizer and Loss Function
         self.loss_function=self.nn_loss_function(type=self.loss_function, **self.loss_function_parameters)
         self.optimizer=self.nn_optimizer(type=self.optimizer, model=self.model, learning_rate=self.learning_rate,  **self.optimizer_parameters)
+
+
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())

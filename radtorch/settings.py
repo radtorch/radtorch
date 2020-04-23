@@ -128,6 +128,7 @@ CLASSIFER_DEFAULT_SETTINGS={
 'stratified':True,
 'num_splits':5,
 'label_column':'label_idx',
+'interaction_terms':False,
 'parameters':{},
 }
 
