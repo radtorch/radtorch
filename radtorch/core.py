@@ -133,8 +133,8 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
         show_dataloader_sample(self.master_dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
 
     def check_leak(self, show_file=False):
-        train_file_list=self.train_dataset.input_data[self.image_path_col]
-        test_file_list=self.test_dataset.input_data[self.image_path_col]
+        train_file_list=self.train_dataset.input_data[self.image_path_column]
+        test_file_list=self.test_dataset.input_data[self.image_path_column]
         leak_files=[]
         for i in train_file_list:
             if i in test_file_list:
