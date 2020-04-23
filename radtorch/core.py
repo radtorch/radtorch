@@ -395,8 +395,8 @@ class Classifier(object):
       if table:
           return misclassified_table
 
-  def coef(self, figure_size=(8,6), plot=False):
-      coeffs = pd.DataFrame(data = self.classifier.coef_, columns = self.train_features.columns)
+  def coef(self, figure_size=(50,10), plot=False):
+      coeffs = pd.DataFrame(dict(zip(self.train_features.columns, self.classifier.coef_.tolist())), index=[0])
       if plot:
           coeffs.T.plot.bar(legend=None, figsize=figure_size);
       else:
