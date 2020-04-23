@@ -169,7 +169,7 @@ DEFAULT_DATASET_SETTINGS={
 'mode':'RAW',
 'wl':None,
 'table':None,
-'normalize':((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+'normalize':((0, 0, 0), (1, 1, 1)),
 'balance_class':False,
 'image_path_column':'IMAGE_PATH',
 'image_label_column':'IMAGE_LABEL',

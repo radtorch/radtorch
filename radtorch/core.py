@@ -242,7 +242,9 @@ class Classifier(object):
 
     self.features=self.feature_table[self.feature_names]
     if self.interaction_terms:
+        log('Creating Interaction Terms')
         self.features=self.create_interaction_terms()
+        log('Interaction Terms Created Successfully')
     self.labels=self.feature_table[self.label_column]
     self.train_features,  self.test_features, self.train_labels, self.test_labels=train_test_split(self.features, self.labels, test_size=self.test_percent, random_state=100)
 
