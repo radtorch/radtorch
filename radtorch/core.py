@@ -132,6 +132,17 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
     def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
         show_dataloader_sample(self.master_dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
 
+    def check_leak(self, show_file=False):
+        train_file_list=self.train_dataset.input_data[self.image_path_col]
+        test_file_list=self.test_dataset.input_data[self.image_path_col]
+        leak_files=[]
+        for i in train_file_list:
+            if i in test_file_list:
+                leak_files.append(i)
+        log('Data Leak Check: '+str(len(train_file_list))+' file checked. '+str(len(leak_files)+' files were found in train and test datasets.'))
+        if show_file:
+            return pd.DataFrame(leak_files, columns='leaked_files')
+
 
 class Feature_Extractor(): #args: model_arch, pre_trained, unfreeze, device, dataloader
 
@@ -166,7 +177,6 @@ class Feature_Extractor(): #args: model_arch, pre_trained, unfreeze, device, dat
             self.model.classifier=torch.nn.Sequential(
                                                 torch.nn.Linear(in_features=self.model.classifier[0].in_features, out_features=4096, bias=True),
                                                 torch.nn.Identity())
-
         elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Identity()
 
         if self.unfreeze:
