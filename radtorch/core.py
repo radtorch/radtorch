@@ -242,9 +242,9 @@ class Classifier(object):
 
     self.features=self.feature_table[self.feature_names]
     if self.interaction_terms:
-        log('Creating Interaction Terms')
+        log('Creating Interaction Terms.')
         self.features=self.create_interaction_terms()
-        log('Interaction Terms Created Successfully')
+        log('Interaction Terms Created Successfully.')
     self.labels=self.feature_table[self.label_column]
     self.train_features,  self.test_features, self.train_labels, self.test_labels=train_test_split(self.features, self.labels, test_size=self.test_percent, random_state=100)
 
@@ -406,7 +406,7 @@ class Classifier(object):
         self.interaction_features=self.features.copy(deep=True)
         int_feature_names = self.interaction_features.columns
         m=len(int_feature_names)
-        for i in range(m):
+        for i in tqdm(range(m)):
             feature_i_name = int_feature_names[i]
             feature_i_data = self.interaction_features[feature_i_name]
             for j in range(i+1, m):
