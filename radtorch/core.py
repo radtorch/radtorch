@@ -395,14 +395,14 @@ class Classifier(object):
       if table:
           return misclassified_table
 
-  def coef(self, figure_size=(50,10), plot=False):
+  def coef(self, figure_size=(50,10), plot=False):#BETA
       coeffs = pd.DataFrame(dict(zip(self.train_features.columns, self.classifier.coef_.tolist())), index=[0])
       if plot:
           coeffs.T.plot.bar(legend=None, figsize=figure_size);
       else:
           return coeffs
 
-  def create_interaction_terms(self):
+  def create_interaction_terms(self):#BETA
         self.interaction_features=self.features.copy(deep=True)
         int_feature_names = self.interaction_features.columns
         m=len(int_feature_names)
