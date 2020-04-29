@@ -222,7 +222,7 @@ class Feature_Extractor():
         # self.feature_names=['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
         self.feature_names=['f_'+str(i) for i in range(0,self.num_features())]
         feature_table=pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['IMAGE_PATH','IMAGE_LABEL', 'FEATURES'])
-        feature_table[self.feature_names]=pd.DataFrame(feature_table.features.values.tolist(), index= feature_table.index)
+        feature_table[self.feature_names]=pd.DataFrame(feature_table.FEATURES.values.tolist(), index= feature_table.index)
         feature_table=feature_table.drop(['FEATURES'], axis=1)
         log('Features extracted successfully.')
         self.feature_table=feature_table
