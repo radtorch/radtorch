@@ -53,8 +53,8 @@ class Image_Classification():
         if 'data_processor' not in self.__dict__.keys(): self.data_processor=Data_Processor(**self.__dict__)
         # if 'feature_extractor' not in self.__dict__.keys(): self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.master_dataloader, **self.__dict__)
         if 'extracted_feature_dictionary' not in self.__dict__.keys():
-            self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, model_arch=self.model_arch,pre_trained=self.pre_trained, unfreeze=self.unfreeze, device=self.device)
-            self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, model_arch=self.model_arch,pre_trained=self.pre_trained, unfreeze=self.unfreeze, device=self.device)
+            self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
+            self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__
 
 
     def info(self):
