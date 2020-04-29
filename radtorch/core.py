@@ -266,7 +266,7 @@ class Classifier(object):
         if k not in kwargs.keys():
             setattr(self, k, v)
 
-    if 'feature_table' in self.__dict__.keys()
+    if 'feature_table' in self.__dict__.keys():
         if isinstance(self.feature_table, str):
             try:
                 self.feature_table=pd.read_csv(self.feature_table)
