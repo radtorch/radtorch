@@ -347,8 +347,8 @@ class Classifier(object):
         log('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.')
       split_id=0
       for X, x in tqdm(kf.split(self.train_features, self.train_labels), total=self.num_splits):
-        self.classifier.fit(self.train_features.iloc[X], self.train_labels.iloc[X])
-        split_score=self.classifier.score(self.train_features.iloc[x], self.train_labels.iloc[x])
+        self.classifier.fit(self.train_features.iloc[[X]], self.train_labels.iloc[[X]])
+        split_score=self.classifier.score(self.train_features.iloc[[x]], self.train_labels.iloc[[x]])
         self.scores.append(split_score)
         log('Split '+str(split_id)+' Accuracy = ' +str(split_score))
         self.train_metrics.append([[0],[0],[split_score],[0]])
