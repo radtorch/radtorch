@@ -474,7 +474,7 @@ class Classifier(object):
           outfile=open(output_path,'wb')
           pickle.dump(self,outfile)
           outfile.close()
-      log('Classifier exported successfully.')
+          log('Classifier exported successfully.')
       except:
           raise TypeError('Error! Classifier could not be exported.')
 
@@ -483,7 +483,7 @@ class Classifier(object):
           outfile=open(output_path,'wb')
           pickle.dump(self.classifier,outfile)
           outfile.close()
-      log('Trained Classifier exported successfully.')
+          log('Trained Classifier exported successfully.')
       except:
           raise TypeError('Error! Trained Classifier could not be exported.')
 
