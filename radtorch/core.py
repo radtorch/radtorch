@@ -68,7 +68,8 @@ class Data_Processor():
             mean, std=self.normalize
             self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
             # self.train_transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
-        else:
+
+        elif self.normalize!=False:
             log('Error! Selected mean and standard deviation are not allowed.')
             pass
 
