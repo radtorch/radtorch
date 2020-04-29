@@ -283,9 +283,9 @@ class Classifier(object):
         # self.test_labels=self.test_features.iloc[self.fimage_label_col]
         self.feature_names=self.extracted_feature_dictionary['train']['features_names']
         self.train_features=self.extracted_feature_dictionary['train']['features']
-        self.train_labels=self.extracted_feature_dictionary['train']['labels']
+        self.train_labels=np.array(self.extracted_feature_dictionary['train']['labels'])
         self.test_features=self.extracted_feature_dictionary['test']['features']
-        self.test_labels=self.extracted_feature_dictionary['test']['labels']
+        self.test_labels=np.array(self.extracted_feature_dictionary['test']['labels'])
 
     else:
         self.feature_names=[x for x in self.feature_table.columns if x not in [self.image_label_column,self.image_path_column]]
@@ -347,8 +347,8 @@ class Classifier(object):
         log('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.')
       split_id=0
       for train, test in tqdm(kf.split(self.train_features, self.train_labels), total=self.num_splits):
-        self.classifier.fit(self.train_features.iloc[train], np.array(self.train_labels)[train])
-        split_score=self.classifier.score(self.train_features.iloc[test], np.array(self.train_labels)[test])
+        self.classifier.fit(self.train_features.iloc[train], self.train_labels[train])
+        split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels[test])
         self.scores.append(split_score)
         log('Split '+str(split_id)+' Accuracy = ' +str(split_score))
         self.train_metrics.append([[0],[0],[split_score],[0]])
