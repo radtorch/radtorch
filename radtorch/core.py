@@ -285,7 +285,7 @@ class Classifier(object):
         self.train_features=self.extracted_feature_dictionary['train']['features']
         self.train_labels=np.array(self.extracted_feature_dictionary['train']['labels'])
         self.test_features=self.extracted_feature_dictionary['test']['features']
-        self.test_labels=self.extracted_feature_dictionary['test']['labels']
+        self.test_labels=np.array(self.extracted_feature_dictionary['test']['labels'])
 
     else:
         self.feature_names=[x for x in self.feature_table.columns if x not in [self.image_label_column,self.image_path_column]]
