@@ -51,7 +51,7 @@ class Image_Classification():
 
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
         if 'data_processor' not in self.__dict__.keys(): self.data_processor=Data_Processor(**self.__dict__)
-        if 'feature_extractor' not in self.__dict__.keys(): self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.master_dataloader, **self.__dict__)
+        # if 'feature_extractor' not in self.__dict__.keys(): self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.master_dataloader, **self.__dict__)
         if 'extracted_feature_dictionary' not in self.__dict__.keys():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, model_arch=self.model_arch,pre_trained=self.pre_trained, unfreeze=self.unfreeze, device=self.device)
             self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, model_arch=self.model_arch,pre_trained=self.pre_trained, unfreeze=self.unfreeze, device=self.device)
@@ -85,7 +85,7 @@ class Image_Classification():
                 self.test_feature_extractor.run()
                 self.extracted_feature_dictionary={
                                                     'train':{'features':self.train_feature_extractor.features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': self.train_feature_extractor.feature_names,},
-                                                    'test':{'features':self.test_feature_extractor.features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': self.train_feature_extractor.feature_names,}
+                                                    'test':{'features':self.test_feature_extractor.features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': self.train_feature_extractor.feature_names,}
                                                     }
 
             log('Phase 2: Classifier Training.')
