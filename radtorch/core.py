@@ -185,11 +185,11 @@ class Feature_Extractor():
 
         if 'alexnet' in self.model_arch:
             self.model.classifier=torch.nn.Sequential(
-                                                torch.nn.Linear(in_features=self.model.classifier[1].in_features, out_features=4096, bias=True),
+                                                torch.nn.Linear(in_features=9216, out_features=4096, bias=True),
                                                 torch.nn.Identity())
         elif 'vgg' in self.model_arch:
             self.model.classifier=torch.nn.Sequential(
-                                                torch.nn.Linear(in_features=self.model.classifier[0].in_features, out_features=4096, bias=True),
+                                                torch.nn.Linear(in_features=25088, out_features=4096, bias=True),
                                                 torch.nn.Identity())
         elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Identity()
 
