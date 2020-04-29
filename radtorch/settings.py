@@ -127,7 +127,7 @@ CLASSIFER_DEFAULT_SETTINGS={
 'cv':True,
 'stratified':True,
 'num_splits':5,
-'label_column':'label_idx',
+'image_label_col':'IMAGE_LABEL',
 'interaction_terms':False,
 'parameters':{},
 }

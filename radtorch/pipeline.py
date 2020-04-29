@@ -19,7 +19,28 @@ from radtorch.core import *
 
 
 class Image_Classification():
-
+    '''
+    IMAGE_CLASSIFICATION_PIPELINE_SETTINGS={
+    'table':None,
+    'is_dicom':True,
+    'normalize':((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+    'balance_class':False,
+    'batch_size':16,
+    'num_workers':1,
+    'model_arch':'alexnet',
+    'custom_resize':False,
+    'pre_trained':True,
+    'unfreeze':False,
+    'type':'logistic_regression',
+    'test_percent':0.2,
+    'cv':True,
+    'stratified':True,
+    'num_splits':5,
+    'label_column':'label_idx',
+    'parameters':{},
+    'custom_nn_classifier':False,
+    }
+    '''
     def __init__(self, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs):
 
         for k, v in kwargs.items():
@@ -31,6 +52,10 @@ class Image_Classification():
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
         if 'data_processor' not in self.__dict__.keys(): self.data_processor=Data_Processor(**self.__dict__)
         if 'feature_extractor' not in self.__dict__.keys(): self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.master_dataloader, **self.__dict__)
+        if 'extracted_feature_dictionary' not in self.__dict__.keys():
+            self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
+            self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__)
+
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
@@ -42,14 +67,26 @@ class Image_Classification():
         set_random_seed(100)
         if self.type!='nn_classifier':
             log('Phase 1: Feature Extraction.')
-            if 'feature_table' in self.__dict__.keys():
+            # if 'feature_table' in self.__dict__.keys():
+            #     log('Loading Extracted Features')
+            #     self.feature_table=self.__dict__['feature_table']
+            #     self.feature_names=self.__dict__['feature_names']
+            # else:
+            #     self.feature_extractor.run()
+            #     self.feature_table=self.feature_extractor.feature_table
+            #     self.feature_names=self.feature_extractor.feature_names
+
+            if 'extracted_feature_dictionary' in self.__dict__.keys():
                 log('Loading Extracted Features')
-                self.feature_table=self.__dict__['feature_table']
-                self.feature_names=self.__dict__['feature_names']
             else:
-                self.feature_extractor.run()
-                self.feature_table=self.feature_extractor.feature_table
-                self.feature_names=self.feature_extractor.feature_names
+                log('Extracting Training Features')
+                self.train_feature_extractor.run()
+                log('Extracting Testing Features')
+                self.test_feature_extractor.run()
+                self.extracted_feature_dictionary={
+                                                    'train':{'features':self.train_feature_extractor.features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': self.train_feature_extractor.feature_names,}
+                                                    'test':{'features':self.test_feature_extractor.features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': self.train_feature_extractor.feature_names,}
+                                                    }
 
             log('Phase 2: Classifier Training.')
             log ('Running Classifier Training.')
@@ -78,6 +115,7 @@ class Image_Classification():
             pass
 
 
+# NEEDS TESTING
 class Compare_Image_Classifiers():
 
     def __init__(self, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs):
@@ -188,6 +226,7 @@ class Compare_Image_Classifiers():
             pass
 
 
+# NEEDS TESTING
 class Feature_Extraction():
 
     def __init__(self, DEFAULT_SETTINGS=FEATURE_EXTRACTION_PIPELINE_SETTINGS, **kwargs):

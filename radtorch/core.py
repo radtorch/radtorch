@@ -16,9 +16,10 @@ from radtorch.general import *
 from radtorch.data import *
 
 
-
-class Data_Processor(): #device, table, data_directory, is_dicom, normalize, balance_class, batch_size, num_workers, model_arch , custom_resize,
-
+class Data_Processor():
+    '''
+    kwargs: device, table, data_directory, is_dicom, mode, wl, normalize, balance_class, batch_size, num_workers, model_arch , custom_resize,
+    '''
     def __init__(self, DEFAULT_SETTINGS=DEFAULT_DATASET_SETTINGS, **kwargs):
         for k, v in kwargs.items():
             setattr(self, k, v)
@@ -26,7 +27,6 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             if k not in kwargs.keys():
                 setattr(self, k, v)
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
 
         # Create Initial Master Table
         if isinstance(self.table, str): self.table=pd.read_csv(self.table)
@@ -44,25 +44,27 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
         self.temp_table, self.test_table=train_test_split(self.table, test_size=self.test_percent, random_state=100, shuffle=True)
         self.train_table, self.valid_table=train_test_split(self.temp_table, test_size=(len(self.table)*self.valid_percent/len(self.temp_table)), random_state=100, shuffle=True)
 
-
-        # Custom Resize Adjustement
+        # Define Transformations
+        # 1- Custom Resize Adjustement
         if self.custom_resize==False: self.resize=model_dict[self.model_arch]['input_size']
         elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
 
-
-        if self.is_dicom:
-            self.transformations=transforms.Compose([
+        # 2- Image conversion from DICOM
+        if 'transformations' not in self.__dict__.key():
+            if self.is_dicom:
+                self.transformations=transforms.Compose([
+                        transforms.Resize((self.resize, self.resize)),
+                        transforms.transforms.Grayscale(3),
+                        transforms.ToTensor()])
+            else:
+                self.transformations=transforms.Compose([
                     transforms.Resize((self.resize, self.resize)),
-                    transforms.transforms.Grayscale(3),
                     transforms.ToTensor()])
-        else:
-            self.transformations=transforms.Compose([
-                transforms.Resize((self.resize, self.resize)),
-                transforms.ToTensor()])
 
         self.dataset_kwargs=copy.deepcopy(self.__dict__)
         del self.dataset_kwargs['table']
 
+        # 3- Normalize Training Dataset
         if isinstance (self.normalize, tuple):
             self.train_transformations=copy.deepcopy(self.transformations)
             mean, std=self.normalize
@@ -84,7 +86,7 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
             self.train_dataset=Dataset_from_table(table=self.train_table, **self.train_dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
-            self.valid_dataset=Dataset_from_table(table=self.valid_table, **self.dataset_kwargs)
+            self.valid_dataset=Dataset_from_table(table=self.valid_table, **self.train_dataset_kwargs)
             self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
             self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
@@ -143,9 +145,20 @@ class Data_Processor(): #device, table, data_directory, is_dicom, normalize, bal
         if show_file:
             return pd.DataFrame(leak_files, columns='leaked_files')
 
+    def export(self, output_path):
+        try:
+            outfile=open(output_path,'wb')
+            pickle.dump(self,outfile)
+            outfile.close()
+            log('Data Processor exported successfully.')
+        except:
+            raise TypeError('Error! Data Processor could not be exported.')
 
-class Feature_Extractor(): #args: model_arch, pre_trained, unfreeze, device, dataloader
 
+class Feature_Extractor():
+    '''
+    kwargs: model_arch, pre_trained, unfreeze, device, dataloader
+    '''
     def __init__(self, **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
@@ -203,10 +216,11 @@ class Feature_Extractor(): #args: model_arch, pre_trained, unfreeze, device, dat
                 imgs=imgs.to(self.device)
                 output=(self.model(imgs)).tolist()
                 self.features=self.features+(output)
-        self.feature_names=['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
-        feature_table=pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['img_path','label_idx', 'features'])
+        # self.feature_names=['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
+        self.feature_names=['f_'+str(i) for i in range(0,self.num_features())]
+        feature_table=pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['IMAGE_PATH','IMAGE_LABEL', 'FEATURES'])
         feature_table[self.feature_names]=pd.DataFrame(feature_table.features.values.tolist(), index= feature_table.index)
-        feature_table=feature_table.drop(['features'], axis=1)
+        feature_table=feature_table.drop(['FEATURES'], axis=1)
         log('Features extracted successfully.')
         self.feature_table=feature_table
         self.features=self.feature_table[self.feature_names]
@@ -228,25 +242,60 @@ class Feature_Extractor(): #args: model_arch, pre_trained, unfreeze, device, dat
             feature_names=self.feature_names
         return plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col)
 
+    def export(self, output_path):
+        try:
+            outfile=open(output_path,'wb')
+            pickle.dump(self,outfile)
+            outfile.close()
+            log('Feature Extractor exported successfully.')
+        except:
+            raise TypeError('Error! Feature Extractor could not be exported.')
+
 
 class Classifier(object):
-
+  '''
+  kwargs: feature_table (in case the split is to be done at classifier), extracted_feature_dictionary (dictionary of train/test features), parameters, image_label_column, image_path_column, transformations/model (for prediction)
+  '''
   def __init__(self, DEFAULT_SETTINGS=CLASSIFER_DEFAULT_SETTINGS, **kwargs):
     for k,v in kwargs.items():
       setattr(self,k,v)
     for k, v  in DEFAULT_SETTINGS.items():
         if k not in kwargs.keys():
             setattr(self, k, v)
-    if isinstance(self.feature_table, str):
-        self.feature_table=pd.read_csv(self.feature_table)
 
-    self.features=self.feature_table[self.feature_names]
+    if isinstance(self.feature_table, str):
+        try:
+            self.feature_table=pd.read_csv(self.feature_table)
+        except:
+            log('Loading feature table failed. Please check the location of the feature table.')
+            pass
+
+
+    if 'extracted_feature_dictionary' in self.__dict__.keys():
+        # self.feature_names=[x for x in self.feature_table.columns if x not in [self.image_label_col,self.image_path_col]]
+        # self.train_features=self.train_features[self.feature_names]
+        # self.test_features=self.test_features.iloc[self.feature_names]
+        # self.train_labels=self.train_features.iloc[self.fimage_label_col]
+        # self.test_labels=self.test_features.iloc[self.fimage_label_col]
+        self.feature_names=self.extracted_feature_dictionary['train']['features_names']
+        self.train_features=self.extracted_feature_dictionary['train']['features']
+        self.train_labels=self.extracted_feature_dictionary['train']['labels']
+        self.test_features=self.extracted_feature_dictionary['test']['features']
+        self.test_labels=self.extracted_feature_dictionary['test']['labels']
+
+    else:
+        self.feature_names=[x for x in self.feature_table.columns if x not in [self.image_label_column,self.image_path_column]]
+        self.labels=self.feature_table[self.image_label_column]
+        self.features=self.feature_table[self.feature_names]
+        self.train_features,  self.test_features, self.train_labels, self.test_labels=train_test_split(self.features, self.labels, test_size=self.test_percent, random_state=100)
+
     if self.interaction_terms:
-        log('Creating Interaction Terms.')
-        self.features=self.create_interaction_terms()
+        log('Creating Interaction Terms for Train Dataset.')
+        self.train_features=self.create_interaction_terms(self.train_features)
+        log('Creating Interaction Terms for Test Dataset.')
+        self.test_features=self.create_interaction_terms(self.test_features)
         log('Interaction Terms Created Successfully.')
-    self.labels=self.feature_table[self.label_column]
-    self.train_features,  self.test_features, self.train_labels, self.test_labels=train_test_split(self.features, self.labels, test_size=self.test_percent, random_state=100)
+
 
     self.classifier=self.create_classifier(**self.parameters)
     self.classifier_type=self.classifier.__class__.__name__
@@ -338,8 +387,10 @@ class Classifier(object):
   def roc(self, **kw):
     show_roc([self], **kw)
 
-  def predict(self, input_image_path, classifier=None, transformations=None, all_predictions=True, **kw):
-
+  def predict(self, input_image_path, all_predictions=True, classifier=None, transformations=None, **kw):
+    '''
+    Works as a part of pipeline Only
+    '''
     if classifier==None:
         classifier=self.classifier
 
@@ -371,7 +422,7 @@ class Classifier(object):
             B = self.data_processor.classes().values()
             C = self.classifier.predict_proba(image_features)[0]
             C = [("%.4f" % x) for x in C]
-            return pd.DataFrame(list(zip(A, B, C)), columns=['label', 'label_idx', 'prediction_accuracy'])
+            return pd.DataFrame(list(zip(A, B, C)), columns=['LABEL', 'LAEBL_IDX', 'PREDICTION_ACCURACY'])
         except:
             log('All predictions could not be generated. Please set all_predictions to False.')
             pass
@@ -395,15 +446,17 @@ class Classifier(object):
       if table:
           return misclassified_table
 
+  # NEEDS TESTING
   def coef(self, figure_size=(50,10), plot=False):#BETA
-      coeffs = pd.DataFrame(dict(zip(self.train_features.columns, self.classifier.coef_.tolist())), index=[0])
+      coeffs = pd.DataFrame(dict(zip(self.feature_names, self.classifier.coef_.tolist())), index=[0])
       if plot:
           coeffs.T.plot.bar(legend=None, figsize=figure_size);
       else:
           return coeffs
 
-  def create_interaction_terms(self):#BETA
-        self.interaction_features=self.features.copy(deep=True)
+  # NEEDS TESTING
+  def create_interaction_terms(self, table):#BETA
+        self.interaction_features=table.copy(deep=True)
         int_feature_names = self.interaction_features.columns
         m=len(int_feature_names)
         for i in tqdm(range(m)):
@@ -416,7 +469,25 @@ class Classifier(object):
                 self.interaction_features[feature_i_j_name] = feature_i_data*feature_j_data
         return self.interaction_features
 
+  def export(self, output_path):
+      try:
+          outfile=open(output_path,'wb')
+          pickle.dump(self,outfile)
+          outfile.close()
+      log('Classifier exported successfully.')
+      except:
+          raise TypeError('Error! Classifier could not be exported.')
 
+  def export_trained_classifier(self, output_path):
+      try:
+          outfile=open(output_path,'wb')
+          pickle.dump(self.classifier,outfile)
+          outfile.close()
+      log('Trained Classifier exported successfully.')
+      except:
+          raise TypeError('Error! Trained Classifier could not be exported.')
+
+# NEEDS TESTING
 class Feature_Selector(Classifier):
 
     def feature_feature_correlation(self, cmap='Blues', figure_size=(20,15)):
@@ -544,8 +615,10 @@ class Feature_Selector(Classifier):
         show(p)
 
 
-class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUIRED) , unfreeze, learning_rate, epochs, optimizer, loss_function, lr_schedules, batch_size, device
-
+class NN_Classifier():
+    '''
+    kwargs: feature_extractor (REQUIRED), data_processor(REQUIRED) , unfreeze, learning_rate, epochs, optimizer, loss_function, lr_schedules, batch_size, device
+    '''
     def __init__(self, DEFAULT_SETTINGS=NN_CLASSIFIER_DEFAULT_SETTINGS, **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
@@ -629,8 +702,6 @@ class NN_Classifier(): #args: feature_extractor (REQUIRED), data_processor(REQUI
         # Optimizer and Loss Function
         self.loss_function=self.nn_loss_function(type=self.loss_function, **self.loss_function_parameters)
         self.optimizer=self.nn_optimizer(type=self.optimizer, model=self.model, learning_rate=self.learning_rate,  **self.optimizer_parameters)
-
-
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
