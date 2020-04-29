@@ -85,7 +85,7 @@ class Image_Classification():
                 self.test_feature_extractor.run()
                 self.extracted_feature_dictionary={
                                                     'train':{'features':self.train_feature_extractor.features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': self.train_feature_extractor.feature_names,},
-                                                    'test':{'features':self.test_feature_extractor.features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': self.train_feature_extractor.feature_names,}
+                                                    'test':{'features':self.test_feature_extractor.features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': self.test_feature_extractor.feature_names,}
                                                     }
 
             log('Phase 2: Classifier Training.')
