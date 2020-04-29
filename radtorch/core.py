@@ -50,7 +50,7 @@ class Data_Processor():
         elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
 
         # 2- Image conversion from DICOM
-        if 'transformations' not in self.__dict__.key():
+        if 'transformations' not in self.__dict__.keys():
             if self.is_dicom:
                 self.transformations=transforms.Compose([
                         transforms.Resize((self.resize, self.resize)),
