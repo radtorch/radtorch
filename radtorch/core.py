@@ -266,12 +266,13 @@ class Classifier(object):
         if k not in kwargs.keys():
             setattr(self, k, v)
 
-    if isinstance(self.feature_table, str):
-        try:
-            self.feature_table=pd.read_csv(self.feature_table)
-        except:
-            log('Loading feature table failed. Please check the location of the feature table.')
-            pass
+    if 'feature_table' in self.__dict__.keys()
+        if isinstance(self.feature_table, str):
+            try:
+                self.feature_table=pd.read_csv(self.feature_table)
+            except:
+                log('Loading feature table failed. Please check the location of the feature table.')
+                pass
 
 
     if 'extracted_feature_dictionary' in self.__dict__.keys():
