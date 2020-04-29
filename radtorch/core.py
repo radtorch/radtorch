@@ -74,7 +74,6 @@ class Data_Processor():
 
         self.dataset_kwargs=copy.deepcopy(self.__dict__)
         del self.dataset_kwargs['table']
-        del self.dataset_kwargs['transformations']
 
         # self.train_dataset_kwargs=copy.deepcopy(self.dataset_kwargs)
         # del self.train_dataset_kwargs['transformations']
@@ -86,20 +85,20 @@ class Data_Processor():
 
 
         if self.type=='nn_classifier':
-            self.train_dataset=Dataset_from_table(table=self.train_table, transformations=self.transformations, **self.dataset_kwargs)
+            self.train_dataset=Dataset_from_table(table=self.train_table, **self.dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
-            self.valid_dataset=Dataset_from_table(table=self.valid_table,  transformations=self.transformations, **self.dataset_kwargs)
+            self.valid_dataset=Dataset_from_table(table=self.valid_table, **self.dataset_kwargs)
             self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
             self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         else:
-            self.train_dataset=Dataset_from_table(table=self.temp_table,  transformations=self.transformations, **self.dataset_kwargs)
+            self.train_dataset=Dataset_from_table(table=self.temp_table,  **self.dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
             self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
-        self.test_dataset=Dataset_from_table(table=self.test_table,  transformations=self.transformations, **self.dataset_kwargs)
+        self.test_dataset=Dataset_from_table(table=self.test_table, **self.dataset_kwargs)
         self.test_dataloader=torch.utils.data.DataLoader(dataset=self.test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
     def classes(self):

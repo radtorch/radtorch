@@ -179,7 +179,6 @@ DEFAULT_DATASET_SETTINGS={
 'valid_percent':0.2,
 'test_percent':0.2,
 'custom_resize':False,
-'transformations':transforms.Compose([transforms.ToTensor()]),
 'multi_label':False,
 'num_workers':0,
 
