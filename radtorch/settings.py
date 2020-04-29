@@ -137,7 +137,7 @@ NN_CLASSIFIER_DEFAULT_SETTINGS={
 'type':'nn_classifier',
 'classifier_type':'NN-FCN with Softmax',
 'batch_size':16,
-'num_workers':1,
+'num_workers':0,
 'unfreeze':False,
 'valid_percent':0.2,
 'test_percent':0.2,
@@ -181,7 +181,7 @@ DEFAULT_DATASET_SETTINGS={
 'custom_resize':False,
 'transformations':transforms.Compose([transforms.ToTensor()]),
 'multi_label':False,
-'num_workers':1,
+'num_workers':0,
 
 }
 
@@ -208,7 +208,7 @@ IMAGE_CLASSIFICATION_PIPELINE_SETTINGS={
 'normalize':((0,0,0), (1,1,1)),
 'balance_class':False,
 'batch_size':16,
-'num_workers':1,
+'num_workers':0,
 'model_arch':'alexnet',
 'custom_resize':False,
 'pre_trained':True,
@@ -230,7 +230,7 @@ FEATURE_EXTRACTION_PIPELINE_SETTINGS={
 'normalize':((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
 'balance_class':False,
 'batch_size':16,
-'num_workers':1,
+'num_workers':0,
 'model_arch':'alexnet',
 'custom_resize':False,
 'pre_trained':True,
