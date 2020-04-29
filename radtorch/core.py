@@ -92,7 +92,7 @@ class Data_Processor():
             self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         else:
-            self.train_dataset=Dataset_from_table(table=self.temp_table, **self.train_dataset_kwargs)
+            self.train_dataset=Dataset_from_table(table=self.temp_table, **self.dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
             self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
