@@ -205,7 +205,7 @@ IMG_EXTENSIONS=(
 IMAGE_CLASSIFICATION_PIPELINE_SETTINGS={
 'table':None,
 'is_dicom':True,
-'normalize':((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+'normalize':((0,0,0), (1,1,1)),
 'balance_class':False,
 'batch_size':16,
 'num_workers':1,
@@ -231,7 +231,7 @@ FEATURE_EXTRACTION_PIPELINE_SETTINGS={
 'balance_class':False,
 'batch_size':16,
 'num_workers':1,
-'model_arch':'vgg16',
+'model_arch':'alexnet',
 'custom_resize':False,
 'pre_trained':True,
 'unfreeze':False,
