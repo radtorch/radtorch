@@ -437,14 +437,14 @@ class Classifier(object):
 
         return (prediction[0], [k for k,v in class_to_idx.items() if v==prediction][0])
 
-  def misclassified(self, num_of_images=4, figure_size=(5,5), table=False, **kw):
+  def misclassified(self, num_of_images=4, figure_size=(5,5), table=False, **kw): # NEEDS CHECK FILE PATH !!!!!
       pred_labels=(self.classifier.predict(self.test_features)).tolist()
       true_labels=self.test_labels.tolist()
       accuracy_list=[0.0]*len(true_labels)
 
       y = copy.deepcopy(self.test_features)
       paths=[]
-      for i in y.index.tolist():paths.append(self.feature_table.iloc[i]['img_path'])
+      for i in y.index.tolist():paths.append(self.test_feature_extractor.feature_table.iloc[i]['IMAGE_PATH'])  # <<<<< this line was changed .. check.
 
       misclassified_dict=misclassified(true_labels_list=true_labels, predicted_labels_list=pred_labels, accuracy_list=accuracy_list, img_path_list=paths)
       show_misclassified(misclassified_dictionary=misclassified_dict, transforms=self.data_processor.transformations, class_to_idx_dict=self.data_processor.classes(), is_dicom = self.is_dicom, num_of_images = num_of_images, figure_size =figure_size)
