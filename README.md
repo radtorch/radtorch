@@ -11,7 +11,7 @@
 RADTorch provides a package of higher level functions and classes that significantly decrease the amount of time needed for implementation of different machine and deep learning algorithms on DICOM medical images.
 </p>
 
-![](/docs/docs/img/radtorch_stack.png)
+![](/docs/documentation/img/radtorch_stack.png)
 
 
 ## How
