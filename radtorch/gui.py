@@ -56,6 +56,19 @@ class Image_Classification():
 
         # Classifier Module
         self.classifier_type = widgets.Dropdown(options=["linear_regression", "sgd", "logistic_regression", "ridge", "knn", "decision_trees", "random_forests", "gradient_boost", "adaboost", "xgboost", "nn_classifier"],value='ridge',description='Classifier:', style=style, layout=top_margin)
+        self.epochs = widgets.IntSlider(
+                            value=10,
+                            min=1,
+                            max=1000,
+                            step=5,
+                            description='Epochs:',
+                            disabled=False,
+                            continuous_update=False,
+                            orientation='horizontal',
+                            readout=True,
+                            readout_format='d'
+                            , layout=top_margin
+                            )
         self.valid_percent = widgets.FloatSlider(
             value=0.2,
             min=0,
@@ -129,7 +142,7 @@ class Image_Classification():
         # data_entry = widgets.VBox([folder, table, dicom, batch, custom_resize, balance_class, normalize, ])
         data_entry = widgets.VBox([self.folder, self.dicom, self.batch, self.custom_resize, self.balance_class, self.normalize, ])
         feature_extraction = widgets.VBox([self.model_arch, self.pre_trained, self.unfreeze], layout=widgets.Layout(margin='0 0 0 50px'))
-        classifier = widgets.VBox([self.classifier_type, self.valid_percent, self.test_percent, self.cross_validation, self.stratified, self.cross_validation_splits, self.parameters], layout=widgets.Layout(margin='0 0 0 50px'))
+        classifier = widgets.VBox([self.classifier_type, self.epochs, self.valid_percent, self.test_percent, self.cross_validation, self.stratified, self.cross_validation_splits, self.parameters], layout=widgets.Layout(margin='0 0 0 50px'))
         side_buttons= widgets.VBox([self.save, self.info, self.run], layout=widgets.Layout(margin='0 0 0 50px'))
 
         output = widgets.HBox([data_entry, feature_extraction, classifier, side_buttons])
@@ -150,6 +163,7 @@ class Image_Classification():
         'balance_class':self.balance_class.value,
         'batch_size':self.batch.value,
         'model_arch':self.model_arch.value,
+        'epochs':self.epochs,
         'custom_resize':self.custom_resize.value,
         'pre_trained':self.pre_trained.value,
         'unfreeze':self.unfreeze.value,
@@ -165,7 +179,7 @@ class Image_Classification():
         return self.clf
 
     def info_clf(self, button):
-        self.clf.data_processor.show_dataset_info()
+        self.clf.data_processor.dataset_info()
 
     def run_clf(self, button):
         self.clf.run()
