@@ -27,7 +27,7 @@ def image_classification():
 
     # Data Module
     folder = widgets.Text(placeholder='Path to data folder', description='Data Folder:', style=style)
-    table = widgets.Text(placeholder='label table: path to csv or name of pandas', description='Label Table:', value=None, style=style, layout=top_margin)
+    # table = widgets.Text(placeholder='label table: path to csv or name of pandas', description='Label Table:', value=None, style=style, layout=top_margin)
     dicom = widgets.ToggleButtons(options=[True, False],button_style='',description='DICOM:', value=False, style=style, layout=top_margin)
     batch = widgets.IntSlider(
                         value=16,
@@ -157,7 +157,8 @@ def image_classification():
 
 
     # Layout Groups
-    data_entry = widgets.VBox([folder, table, dicom, batch, custom_resize, balance_class, normalize, ])
+    # data_entry = widgets.VBox([folder, table, dicom, batch, custom_resize, balance_class, normalize, ])
+    data_entry = widgets.VBox([folder, dicom, batch, custom_resize, balance_class, normalize, ])
     feature_extraction = widgets.VBox([model_arch, pre_trained, unfreeze], layout=widgets.Layout(margin='0 0 0 50px'))
     classifier = widgets.VBox([classifier_type, valid_percent, test_percent, cross_validation, stratified, cross_validation_splits, parameters], layout=widgets.Layout(margin='0 0 0 50px'))
     side_buttons= widgets.VBox([save, info, run], layout=widgets.Layout(margin='0 0 0 50px'))
