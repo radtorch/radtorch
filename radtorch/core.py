@@ -116,7 +116,7 @@ class Data_Processor():
                 info.append({'Property':i+'_size', 'Value':len(self.__dict__[i])}, ignore_index=True)
         return info
 
-    def dataset_info(self, plot=False, figure_size=(500,300)):
+    def dataset_info(self, plot=True, figure_size=(500,300)):
         info_dict={}
         info_dict['dataset']=show_dataset_info(self.master_dataset)
         info_dict['dataset'].style.set_caption('Dataset')
@@ -146,7 +146,7 @@ class Data_Processor():
         for i in train_file_list:
             if i in test_file_list:
                 leak_files.append(i)
-        log('Data Leak Check: '+str(len(train_file_list))+' train files checked. '+str(len(leak_files))+' common iles were found in train and test datasets.')
+        log('Data Leak Check: '+str(len(train_file_list))+' train files checked. '+str(len(leak_files))+' common files were found in train and test datasets.')
         if show_file:
             return pd.DataFrame(leak_files, columns='leaked_files')
 
@@ -393,7 +393,7 @@ class Classifier(object):
   def roc(self, **kw):
     show_roc([self], **kw)
 
-  def predict(self, input_image_path, all_predictions=True, classifier=None, transformations=None, **kw):
+  def predict(self, input_image_path, all_predictions=False, classifier=None, transformations=None, **kw):
     '''
     Works as a part of pipeline Only
     '''
@@ -444,7 +444,7 @@ class Classifier(object):
 
       y = copy.deepcopy(self.test_features)
       paths=[]
-      for i in y.index.tolist():paths.append(self.test_feature_extractor.feature_table.iloc[i]['IMAGE_PATH'])  # <<<<< this line was changed .. check.
+      for i in y.index.tolist():paths.append(self.test_feature_extractor.feature_table.iloc[i]['IMAGE_PATH'])  # <<<<< this line was changed .. check. / Accuracy not showing correctly !!
 
       misclassified_dict=misclassified(true_labels_list=true_labels, predicted_labels_list=pred_labels, accuracy_list=accuracy_list, img_path_list=paths)
       show_misclassified(misclassified_dictionary=misclassified_dict, transforms=self.data_processor.transformations, class_to_idx_dict=self.data_processor.classes(), is_dicom = self.is_dicom, num_of_images = num_of_images, figure_size =figure_size)

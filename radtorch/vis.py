@@ -289,7 +289,7 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
         p.xaxis.major_label_orientation = pi / 3
         p.toolbar.autohide = True
 
-        p.rect(x="features", y="img_path", width=1, height=1,
+        p.rect(x="features", y="IMAGE_PATH", width=1, height=1,
             source=df,
             fill_color={'field': 'value', 'transform': mapper},
             line_color=None)
