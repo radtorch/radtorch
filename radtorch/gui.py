@@ -112,4 +112,4 @@ def image_classification():
     # tab.set_title(0, 'Image Classification')
     # tab
 
-    tab_content
+    return tab_content
