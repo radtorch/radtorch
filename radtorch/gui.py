@@ -15,15 +15,17 @@ from radtorch.vis import *
 from radtorch.general import *
 from radtorch.data import *
 from radtorch.core import *
+from radtorch.pipline import *
 import ipywidgets as widgets
 
 
 
 def image_classification():
-    # style = {'description_width': 'initial'}
+    # Styles
     style={}
     top_margin=widgets.Layout(margin='10px 0 0 0')
 
+    # Data Module
     folder = widgets.Text(placeholder='Path to data folder', description='Data Folder:', style=style)
     table = widgets.Text(placeholder='label table: path to csv or name of pandas', description='Label Table:', style=style, layout=top_margin)
     dicom = widgets.ToggleButtons(options=[True, False],button_style='',description='DICOM:', style=style, layout=top_margin)
@@ -40,17 +42,16 @@ def image_classification():
                         readout_format='d'
                         , layout=top_margin
                         )
-
     balance_class = widgets.ToggleButtons(options=[True, False],button_style='',description='Balance:', style=style, layout=top_margin)
     normalize = widgets.Text(placeholder='place a tuple here to normalize', button_style='',description='Normalize:', style=style, layout=top_margin)
-    image_resize = widgets.IntText(value=False, description='Custom Resize:', style=style, layout=top_margin)
+    custom_resize = widgets.IntText(value=False, description='Custom Resize:', style=style, layout=top_margin)
 
-
-
-    model_type = widgets.Dropdown(options=["vgg11", "vgg11_bn", "vgg13", "vgg13_bn", "vgg16", "vgg16_bn", "vgg19", "vgg19_bn", "resnet18", "resnet34", "resnet50", "resnet101", "resnet152", "wide_resnet50_2", "wide_resnet101_2", "alexnet"],value='vgg16',description='Model Arch:', layout=top_margin)
+    # Feature Extraction Module
+    model_arch = widgets.Dropdown(options=["vgg11", "vgg11_bn", "vgg13", "vgg13_bn", "vgg16", "vgg16_bn", "vgg19", "vgg19_bn", "resnet18", "resnet34", "resnet50", "resnet101", "resnet152", "wide_resnet50_2", "wide_resnet101_2", "alexnet"],value='vgg16',description='Model Arch:', layout=top_margin)
     pre_trained = widgets.ToggleButtons(options=[True, False], value=True, button_style='',description='Pre Trained:', layout=top_margin)
     unfreeze = widgets.ToggleButtons(options=[True, False],value=False, button_style='',description='Unfreeze:', layout=top_margin)
 
+    # Classifier Module
     classifier_type = widgets.Dropdown(options=["linear_regression", "sgd", "logistic_regression", "ridge", "knn", "decision_trees", "random_forests", "gradient_boost", "adaboost", "xgboost", "nn_classifier"],value='ridge',description='Classifier:', style=style, layout=top_margin)
     valid_percent = widgets.FloatSlider(
         value=0.2,
@@ -64,7 +65,6 @@ def image_classification():
         readout=True,
         readout_format='.1f', style=style, layout=top_margin
     )
-
     test_percent = widgets.FloatSlider(
         value=0.2,
         min=0,
@@ -77,7 +77,6 @@ def image_classification():
         readout=True,
         readout_format='.1f', style=style, layout=top_margin
     )
-
     cross_validation =widgets.ToggleButtons(options=[True, False],value=True, button_style='',description='CV:', style=style, layout=top_margin)
     stratified = widgets.ToggleButtons(options=[True, False],value=True, button_style='',description='Stratified:', style=style, layout=top_margin)
     cross_validation_splits = widgets.IntSlider(
@@ -94,7 +93,27 @@ def image_classification():
                         )
     parameters = widgets.Text(placeholder='Dictionary of Extra classifier parameters', description='Parameters:', style=style, layout=top_margin)
 
-        # Side Buttons
+    clf_kwargs=
+    'data_directory':folder
+    'table':table,
+    'is_dicom':dicom,
+    'normalize':normalize,
+    'balance_class':balance_class,
+    'batch_size':batch,
+    'model_arch':model_arch,
+    'custom_resize':custom_resize,
+    'pre_trained':pre_trained,
+    'unfreeze':unfreeze,
+    'type':classifier_type,
+    'test_percent':test_percent,
+    'valid_percent':valid_percent,
+    'cv':cross_validation,
+    'stratified':stratified,
+    'num_splits':cross_validation_splits,
+    'parameters:parameters
+    }
+
+    # Side Buttons
     save=widgets.Button(
         description='Save Pipeline',
         disabled=False,
@@ -116,8 +135,12 @@ def image_classification():
         ,    layout=widgets.Layout(margin='10px 0 0 0')
     )
 
+    def save():
+        clf = Image_Classification(**clf_kwargs)
+        return clf
+    save.on_click(save)
 
-
+    # Layout Groups
     data_entry = widgets.VBox([folder, table, dicom, batch, image_resize, balance_class, normalize, ])
     feature_extraction = widgets.VBox([model_type, pre_trained, unfreeze], layout=widgets.Layout(margin='0 0 0 50px'))
     classifier = widgets.VBox([classifier_type, valid_percent, test_percent, cross_validation, stratified, cross_validation_splits, parameters], layout=widgets.Layout(margin='0 0 0 50px'))
