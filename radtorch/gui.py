@@ -93,25 +93,6 @@ def image_classification():
                         )
     parameters = widgets.Text(placeholder='Dictionary of Extra classifier parameters', description='Parameters:', style=style, layout=top_margin)
 
-    clf_kwargs={
-    'data_directory':folder.value,
-    'table':table.value,
-    'is_dicom':dicom.value,
-    'normalize':normalize.value,
-    'balance_class':balance_class.value,
-    'batch_size':batch.value,
-    'model_arch':model_arch.value,
-    'custom_resize':custom_resize.value,
-    'pre_trained':pre_trained.value,
-    'unfreeze':unfreeze.value,
-    'type':classifier_type.value,
-    'test_percent':test_percent.value,
-    'valid_percent':valid_percent.value,
-    'cv':cross_validation.value,
-    'stratified':stratified.value,
-    'num_splits':cross_validation_splits.value,
-    'parameters':parameters.value,
-    }
 
 
     # Side Buttons
@@ -137,6 +118,25 @@ def image_classification():
     )
 
     def save_clf(button):
+        clf_kwargs={
+        'data_directory':folder.value,
+        'table':table.value,
+        'is_dicom':dicom.value,
+        'normalize':normalize.value,
+        'balance_class':balance_class.value,
+        'batch_size':batch.value,
+        'model_arch':model_arch.value,
+        'custom_resize':custom_resize.value,
+        'pre_trained':pre_trained.value,
+        'unfreeze':unfreeze.value,
+        'type':classifier_type.value,
+        'test_percent':test_percent.value,
+        'valid_percent':valid_percent.value,
+        'cv':cross_validation.value,
+        'stratified':stratified.value,
+        'num_splits':cross_validation_splits.value,
+        'parameters':parameters.value,
+        }
         print (clf_kwargs)
         clf = Image_Classification(**clf_kwargs)
         return clf
