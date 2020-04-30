@@ -17,7 +17,7 @@ from radtorch.data import *
 from radtorch.core import *
 from radtorch.pipeline import *
 import ipywidgets as widgets
-
+from IPython.display import clear_output
 
 
 def image_classification():
@@ -136,6 +136,7 @@ def image_classification():
     )
 
     def save_clf(button):
+        clear_output()
         clf = Image_Classification(**clf_kwargs)
         return clf
     save.on_click(save_clf)
