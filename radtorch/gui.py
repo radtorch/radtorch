@@ -113,6 +113,7 @@ def image_classification():
     'parameters':parameters.value,
     }
 
+
     # Side Buttons
     save=widgets.Button(
         description='Save Pipeline',
@@ -136,7 +137,7 @@ def image_classification():
     )
 
     def save_clf(button):
-        clear_output()
+        print (clf_kwargs)
         clf = Image_Classification(**clf_kwargs)
         return clf
     save.on_click(save_clf)
