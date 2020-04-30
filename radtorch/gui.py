@@ -43,7 +43,7 @@ def image_classification():
                         , layout=top_margin
                         )
     balance_class = widgets.ToggleButtons(options=[True, False],button_style='',description='Balance:', style=style, layout=top_margin)
-    normalize = widgets.Text(placeholder='place a tuple here to normalize', button_style='', value=None, description='Normalize:', style=style, layout=top_margin)
+    normalize = widgets.ToggleButtons(options=[True, False],button_style='',description='Balance:', style=style, layout=top_margin)
     custom_resize = widgets.IntText(description='Custom Resize:', style=style, value=None, layout=top_margin)
 
     # Feature Extraction Module
@@ -118,11 +118,16 @@ def image_classification():
     )
 
     def save_clf(button):
+        if normalize.value==True:
+            normalize=((0,0,0), (1,1,1))
+        else:
+            normalize=False
+
         clf_kwargs={
         'data_directory':folder.value,
         'table':table.value,
         'is_dicom':dicom.value,
-        'normalize':tuple(normalize.value),
+        'normalize':normalize,
         'balance_class':balance_class.value,
         'batch_size':batch.value,
         'model_arch':model_arch.value,
