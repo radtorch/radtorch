@@ -22,7 +22,7 @@ from IPython.display import clear_output
 
 class Image_Classification():
 
-    def __init__(self, **kwargs):   
+    def __init__(self, **kwargs):
 
         # Styles
         style={}
@@ -121,9 +121,9 @@ class Image_Classification():
         )
 
 
-        save.on_click(self.save_clf)
-        info.on_click(self.info_clf)
-        run.on_click(self.run_clf)
+        self.save.on_click(self.save_clf)
+        self.info.on_click(self.info_clf)
+        self.run.on_click(self.run_clf)
 
         # Layout Groups
         # data_entry = widgets.VBox([folder, table, dicom, batch, custom_resize, balance_class, normalize, ])
