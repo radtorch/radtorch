@@ -44,7 +44,7 @@ def image_classification():
                         )
     balance_class = widgets.ToggleButtons(options=[True, False],button_style='',description='Balance:', style=style, layout=top_margin)
     normalize = widgets.Text(placeholder='place a tuple here to normalize', button_style='', value=False, description='Normalize:', style=style, layout=top_margin)
-    custom_resize = widgets.IntText(description='Custom Resize:', style=style, value=False, layout=top_margin)
+    custom_resize = widgets.IntText(description='Custom Resize:', style=style, value=None, layout=top_margin)
 
     # Feature Extraction Module
     model_arch = widgets.Dropdown(options=["vgg11", "vgg11_bn", "vgg13", "vgg13_bn", "vgg16", "vgg16_bn", "vgg19", "vgg19_bn", "resnet18", "resnet34", "resnet50", "resnet101", "resnet152", "wide_resnet50_2", "wide_resnet101_2", "alexnet"],value='vgg16',description='Model Arch:', layout=top_margin)
