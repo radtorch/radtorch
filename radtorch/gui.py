@@ -147,6 +147,15 @@ def image_classification():
         return clf
     save.on_click(save_clf)
 
+    def run_clf(button):
+        clf.run()
+    run.on_click(run_clf)
+
+    def info_clf(button):
+        clf.data_processor.show_dataset_info()
+    info.on_click(info_clf)
+
+
     # Layout Groups
     data_entry = widgets.VBox([folder, table, dicom, batch, custom_resize, balance_class, normalize, ])
     feature_extraction = widgets.VBox([model_arch, pre_trained, unfreeze], layout=widgets.Layout(margin='0 0 0 50px'))
