@@ -144,7 +144,8 @@ def image_classification():
         }
         clf = Image_Classification(**clf_kwargs)
         return clf
-    save.on_click(save_clf)
+
+    save.on_click(clf = save_clf)
 
     def run_clf(button):
         clf.run()
