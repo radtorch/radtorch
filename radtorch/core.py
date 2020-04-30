@@ -48,7 +48,7 @@ class Data_Processor():
 
         # Define Transformations
         # 1- Custom Resize Adjustement
-        if self.custom_resize==False: self.resize=model_dict[self.model_arch]['input_size']
+        if self.custom_resize in [False, '', 0]: self.resize=model_dict[self.model_arch]['input_size']
         elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
 
         # 2- Image conversion from DICOM
