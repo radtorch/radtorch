@@ -141,8 +141,8 @@ def image_classification():
     save.on_click(save_clf)
 
     # Layout Groups
-    data_entry = widgets.VBox([folder, table, dicom, batch, image_resize, balance_class, normalize, ])
-    feature_extraction = widgets.VBox([model_type, pre_trained, unfreeze], layout=widgets.Layout(margin='0 0 0 50px'))
+    data_entry = widgets.VBox([folder, table, dicom, batch, custom_resize, balance_class, normalize, ])
+    feature_extraction = widgets.VBox([model_arch, pre_trained, unfreeze], layout=widgets.Layout(margin='0 0 0 50px'))
     classifier = widgets.VBox([classifier_type, valid_percent, test_percent, cross_validation, stratified, cross_validation_splits, parameters], layout=widgets.Layout(margin='0 0 0 50px'))
     side_buttons= widgets.VBox([save, info, run], layout=widgets.Layout(margin='0 0 0 50px'))
 
