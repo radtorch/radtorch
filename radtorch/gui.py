@@ -134,7 +134,7 @@ class Image_Classification():
 
         output = widgets.HBox([data_entry, feature_extraction, classifier, side_buttons])
 
-        display (output)
+        display (output);
 
     def save_clf(self, button):
         if self.normalize.value==True:
@@ -147,7 +147,7 @@ class Image_Classification():
         'table':None,
         'is_dicom':self.dicom.value,
         'normalize':n,
-        'balance_class':self.self.balance_class.value,
+        'balance_class':self.balance_class.value,
         'batch_size':self.batch.value,
         'model_arch':self.model_arch.value,
         'custom_resize':self.custom_resize.value,
