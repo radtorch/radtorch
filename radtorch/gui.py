@@ -28,7 +28,7 @@ def image_classification():
     # Data Module
     folder = widgets.Text(placeholder='Path to data folder', description='Data Folder:', style=style)
     table = widgets.Text(placeholder='label table: path to csv or name of pandas', description='Label Table:', value=None, style=style, layout=top_margin)
-    dicom = widgets.ToggleButtons(options=[True, False],button_style='',description='DICOM:', style=style, layout=top_margin)
+    dicom = widgets.ToggleButtons(options=[True, False],button_style='',description='DICOM:', value=False, style=style, layout=top_margin)
     batch = widgets.IntSlider(
                         value=16,
                         min=4,
@@ -43,8 +43,8 @@ def image_classification():
                         , layout=top_margin
                         )
     balance_class = widgets.ToggleButtons(options=[True, False],button_style='',description='Balance:', style=style, layout=top_margin)
-    normalize = widgets.Text(placeholder='place a tuple here to normalize', button_style='',description='Normalize:', style=style, layout=top_margin)
-    custom_resize = widgets.IntText(value=False, description='Custom Resize:', style=style, layout=top_margin)
+    normalize = widgets.Text(placeholder='place a tuple here to normalize', button_style='', value=False, description='Normalize:', style=style, layout=top_margin)
+    custom_resize = widgets.IntText(value=False, description='Custom Resize:', style=style, value=False, layout=top_margin)
 
     # Feature Extraction Module
     model_arch = widgets.Dropdown(options=["vgg11", "vgg11_bn", "vgg13", "vgg13_bn", "vgg16", "vgg16_bn", "vgg19", "vgg19_bn", "resnet18", "resnet34", "resnet50", "resnet101", "resnet152", "wide_resnet50_2", "wide_resnet101_2", "alexnet"],value='vgg16',description='Model Arch:', layout=top_margin)
