@@ -15,155 +15,157 @@ from radtorch.vis import *
 from radtorch.general import *
 from radtorch.data import *
 from radtorch.core import *
-from radtorch.pipeline import *
+from radtorch import pipeline
 import ipywidgets as widgets
 from IPython.display import clear_output
 
 
-def image_classification():
-    # Styles
-    style={}
-    top_margin=widgets.Layout(margin='10px 0 0 0')
+class Image_Classification():
 
-    # Data Module
-    folder = widgets.Text(placeholder='Path to data folder', description='Data Folder:', style=style)
-    # table = widgets.Text(placeholder='label table: path to csv or name of pandas', description='Label Table:', value=None, style=style, layout=top_margin)
-    dicom = widgets.ToggleButtons(options=[True, False],button_style='',description='DICOM:', value=False, style=style, layout=top_margin)
-    batch = widgets.IntSlider(
-                        value=16,
-                        min=4,
-                        max=32,
-                        step=1,
-                        description='Batch Size:',
-                        disabled=False,
-                        continuous_update=False,
-                        orientation='horizontal',
-                        readout=True,
-                        readout_format='d'
-                        , layout=top_margin
-                        )
-    balance_class = widgets.ToggleButtons(options=[True, False],button_style='',description='Balance:', style=style, layout=top_margin)
-    normalize = widgets.ToggleButtons(options=[True, False],button_style='',description='Normalize:', style=style, layout=top_margin)
-    custom_resize = widgets.IntText(description='Custom Resize:', style=style, value=None, layout=top_margin)
+    def __init__(self, **kwargs):   
 
-    # Feature Extraction Module
-    model_arch = widgets.Dropdown(options=["vgg11", "vgg11_bn", "vgg13", "vgg13_bn", "vgg16", "vgg16_bn", "vgg19", "vgg19_bn", "resnet18", "resnet34", "resnet50", "resnet101", "resnet152", "wide_resnet50_2", "wide_resnet101_2", "alexnet"],value='vgg16',description='Model Arch:', layout=top_margin)
-    pre_trained = widgets.ToggleButtons(options=[True, False], value=True, button_style='',description='Pre Trained:', layout=top_margin)
-    unfreeze = widgets.ToggleButtons(options=[True, False],value=False, button_style='',description='Unfreeze:', layout=top_margin)
+        # Styles
+        style={}
+        top_margin=widgets.Layout(margin='10px 0 0 0')
 
-    # Classifier Module
-    classifier_type = widgets.Dropdown(options=["linear_regression", "sgd", "logistic_regression", "ridge", "knn", "decision_trees", "random_forests", "gradient_boost", "adaboost", "xgboost", "nn_classifier"],value='ridge',description='Classifier:', style=style, layout=top_margin)
-    valid_percent = widgets.FloatSlider(
-        value=0.2,
-        min=0,
-        max=1.0,
-        step=0.1,
-        description='Valid Percent:',
-        disabled=False,
-        continuous_update=False,
-        orientation='horizontal',
-        readout=True,
-        readout_format='.1f', style=style, layout=top_margin
-    )
-    test_percent = widgets.FloatSlider(
-        value=0.2,
-        min=0,
-        max=1.0,
-        step=0.1,
-        description='Test Percent:',
-        disabled=False,
-        continuous_update=False,
-        orientation='horizontal',
-        readout=True,
-        readout_format='.1f', style=style, layout=top_margin
-    )
-    cross_validation =widgets.ToggleButtons(options=[True, False],value=True, button_style='',description='CV:', style=style, layout=top_margin)
-    stratified = widgets.ToggleButtons(options=[True, False],value=True, button_style='',description='Stratified:', style=style, layout=top_margin)
-    cross_validation_splits = widgets.IntSlider(
-                        value=5,
-                        min=2,
-                        max=20,
-                        step=1,
-                        description='CV Splits:',
-                        disabled=False,
-                        continuous_update=False,
-                        orientation='horizontal',
-                        readout=True,
-                        readout_format='d', style=style, layout=top_margin
-                        )
-    parameters = widgets.Text(placeholder='Dictionary of Extra classifier parameters', description='Parameters:', style=style, layout=top_margin)
+        # Data Module
+        self.folder = widgets.Text(placeholder='Path to data folder', description='Data Folder:', style=style)
+        # table = widgets.Text(placeholder='label table: path to csv or name of pandas', description='Label Table:', value=None, style=style, layout=top_margin)
+        self.dicom = widgets.ToggleButtons(options=[True, False],button_style='',description='DICOM:', value=False, style=style, layout=top_margin)
+        self.batch = widgets.IntSlider(
+                            value=16,
+                            min=4,
+                            max=32,
+                            step=1,
+                            description='Batch Size:',
+                            disabled=False,
+                            continuous_update=False,
+                            orientation='horizontal',
+                            readout=True,
+                            readout_format='d'
+                            , layout=top_margin
+                            )
+        self.balance_class = widgets.ToggleButtons(options=[True, False],button_style='',description='Balance:', style=style, layout=top_margin)
+        self.normalize = widgets.ToggleButtons(options=[True, False],button_style='',description='Normalize:', style=style, layout=top_margin)
+        self.custom_resize = widgets.IntText(description='Custom Resize:', style=style, value=None, layout=top_margin)
+
+        # Feature Extraction Module
+        self.model_arch = widgets.Dropdown(options=["vgg11", "vgg11_bn", "vgg13", "vgg13_bn", "vgg16", "vgg16_bn", "vgg19", "vgg19_bn", "resnet18", "resnet34", "resnet50", "resnet101", "resnet152", "wide_resnet50_2", "wide_resnet101_2", "alexnet"],value='vgg16',description='Model Arch:', layout=top_margin)
+        self.pre_trained = widgets.ToggleButtons(options=[True, False], value=True, button_style='',description='Pre Trained:', layout=top_margin)
+        self.unfreeze = widgets.ToggleButtons(options=[True, False],value=False, button_style='',description='Unfreeze:', layout=top_margin)
+
+        # Classifier Module
+        self.classifier_type = widgets.Dropdown(options=["linear_regression", "sgd", "logistic_regression", "ridge", "knn", "decision_trees", "random_forests", "gradient_boost", "adaboost", "xgboost", "nn_classifier"],value='ridge',description='Classifier:', style=style, layout=top_margin)
+        self.valid_percent = widgets.FloatSlider(
+            value=0.2,
+            min=0,
+            max=1.0,
+            step=0.1,
+            description='Valid Percent:',
+            disabled=False,
+            continuous_update=False,
+            orientation='horizontal',
+            readout=True,
+            readout_format='.1f', style=style, layout=top_margin
+        )
+        self.test_percent = widgets.FloatSlider(
+            value=0.2,
+            min=0,
+            max=1.0,
+            step=0.1,
+            description='Test Percent:',
+            disabled=False,
+            continuous_update=False,
+            orientation='horizontal',
+            readout=True,
+            readout_format='.1f', style=style, layout=top_margin
+        )
+        self.cross_validation =widgets.ToggleButtons(options=[True, False],value=True, button_style='',description='CV:', style=style, layout=top_margin)
+        self.stratified = widgets.ToggleButtons(options=[True, False],value=True, button_style='',description='Stratified:', style=style, layout=top_margin)
+        self.cross_validation_splits = widgets.IntSlider(
+                            value=5,
+                            min=2,
+                            max=20,
+                            step=1,
+                            description='CV Splits:',
+                            disabled=False,
+                            continuous_update=False,
+                            orientation='horizontal',
+                            readout=True,
+                            readout_format='d', style=style, layout=top_margin
+                            )
+        self.parameters = widgets.Text(placeholder='Dictionary of Extra classifier parameters', description='Parameters:', style=style, layout=top_margin)
 
 
 
-    # Side Buttons
-    save=widgets.Button(
-        description='Save Pipeline',
-        disabled=False,
-        button_style='success', # 'success', 'info', 'warning', 'danger' or ''
-        icon='save' # (FontAwesome names without the `fa-` prefix)
-    )
-    info=widgets.Button(
-        description='Show Dataset Information',
-        disabled=False,
-        button_style='info', # 'success', 'info', 'warning', 'danger' or ''
-        icon='save', # (FontAwesome names without the `fa-` prefix),
-        layout=widgets.Layout(margin='10px 0 0 0')
-    )
-    run=widgets.Button(
-        description='Run Pipeline',
-        disabled=False,
-        button_style='danger', # 'success', 'info', 'warning', 'danger' or ''
-        icon='save' # (FontAwesome names without the `fa-` prefix)
-        ,    layout=widgets.Layout(margin='10px 0 0 0')
-    )
+        # Side Buttons
+        self.save=widgets.Button(
+            description='Save Pipeline',
+            disabled=False,
+            button_style='success', # 'success', 'info', 'warning', 'danger' or ''
+            icon='save' # (FontAwesome names without the `fa-` prefix)
+        )
+        self.info=widgets.Button(
+            description='Show Dataset Information',
+            disabled=False,
+            button_style='info', # 'success', 'info', 'warning', 'danger' or ''
+            icon='save', # (FontAwesome names without the `fa-` prefix),
+            layout=widgets.Layout(margin='10px 0 0 0')
+        )
+        self.run=widgets.Button(
+            description='Run Pipeline',
+            disabled=False,
+            button_style='danger', # 'success', 'info', 'warning', 'danger' or ''
+            icon='save' # (FontAwesome names without the `fa-` prefix)
+            ,    layout=widgets.Layout(margin='10px 0 0 0')
+        )
 
-    def save_clf(button):
-        if normalize.value==True:
+
+        save.on_click(self.save_clf)
+        info.on_click(self.info_clf)
+        run.on_click(self.run_clf)
+
+        # Layout Groups
+        # data_entry = widgets.VBox([folder, table, dicom, batch, custom_resize, balance_class, normalize, ])
+        data_entry = widgets.VBox([folder, dicom, batch, custom_resize, balance_class, normalize, ])
+        feature_extraction = widgets.VBox([model_arch, pre_trained, unfreeze], layout=widgets.Layout(margin='0 0 0 50px'))
+        classifier = widgets.VBox([classifier_type, valid_percent, test_percent, cross_validation, stratified, cross_validation_splits, parameters], layout=widgets.Layout(margin='0 0 0 50px'))
+        side_buttons= widgets.VBox([save, info, run], layout=widgets.Layout(margin='0 0 0 50px'))
+
+        output = widgets.HBox([data_entry, feature_extraction, classifier, side_buttons])
+
+        display (output)
+
+    def save_clf(self, button):
+        if self.normalize.value==True:
             n=((0,0,0), (1,1,1))
         else:
             n=False
 
         clf_kwargs={
-        'data_directory':folder.value,
+        'data_directory':self.folder.value,
         'table':None,
-        'is_dicom':dicom.value,
+        'is_dicom':self.dicom.value,
         'normalize':n,
-        'balance_class':balance_class.value,
-        'batch_size':batch.value,
-        'model_arch':model_arch.value,
-        'custom_resize':custom_resize.value,
-        'pre_trained':pre_trained.value,
-        'unfreeze':unfreeze.value,
-        'type':classifier_type.value,
-        'test_percent':test_percent.value,
-        'valid_percent':valid_percent.value,
-        'cv':cross_validation.value,
-        'stratified':stratified.value,
-        'num_splits':cross_validation_splits.value,
-        'parameters':parameters.value,
+        'balance_class':self.self.balance_class.value,
+        'batch_size':self.batch.value,
+        'model_arch':self.model_arch.value,
+        'custom_resize':self.custom_resize.value,
+        'pre_trained':self.pre_trained.value,
+        'unfreeze':self.unfreeze.value,
+        'type':self.classifier_type.value,
+        'test_percent':self.test_percent.value,
+        'valid_percent':self.valid_percent.value,
+        'cv':self.cross_validation.value,
+        'stratified':self.stratified.value,
+        'num_splits':self.cross_validation_splits.value,
+        'parameters':self.parameters.value,
         }
-        clf = Image_Classification(**clf_kwargs)
-        return clf
+        self.clf = pipeline.Image_Classification(**clf_kwargs)
+        return self.clf
 
-    save.on_click(clf = save_clf)
+    def info_clf(self, button):
+        self.clf.data_processor.show_dataset_info()
 
-    def run_clf(button):
-        clf.run()
-    run.on_click(run_clf)
-
-    def info_clf(button):
-        clf.data_processor.show_dataset_info()
-    info.on_click(info_clf)
-
-
-    # Layout Groups
-    # data_entry = widgets.VBox([folder, table, dicom, batch, custom_resize, balance_class, normalize, ])
-    data_entry = widgets.VBox([folder, dicom, batch, custom_resize, balance_class, normalize, ])
-    feature_extraction = widgets.VBox([model_arch, pre_trained, unfreeze], layout=widgets.Layout(margin='0 0 0 50px'))
-    classifier = widgets.VBox([classifier_type, valid_percent, test_percent, cross_validation, stratified, cross_validation_splits, parameters], layout=widgets.Layout(margin='0 0 0 50px'))
-    side_buttons= widgets.VBox([save, info, run], layout=widgets.Layout(margin='0 0 0 50px'))
-
-    output = widgets.HBox([data_entry, feature_extraction, classifier, side_buttons])
-
-
-    return output
+    def run_clf(self, button):
+        self.clf.run()
