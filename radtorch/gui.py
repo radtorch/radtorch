@@ -94,7 +94,7 @@ def image_classification():
     parameters = widgets.Text(placeholder='Dictionary of Extra classifier parameters', description='Parameters:', style=style, layout=top_margin)
 
     clf_kwargs={
-    'data_directory':folder,
+    'data_directory':str(folder),
     'table':table,
     'is_dicom':dicom,
     'normalize':normalize,
