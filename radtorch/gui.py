@@ -127,10 +127,10 @@ class Image_Classification():
 
         # Layout Groups
         # data_entry = widgets.VBox([folder, table, dicom, batch, custom_resize, balance_class, normalize, ])
-        data_entry = widgets.VBox([folder, dicom, batch, custom_resize, balance_class, normalize, ])
-        feature_extraction = widgets.VBox([model_arch, pre_trained, unfreeze], layout=widgets.Layout(margin='0 0 0 50px'))
-        classifier = widgets.VBox([classifier_type, valid_percent, test_percent, cross_validation, stratified, cross_validation_splits, parameters], layout=widgets.Layout(margin='0 0 0 50px'))
-        side_buttons= widgets.VBox([save, info, run], layout=widgets.Layout(margin='0 0 0 50px'))
+        data_entry = widgets.VBox([self.folder, self.dicom, self.batch, self.custom_resize, self.balance_class, self.normalize, ])
+        feature_extraction = widgets.VBox([self.model_arch, self.pre_trained, self.unfreeze], layout=widgets.Layout(margin='0 0 0 50px'))
+        classifier = widgets.VBox([self.classifier_type, self.valid_percent, self.test_percent, self.cross_validation, self.stratified, self.cross_validation_splits, self.parameters], layout=widgets.Layout(margin='0 0 0 50px'))
+        side_buttons= widgets.VBox([self.save, self.info, self.run], layout=widgets.Layout(margin='0 0 0 50px'))
 
         output = widgets.HBox([data_entry, feature_extraction, classifier, side_buttons])
 
