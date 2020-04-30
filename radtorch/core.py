@@ -29,7 +29,9 @@ class Data_Processor():
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # Create Initial Master Table
-        if isinstance(self.table, str): self.table=pd.read_csv(self.table)
+        if isinstance(self.table, str):
+                if self.table!='':
+                    self.table=pd.read_csv(self.table)
         elif isinstance(self.table, pd.DataFrame): self.table=self.table
         else:
             classes, class_to_idx=root_to_class(self.data_directory)
