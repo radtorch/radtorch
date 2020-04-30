@@ -67,14 +67,6 @@ class Image_Classification():
         set_random_seed(100)
         if self.type!='nn_classifier':
             log('Phase 1: Feature Extraction.')
-            # if 'feature_table' in self.__dict__.keys():
-            #     log('Loading Extracted Features')
-            #     self.feature_table=self.__dict__['feature_table']
-            #     self.feature_names=self.__dict__['feature_names']
-            # else:
-            #     self.feature_extractor.run()
-            #     self.feature_table=self.feature_extractor.feature_table
-            #     self.feature_names=self.feature_extractor.feature_names
 
             if 'extracted_feature_dictionary' in self.__dict__.keys():
                 log('Loading Extracted Features')
@@ -130,7 +122,6 @@ class Compare_Image_Classifiers():
         self.compare_parameters={k:v for k,v in self.__dict__.items() if type(v)==list}
         self.non_compare_parameters={k:v for k, v in self.__dict__.items() if k not in self.compare_parameters and k !='compare_parameters'}
         self.compare_parameters_names= list(self.compare_parameters.keys())
-        # self.scenarios_list=list(itertools.product(*list(self.compare_parameters.values())))
         self.scenarios_list=[]
         keys, values = zip(*self.compare_parameters.items()) #http://stephantul.github.io/python/2019/07/20/product-dict/
         for bundle in itertools.product(*values):
@@ -140,14 +131,8 @@ class Compare_Image_Classifiers():
         self.num_scenarios=len(self.scenarios_list)
         self.scenarios_list.sort(key = lambda x: x['type'], reverse=True)
         self.scenarios_df=pd.DataFrame(self.scenarios_list)
-
-
         self.classifiers=[]
-        self.data_processors=[]
-        self.feature_extractors=[]
-        self.train_feature_extractor=[]
-        self.test_feature_extractor=[]
-        self.extracted_features = {}
+
 
     def grid(self, full=False):
         if full:
@@ -169,42 +154,6 @@ class Compare_Image_Classifiers():
 
         for x in self.scenarios_list:
             classifier=Image_Classification(**x)
-        #     data_processor=Data_Processor(**settings)
-        #     feature_extractor=Feature_Extractor(dataloader=data_processor.dataloader,**settings)
-        #     train_feature_extractor=Feature_Extractor(dataloader=data_processor.train_dataloader, **settings)
-        #     test_feature_extractor=Feature_Extractor(dataloader=data_processor.test_dataloader, **settings)
-        #     if (feature_extractor.model_arch, feature_extractor.balance_class, feature_extractor.normalize) not in [(i.model_arch, i.balance_class,i.normalize )for i in self.feature_extractors]:
-        #         if settings['type']=='nn_classifier':
-        #             self.feature_extractors.append(feature_extractor)
-        #             self.data_processors.append(data_processor)
-        #             log('Skipping Phase 1: Feature Extraction. For NN-Classifiers feature extraction is performed during model training.')
-        #         else:
-        #             log('Phase 1: Feature Extraction.')
-        #             train_feature_extractor.run()
-        #             test_feature_extractor.run()
-        #             self.train_feature_extractor.append(train_feature_extractor)
-        #             self.train_feature_extractor.append(test_feature_extractor)
-        #             # self.feature_extractors.append(feature_extractor)
-        #             self.data_processors.append(data_processor)
-        #
-        #
-        # log('Phase 2: Classifier Training.')
-        # for x in tqdm(self.scenarios_list, total=len(self.scenarios_list)):
-        #     settings=x
-        #     if settings['type']=='nn_classifier':
-        #         feature_extractor=
-        #         classifier=Image_Classification(feature_extractor=feature_extractor, **settings)
-        #     else:
-        #
-        #
-        #
-        #     feature_extractor=[i for i in self.feature_extractors if settings['model_arch']==i.model_arch and settings['normalize']==i.normalize and settings['balance_class']==i.balance_class][0]
-        #     if settings['type']!='nn_classifier':
-        #         feature_table=feature_extractor.feature_table
-        #         feature_names=feature_extractor.feature_names
-        #         classifier=Image_Classification(feature_table=feature_table, feature_names=feature_names, feature_extractor=feature_extractor, **settings)
-        #     else:
-        #         classifier=Image_Classification(feature_extractor=feature_extractor, **settings)
             log('Starting Training Classifier Number '+str(self.scenarios_list.index(x)))
             classifier.run()
             self.classifiers.append(classifier)
