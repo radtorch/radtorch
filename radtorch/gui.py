@@ -122,7 +122,7 @@ def image_classification():
         'data_directory':folder.value,
         'table':table.value,
         'is_dicom':dicom.value,
-        'normalize':normalize.value,
+        'normalize':tuple(normalize.value),
         'balance_class':balance_class.value,
         'batch_size':batch.value,
         'model_arch':model_arch.value,
