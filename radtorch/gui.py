@@ -135,7 +135,7 @@ def image_classification():
         ,    layout=widgets.Layout(margin='10px 0 0 0')
     )
 
-    def save_clf():
+    def save_clf(button):
         clf = Image_Classification(**clf_kwargs)
         return clf
     save.on_click(save_clf)
