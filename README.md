@@ -1,7 +1,6 @@
 
-# RADTorch
-## The Radiology Machine Learning Framework
-Official repository for RADTorch - The Radiology Machine Learning Tool Kit
+# RADTorch, The Radiology Machine Learning Framework
+
 
 ![](https://img.shields.io/badge/stable%20version-1.0.0-blue)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen)
