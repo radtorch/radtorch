@@ -125,7 +125,7 @@ def image_classification():
 
         clf_kwargs={
         'data_directory':folder.value,
-        'table':table.value,
+        'table':None,
         'is_dicom':dicom.value,
         'normalize':n,
         'balance_class':balance_class.value,
@@ -142,7 +142,6 @@ def image_classification():
         'num_splits':cross_validation_splits.value,
         'parameters':parameters.value,
         }
-        print (clf_kwargs)
         clf = Image_Classification(**clf_kwargs)
         return clf
     save.on_click(save_clf)
