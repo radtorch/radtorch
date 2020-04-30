@@ -135,10 +135,10 @@ def image_classification():
         ,    layout=widgets.Layout(margin='10px 0 0 0')
     )
 
-    def save():
+    def save_clf():
         clf = Image_Classification(**clf_kwargs)
         return clf
-    save.on_click(save)
+    save.on_click(save_clf)
 
     # Layout Groups
     data_entry = widgets.VBox([folder, table, dicom, batch, image_resize, balance_class, normalize, ])
