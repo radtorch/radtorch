@@ -93,8 +93,8 @@ def image_classification():
                         )
     parameters = widgets.Text(placeholder='Dictionary of Extra classifier parameters', description='Parameters:', style=style, layout=top_margin)
 
-    clf_kwargs=
-    'data_directory':folder
+    clf_kwargs={
+    'data_directory':folder,
     'table':table,
     'is_dicom':dicom,
     'normalize':normalize,
@@ -110,7 +110,7 @@ def image_classification():
     'cv':cross_validation,
     'stratified':stratified,
     'num_splits':cross_validation_splits,
-    'parameters:parameters
+    'parameters':parameters,
     }
 
     # Side Buttons
