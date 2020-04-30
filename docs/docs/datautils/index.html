@@ -1,0 +1,641 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="shortcut icon" href="../img/radtorch_icon.ico">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-5.1.0">
+    
+    
+      
+        <title>Data Module radtorch.datautils - RADTorch - API Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.89dc9fe3.min.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ecd4686e.min.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="">
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    
+      
+        
+<link rel="preconnect dns-prefetch" href="https://www.google-analytics.com">
+<script>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-116382803-2","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){if(this.value){var e=document.location.pathname;ga("send","pageview",e+"?q="+this.value)}})}),document.addEventListener("DOMContentSwitch",function(){ga("send","pageview")})</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="black" data-md-color-accent="deep-orange">
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#data-module-radtorchdatautils" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href=".." title="RADTorch - API Documentation" class="md-header-nav__button md-logo" aria-label="RADTorch - API Documentation">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18,22A2,2 0 0,0 20,20V4C20,2.89 19.1,2 18,2H12V9L9.5,7.5L7,9V2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18Z" /></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" /></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            RADTorch - API Documentation
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Data Module <small> radtorch.datautils </small>
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" /></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/radtorch/radtorch/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    radtorch/radtorch
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="RADTorch - API Documentation" class="md-nav__button md-logo" aria-label="RADTorch - API Documentation">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18,22A2,2 0 0,0 20,20V4C20,2.89 19.1,2 18,2H12V9L9.5,7.5L7,9V2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18Z" /></svg>
+
+    </a>
+    RADTorch - API Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/radtorch/radtorch/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    radtorch/radtorch
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../start/" title="Getting Started" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../install/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../core/" title="radtorch.core" class="md-nav__link">
+      radtorch.core
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../pipeline/" title="radtorch.pipeline" class="md-nav__link">
+      radtorch.pipeline
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../involve/" title="Get Involved" class="md-nav__link">
+      Get Involved
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../version/" title="Releases/Versions" class="md-nav__link">
+      Releases/Versions
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../copyright/" title="Copyrights" class="md-nav__link">
+      Copyrights
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#set_random_seed" class="md-nav__link">
+    set_random_seed
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#list_of_files" class="md-nav__link">
+    list_of_files
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#path_to_class" class="md-nav__link">
+    path_to_class
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#root_to_class" class="md-nav__link">
+    root_to_class
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class_to_idx" class="md-nav__link">
+    class_to_idx
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataset_from_folder" class="md-nav__link">
+    dataset_from_folder
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dataset_from_table" class="md-nav__link">
+    dataset_from_table
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="data-module-radtorchdatautils">Data Module <small> radtorch.datautils </small></h1>
+<div class="admonition bug">
+<p class="admonition-title"> Documentation Outdated. Please check again later for update.</p>
+</div>
+<h2 id="set_random_seed">set_random_seed</h2>
+<pre><code>datautils.set_random_seed(seed)
+</code></pre>
+<div class="admonition quote">
+<p>Sets the PyTorch and Numpy randoom seed for consistensy.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>seed: <em>(int)</em> target random seed.</li>
+</ul>
+</div>
+<h2 id="list_of_files">list_of_files</h2>
+<pre><code>datautils.list_of_files(root)
+</code></pre>
+<div class="admonition quote">
+<p>Create a list of file paths from a root folder and its sub directories.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>root: <em>(str)</em> path of target folder.</li>
+</ul>
+<p><strong>Output</strong></p>
+<ul>
+<li>list of file paths.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code>root_path = 'root/'
+list_of_files(root_path)
+</code></pre>
+<!-- **** -->
+
+<pre><code>['root/folder1/0000.dcm', 'root/folder1/0001.dcm', 'root/folder2/0000.dcm', ...]
+</code></pre>
+</div>
+<h2 id="path_to_class">path_to_class</h2>
+<pre><code>datautils.path_to_class(filepath)
+</code></pre>
+<div class="admonition quote">
+<p>Creates a class name from the immediate parent folder of a target file.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>filepath: <em>(str)</em> path to target file.</li>
+</ul>
+<p><strong>Output</strong></p>
+<ul>
+<li><em>(str)</em> folder name / class name.</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code>file_path = 'root/folder1/folder2/0000.dcm'
+path_to_class(file_path)
+</code></pre>
+<!-- **** -->
+
+<pre><code>'folder2'
+</code></pre>
+</div>
+<h2 id="root_to_class">root_to_class</h2>
+<pre><code>datautils.root_to_class(root)
+</code></pre>
+<div class="admonition quote">
+<p>Creates list of classes and dictionary of classes and idx in a given data root. All first level subfolders within the root are converted into classes and given class id.</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>root: <em>(str)</em> path of target root.</li>
+</ul>
+<p><strong>Output</strong></p>
+<ul>
+<li><em>(tuple)</em> of<ul>
+<li>classes: <em>(list)</em> of generated classes,</li>
+<li>class_to_idx: <em>(dictionary)</em> of classes and class id numbers</li>
+</ul>
+</li>
+</ul>
+<p><strong>Example</strong></p>
+<p>This example assumes that root folder contains 3 folders (folder1, folder2 and folder3) each contains images of 1 class.</p>
+<pre><code>root_folder = 'root/'
+root_to_class(root_folder)
+</code></pre>
+<!-- **** -->
+
+<pre><code>['folder1', 'folder2', 'folder3'], {'folder1':0, 'folder2':1, 'folder3':2}
+</code></pre>
+</div>
+<h2 id="class_to_idx">class_to_idx</h2>
+<pre><code>datautils.class_to_idx(classes)
+</code></pre>
+<div class="admonition quote">
+<p>Creates a dictionary of classes to classes idx from provided list of classes</p>
+<p><strong>Arguments</strong></p>
+<ul>
+<li>classes: <em>(list)</em> list of classes</li>
+</ul>
+<p><strong>Output</strong></p>
+<ul>
+<li>Output: <em>(dictionary)</em> dictionary of classes to class idx</li>
+</ul>
+<p><strong>Example</strong></p>
+<pre><code>class_list = ['class1','class4', 'class2', 'class3']
+class_to_idx(class_list)
+</code></pre>
+<!-- **** -->
+
+<pre><code>{'class1':0, 'class2':1, 'class3':2, 'class4':3}
+</code></pre>
+</div>
+<h2 id="dataset_from_folder">dataset_from_folder</h2>
+<pre><code>datautils.dataset_from_folder(data_directory, is_dicom=True, mode='RAW',
+                    wl=None, trans=Compose(ToTensor()))
+</code></pre>
+<div class="admonition quote">
+<p>Creates a dataset from a root directory using subdirectories as classes/labels.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p>data_director: <em>(str)</em> target data root directory.</p>
+</li>
+<li>
+<p>is_dicom: <em>(boolean)</em> True for DICOM images, False for regular images.(default=True)</p>
+</li>
+<li>
+<p>mode: <em>(str)</em> output mode for DICOM images only. options: RAW= Raw pixels, HU= Image converted to Hounsefield Units, WIN= 'window' image windowed to certain W and L, MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].</p>
+</li>
+<li>
+<p>wl: <em>(list)</em> list of lists of combinations of window level and widths to be used with WIN and MWIN. In the form of : [[Level,Width], [Level,Width],…]. Only 3 combinations are allowed for MWIN (for now). (default=None)</p>
+</li>
+<li>
+<p>trans: <em>(pytorch transforms)</em> pytroch transforms to be performed on the dataset. (default=Convert to tensor)</p>
+</li>
+</ul>
+<p><strong>Methods</strong></p>
+<ul>
+<li>
+<p><strong>.class_to_idx()</strong></p>
+<p>Returns dictionary of dataset classes and corresponding class id.</p>
+</li>
+<li>
+<p><strong>.classes()</strong></p>
+<p>Returns list of dataset classes</p>
+</li>
+<li>
+<p><strong>.info()</strong></p>
+<p>Returns detailed information of the dataset.</p>
+</li>
+<li>
+<p><strong>len(dataset)</strong></p>
+<p>Returns number of items in the dataset.</p>
+</li>
+</ul>
+</div>
+<h2 id="dataset_from_table">dataset_from_table</h2>
+<pre><code>datautils.dataset_from_table(data_directory, is_csv=True, is_dicom=True,
+                            input_source=None, img_path_column='IMAGE_PATH',
+                            img_label_column='IMAGE_LABEL', mode='RAW', wl=None,
+                            trans=Compose(ToTensor()))
+</code></pre>
+<div class="admonition quote">
+<p>Creates a dataset using labels and filepaths from a table which can be either a excel sheet or pandas dataframe.</p>
+<p><strong>Parameters</strong></p>
+<ul>
+<li>
+<p>data_directory: <em>(str)</em> target data directory.</p>
+</li>
+<li>
+<p>is_csv: <em>(boolean)</em> True for csv, False for pandas dataframe. (default=True)</p>
+</li>
+<li>
+<p>is_dicom: <em>(boolean)</em> True for DICOM images, False for regular images.(default=True)</p>
+</li>
+<li>
+<p>input_source: <em>(str or pandas dataframe object)</em> source for labelling data. This is path to csv file or name of pandas dataframe if pandas to be used.</p>
+</li>
+<li>
+<p>img_path_column: <em>(str)</em>  name of the image path column in data input. (default = "IMAGE_PATH")</p>
+</li>
+<li>
+<p>img_label_column: <em>(str)</em>  name of label column in the data input (default = "IMAGE_LABEL")</p>
+</li>
+<li>
+<p>mode: <em>(str)</em>  output mode for DICOM images only. options: RAW= Raw pixels, HU= Image converted to Hounsefield Units, WIN= 'window' image windowed to certain W and L, MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together].</p>
+</li>
+<li>
+<p>wl: <em>(list)</em>  list of lists of combinations of window level and widths to be used with WIN and MWIN.In the form of : [[Level,Width], [Level,Width],…]. Only 3 combinations are allowed for MWIN (for now).  (default=None)</p>
+</li>
+<li>
+<p>transforms: <em>(pytorch transforms)</em> pytroch transforms to be performed on the dataset. (default=Convert to tensor)</p>
+</li>
+</ul>
+<p><strong>Methods</strong></p>
+<ul>
+<li>
+<p><strong>.class_to_idx()</strong></p>
+<p>Returns dictionary of dataset classes and corresponding class id.</p>
+</li>
+<li>
+<p><strong>.classes()</strong></p>
+<p>Returns list of dataset classes</p>
+</li>
+<li>
+<p><strong>.info()</strong></p>
+<p>Returns detailed information of the dataset.</p>
+</li>
+<li>
+<p><strong>len(dataset)</strong></p>
+<p>Returns number of items in the dataset.</p>
+</li>
+</ul>
+</div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.36cbf620.min.js"></script>
+      <script src="../assets/javascripts/bundle.00c583dd.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: ["instant"],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.7f7c8775.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,684 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="shortcut icon" href="../img/radtorch_icon.ico">
+      <meta name="generator" content="mkdocs-1.1, mkdocs-material-5.1.0">
+    
+    
+      
+        <title>radtorch.core - RADTorch - API Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.89dc9fe3.min.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ecd4686e.min.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="">
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    
+      
+        
+<link rel="preconnect dns-prefetch" href="https://www.google-analytics.com">
+<script>window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)},ga.l=+new Date,ga("create","UA-116382803-2","auto"),ga("set","anonymizeIp",!0),ga("send","pageview"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){if(this.value){var e=document.location.pathname;ga("send","pageview",e+"?q="+this.value)}})}),document.addEventListener("DOMContentSwitch",function(){ga("send","pageview")})</script>
+<script async src="https://www.google-analytics.com/analytics.js"></script>
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="black" data-md-color-accent="deep-orange">
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#core-module-radtorchcore" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href=".." title="RADTorch - API Documentation" class="md-header-nav__button md-logo" aria-label="RADTorch - API Documentation">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18,22A2,2 0 0,0 20,20V4C20,2.89 19.1,2 18,2H12V9L9.5,7.5L7,9V2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18Z" /></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" /></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            RADTorch - API Documentation
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              radtorch.core
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" /></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" /></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/radtorch/radtorch/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    radtorch/radtorch
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="RADTorch - API Documentation" class="md-nav__button md-logo" aria-label="RADTorch - API Documentation">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18,22A2,2 0 0,0 20,20V4C20,2.89 19.1,2 18,2H12V9L9.5,7.5L7,9V2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18Z" /></svg>
+
+    </a>
+    RADTorch - API Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/radtorch/radtorch/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    radtorch/radtorch
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../start/" title="Getting Started" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../install/" title="Installation" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        radtorch.core
+        <span class="md-nav__icon md-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3,9H17V7H3V9M3,13H17V11H3V13M3,17H17V15H3V17M19,17H21V15H19V17M19,7V9H21V7H19M19,13H21V11H19V13Z" /></svg>
+        </span>
+      </label>
+    
+    <a href="./" title="radtorch.core" class="md-nav__link md-nav__link--active">
+      radtorch.core
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#data_processor" class="md-nav__link">
+    Data_Processor
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../pipeline/" title="radtorch.pipeline" class="md-nav__link">
+      radtorch.pipeline
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../involve/" title="Get Involved" class="md-nav__link">
+      Get Involved
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../version/" title="Releases/Versions" class="md-nav__link">
+      Releases/Versions
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../copyright/" title="Copyrights" class="md-nav__link">
+      Copyrights
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../license/" title="License" class="md-nav__link">
+      License
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+      </span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#data_processor" class="md-nav__link">
+    Data_Processor
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="core-module-radtorchcore">Core Module <small> radtorch.core </small></h1>
+<div class="admonition bug">
+<p class="admonition-title">DOCUMENTATION OUT OF DATE</p>
+<p>Documentation not updated. Please check again later.</p>
+</div>
+<p><div class="highlight"><pre><span></span><code>from radtorch import core
+</code></pre></div>
+The core module has all the core functionalities of RADTorch framework. These include:</p>
+<ol>
+<li>
+<p>Data_Processor</p>
+</li>
+<li>
+<p>Feature_Extractor</p>
+</li>
+<li>
+<p>Classifier</p>
+</li>
+<li>
+<p>NN_Classifier</p>
+</li>
+<li>
+<p>Feature_Selector</p>
+</li>
+</ol>
+<h2 id="data_processor">Data_Processor</h2>
+<p><div class="highlight"><pre><span></span><code>core.Data_Processor(data_directory, is_dicom=True,
+  mode=&#39;raw&#39;, wl=None, table=None, image_path_col=&#39;IMAGE_PATH&#39;,
+  image_label_column=&#39;IMAGE_LABEL&#39;, valid_percent=0.2, test_percent=0.2,
+  normalize=((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)), balance_class=False,
+  type=&#39;logistic_regression&#39;, model_arch=&#39;alexnet&#39;,
+  batch_size=16, custom_resize=False,
+  transformations=transforms.Compose([transforms.ToTensor()]))
+</code></pre></div>
+<p style='text-align: justify;'>
+The Data_Processor class acts as the first step in all image analysis pipelines. The purpose of the data_processor is to perform dataset preparation for feature extraction and further analysis.
+</br>
+</br>
+Data preparation includes: data augmentation, transformation, resize, splitting, normalization and class balance through oversampling.
+</br>
+</br></p>
+<details class="quote"><summary>Parameters</summary><ul>
+<li>
+<p><strong>data_directory</strong>: <em>(str)</em> path to folder which contains the data images.</p>
+</li>
+<li>
+<p><strong>is_dicom</strong>: <em>(boolean)</em> True if images are DICOM. False if any other type. (Default=True)</p>
+</li>
+<li>
+<p><strong>mode</strong> <em>(str)</em>  output mode for DICOM images only where 'RAW'= Raw pixels, 'HU'= Image converted to Hounsefield Units, 'WIN'= 'window' image windowed to certain W and L, 'MWIN' = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together. (default='RAW')</p>
+</li>
+<li>
+<p><strong>wl</strong> <em>(list)</em> list of lists of combinations of window level and widths to be used with 'WIN' and 'MWIN'.In the form of : [[Level,Width], [Level,Width],...]. Only 3 combinations are allowed for 'MWIN' (for now). (default=None)</p>
+</li>
+<li>
+<p><strong>table</strong>: <em>(path to csv or name of pandas table)</em> The table to be used for image paths and labels. By default, this is <strong>None</strong> which means the Data_Processor will create the datasets and labels from folder structure as shown <a href="https://pytorch.org/docs/stable/torchvision/datasets.html#torchvision.datasets.ImageFolder">here</a>.</p>
+</li>
+<li>
+<p><strong>image_path_col</strong>: <em>(str)</em>  name of the column with the image path. (default='IMAGE_PATH')</p>
+</li>
+<li>
+<p><strong>image_label_column</strong>: <em>(str)</em>  name of the label/class column. (default='IMAGE_LABEL')</p>
+</li>
+<li>
+<p><strong>test_percent:</strong>: <em>(float)</em> percentage of dataset to use for testing. Float value between 0 and 1.0. (default=0.2)</p>
+</li>
+<li>
+<p><strong>valid_percent:</strong>: <em>(float)</em> percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)</p>
+</li>
+<li>
+<p><strong>transformations:</strong> <em>(pytorch transforms list)</em> pytroch transforms to be performed on the dataset. (default=Convert to tensor)</p>
+</li>
+<li>
+<p><strong>custom_resize:</strong>: <em>(int)</em> by default, the Data_Processor will resize the input images into the default training model input image size. This default size can be changed here if needed.</p>
+</li>
+<li>
+<p><strong>batch_size:</strong>: <em>(int)</em> batch size of the dataset (default=16)</p>
+</li>
+<li>
+<p><strong>normalize</strong>: Image normalization. By default, the Data_processor will normalize images with mean and standard deviation = 0.5. If you want the data to be normalized to the mean and std of the dataset itself, change this to 'auto'. Specific of mean and std can also be passed in the form of ((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)). If no normalization is desired, change this to False.</p>
+</li>
+<li>
+<p><strong>balance_class</strong>: <em>(boolean)</em> option to balance classes within the dataset if classes are not equal (Class Imbalance). This occurs through oversampling of the classes with fewer instances until all classes have equal numbers. Please note that class balance happens at a dataset level i.e. each of trainig/validation/testing datasets are balanced separately to avoid data leakage between datasets.</p>
+</li>
+<li>
+<p><strong>type</strong>: <em>(str)</em> type of Classifier that will be used. This is important for the data splitting algorithm. (Default='logistic_regression')</p>
+</li>
+<li>
+<p><strong>model_arch</strong>: <em>(str)</em> Model architecture of the neural network that will be used for feature extraction. Specifying that is important as the default resizing of the images depends on the feature extraction network architecture as shown below. (Default='alexnet')</p>
+</li>
+</ul>
+<div align='center'>
+
+<table>
+<thead>
+<tr>
+<th>Model Architecture</th>
+<th align="center">Default Input Image Size</th>
+<th align="center">Output Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>vgg11</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg13</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg16</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg19</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg11_bn</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg13_bn</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg16_bn</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>vgg19_bn</td>
+<td align="center">224 x 224</td>
+<td align="center">4096</td>
+</tr>
+<tr>
+<td>resnet18</td>
+<td align="center">224 x 224</td>
+<td align="center">512</td>
+</tr>
+<tr>
+<td>resnet34</td>
+<td align="center">224 x 224</td>
+<td align="center">512</td>
+</tr>
+<tr>
+<td>resnet50</td>
+<td align="center">224 x 224</td>
+<td align="center">2048</td>
+</tr>
+<tr>
+<td>resnet101</td>
+<td align="center">224 x 224</td>
+<td align="center">2048</td>
+</tr>
+<tr>
+<td>resnet152</td>
+<td align="center">224 x 224</td>
+<td align="center">2048</td>
+</tr>
+<tr>
+<td>wide_resnet50_2</td>
+<td align="center">224 x 224</td>
+<td align="center">2048</td>
+</tr>
+<tr>
+<td>wide_resnet101_2</td>
+<td align="center">224 x 224</td>
+<td align="center">2048</td>
+</tr>
+<tr>
+<td>alexnet</td>
+<td align="center">256 x 256</td>
+<td align="center">4096</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</details>
+<details class="quote"><summary>Attributes</summary><p>After creating the data_processor object, the following attributes can be accessed:</p>
+<p><strong>Data_Processor.dataset</strong> : pytroch dataset object including images, labels and image paths.</p>
+<p><strong>Data_Processor.dataloader</strong>: pytroch dataloader object created using Data_Processor.dataset and batch size specified.</p>
+<p><strong>Data_Processor.transformations</strong>: list of transformations applied to dataset images.</p>
+<p></br>  </p>
+<p>The following only apply if classifier type selected is 'nn_classifier':</p>
+<p><strong><em>Data_Processor.train_dataset</em></strong>: pytroch dataset object including images, labels and image paths for training.</p>
+<p><strong><em>Data_Processor.train_dataloader</em></strong>: pytorch dataloader object for training.</p>
+<p><strong><em>Data_Processor.valid_dataset</em></strong>: pytroch dataset object including images, labels and image paths for validation.</p>
+<p><strong><em>Data_Processor.valid_dataloader</em></strong>: pytorch dataloader object for validation.</p>
+<p><strong><em>Data_Processor.test_dataset</em></strong>: pytroch dataset object including images, labels and image paths for testing.</p>
+<p><strong><em>Data_Processor.test_dataloader</em></strong>: pytorch dataloader object for testing.</p>
+</details>
+<details class="quote"><summary>Methods</summary><p><strong>.classes()</strong></p>
+<ul>
+<li>returns a dictionary of classes and class_idx generated for the dataset.</li>
+</ul>
+<p><strong>.info()</strong></p>
+<ul>
+<li>returns a table of all information and parameters of the Data_Processor object.</li>
+</ul>
+<p><strong>.dataset_info(plot=False, figure_size=(500,300))</strong></p>
+<ul>
+<li>Displays tables of class distribution among different datasets created. Plot=True plots the data info bar charts.</li>
+</ul>
+<p><strong>.sample(figure_size=(10,10), show_labels=True, show_file_name=False)</strong></p>
+<ul>
+<li>Displays a sample of the dataset images. The default number of images displayed is the same as the batch size used for the dataloader.</li>
+</ul>
+</details>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../install/" title="Installation" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z" /></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Installation
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../pipeline/" title="radtorch.pipeline" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                radtorch.pipeline
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z" /></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.36cbf620.min.js"></script>
+      <script src="../assets/javascripts/bundle.00c583dd.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: ["instant"],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.7f7c8775.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
