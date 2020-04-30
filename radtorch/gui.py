@@ -27,7 +27,7 @@ def image_classification():
 
     # Data Module
     folder = widgets.Text(placeholder='Path to data folder', description='Data Folder:', style=style)
-    table = widgets.Text(placeholder='label table: path to csv or name of pandas', description='Label Table:', style=style, layout=top_margin)
+    table = widgets.Text(placeholder='label table: path to csv or name of pandas', description='Label Table:', value=None, style=style, layout=top_margin)
     dicom = widgets.ToggleButtons(options=[True, False],button_style='',description='DICOM:', style=style, layout=top_margin)
     batch = widgets.IntSlider(
                         value=16,
