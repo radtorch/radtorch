@@ -3,7 +3,7 @@
 ## The Radiology Machine Learning Framework
 Official repository for RADTorch - The Radiology Machine Learning Tool Kit
 
-![](https://img.shields.io/badge/stable%20version-0.1.4_beta-blue)
+![](https://img.shields.io/badge/stable%20version-1.0.0-blue)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen)
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
 
@@ -25,7 +25,7 @@ classifier = pipeline.Image_Classification(data_directory='path to data')
 classifier.run()
 ```
 <small>
-The above 3 lines of code will run an image classifier using VGG16 with pre-trained weights.
+The above 3 lines of code will run an image classifier using Alexnet model architecture with pre-trained weights for feature extraction and 'ridge' classifier.
 </small>
 
 ## See it in action
