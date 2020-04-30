@@ -43,7 +43,7 @@ def image_classification():
                         , layout=top_margin
                         )
     balance_class = widgets.ToggleButtons(options=[True, False],button_style='',description='Balance:', style=style, layout=top_margin)
-    normalize = widgets.Text(placeholder='place a tuple here to normalize', button_style='', value=False, description='Normalize:', style=style, layout=top_margin)
+    normalize = widgets.Text(placeholder='place a tuple here to normalize', button_style='', value=None, description='Normalize:', style=style, layout=top_margin)
     custom_resize = widgets.IntText(description='Custom Resize:', style=style, value=None, layout=top_margin)
 
     # Feature Extraction Module
