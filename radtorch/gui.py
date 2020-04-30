@@ -10,6 +10,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
+###### BETA #############
+
+
 from radtorch.settings import *
 from radtorch.vis import *
 from radtorch.general import *

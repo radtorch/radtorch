@@ -146,7 +146,7 @@ class Data_Processor():
         for i in train_file_list:
             if i in test_file_list:
                 leak_files.append(i)
-        log('Data Leak Check: '+str(len(train_file_list))+' file checked. '+str(len(leak_files))+' files were found in train and test datasets.')
+        log('Data Leak Check: '+str(len(train_file_list))+' train files checked. '+str(len(leak_files))+' common iles were found in train and test datasets.')
         if show_file:
             return pd.DataFrame(leak_files, columns='leaked_files')
 
@@ -240,7 +240,7 @@ class Feature_Extractor():
             log('Error! No features found. Please check again or re-run the extracion pipeline.')
             pass
 
-    def plot_extracted_features(self, feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx'):
+    def plot_extracted_features(self, feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='IMAGE_PATH', image_label_col='IMAGE_LABEL'):
         if feature_table==None:
             feature_table=self.feature_table
         if feature_names==None:
