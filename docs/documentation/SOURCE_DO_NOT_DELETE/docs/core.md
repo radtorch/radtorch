@@ -1,8 +1,12 @@
 
 # Core Module <small> radtorch.core </small>
 
-!!! bug "DOCUMENTATION OUT OF DATE"
-    Documentation not updated. Please check again later.
+<!-- !!! bug "DOCUMENTATION OUT OF DATE"
+    Documentation not updated. Please check again later. -->
+
+<!-- ![](img/1.png) -->
+
+<!-- <div style="text-align:center"><img src="/img/1.png" /></div> -->
 
 ```
 from radtorch import core
@@ -21,7 +25,15 @@ The core module has all the core functionalities of RADTorch framework. These in
 
 
 
+<!-- ![](img/3.png)
+![](img/4.png)
+ -->
+
+
+
 ## Data_Processor
+
+<div style="text-align:center"><img src="/img/data_processor.png" /></div>
 
 ```
 core.Data_Processor(data_directory, is_dicom=True,
@@ -32,13 +44,13 @@ core.Data_Processor(data_directory, is_dicom=True,
   batch_size=16, custom_resize=False,
   transformations=transforms.Compose([transforms.ToTensor()]))
 ```
-<p style='text-align: justify;'>
+<!-- <p style='text-align: justify;'>
 The Data_Processor class acts as the first step in all image analysis pipelines. The purpose of the data_processor is to perform dataset preparation for feature extraction and further analysis.
 </br>
 </br>
 Data preparation includes: data augmentation, transformation, resize, splitting, normalization and class balance through oversampling.
 </br>
-</br>
+</br> -->
 
 
 ??? quote "Parameters"
@@ -147,3 +159,26 @@ Data preparation includes: data augmentation, transformation, resize, splitting,
     **.sample(figure_size=(10,10), show_labels=True, show_file_name=False)**
 
     - Displays a sample of the dataset images. The default number of images displayed is the same as the batch size used for the dataloader.
+
+
+
+
+## Feature_Extractor
+
+<div style="text-align:center"><img src="/img/feature_extractor.png" /></div>
+
+
+
+## Classifier
+
+<div style="text-align:center"><img src="/img/classifier.png" /></div>
+
+
+## NN_Classifier
+
+<div style="text-align:center"><img src="/img/nn_classifier.png" /></div>
+
+
+## Feature_Selector
+
+<div style="text-align:center"><img src="/img/feature_selector.png" /></div>
