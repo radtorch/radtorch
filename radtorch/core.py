@@ -137,7 +137,7 @@ class Data_Processor():
                 display(v)
 
     def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
-        show_dataloader_sample(self.master_dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
+        show_dataloader_sample(self.train_dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
 
     def check_leak(self, show_file=False):
         train_file_list=self.train_dataset.input_data[self.image_path_column]
