@@ -66,8 +66,8 @@ class Data_Processor():
 
 
         # 3- Normalize Training Dataset
+        self.train_transformations=copy.deepcopy(self.transformations)
         if isinstance (self.normalize, tuple):
-            self.train_transformations=copy.deepcopy(self.transformations)
             mean, std=self.normalize
             # self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
             self.train_transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
