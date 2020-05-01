@@ -64,12 +64,13 @@ class Data_Processor():
                     transforms.ToTensor()])
 
 
+
         # 3- Normalize Training Dataset
         if isinstance (self.normalize, tuple):
-            # self.train_transformations=copy.deepcopy(self.transformations)
+            self.train_transformations=copy.deepcopy(self.transformations)
             mean, std=self.normalize
-            self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
-            # self.train_transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+            # self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+            self.train_transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
 
         elif self.normalize!=False:
             log('Error! Selected mean and standard deviation are not allowed.')
@@ -78,9 +79,9 @@ class Data_Processor():
         self.dataset_kwargs=copy.deepcopy(self.__dict__)
         del self.dataset_kwargs['table']
 
-        # self.train_dataset_kwargs=copy.deepcopy(self.dataset_kwargs)
+        self.train_dataset_kwargs=copy.deepcopy(self.dataset_kwargs)
         # del self.train_dataset_kwargs['transformations']
-        # self.train_dataset_kwargs['transformations']=self.train_transformations
+        self.train_dataset_kwargs['transformations']=self.train_transformations
 
         self.master_dataset=Dataset_from_table(table=self.table, **self.dataset_kwargs)
         self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
@@ -88,7 +89,7 @@ class Data_Processor():
 
 
         if self.type=='nn_classifier':
-            self.train_dataset=Dataset_from_table(table=self.train_table, **self.dataset_kwargs)
+            self.train_dataset=Dataset_from_table(table=self.train_table, **self.train_dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
             self.valid_dataset=Dataset_from_table(table=self.valid_table, **self.dataset_kwargs)
@@ -96,7 +97,7 @@ class Data_Processor():
             self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         else:
-            self.train_dataset=Dataset_from_table(table=self.temp_table,  **self.dataset_kwargs)
+            self.train_dataset=Dataset_from_table(table=self.temp_table,  **self.train_dataset_kwargs)
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance()
             self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
