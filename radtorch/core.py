@@ -67,7 +67,7 @@ class Data_Processor():
 
         # 3- Normalize Training Dataset
         self.train_transformations=copy.deepcopy(self.transformations)
-        if 'extra_transformations' not in self.__dict__.keys():
+        if 'extra_transformations' in self.__dict__.keys():
             for i in self.extra_transformations:
                 self.train_transformations.transforms.insert(1, i)
         if isinstance (self.normalize, tuple):
