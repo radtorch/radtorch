@@ -152,6 +152,7 @@ NN_CLASSIFIER_DEFAULT_SETTINGS={
 
 
 SUPPORTED_CLASSIFIER=[
+'nn_classifier',
 'linear_regression',
 'sgd',
 'logistic_regression',
