@@ -22,7 +22,7 @@ from ipywidgets import interact, interact_manual
 from IPython.display import clear_output
 
 
-class Image_Classification():
+class Image_Classification_UI():
   def __init__(self):
 
     # Visual Styles
@@ -122,7 +122,7 @@ class Image_Classification():
       self.table = None
 
     with self.output:
-      self.clf = pipeline.Image_Classification(data_directory=self.ui_folder.value,
+      self.clf = Image_Classification(data_directory=self.ui_folder.value,
                                                is_dicom=self.ui_dicom.value,
                                                table=self.table,
                                                mode=self.ui_mode.value,
