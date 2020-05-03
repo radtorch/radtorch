@@ -15,6 +15,7 @@ from radtorch.vis import *
 from radtorch.general import *
 from radtorch.data import *
 from radtorch.core import *
+from radtorch.pipeline import *
 
 
 import ipywidgets as widgets
