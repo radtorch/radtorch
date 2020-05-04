@@ -83,11 +83,11 @@ class Image_Classification_UI():
     self.b2=widgets.Button(description='CLEAR OUTPUT',button_style='warning')
     self.b3=widgets.Button(description='SAMPLE',button_style='info')
     self.b4=widgets.Button(description='RUN',button_style='danger')
-    self.b5=widgets.Button(description='INFO',button_style='')
-    self.b6=widgets.Button(description='DATA INFO',button_style='')
-    self.b7=widgets.Button(description='ROC',button_style='')
-    self.b8=widgets.Button(description='CONFUSION MATRIX',button_style='')
-    self.b9=widgets.Button(description='TEST ACC',button_style='')
+    self.b5=widgets.Button(description='INFO',button_style='info')
+    self.b6=widgets.Button(description='DATA INFO',button_style='info')
+    self.b7=widgets.Button(description='ROC',button_style='info')
+    self.b8=widgets.Button(description='CONFUSION MATRIX',button_style='info')
+    self.b9=widgets.Button(description='TEST ACC',button_style='info')
 
 
     # UI Layouts
