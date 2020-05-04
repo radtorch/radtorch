@@ -24,6 +24,7 @@ from IPython.display import clear_output
 
 
 class Image_Classification_UI():
+
   def __init__(self):
 
     # Visual Styles
@@ -84,7 +85,9 @@ class Image_Classification_UI():
     self.b4=widgets.Button(description='RUN',button_style='danger')
     self.b5=widgets.Button(description='INFO',button_style='')
     self.b6=widgets.Button(description='DATA INFO',button_style='')
-
+    self.b7=widgets.Button(description='ROC',button_style='')
+    self.b8=widgets.Button(description='CONFUSION MATRIX',button_style='')
+    self.b9=widgets.Button(description='TEST ACC',button_style='')
 
 
     # UI Layouts
@@ -98,7 +101,7 @@ class Image_Classification_UI():
     self.ui4b = widgets.VBox([self.ui_batch_size, self.ui_workers,self.ui_valid_percent, self.ui_epochs,  ])
     self.ui4c = widgets.VBox([self.ui_learning_rate, self.ui_unfreeze, self.ui_optimizer, self.ui_loss_function])
     self.ui4 = widgets.HBox([self.ui4a,  self.ui4c, self.ui4b,])
-    self.ui_controls = widgets.HBox([self.b1, self.b5, self.b6, self.b3, self.b4, self.b2, ], layout=widgets.Layout(margin='40px 0 0 40px'))
+    self.ui_controls = widgets.HBox([self.b1, self.b5, self.b6, self.b3, self.b4, self.b2, self.b7,self.b8,self.b9], layout=widgets.Layout(margin='40px 0 0 40px'))
 
     self.ui = widgets.VBox([self.header, self.title1, self.ui1a, self.ui1b, self.ui2,self.ui3, self.ui4, self.ui_controls])
 
@@ -110,12 +113,14 @@ class Image_Classification_UI():
     self.b4.on_click(self.run_clf)
     self.b5.on_click(self.info)
     self.b6.on_click(self.data_info)
+    self.b7.on_click(self.roc)
+    self.b8.on_click(self.cm)
+    self.b9.on_click(self.test_accuracy)
 
     # Display Layouts
     self.output = widgets.Output()
     display(self.ui)
     display(self.output)
-
 
   def create_clf(self, button):
     self.output.clear_output()
@@ -169,3 +174,18 @@ class Image_Classification_UI():
     self.output.clear_output()
     with self.output:
       display(self.clf.info())
+
+  def roc(self, button):
+    self.output.clear_output()
+    with self.output:
+      self.clf.classifier.roc()
+
+  def cm(self, button):
+    self.output.clear_output()
+    with self.output:
+      self.clf.classifier.confusion_matrix()
+
+  def test_accuracy(self, button):
+    self.output.clear_output()
+    with self.output:
+      self.clf.classifier.test_accuracy()
