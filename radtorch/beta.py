@@ -104,7 +104,7 @@ class Image_Classification_UI():
     # self.ui_controls = widgets.HBox([self.b1, self.b5, self.b6, self.b3, self.b4, self.b2, self.b7,self.b8,self.b9], layout=widgets.Layout(margin='40px 0 0 40px'))
 
     self.ui_c1=widgets.HBox([widgets.VBox([self.b1, self.b3]), widgets.VBox([self.b5, self.b6])])
-    self.ui_c2=widgets.HBox([self.b4])])
+    self.ui_c2=widgets.HBox([self.b4]])
     self.ui_c3=widgets.HBox([widgets.VBox([self.b8, self.b7]), widgets.VBox([self.b9, self.b2])])
     self.ui_controls = widgets.HBox([self.ui_c1, self.ui_c2, self.ui_c3])
 
