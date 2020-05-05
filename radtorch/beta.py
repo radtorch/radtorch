@@ -88,6 +88,7 @@ class Image_Classification_UI():
     self.b7=widgets.Button(description='ROC',button_style='info')
     self.b8=widgets.Button(description='CONFUSION MATRIX',button_style='info')
     self.b9=widgets.Button(description='TEST ACC',button_style='info')
+    self.b10=widgets.Button(description='METRICS',button_style='info')
 
 
     # UI Layouts
@@ -104,7 +105,7 @@ class Image_Classification_UI():
     # self.ui_controls = widgets.HBox([self.b1, self.b5, self.b6, self.b3, self.b4, self.b2, self.b7,self.b8,self.b9], layout=widgets.Layout(margin='40px 0 0 40px'))
 
     self.ui_c1=widgets.HBox([widgets.VBox([self.b1, self.b3]), widgets.VBox([self.b5, self.b6])],layout=widgets.Layout(margin='40px 0 40px 40px'))
-    self.ui_c2=widgets.HBox([self.b4],layout=widgets.Layout(margin='40px 0 40px 40px'))
+    self.ui_c2=widgets.HBox([widgets.VBox([self.b4, self.b10],layout=widgets.Layout(margin='40px 0 40px 40px'))
     self.ui_c3=widgets.HBox([widgets.VBox([self.b8, self.b7]), widgets.VBox([self.b9, self.b2])],layout=widgets.Layout(margin='40px 0 40px 40px'))
     self.ui_controls = widgets.HBox([self.ui_c1, self.ui_c2, self.ui_c3])
 
@@ -121,6 +122,7 @@ class Image_Classification_UI():
     self.b7.on_click(self.roc)
     self.b8.on_click(self.cm)
     self.b9.on_click(self.test_accuracy)
+    self.b10.on_click(self.metrics)
 
     # Display Layouts
     self.output = widgets.Output()
@@ -194,3 +196,8 @@ class Image_Classification_UI():
     self.output.clear_output()
     with self.output:
       display(self.clf.classifier.test_accuracy())
+                             
+  def metrics(self, button):
+    self.output.clear_output()
+    with self.output:
+      show_metrics([self.clf.classifier])                            
