@@ -205,7 +205,7 @@ class Data_Processor():
         if self.type=='nn_classifier':
             self.train_dataset=Dataset_from_table(table=self.train_table, **self.train_dataset_kwargs)
             if self.balance_class:
-                self.train_dataset=self.train_dataset.balance(label_col=self.image_label_col, upsample=True)
+                self.train_dataset=self.train_dataset.balance(label_col=self.image_label_column, upsample=True)
             self.valid_dataset=Dataset_from_table(table=self.valid_table, **self.dataset_kwargs)
             self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
             self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
@@ -213,7 +213,7 @@ class Data_Processor():
         else:
             self.train_dataset=Dataset_from_table(table=self.temp_table,  **self.train_dataset_kwargs)
             if self.balance_class:
-                self.train_dataset=self.train_dataset.balance(label_col=self.image_label_col, upsample=True)
+                self.train_dataset=self.train_dataset.balance(label_col=self.image_label_column, upsample=True)
             self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         self.test_dataset=Dataset_from_table(table=self.test_table, **self.dataset_kwargs)
