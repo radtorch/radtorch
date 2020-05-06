@@ -405,7 +405,7 @@ def plot_dataset_info(dataframe_dictionary, plot_size=(500,300)):
     show(column(output))
 
 
-def show_metrics(classifer_list, fig_size=(500,300)):
+def show_metrics(classifer_list, fig_size=(700,400)):
     metrics_list = [x.train_metrics for x in classifer_list]
     output_notebook()
     output = []
@@ -485,14 +485,14 @@ def calculate_nn_predictions(model, target_data_set,  device):
     return (true_labels, pred_labels)
 
 
-def show_roc(classifier_list, fig_size=(700,400)):
+def show_roc(classifier_list, figure_size=(700,400)):
 
     output_notebook()
 
     TOOLS = "hover,save,box_zoom,reset,wheel_zoom, box_select"
 
     output = []
-    p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Receiver Operating Characteristic'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+    p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('Receiver Operating Characteristic'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
     p.line([0, 0.5, 1.0], [0, 0.5, 1.0], line_width=1.5, line_color='#93D5ED', line_dash='dashed')
 
     ind = 0

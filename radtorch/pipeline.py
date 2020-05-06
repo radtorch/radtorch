@@ -179,6 +179,9 @@ class Compare_Image_Classifiers():
             log('Error! ROC and AUC for classifiers have not been estimated. Please run Compare_Image_Classifier.roc.() first')
             pass
 
+    def metrics(self, **kw):
+        show_metrics(self.classifiers, **kw)
+
     def export(self, output_path):
         try:
             outfile=open(output_path,'wb')
