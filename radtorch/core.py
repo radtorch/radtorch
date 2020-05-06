@@ -129,7 +129,7 @@ class Dataset_from_folder(RADTorch_Dataset):
 
 class Data_Processor():
     '''
-    kwargs: sample, device, table, data_directory, is_dicom, mode, wl, normalize, balance_class, batch_size, num_workers, model_arch , custom_resize,
+    kwargs: sampling, device, table, data_directory, is_dicom, mode, wl, normalize, balance_class, batch_size, num_workers, model_arch , custom_resize,
     '''
     def __init__(self, DEFAULT_SETTINGS=DEFAULT_DATASET_SETTINGS, **kwargs):
         for k, v in kwargs.items():
