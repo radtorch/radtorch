@@ -302,10 +302,14 @@ class Feature_Extractor():
         elif self.model_arch=='wide_resnet101_2': self.model=torchvision.models.wide_resnet101_2(pretrained=self.pre_trained)
         elif self.model_arch=='alexnet': self.model=torchvision.models.alexnet(pretrained=self.pre_trained)
 
-        if 'alexnet' in self.model_arch:
-            self.model.classifier=torch.nn.Linear(in_features=9216, out_features=4096, bias=True)
-        elif 'vgg' in self.model_arch:
-            self.model.classifier=torch.nn.Linear(in_features=25088, out_features=4096, bias=True)
+        if 'alexnet' in self.model_arch or 'vgg' in self.model_arch:
+            self.model.classifier[6]=torch.nn.Identity()
+            
+        #
+        # if 'alexnet' in self.model_arch:
+        #     self.model.classifier=torch.nn.Linear(in_features=9216, out_features=4096, bias=True)
+        # elif 'vgg' in self.model_arch:
+        #     self.model.classifier=torch.nn.Linear(in_features=25088, out_features=4096, bias=True)
         elif 'resnet' in self.model_arch:
             self.model.fc=torch.nn.Identity()
 

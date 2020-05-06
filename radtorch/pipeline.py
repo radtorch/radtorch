@@ -69,7 +69,7 @@ class Image_Classification():
             log('Phase 1: Feature Extraction.')
 
             if 'extracted_feature_dictionary' in self.__dict__.keys():
-                log('Loading Extracted Features')
+                log('Features Already Extracted. Loading Previously Extracted Features')
             else:
                 log('Extracting Training Features')
                 self.train_feature_extractor.run()
