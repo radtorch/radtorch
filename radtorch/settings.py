@@ -33,6 +33,7 @@ from sklearn import metrics, tree
 from sklearn.manifold import TSNE
 from sklearn.linear_model import LogisticRegression, LinearRegression, RidgeClassifier, SGDClassifier, ElasticNet
 from sklearn.model_selection import train_test_split, StratifiedKFold, KFold
+from sklearn.utils import resample
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.metrics import plot_confusion_matrix, plot_roc_curve
