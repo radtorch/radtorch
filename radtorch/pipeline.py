@@ -163,7 +163,7 @@ class Compare_Image_Classifiers():
             print('')
 
     def roc(self, figure_size=(700,400)):
-        self.auc_list=show_roc([i.classifier for i in self.classifiers], fig_size=figure_size)
+        self.auc_list=show_roc([i.classifier for i in self.classifiers], figure_size=figure_size)
         self.best_model_auc=max(self.auc_list)
         self.best_model_index=(self.auc_list.index(self.best_model_auc))
         self.best_classifier=self.classifiers[self.best_model_index]
