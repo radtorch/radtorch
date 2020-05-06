@@ -63,10 +63,8 @@ Please cite us as :
 @software{mohamed_elbanan_md_2020_3732781,
   author       = {Mohamed Elbanan, MD},
   title        = {RADTorch - The Radiology Machine Learning Tool Kit},
-  month        = mar,
   year         = 2020,
   publisher    = {Zenodo},
-  version      = {v0.1.3b},
   doi          = {10.5281/zenodo.3732781},
   url          = {https://doi.org/10.5281/zenodo.3732781}
 }
