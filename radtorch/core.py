@@ -129,7 +129,7 @@ class Dataset_from_folder(RADTorch_Dataset):
 
 class Data_Processor():
     '''
-    kwargs: device, table, data_directory, is_dicom, mode, wl, normalize, balance_class, batch_size, num_workers, model_arch , custom_resize,
+    kwargs: sample, device, table, data_directory, is_dicom, mode, wl, normalize, balance_class, batch_size, num_workers, model_arch , custom_resize,
     '''
     def __init__(self, DEFAULT_SETTINGS=DEFAULT_DATASET_SETTINGS, **kwargs):
         for k, v in kwargs.items():
@@ -152,6 +152,10 @@ class Data_Processor():
             all_classes=[path_to_class(i) for i in dataset_files]
             self.table=pd.DataFrame(list(zip(dataset_files, all_classes)), columns=[self.image_path_column, self.image_label_column])
 
+
+        # Sample from dataset if necessary
+        if self.sample:
+            self.table=self.table.sample(frac=self.sample, random_state=100)
 
         # Split into test, valid and train
         self.temp_table, self.test_table=train_test_split(self.table, test_size=self.test_percent, random_state=100, shuffle=True)
@@ -304,7 +308,7 @@ class Feature_Extractor():
 
         if 'alexnet' in self.model_arch or 'vgg' in self.model_arch:
             self.model.classifier[6]=torch.nn.Identity()
-            
+
         #
         # if 'alexnet' in self.model_arch:
         #     self.model.classifier=torch.nn.Linear(in_features=9216, out_features=4096, bias=True)
