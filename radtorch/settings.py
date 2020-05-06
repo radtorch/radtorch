@@ -183,6 +183,7 @@ DEFAULT_DATASET_SETTINGS={
 'custom_resize':False,
 'multi_label':False,
 'num_workers':0,
+'sample':1.0,
 
 }
 

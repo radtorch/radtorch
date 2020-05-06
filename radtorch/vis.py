@@ -502,7 +502,7 @@ def show_roc(classifier_list, fig_size=(700,400)):
     legend_items = []
 
     for i in classifier_list:
-        if i.type in SUPPORTED_CLASSIFIER:
+        if i.type in [x for x in SUPPORTED_CLASSIFIER if x != 'nn_classifier']:
             true_labels=i.test_labels
             predictions=i.classifier.predict(i.test_features)
         else: true_labels, predictions = calculate_nn_predictions(model=i.trained_model, target_data_set=i.test_dataset, device=i.device)

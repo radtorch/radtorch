@@ -986,6 +986,9 @@ class NN_Classifier():
     def roc(self, **kw):
       show_roc([self], **kw)
 
+    def metrics(self, **kw):
+        show_metrics([self], **kw)
+
     def predict(self,  input_image_path, model=None, transformations=None, all_predictions=True, **kw): #input_image_path
         if model==None:
             model=self.trained_model
