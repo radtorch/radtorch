@@ -180,7 +180,7 @@ class Compare_Image_Classifiers():
             pass
 
     def metrics(self, **kw):
-        show_metrics(self.classifiers, **kw)
+        show_metrics([i.classifier for i in self.classifiers], **kw)
 
     def export(self, output_path):
         try:
