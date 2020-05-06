@@ -154,8 +154,8 @@ class Data_Processor():
 
 
         # Sample from dataset if necessary
-        if self.sample:
-            self.table=self.table.sample(frac=self.sample, random_state=100)
+        if self.sampling:
+            self.table=self.table.sample(frac=self.sampling, random_state=100)
 
         # Split into test, valid and train
         self.temp_table, self.test_table=train_test_split(self.table, test_size=self.test_percent, random_state=100, shuffle=True)

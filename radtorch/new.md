@@ -1,7 +1,7 @@
 # NEW
-- Sample
+- Sampling
 - Metrics for NN_classifier
-
+- Extra transformations
 
 
 
