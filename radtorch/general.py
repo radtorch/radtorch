@@ -40,6 +40,7 @@ def export(item, path):
 
 
 def log(msg):
+    logfile=os.getcwd()+'logfile.txt'
     now = datetime.now()
     timestamp = now.strftime("%d/%m/%Y %H:%M:%S")
     message='['+timestamp+']: '+msg
