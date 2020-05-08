@@ -17,6 +17,23 @@ from radtorch.settings import *
 
 
 def window_dicom(filepath, level, width):
+    
+    """
+    Description
+    -----------
+    Converts a DICOM image to HU and applies desired window/level
+
+    Paramaters
+    -----------
+    filepath (string, required): path to DICOM image.
+    level (integer, required): value of Level.
+    width (integer, required): value of Window.
+
+    Returns
+    -----------
+    numpy array of windowed DICOM image.
+    """ 
+    
     ds = pydicom.read_file(filepath)
     pixels = ds.pixel_array
     if ds.Modality == 'CT':
@@ -30,6 +47,23 @@ def window_dicom(filepath, level, width):
         return (pixels)
 
 def dicom_to_narray(filepath, mode='RAW', wl=None):
+    
+    """
+    Description
+    -----------
+    Converts a DICOM image to numpy array.
+
+    Paramaters
+    -----------
+    filepath (string, required): path to DICOM image.
+    mode (string, required): mode of handling pixel values from DICOM to numpy array. Option={'RAW': raw pixel values, 'HU': converts pixel values to HU using slope and intercept, 'WIN':Applies a certain window/level to HU converted DICOM image, 'MWIN': converts DICOM image to 3 channel HU numpy array with each channel adjusted to certain window/level.
+    wl (tuple or list of tuples, required): value of Window/Levelto be used. If mode is set to 'WIN' then wl takes the format (level, window). If mode is set to 'MWIN' then wl takes the format [(level1, window1), (level2, window2), (level3, window3)].
+
+    Returns
+    -----------
+    numpy array of windowed DICOM image.
+    """     
+    
     if mode == 'RAW':
         ds = pydicom.read_file(filepath)
         img = ds.pixel_array
@@ -65,8 +99,18 @@ def dicom_to_narray(filepath, mode='RAW', wl=None):
 def dicom_to_pil(filepath):
 
     """
-    .. include:: ./documentation/docs/dicomutils.md##dicom_to_pil
-    """
+    Description
+    -----------
+    Converts a DICOM image to PIL image object
+
+    Paramaters
+    -----------
+    filepath (string, required): path to DICOM image.
+
+    Returns
+    -----------
+    PIL image object
+    """ 
 
     ds = pydicom.read_file(filepath)
     pixels = ds.pixel_array
