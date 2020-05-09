@@ -38,7 +38,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier, GradientBoostingClassifier
 from sklearn.metrics import plot_confusion_matrix, plot_roc_curve
 from sklearn.feature_selection import SelectKBest, chi2,  f_classif, mutual_info_classif, RFECV, RFE, VarianceThreshold
-# from xgboost import XGBClassifier
+from xgboost import XGBClassifier
 from tqdm import tqdm_notebook as tqdm
 from tqdm.notebook import tqdm
 from torch.utils.data.dataset import Dataset
