@@ -10,7 +10,9 @@ setup(
       author_email = "https://www.linkedin.com/in/mohamedelbanan/",
       license='MIT',
       packages=['radtorch'],
-      install_requires=['torch', 'torchvision', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn'],
+      install_requires=['torch', 'torchvision', 'numpy', 'pandas', 'pydicom', 'maplotlib', 'pillow', 'tqdm', 'sklearn','pathlib', 'bokeh', 'seaborn'],
+      # install_requires=['torch', 'torchvision', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn'],
+
       zip_safe=False,
       classifiers=[
       "Development Status :: 4 - Beta",

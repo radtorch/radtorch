@@ -13,11 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
+# Documentation update: 5/8/2020
+
 from radtorch.settings import *
 
 
 def window_dicom(filepath, level, width):
-    
+
     """
     Description
     -----------
@@ -32,8 +34,8 @@ def window_dicom(filepath, level, width):
     Returns
     -----------
     numpy array of windowed DICOM image.
-    """ 
-    
+    """
+
     ds = pydicom.read_file(filepath)
     pixels = ds.pixel_array
     if ds.Modality == 'CT':
@@ -46,8 +48,9 @@ def window_dicom(filepath, level, width):
     else:
         return (pixels)
 
+
 def dicom_to_narray(filepath, mode='RAW', wl=None):
-    
+
     """
     Description
     -----------
@@ -62,8 +65,8 @@ def dicom_to_narray(filepath, mode='RAW', wl=None):
     Returns
     -----------
     numpy array of windowed DICOM image.
-    """     
-    
+    """
+
     if mode == 'RAW':
         ds = pydicom.read_file(filepath)
         img = ds.pixel_array
@@ -96,6 +99,7 @@ def dicom_to_narray(filepath, mode='RAW', wl=None):
             mwin_img = np.stack((img0,img1,img2), axis=-1)
             return mwin_img
 
+
 def dicom_to_pil(filepath):
 
     """
@@ -110,15 +114,34 @@ def dicom_to_pil(filepath):
     Returns
     -----------
     PIL image object
-    """ 
+    """
 
     ds = pydicom.read_file(filepath)
     pixels = ds.pixel_array
     pil_image = Image.fromarray(np.rollaxis(pixels, 0,1))
     return pil_image
 
+
 # 3D-Slicer Functions
+## Coordinates
 def find_coordinates(vol="inputvol",roi="croproi"):
+
+    """
+    Description
+    -----------
+    Converts 3D Slicer Coordinates into Real Pixel Coordinates
+
+    Paramaters
+    -----------
+    vol (string, required): name of the input 3d slicer volume
+    rot (string, required): name of the input roi/segment/cropped volume
+
+    Returns
+    -----------
+    Tuple of Integer Coordinates
+
+    """
+
     roiNode = getNode(roi)
     volNode = getNode(vol)
     bounds = [0,0,0,0,0,0]
@@ -133,8 +156,28 @@ def find_coordinates(vol="inputvol",roi="croproi"):
     coordinates = [int(x) for x in coordinates]
     print (coordinates)
 
-# Split Multiphasic study
+
+## Split Multiphasic study
 def split_multiphasic_scan(input_dir, output_dir, modality=''):
+
+    """
+    Description
+    -----------
+    Splits multiphasic CT/MRI into different series.
+
+    Paramaters
+    -----------
+    input_dir (string, required): path of the original series.
+    output_dir (string, required): path of the output series.
+    modality (string, required): type of exam. Options={'CT', 'MRI'}.
+
+    Returns
+    -----------
+    Outputs DICOM images in a new directory separated into different series by phase.
+
+    """
+
+
     if modality=='MRI':
         files = []
         position = []

@@ -20,6 +20,23 @@ from radtorch.settings import *
 
 
 def load_predefined_datatables(*args, **kwargs):
+
+    """
+    Description
+    -----------
+    Creates a dictionary of datasets from a dictionary of predfined tables for each of train/valid/test
+
+
+    Parameters
+    -----------
+    predefined_datasets (dictionary, required): Dictionary of tables containing data for train/valid/test as {'train':, 'valid':, 'test':}
+    Rest of parameters as with "Dataset_from_table"
+
+    Returns
+    -----------
+    Dictionary of dataset objects as {'train':train_dataset, 'valid':valid_dataset, 'test':test_dataset}
+    """
+
     train_dataset=Dataset_from_table(**kwargs, table=kwargs['predefined_datasets']['train'])
     valid_dataset=Dataset_from_table(**kwargs, table=kwargs['predefined_datasets']['valid'])
     test_dataset=Dataset_from_table(**kwargs, table=kwargs['predefined_datasets']['test'])

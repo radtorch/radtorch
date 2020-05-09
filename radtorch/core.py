@@ -10,64 +10,156 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
+# Documentation update: 5/8/2020
+
 from radtorch.settings import *
 from radtorch.vis import *
 from radtorch.general import *
 from radtorch.data import *
+from radtorch.utils import *
 
 
-class RADTorch_Dataset(Dataset):
 
-    def __init__(self, **kwargs): #defines the default parameters for dataset class.
-        for k,v in kwargs.items():
-            setattr(self, k, v)
 
-        for k, v in DEFAULT_DATASET_SETTINGS.items():
-            if k not in kwargs.keys():
-                setattr(self, k, v)
+class RADTroch_Dataset(Dataset):
 
-    def __getitem__(self, index): #handles how to get an image of the dataset.
+    """
+
+    Description
+    -----------
+    Core class for dataset. This is an extension of Pytorch dataset class with modifications.
+
+
+    Parameters
+    ------------
+    - data_directory (string, required): path to target data directory/folder.
+
+    - is_dicom (bollean, optional): True if images are DICOM. default=False.
+
+    - table (string or pandas dataframe, optional): path to label table csv or name of pandas data table. default=None.
+
+    - image_path_column (string, optional): name of column that has image path/image file name. default='IMAGE_PATH'.
+
+    - image_label_column (string, optional): name of column that has image label. default='IMAGE_LABEL'.
+
+    - is_path (boolean, optional): True if file_path column in table is file path. If False, this assumes that the column contains file names only and will append the data_directory to all files. default=False.
+
+    - mode (string, optional): mode of handling pixel values from DICOM to numpy array. Option={'RAW': raw pixel values, 'HU': converts pixel values to HU using slope and intercept, 'WIN':Applies a certain window/level to HU converted DICOM image, 'MWIN': converts DICOM image to 3 channel HU numpy array with each channel adjusted to certain window/level. default='RAW'.
+
+    - wl (tuple or list of tuples, optional): value of Window/Levelto be used. If mode is set to 'WIN' then wl takes the format (level, window). If mode is set to 'MWIN' then wl takes the format [(level1, window1), (level2, window2), (level3, window3)]. default=None.
+
+    - sampling (float, optional): fraction of the whole dataset to be used. default=1.0.
+
+    - transformations (list, optional): list of pytorch transformations to be applied to all datasets. By default, the images are resized, channels added up to 3 and greyscaled. default='default'.
+
+
+    Returns
+    -----------
+    RADTorch dataset object.
+
+
+    """
+
+    def __init__(
+                self,
+                data_directory,
+                transformations,
+                table=None,
+                is_dicom=False,
+                mode='RAW',
+                wl=None,
+                image_path_column='IMAGE_PATH',
+                image_label_column='IMAGE_LABEL',
+                is_path=False,
+                sampling=1.0,
+                **kwargs):
+
+        # Create Data Table
+        if isinstance(self.table, pd.DataFrame): self.input_data=self.table
+        elif isinstance(self.table, string): self.input_data=pd.read_csv(self.table)
+        else: self.input_data=create_data_table(data_directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
+
+        # Check if file path or file name and fix
+        if self.is_path==False:
+            files=[]
+            for i, r in self.table:
+                files.append(self.data_directory+r[self.image_path_column])
+            self.table[self.image_path_column]=file
+
+        # Get list of files
+        if self.is_dicom: self.dataset_files=[x for x in (self.input_data[self.image_path_column].tolist()) if x.endswith('.dcm')]
+        else: self.dataset_files=[x for x in (self.input_data[self.image_path_column].tolist()) if x.endswith(IMG_EXTENSIONS)]
+
+        # Get list of labels and create label dictionary
+        self.classes= list(self.input_data[self.image_label_column].unique())
+        self.class_to_idx=class_to_idx(self.classes)
+
+        # Print Errors if classes or files = 0
+        if len(self.dataset_files)==0: log ('Error! No data files found in directory:'+ self.data_directory)
+        if len(self.classes)==0:log ('Error! No classes extracted from directory:'+ self.data_directory)
+
+    def __getitem__(self, index):
+        """
+        Handles how to get an image of the dataset.
+        """
         image_path=self.input_data.iloc[index][self.image_path_column]
         if self.is_dicom:
             image=dicom_to_narray(image_path, self.mode, self.wl)
             image=Image.fromarray(image)
         else:
             image=Image.open(image_path).convert('RGB')
-
         image=self.transformations(image)
-
         label=self.input_data.iloc[index][self.image_label_column]
         label_idx=[v for k, v in self.class_to_idx.items() if k == label][0]
-
         return image, label_idx, image_path
 
-    def __len__(self): #returns number of images in dataset.
+    def __len__(self):
+        """
+        Returns number of images in dataset.
+        """
         return len(self.dataset_files)
 
-    def info(self): #returns table of dataset information.
+    def info(self):
+        """
+        Returns information of the dataset.
+        """
         return show_dataset_info(self)
 
-    def classes(self): #returns list of classes in dataset.
+    def classes(self):
+        """
+        returns list of classes in dataset.
+        """
         return self.classes
 
-    def class_to_idx(self): #returns mapping of classes to class id (dictionary).
+    def class_to_idx(self):
+        """
+        returns mapping of classes to class id (dictionary).
+        """
         return self.class_to_idx
 
-    def parameters(self): #returns all the parameter names of the dataset.
+    def parameters(self):
+        """
+        returns all the parameter names of the dataset.
+        """
         return self.__dict__.keys()
 
-    def split(self, **kwargs): #splits dataset into train/valid/split, takes test_percent and valid_percent.
-        return split_dataset(dataset=self, **kwargs)
+    def balance(self, method='upsample'):
+        """
+        Retuns a balanced dataset. methods={'upsample', 'downsample'}
+        """
+        return balance_dataset(dataset=self, label_col=self.image_label_col, method=method)
 
-    def balance(self, **kwargs): #solves class imbalance in dataset through over-sampling of classes with less images.
-        # return over_sample(dataset=self, **kwargs)
-        return balance_dataset(dataset=self, **kwargs)
-
-    def mean_std(self): #calculates mean and standard deviation of dataset.
+    def mean_std(self):
+        """
+        calculates mean and standard deviation of dataset.
+        """
         self.mean, self.std= calculate_mean_std(torch.utils.data.DataLoader(dataset=self))
         return tuple(self.mean.tolist()), tuple(self.std.tolist())
 
-    def normalize(self, **kwargs): #retruns a normalized dataset with either mean/std of the dataset or a user specified mean/std
+    def normalize(self, **kwargs):
+        """
+        Retruns a normalized dataset with either mean/std of the dataset or a user specified mean/std in the form of ((mean, mean, mean), (std, std, std)).
+        """
         if 'mean' in kwargs.keys() and 'std' in kwargs.keys():
             mean=kwargs['mean']
             std=kwargs['std']
@@ -78,84 +170,110 @@ class RADTorch_Dataset(Dataset):
         return normalized_dataset
 
 
-class Dataset_from_table(RADTorch_Dataset):
-    def __init__(self, **kwargs):
-        super(Dataset_from_table, self).__init__(**kwargs)
-        if isinstance(self.table, pd.DataFrame):
-            self.input_data=self.table
-        elif self.table != None:
-            self.input_data=pd.read_csv(self.input_source)
-        else:
-            raise TypeError('Error! No label table was selected. Please check.')
-        if self.is_dicom: self.dataset_files=[x for x in (self.input_data[self.image_path_column].tolist()) if x.endswith('.dcm')]
-        else: self.dataset_files=[x for x in (self.input_data[self.image_path_column].tolist()) if x.endswith(IMG_EXTENSIONS)]
-        if self.multi_label == True:
-            self.classes=list(np.unique([item for t in self.input_data[self.image_label_column].to_numpy() for item in t]))
-            self.class_to_idx=class_to_idx(self.classes)
-            self.multi_label_idx=[]
-            for i, row in self.input_data.iterrows():
-                t=[]
-                for u in self.classes:
-                    if u in row[self.image_label_column]:
-                        t.append(1)
-                    else:
-                        t.append(0)
-                self.multi_label_idx.append(t)
-            self.input_data['MULTI_LABEL_IDX']=self.multi_label_idx
-        else:
-            self.classes= list(self.input_data[self.image_label_column].unique())
-            self.class_to_idx=class_to_idx(self.classes)
-        if len(self.dataset_files)==0:
-            print ('Error! No data files found in directory:', self.data_directory)
-
-        if len(self.classes)    ==0:
-            print ('Error! No classes extracted from directory:', self.data_directory)
-
-
-class Dataset_from_folder(RADTorch_Dataset):
-    def __init__(self, **kwargs):
-        super(Dataset_from_folder, self).__init__(**kwargs)
-        self.classes, self.class_to_idx=root_to_class(self.data_directory)
-        self.all_files=list_of_files(self.data_directory)
-        if self.is_dicom: self.dataset_files=[x for x in self.all_files  if x.endswith('.dcm')]
-        else: self.dataset_files=[x for x in self.all_files if x.endswith(IMG_EXTENSIONS)]
-        self.all_classes=[path_to_class(i) for i in self.dataset_files]
-        self.input_data=pd.DataFrame(list(zip(self.dataset_files, self.all_classes)), columns=[self.image_path_column, self.image_label_column])
-        if len(self.dataset_files)==0:
-            print ('Error! No data files found in directory:', self.data_directory)
-        if len(self.classes)==0:
-            print ('Error! No classes extracted from directory:', self.data_directory)
-
-
 class Data_Processor():
-    '''
-    kwargs: sampling, device, table, data_directory, is_dicom, mode, wl, normalize, balance_class, batch_size, num_workers, model_arch , custom_resize,
-    '''
-    def __init__(self, DEFAULT_SETTINGS=DEFAULT_DATASET_SETTINGS, **kwargs):
-        for k, v in kwargs.items():
-            setattr(self, k, v)
-        for k, v  in DEFAULT_SETTINGS.items():
-            if k not in kwargs.keys():
-                setattr(self, k, v)
-        if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    """
+
+    Description
+    ------------
+    Class Data Processor. The core class for data preparation before feature extraction and classification. This class performs dataset creation, data splitting, sampling, balancing, normalization and transformations.
+
+
+    Parameters
+    ------------
+
+    - data_directory (string, required): path to target data directory/folder.
+
+    - is_dicom (bollean, optional): True if images are DICOM. default=False.
+
+    - table (string or pandas dataframe, optional): path to label table csv or name of pandas data table. default=None.
+
+    - image_path_column (string, optional): name of column that has image path/image file name. default='IMAGE_PATH'.
+
+    - image_label_column (string, optional): name of column that has image label. default='IMAGE_LABEL'.
+
+    - is_path (boolean, optional): True if file_path column in table is file path. If False, this assumes that the column contains file names only and will append the data_directory to all files. default=False.
+
+    - mode (string, optional): mode of handling pixel values from DICOM to numpy array. Option={'RAW': raw pixel values, 'HU': converts pixel values to HU using slope and intercept, 'WIN':Applies a certain window/level to HU converted DICOM image, 'MWIN': converts DICOM image to 3 channel HU numpy array with each channel adjusted to certain window/level. default='RAW'.
+
+    - wl (tuple or list of tuples, optional): value of Window/Levelto be used. If mode is set to 'WIN' then wl takes the format (level, window). If mode is set to 'MWIN' then wl takes the format [(level1, window1), (level2, window2), (level3, window3)]. default=None.
+
+    - balance_class (bollean, optional): True to perform oversampling in the train dataset to solve class imbalance. default=False.
+
+    - balance_class_method (string, optional): methodology used to balance classes. Options={'upsample', 'downsample'}. default='upsample'.
+
+    - normalize (bollean, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=False.
+
+    - batch_size (integer, optional): Batch size for dataloader. defult=16.
+
+    - num_workers (integer, optional): Number of CPU workers for dataloader. default=0.
+
+    - sampling (float, optional): fraction of the whole dataset to be used. default=1.0.
+
+    - custom_resize (integer, optional): By default, the data processor resizes the image in dataset into the size expected bu the different CNN architectures. To override this and use a custom resize, set this to desired value. default=False.
+
+    - model_arch (string, required): CNN model architecture that this data will be used for. Used to resize images as detailed above. default='alexnet' .
+
+    - type (string, required): type of classifier that will be used. please refer to classifier object type. default='nn_classifier'.
+
+    - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
+
+    - transformations (list, optional): list of pytorch transformations to be applied to all datasets. By default, the images are resized, channels added up to 3 and greyscaled. default='default'.
+
+    - extra_transformations (list, optional): list of pytorch transformations to be extra added to train dataset specifically. default=None.
+
+
+    """
+
+    def __init__(
+                self,
+                data_directory,
+                is_dicom=False,
+                table=None,
+                image_path_column='IMAGE_PATH',
+                image_label_column='IMAGE_LABEL',
+                is_path=False,
+                mode='RAW',
+                wl=None,
+                balance_class=False,
+                balance_class_method='upsample',
+                normalize=((0,0,0), (1,1,1)),
+                batch_size=16,
+                num_workers=0,
+                sampling=1.0,
+                custom_resize=False,
+                model_arch='alexnet',
+                type='nn_classifier',
+                transformations='default',
+                extra_transformations=None,
+                device='auto',
+                **kwargs):
+
+        if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # Create Initial Master Table
         if isinstance(self.table, str):
-                if self.table!='':
-                    self.table=pd.read_csv(self.table)
-        elif isinstance(self.table, pd.DataFrame): self.table=self.table
-        else:
-            classes, class_to_idx=root_to_class(self.data_directory)
-            all_files=list_of_files(self.data_directory)
-            if self.is_dicom: dataset_files=[x for x in all_files  if x.endswith('.dcm')]
-            else: dataset_files=[x for x in all_files if x.endswith(IMG_EXTENSIONS)]
-            all_classes=[path_to_class(i) for i in dataset_files]
-            self.table=pd.DataFrame(list(zip(dataset_files, all_classes)), columns=[self.image_path_column, self.image_label_column])
+            if self.table!='':
+                self.table=pd.read_csv(self.table)
+        elif isinstance(self.table, pd.DataFrame):
+            self.table=self.table
+        else: create_data_table(data_directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
 
 
         # Sample from dataset if necessary
-        if self.sampling:
-            self.table=self.table.sample(frac=self.sampling, random_state=100)
+        if isinstance (self.sampling, float):
+            if self.sampling > 1.0 :
+                log('Error! Sampling cannot be more than 1.0.')
+                pass
+            elif self.sampling == 0:
+                log ('Error! Sampling canot be Zero.')
+                pass
+            else:
+                self.table=self.table.sample(frac=self.sampling, random_state=100)
+        else:
+            log ('Error! Sampling is not float')
+            pass
+
 
         # Split into test, valid and train
         self.temp_table, self.test_table=train_test_split(self.table, test_size=self.test_percent, random_state=100, shuffle=True)
@@ -165,9 +283,10 @@ class Data_Processor():
         # 1- Custom Resize Adjustement
         if self.custom_resize in [False, '', 0, None]: self.resize=model_dict[self.model_arch]['input_size']
         elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
+        else: log ('Image Custom Resize not allowed. Please recheck.')
 
         # 2- Image conversion from DICOM
-        if 'transformations' not in self.__dict__.keys():
+        if self.transformations=='default':
             if self.is_dicom:
                 self.transformations=transforms.Compose([
                         transforms.Resize((self.resize, self.resize)),
@@ -179,54 +298,101 @@ class Data_Processor():
                     transforms.ToTensor()])
 
 
-
         # 3- Normalize Training Dataset
         self.train_transformations=copy.deepcopy(self.transformations)
-        if 'extra_transformations' in self.__dict__.keys():
+        if self.extra_transformations != None :
             for i in self.extra_transformations:
                 self.train_transformations.transforms.insert(1, i)
         if isinstance (self.normalize, tuple):
             mean, std=self.normalize
-            # self.transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
             self.train_transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
-
         elif self.normalize!=False:
             log('Error! Selected mean and standard deviation are not allowed.')
             pass
 
-        self.dataset_kwargs=copy.deepcopy(self.__dict__)
-        del self.dataset_kwargs['table']
 
-        self.train_dataset_kwargs=copy.deepcopy(self.dataset_kwargs)
-        # del self.train_dataset_kwargs['transformations']
-        self.train_dataset_kwargs['transformations']=self.train_transformations
+        self.master_dataset=RADTorch_Dataset(
+                                            data_directory=self.data_directory,
+                                            table=self.table,
+                                            is_dicom=self.is_dicom,
+                                            mode=self.mode,
+                                            wl=self.wl,
+                                            image_path_column=self.image_path_column,
+                                            image_label_column=self.image_label_column,
+                                            is_path=self.is_path,
+                                            sampling=1.0,
+                                            transformations=self.transformations)
 
-        self.master_dataset=Dataset_from_table(table=self.table, **self.dataset_kwargs)
-        self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
         self.num_output_classes=len(self.master_dataset.classes)
 
-
         if self.type=='nn_classifier':
-            self.train_dataset=Dataset_from_table(table=self.train_table, **self.train_dataset_kwargs)
+            self.train_dataset=RADTorch_Dataset(
+                                                data_directory=self.data_directory,
+                                                table=self.train_table,
+                                                is_dicom=self.is_dicom,
+                                                mode=self.mode,
+                                                wl=self.wl,
+                                                image_path_column=self.image_path_column,
+                                                image_label_column=self.image_label_column,
+                                                is_path=self.is_path,
+                                                sampling=1.0,
+                                                transformations=self.train_transformations)
             if self.balance_class:
-                self.train_dataset=self.train_dataset.balance(label_col=self.image_label_column, upsample=True)
-            self.valid_dataset=Dataset_from_table(table=self.valid_table, **self.dataset_kwargs)
-            self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-            self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+                self.train_dataset=self.train_dataset.balance(method=self.balance_class_method)
+            self.valid_dataset=RADTorch_Dataset(
+                                                data_directory=self.data_directory,
+                                                table=self.valid_table,
+                                                is_dicom=self.is_dicom,
+                                                mode=self.mode,
+                                                wl=self.wl,
+                                                image_path_column=self.image_path_column,
+                                                image_label_column=self.image_label_column,
+                                                is_path=self.is_path,
+                                                sampling=1.0,
+                                                transformations=self.transformations)
 
         else:
-            self.train_dataset=Dataset_from_table(table=self.temp_table,  **self.train_dataset_kwargs)
+            self.train_dataset=RADTorch_Dataset(
+                                                data_directory=self.data_directory,
+                                                table=self.temp_table,
+                                                is_dicom=self.is_dicom,
+                                                mode=self.mode,
+                                                wl=self.wl,
+                                                image_path_column=self.image_path_column,
+                                                image_label_column=self.image_label_column,
+                                                is_path=self.is_path,
+                                                sampling=1.0,
+                                                transformations=self.train_transformations)
             if self.balance_class:
-                self.train_dataset=self.train_dataset.balance(label_col=self.image_label_column, upsample=True)
-            self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+                self.train_dataset=self.train_dataset.balance(method=self.balance_class_method)
 
-        self.test_dataset=Dataset_from_table(table=self.test_table, **self.dataset_kwargs)
+        self.test_dataset=RADTorch_Dataset(
+                                            data_directory=self.data_directory,
+                                            table=self.test_table,
+                                            is_dicom=self.is_dicom,
+                                            mode=self.mode,
+                                            wl=self.wl,
+                                            image_path_column=self.image_path_column,
+                                            image_label_column=self.image_label_column,
+                                            is_path=self.is_path,
+                                            sampling=1.0,
+                                            transformations=self.transformations)
+
+        self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
         self.test_dataloader=torch.utils.data.DataLoader(dataset=self.test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
     def classes(self):
+        """
+        Returns list of classes in data.
+        """
         return self.master_dataset.class_to_idx
 
     def info(self):
+        """
+        Returns full information of the data processor object.
+        """
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns=['Property', 'Value']
         info=info.append({'Property':'master_dataset_size', 'Value':len(self.master_dataset)}, ignore_index=True)
@@ -236,9 +402,18 @@ class Data_Processor():
         return info
 
     def dataset_info(self, plot=True, figure_size=(500,300)):
+        """
+        Displays information of the data and class breakdown.
+
+        Parameters
+        -----------
+        plot (boolean, optional): True to display data as graph. False to display in table format. default=True
+        figure_size (tuple, optional): Tuple of width and lenght of figure plotted. default=(500,300)
+        """
+
         info_dict={}
         info_dict['dataset']=show_dataset_info(self.master_dataset)
-        info_dict['dataset'].style.set_caption('Dataset')
+        info_dict['dataset'].style.set_caption('Overall Dataset')
         if 'type' in self.__dict__.keys():
             for i in ['train_dataset','test_dataset']:
                 if i in self.__dict__.keys():
@@ -256,9 +431,28 @@ class Data_Processor():
                 display(v)
 
     def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
+        """
+        Displays a sample from the training dataset. Number of images displayed is the same as batch size.
+
+        Parameters
+        ----------
+        figure_size (tuple, optional): Tuple of width and lenght of figure plotted. default=(10,10)
+        show_label (boolean, optional): show labels above images. default=True
+        show_file_names (boolean, optional): show file path above image. default=False
+
+
+        """
         show_dataloader_sample(self.train_dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
 
     def check_leak(self, show_file=False):
+        """
+        Checks possible overlap between train and test dataset files.
+
+        Parameters
+        ----------
+        show_file (boolean, optional): display table of leaked/common files between train and test. default=False.
+
+        """
         train_file_list=self.train_dataset.input_data[self.image_path_column]
         test_file_list=self.test_dataset.input_data[self.image_path_column]
         leak_files=[]
@@ -270,6 +464,14 @@ class Data_Processor():
             return pd.DataFrame(leak_files, columns='leaked_files')
 
     def export(self, output_path):
+        """
+        Exports the Dtaprocessor object for future use.
+
+        Parameters
+        ----------
+        output_path (string, required): output file path.
+
+        """
         try:
             outfile=open(output_path,'wb')
             pickle.dump(self,outfile)
@@ -280,10 +482,41 @@ class Data_Processor():
 
 
 class Feature_Extractor():
-    '''
-    kwargs: model_arch, pre_trained, unfreeze, device, dataloader
-    '''
-    def __init__(self, **kwargs):
+
+    """
+
+    Description
+    -----------
+    Creates a feature extractor neural network using one of the famous CNN architectures and the data provided as dataloader from Data_Processor.
+
+    Parameters
+    ----------
+
+    - model_arch (string, required): CNN architecture to be utilized. To see list of supported architectures see settings.
+
+    - pre_trained (boolean, optional): Initialize with ImageNet pretrained weights or not. default=True.
+
+    - unfreeze (boolean, required): Unfreeze all layers of network for future retraining. default=False.
+
+    - dataloader (pytorch dataloader object, required): the dataloader that will be used to supply data for feature extraction.
+
+    - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
+
+    Retruns
+    ---------
+    Pandas dataframe with extracted features.
+
+    """
+
+
+    def __init__(
+                self,
+                model_arch,
+                pre_trained=True,
+                unfreeze=False,
+                dataloader,
+                device='auto',
+                **kwargs):
         for k,v in kwargs.items():
             setattr(self,k,v)
         if self.model_arch not in supported_models:
@@ -309,11 +542,6 @@ class Feature_Extractor():
         if 'alexnet' in self.model_arch or 'vgg' in self.model_arch:
             self.model.classifier[6]=torch.nn.Identity()
 
-        #
-        # if 'alexnet' in self.model_arch:
-        #     self.model.classifier=torch.nn.Linear(in_features=9216, out_features=4096, bias=True)
-        # elif 'vgg' in self.model_arch:
-        #     self.model.classifier=torch.nn.Linear(in_features=25088, out_features=4096, bias=True)
         elif 'resnet' in self.model_arch:
             self.model.fc=torch.nn.Identity()
 
@@ -322,9 +550,21 @@ class Feature_Extractor():
                 param.requires_grad = False
 
     def num_features(self):
+        """
+        Returns the number of features to be extracted.
+        """
         return model_dict[self.model_arch]['output_features']
 
     def run(self, verbose=False):
+        """
+        Runs the feature exraction process
+
+        Returns
+        --------
+        tuple of feature_table (dataframe which contains all features, labels and image file path), features (dataframe which contains features only), feature_names(list of feature names)
+
+        """
+
         if 'balance_class' in self.__dict__.keys() and 'normalize' in self.__dict__.keys():
             log('Running Feature Extraction using '+str(self.model_arch)+' architecture with balance_class = '+str(self.balance_class)+' and normalize = '+str(self.normalize)+".")
         else:
@@ -341,7 +581,6 @@ class Feature_Extractor():
                 imgs=imgs.to(self.device)
                 output=(self.model(imgs)).tolist()
                 self.features=self.features+(output)
-        # self.feature_names=['f_'+str(i) for i in range(0,(model_dict[self.model_arch]['output_features']))]
         self.feature_names=['f_'+str(i) for i in range(0,self.num_features())]
         feature_table=pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['IMAGE_PATH','IMAGE_LABEL', 'FEATURES'])
         feature_table[self.feature_names]=pd.DataFrame(feature_table.FEATURES.values.tolist(), index= feature_table.index)
@@ -349,10 +588,20 @@ class Feature_Extractor():
         log('Features extracted successfully.')
         self.feature_table=feature_table
         self.features=self.feature_table[self.feature_names]
+        return self.feature_table, self.features, self.feature_names
         if verbose:
             print (self.feature_table)
 
     def export_features(self,csv_path):
+
+        """
+        Exports extracted features into csv file.
+
+        Parameters
+        ----------
+        csv_path (string, required): path to csv output.
+
+        """
         try:
             self.feature_table.to_csv(csv_path, index=False)
             log('Features exported to CSV successfully.')
@@ -360,14 +609,34 @@ class Feature_Extractor():
             log('Error! No features found. Please check again or re-run the extracion pipeline.')
             pass
 
-    def plot_extracted_features(self, feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='IMAGE_PATH', image_label_col='IMAGE_LABEL'):
-        if feature_table==None:
-            feature_table=self.feature_table
-        if feature_names==None:
-            feature_names=self.feature_names
-        return plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col)
+    def plot_extracted_features(self, num_features=100, num_images=100,image_path_column='IMAGE_PATH', image_label_column='IMAGE_LABEL'):
+        """
+        Plots Extracted Features in Heatmap
+
+        Parameters
+        -----------
+
+        - num_features (integer, optional): number of features to display. default=100
+
+        - num_images (integer, optional): number of images to display features for. default=100
+
+        - image_path_column (string, required): name of column that has image names/path. default='IMAGE_PATH'
+
+        - image_label_column (string, required): name of column that has image labels. default='IMAGE_LABEL'
+
+        """
+
+        return plot_features(feature_table=self.feature_table, feature_names=self.feature_names, num_features, num_images,image_path_col=image_path_column, image_label_col=image_label_column)
 
     def export(self, output_path):
+        """
+        Exports the Feature Extractor object for future use.
+
+        Parameters
+        ----------
+        output_path (string, required): output file path.
+
+        """
         try:
             outfile=open(output_path,'wb')
             pickle.dump(self,outfile)
@@ -739,7 +1008,6 @@ class Feature_Selector(Classifier):
         p.title.text='t-distributed Stochastic Neighbor Embedding (t-SNE)'
         p.title_location='above'
         show(p)
-
 
 class NN_Classifier():
     '''

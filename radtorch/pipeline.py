@@ -39,7 +39,7 @@ class Image_Classification():
     'label_column':'label_idx',
     'parameters':{},
     'custom_nn_classifier':False,
-    }
+    ''}
     '''
     def __init__(self, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs):
 
@@ -55,7 +55,6 @@ class Image_Classification():
         if 'extracted_feature_dictionary' not in self.__dict__.keys():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
             self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__)
-
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
@@ -93,6 +92,10 @@ class Image_Classification():
             self.trained_model, self.train_metrics=self.classifier.run()
             log ('Classifier Training completed successfully.')
 
+
+    def feature_selection_sampling(self, method=):
+
+
     def metrics(self, figure_size=(500,300)):
         return show_metrics([self.classifier],  fig_size=figure_size)
 
@@ -107,7 +110,7 @@ class Image_Classification():
             pass
 
 
-# NEEDS TESTING
+
 class Compare_Image_Classifiers():
 
     def __init__(self, DEFAULT_SETTINGS=IMAGE_CLASSIFICATION_PIPELINE_SETTINGS, **kwargs):
@@ -132,7 +135,6 @@ class Compare_Image_Classifiers():
         self.scenarios_list.sort(key = lambda x: x['type'], reverse=True)
         self.scenarios_df=pd.DataFrame(self.scenarios_list)
         self.classifiers=[]
-
 
     def grid(self, full=False):
         if full:
