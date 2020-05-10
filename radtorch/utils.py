@@ -344,3 +344,190 @@ def plot_features(feature_table, feature_names, num_features, num_images,image_p
     tabs = Tabs(tabs=figures)
 
     show(tabs)
+
+
+def show_confusion_matrix(cm,target_names,title='Confusion Matrix',cmap=None,normalize=False,figure_size=(8,6)):
+
+    """
+
+    Description
+    -----------
+    Displays confusion matrix using a confusion matrix object created by scki-kit learn.
+
+    Parameters
+    ----------
+
+    - cm (np array, required): confusion matrix object created by sci-kit learn.
+
+    - target_names (list, required): list of classes/labels.
+
+    - cmap (string, optional): colormap of the displayed confusion matrix. This follows matplot color palletes. default=None.
+
+    - normalize (boolean, optional): normalize values. default=False.
+
+    - figure_size (tuple, optional): size of the figure as width, height. default=(8,6)
+
+
+    Returns
+    -------
+    matplot figure
+
+    """
+
+    accuracy = np.trace(cm) / float(np.sum(cm))
+    misclass = 1 - accuracy
+
+    if cmap is None:
+        cmap = plt.get_cmap('Blues')
+
+    plt.figure(figsize=figure_size)
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+
+    if target_names is not None:
+        tick_marks = np.arange(len(target_names))
+        plt.xticks(tick_marks, target_names, rotation=45)
+        plt.yticks(tick_marks, target_names)
+
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+
+
+    thresh = cm.max() / 1.5 if normalize else cm.max() / 2
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        if normalize:
+            plt.text(j, i, "{:0.4f}".format(cm[i, j]),
+                     horizontalalignment="center",
+                     color="white" if cm[i, j] > thresh else "black")
+        else:
+            plt.text(j, i, "{:,}".format(cm[i, j]),
+                     horizontalalignment="center",
+                     color="white" if cm[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(accuracy, misclass))
+    plt.show()
+
+
+def show_roc(classifier_list, figure_size=(700,400)):
+
+    """
+
+    Description
+    -----------
+    Displays ROC and AUC of trained classifier and test dataset. Can be used to display ROC of list of classifiers for comparison.
+
+
+    Parameters
+    ----------
+
+    - classifier_list (list, required): list of classifier object (radtorch.core.classifier)
+
+    - figure_size (tuple, optional): size of the figure as width, height. default=(700,400)
+
+
+    Returns
+    -------
+    Bokeh figure.
+
+
+    """
+
+    output_notebook()
+
+    output = []
+    p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('Receiver Operating Characteristic'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+    p.line([0, 0.5, 1.0], [0, 0.5, 1.0], line_width=1.5, line_color='#93D5ED', line_dash='dashed')
+
+    ind = 0
+
+    auc_list = []
+
+    legend_items = []
+
+    for i in classifier_list:
+        if i.type in [x for x in SUPPORTED_CLASSIFIER if x != 'nn_classifier']:
+            true_labels=i.test_labels
+            predictions=i.classifier.predict(i.test_features)
+        else: true_labels, predictions = calculate_nn_predictions(model=i.trained_model, target_data_set=i.test_dataset, device=i.device)
+        fpr, tpr, thresholds = metrics.roc_curve(true_labels, predictions)
+        auc = metrics.roc_auc_score(true_labels, predictions)
+        x = p.line(fpr, tpr, line_width=2, line_color= COLORS2[ind])
+        legend_items.append((('Model '+i.classifier_type+'. AUC = '+'{:0.4f}'.format((auc))),[x]))
+
+        ind = ind+1
+        auc_list.append(auc)
+
+    legend = Legend(items=legend_items, location=(10, -20))
+    p.add_layout(legend, 'right')
+
+    p.legend.inactive_fill_alpha = 0.7
+    p.legend.border_line_width = 0
+    p.legend.click_policy="hide"
+    p.xaxis.axis_line_color = '#D6DBDF'
+    p.xaxis.axis_label = 'False Positive Rate (1-Specificity)'
+    p.yaxis.axis_label = 'True Positive Rate (Senstivity)'
+    p.yaxis.axis_line_color = '#D6DBDF'
+    p.xgrid.grid_line_color=None
+    p.yaxis.axis_line_width = 2
+    p.xaxis.axis_line_width = 2
+    p.xaxis.major_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_color = '#D6DBDF'
+    p.xaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.minor_tick_line_color = '#D6DBDF'
+    p.yaxis.major_tick_line_width = 2
+    p.xaxis.major_tick_line_width = 2
+    p.yaxis.minor_tick_line_width = 0
+    p.xaxis.minor_tick_line_width = 0
+    p.xaxis.major_label_text_color = '#99A3A4'
+    p.yaxis.major_label_text_color = '#99A3A4'
+    p.outline_line_color = None
+    p.toolbar.autohide = True
+
+    show(p)
+
+    return auc_list
+
+
+def calculate_nn_predictions(model, target_data_set,  device):
+
+    """
+
+    Description
+    -----------
+    Calculates predictions on test dataset using a trained nn_classifier.
+
+    Parameters
+    ----------
+
+    - model (pytorch Model, required): trained model.
+
+    - target_data_set (pytorch dataset, required): tets dataset/target dataset to predict.
+
+    - device (string, required): device to use. Options {'cpu', 'cuda'}
+
+    Returns
+    -------
+    tuple of 2 lists: (true labels , predicted labels)
+
+    """
+
+    true_labels = []
+    pred_labels = []
+    model.to(device)
+    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
+
+    for i, (imgs, labels, path) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
+        imgs = imgs.to(device)
+        labels = labels.to(device)
+        true_labels = true_labels+labels.tolist()
+        with torch.no_grad():
+            model.eval()
+            out = model(imgs)
+            ps = out
+            pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
+            pred_labels = pred_labels+pr
+
+    return (true_labels, pred_labels)

@@ -647,186 +647,327 @@ class Feature_Extractor():
 
 
 class Classifier(object):
-  '''
-  kwargs: feature_table (in case the split is to be done at classifier), extracted_feature_dictionary (dictionary of train/test features), parameters, image_label_column, image_path_column, transformations/model (for prediction)
-  '''
-  def __init__(self, DEFAULT_SETTINGS=CLASSIFER_DEFAULT_SETTINGS, **kwargs):
-    for k,v in kwargs.items():
-      setattr(self,k,v)
-    for k, v  in DEFAULT_SETTINGS.items():
-        if k not in kwargs.keys():
-            setattr(self, k, v)
 
-    if 'feature_table' in self.__dict__.keys():
-        if isinstance(self.feature_table, str):
-            try:
-                self.feature_table=pd.read_csv(self.feature_table)
-            except:
-                log('Loading feature table failed. Please check the location of the feature table.')
-                pass
+    """
+
+    Description
+    -----------
+    Image Classification Class. Performs Binary/Multiclass classification using features extracted via Feature Extractor or Supplied by user.
 
 
-    if 'extracted_feature_dictionary' in self.__dict__.keys():
-        # self.feature_names=[x for x in self.feature_table.columns if x not in [self.image_label_col,self.image_path_col]]
-        # self.train_features=self.train_features[self.feature_names]
-        # self.test_features=self.test_features.iloc[self.feature_names]
-        # self.train_labels=self.train_features.iloc[self.fimage_label_col]
-        # self.test_labels=self.test_features.iloc[self.fimage_label_col]
-        self.feature_names=self.extracted_feature_dictionary['train']['features_names']
-        self.train_features=self.extracted_feature_dictionary['train']['features']
-        self.train_labels=np.array(self.extracted_feature_dictionary['train']['labels'])
-        self.test_features=self.extracted_feature_dictionary['test']['features']
-        self.test_labels=np.array(self.extracted_feature_dictionary['test']['labels'])
+    Parameters
+    -----------
 
-    else:
-        self.feature_names=[x for x in self.feature_table.columns if x not in [self.image_label_column,self.image_path_column]]
-        self.labels=self.feature_table[self.image_label_column]
-        self.features=self.feature_table[self.feature_names]
-        self.train_features,  self.test_features, self.train_labels, self.test_labels=train_test_split(self.features, self.labels, test_size=self.test_percent, random_state=100)
+    - extracted_feature_dictionary (dictionary, required): Dictionary of features/labels datasets to be used for classification. This follows the following format :
+    {
+        'train':
+                {'features':dataframe, 'feature_names':list, 'labels': list}},
+        'test':
+                {'features':dataframe, 'feature_names':list, 'labels': list}},
+    }
 
-    if self.interaction_terms:
-        log('Creating Interaction Terms for Train Dataset.')
-        self.train_features=self.create_interaction_terms(self.train_features)
-        log('Creating Interaction Terms for Test Dataset.')
-        self.test_features=self.create_interaction_terms(self.test_features)
-        log('Interaction Terms Created Successfully.')
+    - feature_table (string, optional): path to csv table with user selected image paths, labels and features. default=None.
+
+    - image_label_column (string, required if using feature_table): name of the column with images labels.default=None.
+
+    - image_path_column (string, requried if using feature_table): name of column with images paths.default=None.
+
+    - test_percent (float, required if using feature_table): percentage of data for testing.default=None.
+
+    - type (string, required): type of classifier. For complete list refer to settings. default='logistic_regression'.
+
+    - interaction_terms (boolean, optional): create interaction terms between different features and add them as new features to feature table. default=False.
+
+    - cv (boolean, required): True for cross validation. default=True.
+
+    - stratified (boolean, required): True for stratified cross validation. default=True.
+
+    - num_splits (integer, required): Number of K-fold cross validation splits. default=5.
+
+    - parameters (dictionary, optional): optional parameters passed to the classifier. Please refer to sci-kit learn documentaion.
+
+    """
+
+    def __init__(self,
+                extracted_feature_dictionary,
+                feature_table=None,
+                image_label_column=None,
+                image_path_column=None,
+                test_percent=None,
+                type='logistic_regression',
+                interaction_terms=False,
+                cv=True,
+                stratified=True,
+                num_splits=5,
+                parameters={},
+                transformations=None,
+                model=None,
+                **kwargs):
+
+        # Load extracted feature dictionary
+        if 'extracted_feature_dictionary' in self.__dict__.keys():
+            self.feature_names=self.extracted_feature_dictionary['train']['features_names']
+            self.train_features=self.extracted_feature_dictionary['train']['features']
+            self.train_labels=np.array(self.extracted_feature_dictionary['train']['labels'])
+            self.test_features=self.extracted_feature_dictionary['test']['features']
+            self.test_labels=np.array(self.extracted_feature_dictionary['test']['labels'])
 
 
-    self.classifier=self.create_classifier(**self.parameters)
-    self.classifier_type=self.classifier.__class__.__name__
+        # Or Load user specified features
+        else:
+            if 'feature_table' in self.__dict__.keys():
+                if isinstance(self.feature_table, str):
+                    try:
+                        self.feature_table=pd.read_csv(self.feature_table)
+                    except:
+                        log('Loading feature table failed. Please check the location of the feature table.')
+                        pass
+            self.feature_names=[x for x in self.feature_table.columns if x not in [self.image_label_column,self.image_path_column]]
+            self.labels=self.feature_table[self.image_label_column]
+            self.features=self.feature_table[self.feature_names]
+            self.train_features,  self.test_features, self.train_labels, self.test_labels=train_test_split(self.features, self.labels, test_size=self.test_percent, random_state=100)
 
-  def create_classifier(self, **kw):
-    if self.type not in SUPPORTED_CLASSIFIER:
-      log('Error! Classifier type not supported. Please check again.')
-      pass
-    elif self.type=='linear_regression':
-      classifier=LinearRegression(n_jobs=-1, **kw)
-    elif self.type=='logistic_regression':
-      classifier=LogisticRegression(max_iter=10000,n_jobs=-1, **kw)
-    elif self.type=='ridge':
-      classifier=RidgeClassifier(max_iter=10000, **kw)
-    elif self.type=='sgd':
-      classifier=SGDClassifier(**kw)
-    elif self.type=='knn':
-      classifier=KNeighborsClassifier(n_jobs=-1,**kw)
-    elif self.type=='decision_trees':
-      classifier=tree.DecisionTreeClassifier(**kw)
-    elif self.type=='random_forests':
-      classifier=RandomForestClassifier(**kw)
-    elif self.type=='gradient_boost':
-      classifier=GradientBoostingClassifier(**kw)
-    elif self.type=='adaboost':
-      classifier=AdaBoostClassifier(**kw)
-    elif self.type=='xgboost':
-      classifier=XGBClassifier(**kw)
-    return classifier
+        # Interaction Terms
+        if self.interaction_terms:
+            log('Creating Interaction Terms for Train Dataset.')
+            self.train_features=self.create_interaction_terms(self.train_features)
+            log('Creating Interaction Terms for Test Dataset.')
+            self.test_features=self.create_interaction_terms(self.test_features)
+            log('Interaction Terms Created Successfully.')
 
-  def info(self):
-    info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
-    info.columns=['Property', 'Value']
-    return info
+        # Create Classifier object
+        self.classifier=self.create_classifier(**self.parameters)
+        self.classifier_type=self.classifier.__class__.__name__
 
-  def run(self):
-    self.scores=[]
-    self.train_metrics=[]
-    if self.cv:
-      if self.stratified:
-        kf=StratifiedKFold(n_splits=self.num_splits, shuffle=True, random_state=100)
-        log('Training '+str(self.classifier_type)+ ' with '+str(self.num_splits)+' split stratified cross validation.')
-      else:
-        kf=KFold(n_splits=self.num_splits, shuffle=True, random_state=100)
-        log('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.')
-      split_id=0
-      for train, test in tqdm(kf.split(self.train_features, self.train_labels), total=self.num_splits):
-        self.classifier.fit(self.train_features.iloc[train], self.train_labels[train])
-        split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels[test])
-        self.scores.append(split_score)
-        log('Split '+str(split_id)+' Accuracy = ' +str(split_score))
-        self.train_metrics.append([[0],[0],[split_score],[0]])
-        split_id+=1
-    else:
-      log('Training '+str(self.type)+' classifier without cross validation.')
-      self.classifier.fit(self.train_features, self.train_labels)
-      score=self.classifier.score(self.test_features, self.test_labels)
-      self.scores.append(score)
-      self.train_metrics.append([[0],[0],[score],[0]])
-    self.scores = np.asarray(self.scores )
-    self.classes=self.classifier.classes_.tolist()
-    log(str(self.classifier_type)+ ' model training finished successfully.')
-    log(str(self.classifier_type)+ ' overall training accuracy: %0.2f (+/- %0.2f)' % ( self.scores .mean(),  self.scores .std() * 2))
-    self.train_metrics = pd.DataFrame(data=self.train_metrics, columns = ['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
-    return self.classifier, self.train_metrics
+    def create_classifier(self, **kw):
 
-  def average_cv_accuracy(self):
-    if self.cv:
-      return self.scores.mean()
-    else:
-      log('Error! Training was done without cross validation. Please use test_accuracy() instead.')
+        """
+        Creates Classifier Object
+        """
 
-  def test_accuracy(self) :
-    acc= self.classifier.score(self.test_features, self.test_labels)
-    return acc
+        if self.type not in SUPPORTED_CLASSIFIER:
+          log('Error! Classifier type not supported. Please check again.')
+          pass
+        elif self.type=='linear_regression':
+          classifier=LinearRegression(n_jobs=-1, **kw)
+        elif self.type=='logistic_regression':
+          classifier=LogisticRegression(max_iter=10000,n_jobs=-1, **kw)
+        elif self.type=='ridge':
+          classifier=RidgeClassifier(max_iter=10000, **kw)
+        elif self.type=='sgd':
+          classifier=SGDClassifier(**kw)
+        elif self.type=='knn':
+          classifier=KNeighborsClassifier(n_jobs=-1,**kw)
+        elif self.type=='decision_trees':
+          classifier=tree.DecisionTreeClassifier(**kw)
+        elif self.type=='random_forests':
+          classifier=RandomForestClassifier(**kw)
+        elif self.type=='gradient_boost':
+          classifier=GradientBoostingClassifier(**kw)
+        elif self.type=='adaboost':
+          classifier=AdaBoostClassifier(**kw)
+        elif self.type=='xgboost':
+          classifier=XGBClassifier(**kw)
+        return classifier
 
-  def confusion_matrix(self,title='Confusion Matrix',cmap=None,normalize=False,figure_size=(8,6)):
-    pred_labels=self.classifier.predict(self.test_features)
-    true_labels=self.test_labels
-    cm = metrics.confusion_matrix(true_labels, pred_labels)
-    show_confusion_matrix(cm=cm,
-                          target_names=self.classes,
-                          title=title,
-                          cmap=cmap,
-                          normalize=normalize,
-                          figure_size=figure_size
-                          )
+    def info(self):
 
-  def roc(self, **kw):
-    show_roc([self], **kw)
+        """
+        Returns table of different classifier parameters/properties.
+        """
 
-  def predict(self, input_image_path, all_predictions=False, classifier=None, transformations=None, **kw):
-    '''
-    Works as a part of pipeline Only
-    '''
-    if classifier==None:
+        info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
+        info.columns=['Property', 'Value']
+        return info
+
+    def run(self):
+
+        """
+        Runs Image Classifier.
+        """
+
+        self.scores=[]
+        self.train_metrics=[]
+        if self.cv:
+          if self.stratified:
+            kf=StratifiedKFold(n_splits=self.num_splits, shuffle=True, random_state=100)
+            log('Training '+str(self.classifier_type)+ ' with '+str(self.num_splits)+' split stratified cross validation.')
+          else:
+            kf=KFold(n_splits=self.num_splits, shuffle=True, random_state=100)
+            log('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.')
+          split_id=0
+          for train, test in tqdm(kf.split(self.train_features, self.train_labels), total=self.num_splits):
+            self.classifier.fit(self.train_features.iloc[train], self.train_labels[train])
+            split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels[test])
+            self.scores.append(split_score)
+            log('Split '+str(split_id)+' Accuracy = ' +str(split_score))
+            self.train_metrics.append([[0],[0],[split_score],[0]])
+            split_id+=1
+        else:
+          log('Training '+str(self.type)+' classifier without cross validation.')
+          self.classifier.fit(self.train_features, self.train_labels)
+          score=self.classifier.score(self.test_features, self.test_labels)
+          self.scores.append(score)
+          self.train_metrics.append([[0],[0],[score],[0]])
+        self.scores = np.asarray(self.scores )
+        self.classes=self.classifier.classes_.tolist()
+        log(str(self.classifier_type)+ ' model training finished successfully.')
+        log(str(self.classifier_type)+ ' overall training accuracy: %0.2f (+/- %0.2f)' % ( self.scores .mean(),  self.scores .std() * 2))
+        self.train_metrics = pd.DataFrame(data=self.train_metrics, columns = ['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
+        return self.classifier, self.train_metrics
+
+    def average_cv_accuracy(self):
+
+        """
+        Returns average cross validation accuracy.
+        """
+
+        if self.cv:
+          return self.scores.mean()
+        else:
+          log('Error! Training was done without cross validation. Please use test_accuracy() instead.')
+
+    def test_accuracy(self) :
+
+        """
+        Returns accuracy of trained classifier on test dataset.
+        """
+
+        acc= self.classifier.score(self.test_features, self.test_labels)
+        return acc
+
+    def confusion_matrix(self,title='Confusion Matrix',cmap=None,normalize=False,figure_size=(8,6)):
+
+        """
+        Displays confusion matrix using trained classifier and test dataset.
+
+        Parameters
+        ----------
+
+        - title (string, optional): name to be displayed over confusion matrix.
+
+        - cmap (string, optional): colormap of the displayed confusion matrix. This follows matplot color palletes. default=None.
+
+        - normalize (boolean, optional): normalize values. default=False.
+
+        - figure_size (tuple, optional): size of the figure as width, height. default=(8,6)
+
+        """
+
+        pred_labels=self.classifier.predict(self.test_features)
+        true_labels=self.test_labels
+        cm = metrics.confusion_matrix(true_labels, pred_labels)
+        show_confusion_matrix(cm=cm,
+                              target_names=self.classes,
+                              title=title,
+                              cmap=cmap,
+                              normalize=normalize,
+                              figure_size=figure_size
+                              )
+
+    def roc(self, **kw):
+
+        """
+        Display ROC and AUC of trained classifier and test dataset.
+
+        """
+
+        show_roc([self], **kw)
+
+    def predict(self, input_image_path, all_predictions=False, **kw):
+
+        """
+
+        Description
+        -----------
+        Returns label prediction of a target image using a trained classifier. This works as part of pipeline only for now.
+
+
+        Parameters
+        ----------
+
+        - input_image_path (string, required): path of target image.
+
+        - all_predictions (boolean, optional): return a table of all predictions for all possible labels.
+
+
+        """
+
         classifier=self.classifier
 
-    if transformations==None:
         transformations=self.data_processor.transformations
 
-    model=self.feature_extractor.model
+        model=self.feature_extractor.model
 
-    if input_image_path.endswith('dcm'):
-        target_img=dicom_to_pil(input_image_path)
-    else:
-        target_img=Image.open(input_image_path).convert('RGB')
+        if input_image_path.endswith('dcm'):
+            target_img=dicom_to_pil(input_image_path)
+        else:
+            target_img=Image.open(input_image_path).convert('RGB')
 
-    target_img_tensor=transformations(target_img)
-    target_img_tensor=target_img_tensor.unsqueeze(0)
+        target_img_tensor=transformations(target_img)
+        target_img_tensor=target_img_tensor.unsqueeze(0)
 
-    with torch.no_grad():
-        model.to('cpu')
-        target_img_tensor.to('cpu')
-        model.eval()
-        out=model(target_img_tensor)
-    image_features=pd.DataFrame(out, columns=self.feature_names)
+        with torch.no_grad():
+            model.to('cpu')
+            target_img_tensor.to('cpu')
+            model.eval()
+            out=model(target_img_tensor)
+        image_features=pd.DataFrame(out, columns=self.feature_names)
 
-    class_to_idx = self.data_processor.classes()
+        class_to_idx = self.data_processor.classes()
 
-    if all_predictions:
+        if all_predictions:
+            try:
+                A = self.data_processor.classes().keys()
+                B = self.data_processor.classes().values()
+                C = self.classifier.predict_proba(image_features)[0]
+                C = [("%.4f" % x) for x in C]
+                return pd.DataFrame(list(zip(A, B, C)), columns=['LABEL', 'LAEBL_IDX', 'PREDICTION_ACCURACY'])
+            except:
+                log('All predictions could not be generated. Please set all_predictions to False.')
+                pass
+        else:
+            prediction=self.classifier.predict(image_features)
+
+            return (prediction[0], [k for k,v in class_to_idx.items() if v==prediction][0])
+
+    def export(self, output_path):
+
+        """
+        Exports the Classifier object for future use.
+
+        Parameters
+        ----------
+        output_path (string, required): output file path.
+
+        """
         try:
-            A = self.data_processor.classes().keys()
-            B = self.data_processor.classes().values()
-            C = self.classifier.predict_proba(image_features)[0]
-            C = [("%.4f" % x) for x in C]
-            return pd.DataFrame(list(zip(A, B, C)), columns=['LABEL', 'LAEBL_IDX', 'PREDICTION_ACCURACY'])
+          outfile=open(output_path,'wb')
+          pickle.dump(self,outfile)
+          outfile.close()
+          log('Classifier exported successfully.')
         except:
-            log('All predictions could not be generated. Please set all_predictions to False.')
-            pass
-    else:
-        prediction=self.classifier.predict(image_features)
+          raise TypeError('Error! Classifier could not be exported.')
 
-        return (prediction[0], [k for k,v in class_to_idx.items() if v==prediction][0])
+    def export_trained_classifier(self, output_path):
+        """
+        Exports the trained classifier for future use.
 
-  def misclassified(self, num_of_images=4, figure_size=(5,5), table=False, **kw): # NEEDS CHECK FILE PATH !!!!!
+        Parameters
+        ----------
+        output_path (string, required): output file path.
+
+        """
+        try:
+          outfile=open(output_path,'wb')
+          pickle.dump(self.classifier,outfile)
+          outfile.close()
+          log('Trained Classifier exported successfully.')
+        except:
+          raise TypeError('Error! Trained Classifier could not be exported.')
+
+    # NEEDS TESTING
+    def misclassified(self, num_of_images=4, figure_size=(5,5), table=False, **kw): # NEEDS CHECK FILE PATH !!!!!
       pred_labels=(self.classifier.predict(self.test_features)).tolist()
       true_labels=self.test_labels.tolist()
       accuracy_list=[0.0]*len(true_labels)
@@ -841,16 +982,16 @@ class Classifier(object):
       if table:
           return misclassified_table
 
-  # NEEDS TESTING
-  def coef(self, figure_size=(50,10), plot=False):#BETA
+    # NEEDS TESTING
+    def coef(self, figure_size=(50,10), plot=False):#BETA
       coeffs = pd.DataFrame(dict(zip(self.feature_names, self.classifier.coef_.tolist())), index=[0])
       if plot:
           coeffs.T.plot.bar(legend=None, figsize=figure_size);
       else:
           return coeffs
 
-  # NEEDS TESTING
-  def create_interaction_terms(self, table):#BETA
+    # NEEDS TESTING
+    def create_interaction_terms(self, table):#BETA
         self.interaction_features=table.copy(deep=True)
         int_feature_names = self.interaction_features.columns
         m=len(int_feature_names)
@@ -864,150 +1005,6 @@ class Classifier(object):
                 self.interaction_features[feature_i_j_name] = feature_i_data*feature_j_data
         return self.interaction_features
 
-  def export(self, output_path):
-      try:
-          outfile=open(output_path,'wb')
-          pickle.dump(self,outfile)
-          outfile.close()
-          log('Classifier exported successfully.')
-      except:
-          raise TypeError('Error! Classifier could not be exported.')
-
-  def export_trained_classifier(self, output_path):
-      try:
-          outfile=open(output_path,'wb')
-          pickle.dump(self.classifier,outfile)
-          outfile.close()
-          log('Trained Classifier exported successfully.')
-      except:
-          raise TypeError('Error! Trained Classifier could not be exported.')
-
-# NEEDS TESTING
-class Feature_Selector(Classifier):
-
-    def feature_feature_correlation(self, cmap='Blues', figure_size=(20,15)):
-        corrmat = self.features.corr()
-        f, ax = plt.subplots(figsize=figure_size)
-        sns.heatmap(corrmat, cmap=cmap, linewidths=.1,ax=ax)
-
-    def feature_label_correlation(self, threshold=0.5):
-        corrmat = self.feature_table.corr()
-        corr_target = abs(corrmat[self.label_column])
-        relevant_features = corr_target[corr_target>threshold]
-        df = pd.DataFrame(relevant_features)
-        df.columns=['Score']
-        df.index.rename('Feature')
-        best_features_scores=df.sort_values(by=['Score'], ascending=False)
-        best_features_names=df.index.tolist()
-        best_features_names.remove(self.label_column)
-        best_features_table=self.feature_table[df.index.tolist()]
-        return best_features_scores, best_features_names, best_features_table
-
-    def univariate(self, test='chi2', num_features=20):
-        if test=='chi2':
-          selector = SelectKBest(chi2, k=num_features)
-        elif test=='anova':
-          selector = SelectKBest(f_classif, k=num_features)
-        elif test=='mutual_info':
-          selector = SelectKBest(mutual_info_classif, k=num_features)
-        selector.fit(self.train_features, self.train_labels)
-        feature_score=selector.scores_.tolist()
-        df=pd.DataFrame(list(zip(self.feature_names, feature_score)), columns=['Feature', 'Score'])
-        best_features_scores=df.sort_values(by=['Score'], ascending=False)[:num_features]
-        best_features_names=best_features_scores.Feature.tolist()
-        best_features_table=self.feature_table[best_features_names+[self.label_column]]
-        return best_features_scores, best_features_names, best_features_table
-
-    def variance(self, threshold=0, num_features=20):
-        selector=VarianceThreshold(threshold=threshold)
-        selector.fit(self.train_features, self.train_labels)
-        feature_score=selector.variances_.tolist()
-        df=pd.DataFrame(list(zip(self.feature_names, feature_score)), columns=['Feature', 'Score'])
-        best_features_scores=df.sort_values(by=['Score'], ascending=False)[:num_features]
-        best_features_names=best_features_scores.Feature.tolist()
-        best_features_table=self.feature_table[best_features_names+[self.label_column]]
-        return best_features_scores, best_features_names, best_features_table
-
-    def rfe(self, step=1, rfe_features=None):
-        if 'rfe_feature_rank' not in self.__dict__.keys():
-          self.selector=RFE(estimator=self.classifier, n_features_to_select=rfe_features, step=step)
-          self.selector.fit(self.train_features, self.train_labels)
-          self.rfe_feature_rank=self.selector.ranking_
-        df= pd.DataFrame(list(zip(self.feature_names, self.rfe_feature_rank.tolist())), columns=['Feature', 'Rank'])
-        best_features_names=[x for x,v in list(zip(G.feature_names, G.selector.support_.tolist())) if v==True]
-        best_features_scores=df.sort_values(by=['Rank'], ascending=True)
-        best_features_table=self.feature_table[best_features_names+[self.label_column]]
-        return best_features_scores, best_features_names, best_features_table
-
-    def rfecv(self, step=1, n_jobs=-1, verbose=0):
-        self.rfecv_selector=RFECV(estimator=self.classifier, step=step, cv=StratifiedKFold(self.num_splits),scoring='accuracy', n_jobs=-1, verbose=verbose)
-        self.rfecv_selector.fit(self.train_features, self.train_labels)
-        self.optimal_feature_number=self.rfecv_selector.n_features_
-        self.optimal_features_names=[x for x,v in list(zip(self.feature_names, self.rfecv_selector.support_.tolist())) if v==True]
-        self.best_features_table=self.feature_table[self.optimal_features_names+[self.label_column]]
-        log('Optimal Number of Features = '+ str(self.optimal_feature_number))
-        j = range(1, len(self.rfecv_selector.grid_scores_) + 1)
-        i = self.rfecv_selector.grid_scores_
-        output_notebook()
-        p = figure(plot_width=600, plot_height=400)
-        p.line(j, i, line_width=2, color='#1A5276')
-        p.line([self.optimal_feature_number]*len(i),i,line_width=2, color='#F39C12', line_dash='dashed')
-        p.xaxis.axis_line_color = '#D6DBDF'
-        p.yaxis.axis_line_color = '#D6DBDF'
-        p.xgrid.grid_line_color=None
-        p.yaxis.axis_line_width = 2
-        p.xaxis.axis_line_width = 2
-        p.xaxis.axis_label = 'Number of features selected. Optimal = '+str(self.optimal_feature_number)
-        p.yaxis.axis_label = 'Cross validation score (nb of correct classifications)'
-        p.xaxis.major_tick_line_color = '#D6DBDF'
-        p.yaxis.major_tick_line_color = '#D6DBDF'
-        p.xaxis.minor_tick_line_color = '#D6DBDF'
-        p.yaxis.minor_tick_line_color = '#D6DBDF'
-        p.yaxis.major_tick_line_width = 2
-        p.xaxis.major_tick_line_width = 2
-        p.yaxis.minor_tick_line_width = 0
-        p.xaxis.minor_tick_line_width = 0
-        p.xaxis.major_label_text_color = '#99A3A4'
-        p.yaxis.major_label_text_color = '#99A3A4'
-        p.outline_line_color = None
-        p.toolbar.autohide = True
-        p.title.text='Recursive Feature Elimination with '+str(self.num_splits)+'-split Cross Validation'
-        p.title_location='above'
-        show(p)
-        return self.optimal_features_names, self.best_features_table
-
-    def tsne(self, feature_table=None, figure_size=(800, 800), colormap=COLORS3, **kwargs):
-        if isinstance(feature_table, pd.DataFrame):
-            y = feature_table
-        else:
-            y = self.feature_table[self.feature_names+[self.label_column]]
-        tsne = TSNE(n_components=2, random_state=0)
-        X_2d = tsne.fit_transform(y)
-        output_notebook()
-        p = figure(tools=TOOLS, plot_width=figure_size[0], plot_height=figure_size[1])
-        for i in y.label_idx.unique().tolist():
-            p.scatter(X_2d[y[self.label_column] == i, 0], X_2d[y[self.label_column] == i, 1], radius=0.4, fill_alpha=0.6,line_color=None, fill_color=colormap[i])
-        p.xaxis.axis_line_color = '#D6DBDF'
-        p.yaxis.axis_line_color = '#D6DBDF'
-        p.xgrid.grid_line_color=None
-        p.ygrid.grid_line_color=None
-        p.yaxis.axis_line_width = 2
-        p.xaxis.axis_line_width = 2
-        p.xaxis.major_tick_line_color = '#D6DBDF'
-        p.yaxis.major_tick_line_color = '#D6DBDF'
-        p.xaxis.minor_tick_line_color = '#D6DBDF'
-        p.yaxis.minor_tick_line_color = '#D6DBDF'
-        p.yaxis.major_tick_line_width = 2
-        p.xaxis.major_tick_line_width = 2
-        p.yaxis.minor_tick_line_width = 0
-        p.xaxis.minor_tick_line_width = 0
-        p.xaxis.major_label_text_color = '#99A3A4'
-        p.yaxis.major_label_text_color = '#99A3A4'
-        p.outline_line_color = None
-        p.toolbar.autohide = True
-        p.title.text='t-distributed Stochastic Neighbor Embedding (t-SNE)'
-        p.title_location='above'
-        show(p)
 
 class NN_Classifier():
     '''
@@ -1292,3 +1289,132 @@ class NN_Classifier():
         misclassified_table = show_nn_misclassified(model=self.trained_model, target_data_set=self.test_dataset, num_of_images=num_of_images, device=self.device, transforms=self.data_processor.transformations, is_dicom = self.is_dicom, figure_size=figure_size)
         if table:
             return misclassified_table
+
+
+
+# NEEDS TESTING
+class Feature_Selector(Classifier):
+
+    def feature_feature_correlation(self, cmap='Blues', figure_size=(20,15)):
+        corrmat = self.features.corr()
+        f, ax = plt.subplots(figsize=figure_size)
+        sns.heatmap(corrmat, cmap=cmap, linewidths=.1,ax=ax)
+
+    def feature_label_correlation(self, threshold=0.5):
+        corrmat = self.feature_table.corr()
+        corr_target = abs(corrmat[self.label_column])
+        relevant_features = corr_target[corr_target>threshold]
+        df = pd.DataFrame(relevant_features)
+        df.columns=['Score']
+        df.index.rename('Feature')
+        best_features_scores=df.sort_values(by=['Score'], ascending=False)
+        best_features_names=df.index.tolist()
+        best_features_names.remove(self.label_column)
+        best_features_table=self.feature_table[df.index.tolist()]
+        return best_features_scores, best_features_names, best_features_table
+
+    def univariate(self, test='chi2', num_features=20):
+        if test=='chi2':
+          selector = SelectKBest(chi2, k=num_features)
+        elif test=='anova':
+          selector = SelectKBest(f_classif, k=num_features)
+        elif test=='mutual_info':
+          selector = SelectKBest(mutual_info_classif, k=num_features)
+        selector.fit(self.train_features, self.train_labels)
+        feature_score=selector.scores_.tolist()
+        df=pd.DataFrame(list(zip(self.feature_names, feature_score)), columns=['Feature', 'Score'])
+        best_features_scores=df.sort_values(by=['Score'], ascending=False)[:num_features]
+        best_features_names=best_features_scores.Feature.tolist()
+        best_features_table=self.feature_table[best_features_names+[self.label_column]]
+        return best_features_scores, best_features_names, best_features_table
+
+    def variance(self, threshold=0, num_features=20):
+        selector=VarianceThreshold(threshold=threshold)
+        selector.fit(self.train_features, self.train_labels)
+        feature_score=selector.variances_.tolist()
+        df=pd.DataFrame(list(zip(self.feature_names, feature_score)), columns=['Feature', 'Score'])
+        best_features_scores=df.sort_values(by=['Score'], ascending=False)[:num_features]
+        best_features_names=best_features_scores.Feature.tolist()
+        best_features_table=self.feature_table[best_features_names+[self.label_column]]
+        return best_features_scores, best_features_names, best_features_table
+
+    def rfe(self, step=1, rfe_features=None):
+        if 'rfe_feature_rank' not in self.__dict__.keys():
+          self.selector=RFE(estimator=self.classifier, n_features_to_select=rfe_features, step=step)
+          self.selector.fit(self.train_features, self.train_labels)
+          self.rfe_feature_rank=self.selector.ranking_
+        df= pd.DataFrame(list(zip(self.feature_names, self.rfe_feature_rank.tolist())), columns=['Feature', 'Rank'])
+        best_features_names=[x for x,v in list(zip(G.feature_names, G.selector.support_.tolist())) if v==True]
+        best_features_scores=df.sort_values(by=['Rank'], ascending=True)
+        best_features_table=self.feature_table[best_features_names+[self.label_column]]
+        return best_features_scores, best_features_names, best_features_table
+
+    def rfecv(self, step=1, n_jobs=-1, verbose=0):
+        self.rfecv_selector=RFECV(estimator=self.classifier, step=step, cv=StratifiedKFold(self.num_splits),scoring='accuracy', n_jobs=-1, verbose=verbose)
+        self.rfecv_selector.fit(self.train_features, self.train_labels)
+        self.optimal_feature_number=self.rfecv_selector.n_features_
+        self.optimal_features_names=[x for x,v in list(zip(self.feature_names, self.rfecv_selector.support_.tolist())) if v==True]
+        self.best_features_table=self.feature_table[self.optimal_features_names+[self.label_column]]
+        log('Optimal Number of Features = '+ str(self.optimal_feature_number))
+        j = range(1, len(self.rfecv_selector.grid_scores_) + 1)
+        i = self.rfecv_selector.grid_scores_
+        output_notebook()
+        p = figure(plot_width=600, plot_height=400)
+        p.line(j, i, line_width=2, color='#1A5276')
+        p.line([self.optimal_feature_number]*len(i),i,line_width=2, color='#F39C12', line_dash='dashed')
+        p.xaxis.axis_line_color = '#D6DBDF'
+        p.yaxis.axis_line_color = '#D6DBDF'
+        p.xgrid.grid_line_color=None
+        p.yaxis.axis_line_width = 2
+        p.xaxis.axis_line_width = 2
+        p.xaxis.axis_label = 'Number of features selected. Optimal = '+str(self.optimal_feature_number)
+        p.yaxis.axis_label = 'Cross validation score (nb of correct classifications)'
+        p.xaxis.major_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_color = '#D6DBDF'
+        p.xaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_width = 2
+        p.xaxis.major_tick_line_width = 2
+        p.yaxis.minor_tick_line_width = 0
+        p.xaxis.minor_tick_line_width = 0
+        p.xaxis.major_label_text_color = '#99A3A4'
+        p.yaxis.major_label_text_color = '#99A3A4'
+        p.outline_line_color = None
+        p.toolbar.autohide = True
+        p.title.text='Recursive Feature Elimination with '+str(self.num_splits)+'-split Cross Validation'
+        p.title_location='above'
+        show(p)
+        return self.optimal_features_names, self.best_features_table
+
+    def tsne(self, feature_table=None, figure_size=(800, 800), colormap=COLORS3, **kwargs):
+        if isinstance(feature_table, pd.DataFrame):
+            y = feature_table
+        else:
+            y = self.feature_table[self.feature_names+[self.label_column]]
+        tsne = TSNE(n_components=2, random_state=0)
+        X_2d = tsne.fit_transform(y)
+        output_notebook()
+        p = figure(tools=TOOLS, plot_width=figure_size[0], plot_height=figure_size[1])
+        for i in y.label_idx.unique().tolist():
+            p.scatter(X_2d[y[self.label_column] == i, 0], X_2d[y[self.label_column] == i, 1], radius=0.4, fill_alpha=0.6,line_color=None, fill_color=colormap[i])
+        p.xaxis.axis_line_color = '#D6DBDF'
+        p.yaxis.axis_line_color = '#D6DBDF'
+        p.xgrid.grid_line_color=None
+        p.ygrid.grid_line_color=None
+        p.yaxis.axis_line_width = 2
+        p.xaxis.axis_line_width = 2
+        p.xaxis.major_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_color = '#D6DBDF'
+        p.xaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_width = 2
+        p.xaxis.major_tick_line_width = 2
+        p.yaxis.minor_tick_line_width = 0
+        p.xaxis.minor_tick_line_width = 0
+        p.xaxis.major_label_text_color = '#99A3A4'
+        p.yaxis.major_label_text_color = '#99A3A4'
+        p.outline_line_color = None
+        p.toolbar.autohide = True
+        p.title.text='t-distributed Stochastic Neighbor Embedding (t-SNE)'
+        p.title_location='above'
+        show(p)
