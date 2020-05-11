@@ -763,8 +763,6 @@ class Classifier(object):
         self.stratified=stratified
         self.num_splits=num_splits
         self.parameters=parameters
-        self.transformations=transformations
-        self.model=model
 
 
         # Load extracted feature dictionary
