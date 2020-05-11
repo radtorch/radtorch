@@ -13,7 +13,7 @@
 from .settings import *
 from .general import *
 from .data import *
-from core import *
+from radtorch.core import *
 from .utils import *
 
 
