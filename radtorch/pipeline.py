@@ -10,11 +10,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
-from radtorch.settings import *
-from radtorch.general import *
-from radtorch.data import *
-from radtorch.core import *
-from radtorch.utils import *
+from .settings import *
+from .general import *
+from .data import *
+from .core import *
+from .utils import *
 
 
 

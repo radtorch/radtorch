@@ -1337,6 +1337,8 @@ class NN_Classifier():
         set_random_seed(100)
         start_time=datetime.now()
         training_metrics=[]
+        if self.unfreeze:
+            log('INFO: unfreeze is set to True. This will unfreeze all model layers and will train from scratch. This might take sometime specially if pre_trained=False.')
         log('Starting training at '+ str(start_time))
         model=model.to(device)
         for epoch in tqdm(range(epochs)):
