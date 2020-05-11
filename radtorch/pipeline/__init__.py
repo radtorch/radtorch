@@ -1,7 +1,7 @@
 from .image_classification import Image_Classification
 from .feature_extraction import Feature_Extraction
 from .compare_classifiers import Compare_Image_Classifiers
-
+from ..settings import *
 
 
 
