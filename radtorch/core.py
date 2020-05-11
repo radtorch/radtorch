@@ -159,7 +159,7 @@ class RADTorch_Dataset(Dataset):
         """
         Retuns a balanced dataset. methods={'upsample', 'downsample'}
         """
-        return balance_dataset(dataset=self, label_col=self.image_label_col, method=method)
+        return balance_dataset(dataset=self, label_col=self.image_label_column, method=method)
 
     def mean_std(self):
         """
