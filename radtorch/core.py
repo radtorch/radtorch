@@ -629,7 +629,7 @@ class Feature_Extractor():
 
         """
 
-        return plot_features(feature_table=self.feature_table, feature_names=self.feature_names, num_features, num_images,image_path_col=image_path_column, image_label_col=image_label_column)
+        return plot_features(feature_table=self.feature_table, feature_names=self.feature_names, num_features=num_features, num_images=num_images,image_path_col=image_path_column, image_label_col=image_label_column)
 
     def export(self, output_path):
         """
