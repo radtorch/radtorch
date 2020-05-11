@@ -261,7 +261,7 @@ class Data_Processor():
                 transformations='default',
                 extra_transformations=None,
                 test_percent=0.2,
-                valid_percent=0.2
+                valid_percent=0.2,
                 device='auto',
                 **kwargs):
 
