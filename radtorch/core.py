@@ -1108,6 +1108,7 @@ class NN_Classifier():
 
     - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
 
+    -
 
     """
 
@@ -1153,7 +1154,7 @@ class NN_Classifier():
         self.train_dataloader=self.data_processor.train_dataloader
         self.valid_dataset=self.data_processor.valid_dataset
         self.valid_dataloader=self.data_processor.valid_dataloader
-        if self.test_percent>0:
+        if self.data_processor.test_percent>0:
             self.test_dataset=self.data_processor.test_dataset
             self.test_dataloader=self.data_processor.test_dataloader
         self.transformations=self.data_processor.transformations
