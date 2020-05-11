@@ -150,6 +150,43 @@ class Image_Classification():
                 device='auto',
                 **kwargs):
 
+        self.data_directory=data_directory
+        self.is_dicom=is_dicom
+        self.table=table
+        self.image_path_column=image_path_column
+        self.image_label_column=image_label_column
+        self.is_path=is_path
+        self.mode=mode
+        self.wl=wl
+        self.balance_class=balance_class
+        self.balance_class_method=balance_class_method
+        self.interaction_terms=interaction_terms
+        self.normalize=normalize
+        self.batch_size=batch_size
+        self.num_workers=num_workers
+        self.sampling=sampling
+        self.test_percent=test_percent
+        self.valid_percent=valid_percent
+        self.custom_resize=custom_resize
+        self.model_arch=model_arch
+        self.pre_trained=pre_trained
+        self.unfreeze=unfreeze
+        self.type=type
+        self.cv=cv
+        self.stratified=stratified
+        self.num_splits=num_splits
+        self.parameters=parameters
+        self.learning_rate=learning_rate
+        self.epochs=epochs
+        self.optimizer=optimizer
+        self.loss_function=loss_function
+        self.lr_scheduler=lr_scheduler
+        self.custom_nn_classifier=custom_nn_classifier
+        self.loss_function_parameters=loss_function_parameters
+        self.optimizer_parameters=optimizer_parameters
+        self.transformations=transformations
+        self.extra_transformations=extra_transformations
+        self.device=device
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
         if 'data_processor' not in self.__dict__.keys(): self.data_processor=Data_Processor(**self.__dict__)
@@ -194,7 +231,6 @@ class Image_Classification():
             self.trained_model, self.train_metrics=self.classifier.run()
             log ('Classifier Training completed successfully.')
 
-
     def metrics(self, figure_size=(500,300)):
         return show_metrics([self.classifier],  fig_size=figure_size)
 
@@ -207,7 +243,6 @@ class Image_Classification():
         except:
             log ('Error! Pipeline could not be exported.')
             pass
-
 
 
 class Compare_Image_Classifiers():

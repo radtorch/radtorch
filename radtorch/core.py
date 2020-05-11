@@ -73,6 +73,17 @@ class RADTroch_Dataset(Dataset):
                 sampling=1.0,
                 **kwargs):
 
+        self.data_directory=data_directory
+        self.transformations=transformations
+        self.table=table
+        self.is_dicom=is_dicom
+        self.mode=mode
+        self.wl=wl
+        self.image_path_column=image_path_column
+        self.image_label_column=image_label_column
+        self.is_path=is_path
+        self.sampling=sampling
+
         # Create Data Table
         if isinstance(self.table, pd.DataFrame): self.input_data=self.table
         elif isinstance(self.table, string): self.input_data=pd.read_csv(self.table)
@@ -251,6 +262,28 @@ class Data_Processor():
                 extra_transformations=None,
                 device='auto',
                 **kwargs):
+
+        self.data_directory=data_directory
+        self.is_dicom=is_dicom
+        self.table=table
+        self.image_path_column=image_path_column
+        self.image_label_column=image_label_column
+        self.is_path=is_path
+        self.mode=mode
+        self.wl=wl
+        self.balance_class=balance_class
+        self.balance_class_method=balance_class_method
+        self.normalize=normalize
+        self.batch_size=batch_size
+        self.num_workers=num_workers
+        self.sampling=sampling
+        self.custom_resize=custom_resize
+        self.model_arch=model_arch
+        self.type=type
+        self.transformations=transformations
+        self.extra_transformations=extra_transformations
+        self.device=device
+
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -520,6 +553,13 @@ class Feature_Extractor():
                 unfreeze=False,
                 device='auto',
                 **kwargs):
+
+        self.model_arch=model_arch
+        self.dataloader=dataloader
+        self.pre_trained=pre_trained
+        self.unfreeze=unfreeze
+        self.device=device
+
         for k,v in kwargs.items():
             setattr(self,k,v)
         if self.model_arch not in supported_models:
@@ -707,6 +747,22 @@ class Classifier(object):
                 model=None,
                 **kwargs):
 
+
+        self.extracted_feature_dictionary=extracted_feature_dictionary
+        self.feature_table=feature_table
+        self.image_label_column=image_label_column
+        self.image_path_column=image_path_column
+        self.test_percent=test_percent
+        self.type=type
+        self.interaction_terms=interaction_terms
+        self.cv=cv
+        self.stratified=stratified
+        self.num_splits=num_splits
+        self.parameters=parameters
+        self.transformations=transformations
+        self.model=model
+
+
         # Load extracted feature dictionary
         if 'extracted_feature_dictionary' in self.__dict__.keys():
             self.feature_names=self.extracted_feature_dictionary['train']['features_names']
@@ -718,7 +774,7 @@ class Classifier(object):
 
         # Or Load user specified features
         else:
-            if 'feature_table' in self.__dict__.keys():
+            if self.feature_table !=None:
                 if isinstance(self.feature_table, str):
                     try:
                         self.feature_table=pd.read_csv(self.feature_table)
@@ -1065,9 +1121,23 @@ class NN_Classifier():
                 optimizer_parameters={},
                 **kwargs):
 
+        self.feature_extractor=feature_extractor
+        self.data_processor=data_processor
+        self.unfreeze=unfreeze
+        self.learning_rate=learning_rate
+        self.epochs=epochs
+        self.optimizer=optimizer
+        self.loss_function=loss_function
+        self.lr_scheduler=lr_scheduler
+        self.batch_size=batch_size
+        self.device=device
+        self.custom_nn_classifier=custom_nn_classifier
+        self.loss_function_parameters=loss_function_parameters
+        self.optimizer_parameters=optimizer_parameters
+
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        if 'feature_extractor' not in self.__dict__.keys() or 'data_processor' not in self.__dict__.keys():
+        if self.feature_extractor== None or self.data_processor== None:
             log('Error! No  Data Processor and/or Feature Selector was supplied. Please Check.')
             pass
 
@@ -1258,7 +1328,7 @@ class NN_Classifier():
         optimizer=self.optimizer
         epochs=self.epochs
         device=self.device
-        if 'lr_scheduler' in self.__dict__.keys(): lr_scheduler=self.lr_scheduler
+        if self.lr_scheduler!=None: lr_scheduler=self.lr_scheduler
         else: lr_scheduler=False
 
         set_random_seed(100)
