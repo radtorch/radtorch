@@ -116,7 +116,7 @@ class Image_Classification():
                 table=None,
                 image_path_column='IMAGE_PATH',
                 image_label_column='IMAGE_LABEL',
-                is_path=False,
+                is_path=True,
                 mode='RAW',
                 wl=None,
                 balance_class=False,
