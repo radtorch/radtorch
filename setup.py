@@ -1,4 +1,6 @@
-from setuptools import setup
+
+from setuptools import setup, find_packages
+
 
 setup(
       name='radtorch',
@@ -9,7 +11,7 @@ setup(
       author='Mohamed Elbanan, MD',
       author_email = "https://www.linkedin.com/in/mohamedelbanan/",
       license='MIT',
-      packages=['radtorch'],
+      packages=find_packages(),
       install_requires=['torch', 'torchvision', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn'],
 
       zip_safe=False,
