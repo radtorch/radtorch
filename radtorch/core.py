@@ -20,7 +20,7 @@ from radtorch.utils import *
 
 
 
-class RADTroch_Dataset(Dataset):
+class RADTorch_Dataset(Dataset):
 
     """
 
