@@ -13,7 +13,7 @@
 # Documentation update: 5/11/2020
 
 from ..settings import *
-from .utils import *
+from ..utils import *
 
 from .dataset import *
 

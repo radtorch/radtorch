@@ -11,8 +11,8 @@
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
 from ..settings import *
-from .core import *
-from .utils import *
+from ..core import *
+from ..utils import *
 
 
 # NEEDS TESTING

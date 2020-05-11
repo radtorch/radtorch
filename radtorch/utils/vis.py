@@ -13,10 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
-from radtorch.settings import *
-from radtorch.general import *
-from radtorch.dicom import *
-from radtorch.data import *
+from ..settings import *
+from .general import *
+from .dicom import *
+from .data import *
 
 
 def plot_images(images, titles=None, figure_size=(10,10)):
