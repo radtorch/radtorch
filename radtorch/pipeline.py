@@ -231,7 +231,7 @@ class Image_Classification():
             self.trained_model, self.train_metrics=self.classifier.run()
             log ('Classifier Training completed successfully.')
 
-    def metrics(self, figure_size=(500,300)):
+    def metrics(self, figure_size=(700,350)):
         return show_metrics([self.classifier],  figure_size=figure_size)
 
     def export(self, output_path):
