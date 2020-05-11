@@ -92,7 +92,7 @@ class RADTorch_Dataset(Dataset):
         # Check if file path or file name and fix
         if self.is_path==False:
             files=[]
-            for i, r in self.table:
+            for i, r in self.table.iterrows():
                 files.append(self.data_directory+r[self.image_path_column])
             self.table[self.image_path_column]=file
 
