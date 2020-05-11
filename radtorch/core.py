@@ -69,7 +69,7 @@ class RADTorch_Dataset(Dataset):
                 wl=None,
                 image_path_column='IMAGE_PATH',
                 image_label_column='IMAGE_LABEL',
-                is_path=False,
+                is_path=True,
                 sampling=1.0,
                 **kwargs):
 
