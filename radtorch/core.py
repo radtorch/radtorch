@@ -260,6 +260,8 @@ class Data_Processor():
                 type='nn_classifier',
                 transformations='default',
                 extra_transformations=None,
+                test_percent=0.2,
+                valid_percent=0.2
                 device='auto',
                 **kwargs):
 
@@ -283,6 +285,8 @@ class Data_Processor():
         self.transformations=transformations
         self.extra_transformations=extra_transformations
         self.device=device
+        self.test_percent=test_percent
+        self.valid_percent=valid_percent
 
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
