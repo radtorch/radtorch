@@ -92,10 +92,10 @@ class RADTorch_Dataset(Dataset):
         # Check if file path or file name and fix
         if self.is_path==False:
             files=[]
-            for i, r in self.table.iterrows():
+            for i, r in self.input_data.iterrows():
                 files.append(self.data_directory+r[self.image_path_column])
             # self.table[self.image_path_column]=files
-            self.table[self.image_path_column]=pd.Series(files, index=self.table.index)
+            self.input_data[self.image_path_column]=pd.Series(files, index=self.input_data.index)
 
         # Get list of files
         if self.is_dicom: self.dataset_files=[x for x in (self.input_data[self.image_path_column].tolist()) if x.endswith('.dcm')]
