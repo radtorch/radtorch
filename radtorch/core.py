@@ -515,9 +515,9 @@ class Feature_Extractor():
     def __init__(
                 self,
                 model_arch,
+                dataloader,
                 pre_trained=True,
                 unfreeze=False,
-                dataloader,
                 device='auto',
                 **kwargs):
         for k,v in kwargs.items():
