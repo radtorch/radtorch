@@ -271,6 +271,86 @@ def plot_dataset_info(dataframe_dictionary, plot_size=(500,300)):
     show(column(output))
 
 
+def plot_images(images, titles=None, figure_size=(10,10)):
+
+    """
+    Description
+    -----------
+    Displays multiple images with titles in one figure.
+
+    Parameters
+    -----------
+
+    - images (np array of images, required): array of images.
+
+    - titles (list, optional): list of titles to be displayed over images
+
+    - figure_size (tuple, optional): size of the figure as width, height. default=(10,10).
+
+    Retruns
+    --------
+    Matplot figure.
+
+    Source
+    -----------
+    https://gist.github.com/soply/f3eec2e79c165e39c9d540e916142ae1
+
+    """
+
+    cols = int(math.sqrt(len(images)))
+    assert((titles is None)or (len(images) == len(titles)))
+    n_images = len(images)
+    if titles is None: titles = ['Image (%d)' % i for i in range(1,n_images + 1)]
+    fig = plt.figure(figsize=figure_size)
+    for n, (image, title) in enumerate(zip(images, titles)):
+        a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
+        if image.ndim == 2:
+            plt.gray()
+        plt.imshow(image)
+        plt.axis('off')
+        a.set_title(title)
+    plt.axis('off')
+    plt.show()
+
+
+def show_dataloader_sample(dataloader, figure_size=(10,10), show_labels=True, show_file_name = False,):
+
+    """
+    Description
+    -----------
+    Display sample of images from dataloader.
+
+
+    Parameters
+    ----------
+
+    - dataloader (pytorch dataloader, required): target dataloader.
+
+    - figure_size (tuple, optional): figure size of output figure in form of width and height. default=(10,10)
+
+    - show_labels (boolean, optional): display labels on top of images. default=True
+
+    - show_file_name (boolean, optional): display file name on top of images. default=False.
+
+    Returns
+    -------
+    Matplot figure.
+
+
+    """
+    batch = next(iter(dataloader))
+    images, labels, paths = batch
+    images = images.numpy()
+    images = [np.moveaxis(x, 0, -1) for x in images]
+    if show_labels:
+      titles = labels.numpy()
+      titles = [((list(dataloader.dataset.class_to_idx.keys())[list(dataloader.dataset.class_to_idx.values()).index(i)]), i) for i in titles]
+    if show_file_name:
+      titles = [ntpath.basename(x) for x in paths]
+    plot_images(images=images, titles=titles, figure_size=figure_size)
+
+
+
 def plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col):
     """
 
@@ -701,48 +781,6 @@ def show_metrics(classifer_list, figure_size=(700,400)):
 
 
     show(column(output))
-
-
-def plot_images(images, titles=None, figure_size=(10,10)):
-
-    """
-    Description
-    -----------
-    Displays multiple images with titles in one figure.
-
-    Parameters
-    -----------
-
-    - images (np array of images, required): array of images.
-
-    - titles (list, optional): list of titles to be displayed over images
-
-    - figure_size (tuple, optional): size of the figure as width, height. default=(10,10).
-
-    Retruns
-    --------
-    Matplot figure.
-
-    Source
-    -----------
-    https://gist.github.com/soply/f3eec2e79c165e39c9d540e916142ae1
-
-    """
-
-    cols = int(math.sqrt(len(images)))
-    assert((titles is None)or (len(images) == len(titles)))
-    n_images = len(images)
-    if titles is None: titles = ['Image (%d)' % i for i in range(1,n_images + 1)]
-    fig = plt.figure(figsize=figure_size)
-    for n, (image, title) in enumerate(zip(images, titles)):
-        a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
-        if image.ndim == 2:
-            plt.gray()
-        plt.imshow(image)
-        plt.axis('off')
-        a.set_title(title)
-    plt.axis('off')
-    plt.show()
 
 
 def misclassified(true_labels_list, predicted_labels_list, accuracy_list, img_path_list):

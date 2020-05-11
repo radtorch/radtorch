@@ -20,6 +20,7 @@ from radtorch.utils import *
 
 
 
+
 class RADTorch_Dataset(Dataset):
 
     """
@@ -247,7 +248,7 @@ class Data_Processor():
                 table=None,
                 image_path_column='IMAGE_PATH',
                 image_label_column='IMAGE_LABEL',
-                is_path=False,
+                is_path=True,
                 mode='RAW',
                 wl=None,
                 balance_class=False,
@@ -419,7 +420,7 @@ class Data_Processor():
                                             sampling=1.0,
                                             transformations=self.transformations)
 
-        self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset,batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
         self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
         self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
         self.test_dataloader=torch.utils.data.DataLoader(dataset=self.test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
