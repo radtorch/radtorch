@@ -13,10 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
-from radtorch.settings import *
-from radtorch.dicom import  *
-from radtorch.vis import *
-from radtorch.settings import *
+from ..settings import *
+from .dicom import  *
+from .vis import *
 
 
 def load_predefined_datatables(*args, **kwargs):

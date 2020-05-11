@@ -15,7 +15,7 @@
 
 # Documentation update: 5/8/2020
 
-from radtorch.settings import *
+from ..settings import *
 
 
 def window_dicom(filepath, level, width):
