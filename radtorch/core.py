@@ -41,7 +41,7 @@ class RADTorch_Dataset(Dataset):
 
     - image_label_column (string, optional): name of column that has image label. default='IMAGE_LABEL'.
 
-    - is_path (boolean, optional): True if file_path column in table is file path. If False, this assumes that the column contains file names only and will append the data_directory to all files. default=False.
+    - is_path (boolean, optional): True if file_path column in table is file path. If False, this assumes that the column contains file names only and will append the data_directory to all files. default=True.
 
     - mode (string, optional): mode of handling pixel values from DICOM to numpy array. Option={'RAW': raw pixel values, 'HU': converts pixel values to HU using slope and intercept, 'WIN':Applies a certain window/level to HU converted DICOM image, 'MWIN': converts DICOM image to 3 channel HU numpy array with each channel adjusted to certain window/level. default='RAW'.
 
@@ -94,7 +94,8 @@ class RADTorch_Dataset(Dataset):
             files=[]
             for i, r in self.table.iterrows():
                 files.append(self.data_directory+r[self.image_path_column])
-            self.table[self.image_path_column]=files
+            # self.table[self.image_path_column]=files
+            self.table[self.image_path_column]=pd.Series(files, index=self.table.index)
 
         # Get list of files
         if self.is_dicom: self.dataset_files=[x for x in (self.input_data[self.image_path_column].tolist()) if x.endswith('.dcm')]
