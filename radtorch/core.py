@@ -10,10 +10,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
-# Documentation update: 5/8/2020
+# Documentation update: 5/11/2020
 
 from radtorch.settings import *
-from radtorch.vis import *
 from radtorch.general import *
 from radtorch.data import *
 from radtorch.utils import *
@@ -209,6 +208,10 @@ class Data_Processor():
     - num_workers (integer, optional): Number of CPU workers for dataloader. default=0.
 
     - sampling (float, optional): fraction of the whole dataset to be used. default=1.0.
+
+    - test_percent (float, optional): percentage of data for testing.default=0.2.
+
+    - valid_percent (float, optional): percentage of data for validation (ONLY with NN_Classifier) .default=0.2.
 
     - custom_resize (integer, optional): By default, the data processor resizes the image in dataset into the size expected bu the different CNN architectures. To override this and use a custom resize, set this to desired value. default=False.
 
@@ -1007,17 +1010,62 @@ class Classifier(object):
 
 
 class NN_Classifier():
-    '''
-    kwargs: feature_extractor (REQUIRED), data_processor(REQUIRED) , unfreeze, learning_rate, epochs, optimizer, loss_function, lr_schedules, batch_size, device
-    '''
-    def __init__(self, DEFAULT_SETTINGS=NN_CLASSIFIER_DEFAULT_SETTINGS, **kwargs):
-        for k,v in kwargs.items():
-            setattr(self,k,v)
 
-        for k, v in DEFAULT_SETTINGS.items():
-            if k not in kwargs.keys():
-                setattr(self, k, v)
-        if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    """
+    Description
+    ------------
+    Neural Network Classifier. This serves as extension of pytorch neural network modules e.g. VGG16, for fine tuning or transfer learning.
+
+
+    Parameters
+    ----------
+
+    - data_processor (radtorch.core.data_processor, required): data processor object from radtorch.core.Data_Processor.
+
+    - feature_extractor (radtorch.core.feature_extractor, required): feature_extractor object from radtorch.core.Feature_Extractor.
+
+    - unfreeze (boolean, optional): True to unfreeze the weights of all layers in the neural network model for model finetuning. False to just use unfreezed final layers for transfer learning. default=False.
+
+    - learning_rate (float, required): Learning rate. default=0.0001.
+
+    - epochs (integer, required): training epochs. default=10.
+
+    - optimizer (string, required): neural network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
+
+    - optimizer_parameters (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation.
+
+    - loss_function (string, required): neural network loss function. Please see radtorch.settings for list of approved loss functions. default='CrossEntropyLoss'.
+
+    - loss_function_parameters (dictionary, optional): optional extra parameters for loss function as per pytorch documentation.
+
+    - lr_scheduler (string, optional): learning rate scheduler - upcoming soon.
+
+    - batch_size (integer, required): batch size. default=16
+
+    - custom_nn_classifier (pytorch model, optional): Option to use a custom made neural network classifier that will be added after feature extracted layers. default=None.
+
+    - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
+
+
+    """
+
+    def __init__(self,
+                feature_extractor,
+                data_processor,
+                unfreeze=False,
+                learning_rate=0.0001,
+                epochs=10,
+                optimizer='Adam',
+                loss_function='CrossEntropyLoss',
+                lr_scheduler=None,
+                batch_size=16,
+                device='auto',
+                custom_nn_classifier=None,
+                loss_function_parameters={},
+                optimizer_parameters={},
+                **kwargs):
+
+        if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         if 'feature_extractor' not in self.__dict__.keys() or 'data_processor' not in self.__dict__.keys():
             log('Error! No  Data Processor and/or Feature Selector was supplied. Please Check.')
@@ -1040,19 +1088,9 @@ class NN_Classifier():
         self.model_arch=self.feature_extractor.model_arch
         self.in_features=model_dict[self.model_arch]['output_features']
 
-        if self.custom_nn_classifier:
+        if self.custom_nn_classifier !=None:
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier=self.custom_nn_classifier
             elif 'resnet' in self.model_arch: self.model.fc=self.custom_nn_classifier
-
-        # elif self.output_features:
-        #     if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier[6]=torch.nn.Sequential(
-        #                         torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True),
-        #                         torch.nn.Linear(in_features=self.output_features, out_features=self.output_classes, bias=True),
-        #                         torch.nn.LogSoftmax(dim=1))
-        #     elif 'resnet' in self.model_arch: self.model.fc=torch.nn.Sequential(
-        #                         torch.nn.Linear(in_features=self.in_features, out_features=self.output_features, bias=True),
-        #                         torch.nn.Linear(in_features=self.output_features, out_features=self.output_classes, bias=True),
-        #                         torch.nn.LogSoftmax(dim=1))
 
         else:
             if 'vgg' in self.model_arch:
@@ -1095,6 +1133,12 @@ class NN_Classifier():
         self.optimizer=self.nn_optimizer(type=self.optimizer, model=self.model, learning_rate=self.learning_rate,  **self.optimizer_parameters)
 
     def info(self):
+
+        """
+        Returns table with all information about the nn_classifier object.
+
+        """
+
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns=['Property', 'Value']
         for i in ['train_dataset', 'valid_dataset','test_dataset']:
@@ -1103,6 +1147,31 @@ class NN_Classifier():
         return info
 
     def nn_optimizer(self, type, model, learning_rate, **kw):
+
+        """
+
+        Description
+        -----------
+        Creates an instance of pytorch optimizer
+
+
+        Parameters
+        ----------
+
+        - type (string, required): type of the optimizer. Please see settings for supported optimizers.
+
+        - model (pytorch model, required): model for which optimizer will be used for weight optimization.
+
+        - learning_rate (float, required): learning rate for training.
+
+        - **kw (dictionary, optional): other optional optimizer parameters as per pytorch documentation.
+
+        Returns
+        -------
+        pytorch nn.optimizer object
+
+        """
+
         if type not in supported_nn_optimizers:
             log('Error! Optimizer not supported yet. Please check radtorch.settings.supported_nn_optimizers')
             pass
@@ -1124,6 +1193,25 @@ class NN_Classifier():
         return optimizer
 
     def nn_loss_function(self, type, **kw):
+        """
+
+        Description
+        -----------
+        Creates an instance of pytorch loss function.
+
+        Parameters
+        ----------
+
+        - type (string, required): type of the loss function. Please see settings for supported loss functions.
+
+        - **kw (dictionary, optional): other optional loss function parameters as per pytorch documentation.
+
+        Returns
+        -------
+        pytorch nn.loss_function object
+
+        """
+
         if type not in supported_nn_loss_functions:
             log('Error! Loss functions not supported yet. Please check radtorch.settings.supported_nn_loss_functions')
             pass
@@ -1151,7 +1239,16 @@ class NN_Classifier():
         return loss_function
 
     def run(self, **kw):
-        #args: model, train_data_loader, valid_data_loader, train_data_set, valid_data_set,loss_criterion, optimizer, epochs, device, verbose, lr_scheduler,
+        """
+        Performs Model Training
+
+        Returns
+        --------
+        Tuple of
+            - trained_model: trained neural network model.
+            - train_metrics: pandas dataframe of training and validation metrics.
+        """
+
         model=self.model
         train_data_loader=self.train_dataloader
         valid_data_loader=self.valid_dataloader
@@ -1242,23 +1339,64 @@ class NN_Classifier():
         return self.trained_model, self.train_metrics
 
     def confusion_matrix(self, target_dataset=None, figure_size=(8,6), cmap=None):
-        if target_dataset==None:
-            target_dataset=self.test_dataset
+
+        """
+        Displays confusion matrix for trained nn_classifier on test dataset.
+
+        Parameters
+        ----------
+
+        - target_dataset (pytorch dataset, optional): this option can be used to test the trained model on an external test dataset. If set to None, the confusion matrix is generated using the test dataset initially specified in the data_processor. default=None.
+
+        - figure_size (tuple, optional): size of the figure as width, height. default=(8,6)
+
+        """
+
+        if target_dataset==None:target_dataset=self.test_dataset
         target_classes=(self.data_processor.classes()).keys()
 
         show_nn_confusion_matrix(model=self.trained_model, target_data_set=target_dataset, target_classes=target_classes, device=self.device, figure_size=figure_size, cmap=cmap)
 
     def roc(self, **kw):
-      show_roc([self], **kw)
+        """
+        Displays ROC and AUC of trained model with test dataset
 
-    def metrics(self, **kw):
-        show_metrics([self], **kw)
+        """
+        show_roc([self], **kw)
 
-    def predict(self,  input_image_path, model=None, transformations=None, all_predictions=True, **kw): #input_image_path
-        if model==None:
-            model=self.trained_model
-        if transformations==None:
-            transformations=self.transformations
+    def metrics(self, figure_size):
+
+        """
+        Displays graphical representation of train/validation loss /accuracy.
+
+        Parameters
+        ----------
+
+        - figure_size (tuple, optional): size of the figure as width, height. default=(700,400)
+
+        """
+
+        show_metrics([self], figure_size=figure_size)
+
+    def predict(self,  input_image_path, all_predictions=True, **kw):
+
+        """
+        Description
+        -----------
+        Displays classs prediction for a target image using a trained classifier.
+
+
+        Parameters
+        ----------
+
+        - input_image_path (string, required): path to target image.
+
+        - all_predictions (boolean, optional): True to display prediction percentage accuracies for all prediction classes. default=True.
+
+        """
+
+        model=self.trained_model
+        transformations=self.transformations
 
         if input_image_path.endswith('dcm'):
             target_img=dicom_to_pil(input_image_path)
@@ -1286,6 +1424,23 @@ class NN_Classifier():
             return final_prediction.item(), prediction_percentages[final_prediction.item()]
 
     def misclassified(self, num_of_images=4, figure_size=(5,5), table=False, **kw):
+
+        """
+        Description
+        -----------
+        Displays sample of images misclassified by the classifier from test dataset.
+
+
+        Parameters
+        ----------
+
+        - num_of_images (integer, optional): number of images to be displayed. default=4.
+
+        - figure_size (tuple, optional): size of the figure as width, height. default=(5,5).
+
+        - table (boolean, optional): True to display a table of all misclassified images including image path, true label and predicted label.
+
+        """
         misclassified_table = show_nn_misclassified(model=self.trained_model, target_data_set=self.test_dataset, num_of_images=num_of_images, device=self.device, transforms=self.data_processor.transformations, is_dicom = self.is_dicom, figure_size=figure_size)
         if table:
             return misclassified_table

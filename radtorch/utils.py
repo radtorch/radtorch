@@ -90,6 +90,38 @@ def path_to_class(filepath):
     return item_class[-2]
 
 
+def datatable_from_filepath(*filelist,classes:list): #KareemElFatairy
+
+    """
+    Description
+    -----------
+    Create dataframe of file pathes and labels extracted from supplied folders.
+
+    Parameters
+    ----------
+
+    - filelist (list, required): list of target folders.
+
+    - classes (list, required): list of target classses.
+
+    Returns
+    -------
+    Pandas dataframe with image path and label.
+
+    """
+
+    file_lists = map(list_of_files,filelist)  #get a list of files from folders
+    data={'IMAGE_PATH':[],'IMAGE_LABEL':[]}
+    for file_list in file_lists:
+      for file_path in file_list: #create lists of files with the specified label and append to the dictionary
+        for item in classes:
+          if item.casefold() in file_path.casefold():   #case insensitive match
+            data['IMAGE_PATH'].append(file_path)
+            data['IMAGE_LABEL'].append(item)
+    df=pd.DataFrame(data)
+    return df
+
+
 def create_data_table(directory, is_dicom, image_path_column, image_label_column):
 
     """
@@ -531,3 +563,339 @@ def calculate_nn_predictions(model, target_data_set,  device):
             pred_labels = pred_labels+pr
 
     return (true_labels, pred_labels)
+
+
+def show_nn_confusion_matrix(model, target_data_set, target_classes, device, figure_size=(8,6), cmap=None):
+
+    """
+    Description
+    -----------
+    Displays confusion matrix for a trained nn_classifier using a target test dataset.
+
+
+    Parameters
+    ----------
+
+    - model (pytorch Model, required): trained neural network model.
+
+    - target_data_set (pytorch Dataset, required): target test dataset.
+
+    - target_classes (list, required): list of classes/labels.
+
+    - cmap (string, optional): colormap of the displayed confusion matrix. This follows matplot color palletes. default=None.
+
+    - figure_size (tuple, optional): size of the figure as width, height. default=(8,6)
+
+    - device (string, required): device to use. Options {'cpu', 'cuda'}
+
+
+    Returns
+    --------
+
+    Confusion matrix figure.
+
+    """
+
+
+    true_labels = []
+    pred_labels = []
+
+    model.to(device)
+    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
+
+    for i, (imgs, labels, paths) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
+        imgs = imgs.to(device)
+        labels = labels.to(device)
+        true_labels = true_labels+labels.tolist()
+        with torch.no_grad():
+            model.eval()
+            out = model(imgs)
+            ps = out
+            pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
+            pred_labels = pred_labels+pr
+
+
+    cm = metrics.confusion_matrix(true_labels, pred_labels)
+    show_confusion_matrix(cm=cm,
+                          target_names=target_classes,
+                          title='Confusion Matrix',
+                          cmap=cmap,
+                          normalize=False,
+                          figure_size=figure_size
+                          )
+
+
+def show_metrics(classifer_list, figure_size=(700,400)):
+
+    """
+    Description
+    -----------
+    Displays training/validation loss/accuracy graphs.
+
+
+    Parameters
+    ----------
+
+    - classifier_list (list, required): list of trained classifier objects (radtorch.core.Classifier or radtorch.core.NN_Classifier).
+
+    - figure_size (tuple, optional): size of the figure as width, height. default=(700,400).
+
+    Returns
+    --------
+    Bokeh Graph of training/validation accuracy/loss for all target classifiers.
+
+
+    """
+
+    metrics_list = [x.train_metrics for x in classifer_list]
+    output_notebook()
+    output = []
+    for m in ['Accuracy', 'Loss',]:
+        ind = 0
+        if m =='Loss':
+          legend_items = []
+          p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+          for i in metrics_list:
+            x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= COLORS2[ind])
+            y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
+            legend_items.append((('Model '+str(ind)+' Train Loss') , [x]))
+            legend_items.append(('Model '+str(ind)+' Valid Loss' , [y]))
+            ind = ind +1
+
+        elif m == "Accuracy":
+          legend_items = []
+          p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+          for i in metrics_list:
+            x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= COLORS2[ind])
+            y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
+            legend_items.append((('Model '+str(ind)+' Train Accuracy') , [x]))
+            legend_items.append(('Model '+str(ind)+' Valid Accuracy' , [y]))
+            ind = ind +1
+
+        legend = Legend(items=legend_items, location=(10, -20))
+        p.add_layout(legend, 'right')
+        # p.legend.location = "top_center"
+        p.legend.inactive_fill_alpha = 0.7
+        p.legend.border_line_width = 0
+        p.legend.click_policy="hide"
+        p.xaxis.axis_line_color = '#D6DBDF'
+        p.yaxis.axis_line_color = '#D6DBDF'
+        p.xgrid.grid_line_color=None
+        p.yaxis.axis_line_width = 2
+        p.xaxis.axis_line_width = 2
+        p.xaxis.major_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_color = '#D6DBDF'
+        p.xaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.minor_tick_line_color = '#D6DBDF'
+        p.yaxis.major_tick_line_width = 2
+        p.xaxis.major_tick_line_width = 2
+        p.yaxis.minor_tick_line_width = 0
+        p.xaxis.minor_tick_line_width = 0
+        p.xaxis.major_label_text_color = '#99A3A4'
+        p.yaxis.major_label_text_color = '#99A3A4'
+        p.outline_line_color = None
+        p.xaxis.axis_label = 'Epoch'
+        p.xaxis.axis_label_text_align = 'right'
+        p.toolbar.autohide = True
+        output.append(p)
+
+
+    show(column(output))
+
+
+def plot_images(images, titles=None, figure_size=(10,10)):
+
+    """
+    Description
+    -----------
+    Displays multiple images with titles in one figure.
+
+    Parameters
+    -----------
+
+    - images (np array of images, required): array of images.
+
+    - titles (list, optional): list of titles to be displayed over images
+
+    - figure_size (tuple, optional): size of the figure as width, height. default=(10,10).
+
+    Retruns
+    --------
+    Matplot figure.
+
+    Source
+    -----------
+    https://gist.github.com/soply/f3eec2e79c165e39c9d540e916142ae1
+
+    """
+
+    cols = int(math.sqrt(len(images)))
+    assert((titles is None)or (len(images) == len(titles)))
+    n_images = len(images)
+    if titles is None: titles = ['Image (%d)' % i for i in range(1,n_images + 1)]
+    fig = plt.figure(figsize=figure_size)
+    for n, (image, title) in enumerate(zip(images, titles)):
+        a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
+        if image.ndim == 2:
+            plt.gray()
+        plt.imshow(image)
+        plt.axis('off')
+        a.set_title(title)
+    plt.axis('off')
+    plt.show()
+
+
+def misclassified(true_labels_list, predicted_labels_list, accuracy_list, img_path_list):
+
+    """
+    Description
+    -----------
+    Compares true and predicted labels and creates a dictionary of misclassified instances.
+
+
+    Parameters
+    ----------
+
+    - true_labels_list  (list, required): list of true labels.
+
+    - predicted_labels_list (list, required): list of predicted labels.
+
+    - accuracy_list (list, required): list of prediction accuracies.
+
+    - img_path_list (list, required): list of image paths.
+
+    Returns
+    -------
+    Dictionary of {'image_path': {'image_path', 'true_label', 'predicted_label', 'accuracy'}}
+
+    """
+
+    misclassified = {}
+    for i in range (len(true_labels_list)):
+        if true_labels_list[i] != predicted_labels_list[i]:
+            misclassified[img_path_list[i]] = {'image_path': img_path_list[i],
+                                                'true_label': true_labels_list[i],
+                                                'predicted_label': predicted_labels_list[i],
+                                                'accuracy':accuracy_list[i]
+                                                }
+    return misclassified
+
+
+def show_misclassified(misclassified_dictionary, transforms, class_to_idx_dict, is_dicom = True, num_of_images = 16, figure_size = (5,5)):
+
+    """
+    Description
+    -----------
+    Displays a sample of images misclassified by a trained classifier.
+
+
+    Parameters
+    -----------
+
+    - misclassified_dictionary (dictionary, required): dictionary of true labels, predicted labels, image path and accuracy created by radtoch.utils.misclassified().
+
+    - transforms (list, required): pytorch transformations to be applied to images.
+
+    - class_to_idx_dict (dictionary, required): dictionary of classes to class_idx.
+
+    - is_dicom (boolean, optional): True if images are DICOM images. default=True.
+
+    - num_of_images (integer, optional): number of images to be displayed. default=16.
+
+    - figure_size (tuple, optional): size of the figure as width, height. default=(5,5).
+
+
+
+    Retruns
+    -------
+    Matplot figure of misclassified images.
+
+
+    """
+
+    row = int(math.sqrt(num_of_images))
+    try:
+        sample = random.sample(list(misclassified_dictionary), num_of_images)
+        if is_dicom:
+            imgs = [torch.from_numpy(dicom_to_narray(i)) for i in sample]
+        else:
+            imgs = [np.array(transforms(Image.open(i).convert('RGB'))) for i in sample]
+            imgs = [np.moveaxis(i, 0, -1) for i in imgs]
+
+        titles = [
+                    ', '.join([
+                    ['Truth: '+k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['true_label']][0],
+                    ['Pred: '+k for k,v in class_to_idx_dict.items() if v == misclassified_dictionary[i]['predicted_label']][0],
+                    'Acc = '+str(float('{:0.2f}'.format(misclassified_dictionary[i]['accuracy'])))
+                    ])
+
+                   for i in sample]
+
+        plot_images(images=imgs, titles=titles, figure_size=figure_size)
+    except:
+        log("Error! Number of misclassified images is less than 16. Please use a smaller num_of_images to display.")
+        pass
+
+
+def show_nn_misclassified(model, target_data_set, num_of_images, transforms, is_dicom = True, figure_size=(5,5), device):
+
+    """
+    Description
+    -----------
+    Displays a sample of images misclassified by a trained nn_classifier.
+
+
+    Parameters
+    -----------
+
+    - model (pytorch Model, required): trained pytorch neural network classifier.
+
+    - target_data_set (pytorch dataset, required): target dataset to classify.
+
+    - num_of_images (integer, required): number of images to be displayed.
+
+    - transforms (list, required): pytorch transformations to be applied to images.
+
+    - is_dicom (boolean, optional): True if images are DICOM images. default=True.
+
+    - figure_size (tuple, optional): size of the figure as width, height. default=(5,5).
+
+    - device (string, required): device to use. Options {'cpu', 'cuda'}
+
+
+
+    Retruns
+    -------
+    Matplot figure of misclassified images.
+
+
+    """
+    class_dictionary = target_data_set.class_to_idx
+
+    true_labels = []
+    pred_labels = []
+    misses_all = {}
+
+    model.to(device)
+    target_data_loader = torch.utils.data.DataLoader(target_data_set,batch_size=16,shuffle=False)
+
+    for i, (imgs, labels, paths) in tqdm(enumerate(target_data_loader), total=len(target_data_loader)):
+        imgs = imgs.to(device)
+        labels = labels.to(device)
+        true_labels = true_labels+labels.tolist()
+        with torch.no_grad():
+            model.eval()
+            out = model(imgs)
+            ps = out
+            pr = [(i.tolist()).index(max(i.tolist())) for i in ps]
+            softmax = torch.exp(out).cpu()
+            accuracies = [(max(i.tolist())) for i in softmax]
+            misses = misclassified(true_labels_list=labels.tolist(), predicted_labels_list=pr, img_path_list=list(paths), accuracy_list=accuracies)
+            misses_all.update(misses)
+            pred_labels = pred_labels+pr
+
+    show_misclassified(misclassified_dictionary=misses_all, transforms=transforms, class_to_idx_dict=class_dictionary, is_dicom = is_dicom, num_of_images = num_of_images, figure_size = figure_size)
+
+    output = pd.DataFrame(misses_all.values())
+
+    return output

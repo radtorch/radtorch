@@ -405,7 +405,7 @@ def plot_dataset_info(dataframe_dictionary, plot_size=(500,300)):
     show(column(output))
 
 
-def show_metrics(classifer_list, fig_size=(700,400)):
+def show_metrics(classifer_list, figure_size=(700,400)):
     metrics_list = [x.train_metrics for x in classifer_list]
     output_notebook()
     output = []
@@ -413,7 +413,7 @@ def show_metrics(classifer_list, fig_size=(700,400)):
         ind = 0
         if m =='Loss':
           legend_items = []
-          p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+          p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
           for i in metrics_list:
             x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= COLORS2[ind])
             y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
@@ -423,7 +423,7 @@ def show_metrics(classifer_list, fig_size=(700,400)):
 
         elif m == "Accuracy":
           legend_items = []
-          p = figure(plot_width=fig_size[0], plot_height=fig_size[1], title=('Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+          p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
           for i in metrics_list:
             x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= COLORS2[ind])
             y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
