@@ -837,7 +837,7 @@ def show_misclassified(misclassified_dictionary, transforms, class_to_idx_dict, 
         pass
 
 
-def show_nn_misclassified(model, target_data_set, num_of_images, transforms, is_dicom = True, figure_size=(5,5), device):
+def show_nn_misclassified(model, target_data_set, num_of_images, transforms, device, is_dicom = True, figure_size=(5,5)):
 
     """
     Description
