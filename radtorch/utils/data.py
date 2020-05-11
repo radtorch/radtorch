@@ -76,30 +76,30 @@ def calculate_mean_std(dataloader):
     return (mean, std)
 
 
-def balance_dataset(dataset, label_col, upsample=True):
-  balanced_dataset=copy.deepcopy(dataset)
-  df = balanced_dataset.input_data
-  counts=df.groupby(label_col).count()
-  classes=df[label_col].unique().tolist()
-  max_class_num=counts.max()[0]
-  max_class_id=counts.idxmax()[0]
-  min_class_num=counts.min()[0]
-  min_class_id=counts.idxmin()[0]
-  if upsample:
-    resampled_subsets = [df[df[label_col]==max_class_id]]
-    for i in [x for x in classes if x != max_class_id]:
-      class_subset=df[df[label_col]==i]
-      upsampled_subset=resample(class_subset, n_samples=max_class_num, random_state=100)
-      resampled_subsets.append(upsampled_subset)
-  else:
-    resampled_subsets = [df[df[label_col]==min_class_id]]
-    for i in [x for x in classes if x != min_class_id]:
-      class_subset=df[df[label_col]==i]
-      upsampled_subset=resample(class_subset, n_samples=min_class_num, random_state=100)
-      resampled_subsets.append(upsampled_subset)
-  resampled_df = pd.concat(resampled_subsets)
-  balanced_dataset.input_data=resampled_df
-  return balanced_dataset
+# def balance_dataset(dataset, label_col, upsample=True):
+#   balanced_dataset=copy.deepcopy(dataset)
+#   df = balanced_dataset.input_data
+#   counts=df.groupby(label_col).count()
+#   classes=df[label_col].unique().tolist()
+#   max_class_num=counts.max()[0]
+#   max_class_id=counts.idxmax()[0]
+#   min_class_num=counts.min()[0]
+#   min_class_id=counts.idxmin()[0]
+#   if upsample:
+#     resampled_subsets = [df[df[label_col]==max_class_id]]
+#     for i in [x for x in classes if x != max_class_id]:
+#       class_subset=df[df[label_col]==i]
+#       upsampled_subset=resample(class_subset, n_samples=max_class_num, random_state=100)
+#       resampled_subsets.append(upsampled_subset)
+#   else:
+#     resampled_subsets = [df[df[label_col]==min_class_id]]
+#     for i in [x for x in classes if x != min_class_id]:
+#       class_subset=df[df[label_col]==i]
+#       upsampled_subset=resample(class_subset, n_samples=min_class_num, random_state=100)
+#       resampled_subsets.append(upsampled_subset)
+#   resampled_df = pd.concat(resampled_subsets)
+#   balanced_dataset.input_data=resampled_df
+#   return balanced_dataset
 
 
 def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_split=True, shuffle=True, sample=False,  **kwargs):
