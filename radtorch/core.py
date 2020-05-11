@@ -170,7 +170,7 @@ class RADTorch_Dataset(Dataset):
 
     def normalize(self, **kwargs):
         """
-        Retruns a normalized dataset with either mean/std of the dataset or a user specified mean/std in the form of ((mean, mean, mean), (std, std, std)).
+        Returns a normalized dataset with either mean/std of the dataset or a user specified mean/std in the form of ((mean, mean, mean), (std, std, std)).
         """
         if 'mean' in kwargs.keys() and 'std' in kwargs.keys():
             mean=kwargs['mean']
@@ -214,7 +214,7 @@ class Data_Processor():
 
     - balance_class_method (string, optional): methodology used to balance classes. Options={'upsample', 'downsample'}. default='upsample'.
 
-    - normalize (bollean, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=False.
+    - normalize (bolean/False or Tuple, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=((0,0,0), (1,1,1)).
 
     - batch_size (integer, optional): Batch size for dataloader. defult=16.
 
@@ -427,7 +427,7 @@ class Data_Processor():
 
     def classes(self):
         """
-        Returns list of classes in data.
+        Returns dictionary of classes/class_idx in data.
         """
         return self.master_dataset.class_to_idx
 
@@ -749,8 +749,6 @@ class Classifier(object):
                 stratified=True,
                 num_splits=5,
                 parameters={},
-                transformations=None,
-                model=None,
                 **kwargs):
 
 
@@ -1441,7 +1439,7 @@ class NN_Classifier():
         """
         show_roc([self], **kw)
 
-    def metrics(self, figure_size):
+    def metrics(self, figure_size=(700,400)):
 
         """
         Displays graphical representation of train/validation loss /accuracy.

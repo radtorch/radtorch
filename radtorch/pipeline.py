@@ -50,7 +50,7 @@ class Image_Classification():
 
     - interaction_terms (boolean, optional): create interaction terms between different features and add them as new features to feature table. default=False.
 
-    - normalize (bollean, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=False.
+    - normalize (bolean/False or Tuple, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=((0,0,0), (1,1,1)).
 
     - batch_size (integer, optional): Batch size for dataloader. defult=16.
 
@@ -232,7 +232,7 @@ class Image_Classification():
             log ('Classifier Training completed successfully.')
 
     def metrics(self, figure_size=(500,300)):
-        return show_metrics([self.classifier],  fig_size=figure_size)
+        return show_metrics([self.classifier],  figure_size=figure_size)
 
     def export(self, output_path):
         try:
