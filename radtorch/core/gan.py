@@ -92,7 +92,7 @@ class DCGAN_Generator(nn.Module):
         return layers
 
     def forward(self, input):
-        return self.network(output)
+        return self.network(input)
 
 
 class DCGAN_Discriminator(nn.Module):
