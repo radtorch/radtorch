@@ -218,10 +218,10 @@ class GAN():
                 self.G_optimizer.step()
 
                 self.train_metrics.append((errD.item(),  errG.item(), errD_real.item(), errD_fake.item()))
-
+                self.train_metrics=pd.DataFrame(data=self.train_metrics, columns = ['D_loss', 'd_loss_real_images', 'd_loss_fake_images', 'G_loss'])
                 batch_end=time.time()
 
-                log("Epoch : {:03d}/{} : [D_loss: {:.4f}, d_loss_real_images {:.4f}%, d_loss_fake_images {:.4f}] [G_loss: {:.4f}%] [Time: {:.4f}s]".format(epoch, self.epochs, errD.item(), errD_real.item(), errD_fake.item(), errG.item(), batch_end-batch_start))
+                log("Epoch : {:03d}/{} : [D_loss: {:.4f}, d_loss_real_images {:.4f}, d_loss_fake_images {:.4f}] [G_loss: {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, errD.item(), errD_real.item(), errD_fake.item(), errG.item(), batch_end-batch_start))
 
 
             self.G.eval()
