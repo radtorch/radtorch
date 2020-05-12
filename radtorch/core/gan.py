@@ -91,11 +91,7 @@ class DCGAN_Generator(nn.Module):
         return layers
 
     def forward(self, input):
-        fc=torch.nn.Linear(self.noise_size, self.num_generator_features*self.num_units*4*4)
-        output=fc(input)
-        output=output.view(-1, self.num_generator_features*self.num_units, 4, 4)
-        ouptut=self.network(output)
-        return output
+        return self.network(output)
 
 
 class DCGAN_Discriminator(nn.Module):
@@ -145,10 +141,8 @@ class DCGAN_Discriminator(nn.Module):
             layers.append(self.conv_unit(input=self.num_discriminator_features*x, output=self.num_discriminator_features*(x*2), kernel_size=self.kernel_size, stride=2, padding=1, bias=False, batch_norm=True, relu=True))
             x=x*2
         self.x=x
+        layers.append(nn.Sigmoid())
         return layers
 
     def forward(self, input):
-        output = self.network(input)
-        ouptut = output.view(-1, self.num_discriminator_features*self.x*self.kernel_size*self.kernel_size)
-        fc = nn.Linear(self.num_discriminator_features*self.x*self.kernel_size*self.kernel_size, 1)
-        output = fc(output)
+        return self.network(input)
