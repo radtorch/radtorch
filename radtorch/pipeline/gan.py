@@ -188,7 +188,6 @@ class GAN():
                 generated_noise=torch.randn((b_size,self.g_noise_size, 1, 1), device=self.device)
                 # Generate fake image batch with G
                 fake = self.G(generated_noise)
-                print (fake.shape)
                 label.fill_(fake_label)
                 # Classify all fake batch with D
                 output = self.D(fake.detach()).view(-1)
