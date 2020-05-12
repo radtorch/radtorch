@@ -91,9 +91,9 @@ class DCGAN_Generator(nn.Module):
         return layers
 
     def forward(self, input):
-        fc=torch.nn.Linear(self.noise_size, self.num_generator_features*self.num_units*4*4))
+        fc=torch.nn.Linear(self.noise_size, self.num_generator_features*self.num_units*4*4)
         output=fc(input)
-        output=output.view((-1, self.num_generator_features*self.num_units, 4, 4))
+        output=output.view(-1, self.num_generator_features*self.num_units, 4, 4)
         ouptut=self.network(output)
         return output
 
