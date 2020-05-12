@@ -31,7 +31,6 @@ dcgan_generator_options = {
                             1024: {'num_units':7, 'start_num_channels':128},
                             }
 
-
 dcgan_discriminator_options = {
                             16: {'num_units':1, 'end_num_channels':2},
                             32: {'num_units':2, 'end_num_channels':4},
