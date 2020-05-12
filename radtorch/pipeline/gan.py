@@ -17,9 +17,6 @@ from ..utils import *
 
 
 
-
-
-
 class GAN():
 
     def __init__(self,
