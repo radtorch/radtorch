@@ -352,7 +352,6 @@ def show_dataloader_sample(dataloader, figure_size=(10,10), show_labels=True, sh
     plot_images(images=images, titles=titles, figure_size=figure_size)
 
 
-
 def plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col):
     """
 
