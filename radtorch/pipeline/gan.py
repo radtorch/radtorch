@@ -131,8 +131,8 @@ class GAN():
         self.D = self.D.to(self.device)
         self.G = self.G.to(self.device)
 
-        self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, [self.beta1, self.beta2])
-        self.G_optimizer=self.nn_optimizer(type=self.g_optimizer, model=self.G, learning_rate=self.g_learning_rate, [self.beta1, self.beta2])
+        self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, **{'betas':(self.beta1, self.beta2)})
+        self.G_optimizer=self.nn_optimizer(type=self.g_optimizer, model=self.G, learning_rate=self.g_learning_rate, **{'betas':(self.beta1, self.beta2)})
 
 
     def run(self, num_generated_images=16, show_images=True, figure_size=(10,10)):
@@ -141,7 +141,7 @@ class GAN():
 
         self.generated_samples=[]
 
-        for epochs in range tqdm(range(self.epochs))):
+        for epochs in tqdm(range(self.epochs))):
 
             epoch_start=time.time()
 
