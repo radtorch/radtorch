@@ -158,6 +158,8 @@ class GAN():
 
         self.generated_samples=[]
 
+        num_batches=len(self.dataloader)
+
         for epoch in tqdm(range(self.epochs)):
 
             epoch_start=time.time()
@@ -220,7 +222,7 @@ class GAN():
 
                 batch_end=time.time()
 
-                log("Epoch : {:03d}/{} : [D_loss: {:.4f}, d_loss_real_images {:.4f}, d_loss_fake_images {:.4f}] [G_loss: {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, errD.item(), errD_real.item(), errD_fake.item(), errG.item(), batch_end-batch_start))
+                log("[Epoch:{:03d}/{}, Batch{:03d}/{}] : [D_loss: {:.4f}, d_loss_real_images {:.4f}, d_loss_fake_images {:.4f}] [G_loss: {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, batch_number, num_batches, errD.item(), errD_real.item(), errD_fake.item(), errG.item(), batch_end-batch_start))
 
 
             self.G.eval()
