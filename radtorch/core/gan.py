@@ -134,15 +134,17 @@ class DCGAN_Discriminator(nn.Module):
 
 
     def network_layers(self):
-        layers=[self.conv_unit(input=self.num_input_channels, output=self.num_discriminator_features, kernel_size=self.kernel_size, stride=2, padding=1, bias=False, batch_norm=False, relu=True)]
+        layers=[]
+        layers.append(self.conv_unit(input=self.num_input_channels, output=self.num_discriminator_features, kernel_size=self.kernel_size, stride=2, padding=1, bias=False, batch_norm=False, relu=True))
         x=1
         for i in range (self.num_units):
             layers.append(self.conv_unit(input=self.num_discriminator_features*x, output=self.num_discriminator_features*(x*2), kernel_size=self.kernel_size, stride=2, padding=1, bias=False, batch_norm=True, relu=True))
             x=x*2
+        self.x=x
         return layers
 
     def forward(self, input):
         output = self.network(input)
-        ouptut = output.view(-1, self.num_discriminator_features*self.end_num_channels*self.kernel_size*self.kernel_size)
-        fc = nn.Linear(self.num_discriminator_features*self.end_num_channels*self.kernel_size*self.kernel_size, 1)
+        ouptut = output.view(-1, self.num_discriminator_features*self.x*self.kernel_size*self.kernel_size)
+        fc = nn.Linear(self.num_discriminator_features*self.x*self.kernel_size*self.kernel_size, 1)
         output = fc(output)
