@@ -124,7 +124,7 @@ class DCGAN_Discriminator(nn.Module):
     def conv_unit(self,input, output, kernel_size, stride, padding, bias, batch_norm, relu):
         layer1=nn.Conv2d(input, output, kernel_size=(kernel_size, kernel_size), stride=(stride, stride), padding=(padding,padding), bias=bias)
         layer2=nn.BatchNorm2d(output)
-        layer3=nn.LeakyReLU(True)
+        layer3=nn.LeakyReLU(0.2, inplace=True)
 
         if batch_norm:
             if relu:return nn.Sequential(*[layer1, layer2, layer3])
