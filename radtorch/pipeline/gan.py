@@ -28,7 +28,7 @@ class GAN():
                discriminator_input_image_size,
                generator_noise_type='normal',
                table=None,
-               image_path_column='IMAGE_PATH'
+               image_path_column='IMAGE_PATH',
                image_label_column='IMAGE_LABEL',
                is_path=True,
                is_dicom=False,
