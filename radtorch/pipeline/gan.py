@@ -154,7 +154,7 @@ class GAN():
         self.D = self.D.to(self.device)
         self.G = self.G.to(self.device)
 
-        self.training_metrics=[]
+        self.train_metrics=[]
 
         self.generated_samples=[]
 
@@ -217,7 +217,7 @@ class GAN():
                 # Update G
                 self.G_optimizer.step()
 
-                self.training_metrics.append((errD.item(),  errG.item(), errD_real.item(), errD_fake.item()))
+                self.train_metrics.append((errD.item(),  errG.item(), errD_real.item(), errD_fake.item()))
 
                 batch_end=time.time()
 
@@ -236,7 +236,6 @@ class GAN():
 
         self.trained_G = self.G
         self.trained_D = self.D
-        return self.trained_D, self.trained_G, self.training_metrics, self.generated_samples
 
 
 
