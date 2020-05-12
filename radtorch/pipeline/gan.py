@@ -217,7 +217,7 @@ class GAN():
                 # Update G
                 self.G_optimizer.step()
 
-                self.train_metrics.append((errD.item(),  errG.item(), errD_real.item(), errD_fake.item()))
+                self.train_metrics.append([errD.item(),  errG.item(), errD_real.item(), errD_fake.item()])
                 self.train_metrics=pd.DataFrame(data=self.train_metrics, columns = ['D_loss', 'd_loss_real_images', 'd_loss_fake_images', 'G_loss'])
                 batch_end=time.time()
 
