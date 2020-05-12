@@ -82,7 +82,7 @@ class DCGAN_Generator(nn.Module):
 
     def network_layers(self):
         layers=[]
-        layers.append(self.deconv_unit(input=self.noise_size, output=self.num_generator_features*self.start_num_channels, kernel_size=4, stride=2, padding=1, bias=False, batch_norm=True, relu=True))
+        layers.append(self.deconv_unit(input=self.noise_size, output=self.num_generator_features*self.start_num_channels, kernel_size=4, stride=2, padding=0, bias=False, batch_norm=True, relu=True))
         x = self.start_num_channels
         for i in range(self.num_units):
             layers.append(self.deconv_unit(input=self.num_generator_features*x, output=self.num_generator_features*int(x/2), kernel_size=4, stride=2, padding=1, bias=False, batch_norm=True, relu=True))
@@ -142,7 +142,7 @@ class DCGAN_Discriminator(nn.Module):
             layers.append(self.conv_unit(input=self.num_discriminator_features*x, output=self.num_discriminator_features*(x*2), kernel_size=self.kernel_size, stride=2, padding=1, bias=False, batch_norm=True, relu=True))
             x=x*2
         self.x=x
-        layers.append(self.conv_unit(input=self.num_discriminator_features*self.x, output=1, kernel_size=self.kernel_size, stride=2, padding=1, bias=False, batch_norm=False, relu=False))
+        layers.append(self.conv_unit(input=self.num_discriminator_features*self.x, output=1, kernel_size=self.kernel_size, stride=2, padding=0, bias=False, batch_norm=False, relu=False))
         layers.append(nn.Sigmoid())
         return layers
 
