@@ -175,7 +175,7 @@ class GAN():
                 # Format batch
                 images = images.to(self.device)
                 b_size = images.size(0)
-                label = torch.full((b_size,), real_label, device=self.device)
+                label = torch.full((b_size,), real_label, dtype=torch.int, device=self.device)
                 # Forward pass real batch through D
                 output = self.D(images).view(-1)
                 # Calculate loss on all-real batch
