@@ -122,10 +122,10 @@ class GAN():
 
         self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
-        if self.d='dcgan':
+        if self.d=='dcgan':
           self.D=DCGAN_Discriminator(num_input_channels=self.d_input_image_channels,num_discriminator_features=self.d_num_features, input_image_size=self.d_input_image_size,  kernel_size=4)
 
-        if self.g='dcgan':
+        if self.g=='dcgan':
           self.G=DCGAN_Generator(noise_size=self.noise_size, num_generator_features=self.g_num_features, num_output_channels=self.g_output_image_channels, target_image_size=self.g_output_image_size)
 
         self.D = self.D.to(self.device)
