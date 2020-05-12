@@ -34,6 +34,7 @@ class GAN():
                mode='RAW',
                wl=None,
                batch_size=16,
+               normalize=((0,0,0),(1,1,1)),
                num_workers=0,
                label_smooth=False,
                discriminator='dcgan',
@@ -66,6 +67,7 @@ class GAN():
         self.device=device
         self.transformations=transformations
         self.batch_size=batch_size
+        self.normalize=normalize
 
         self.d=discriminator
         self.g=generator
@@ -91,6 +93,8 @@ class GAN():
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+        self.criterion=nn.BCELoss()
+
         if isinstance(self.table, str):
             if self.table!='':
                 self.table=pd.read_csv(self.table)
@@ -104,13 +108,15 @@ class GAN():
                 self.transformations=transforms.Compose([
                         transforms.Resize((self.d_input_image_size, self.d_input_image_size)),
                         transforms.transforms.Grayscale(self.d_input_image_channels),
-                        transforms.ToTensor()])
+                        transforms.ToTensor(),
+                        transforms.Normalize(mean=self.normalize[0], std=self.normalize[1])])
             else:
                 self.transformations=transforms.Compose([
                     transforms.Resize((self.d_input_image_size, self.d_input_image_size)),
-                    transforms.ToTensor()])
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean=self.normalize[0], std=self.normalize[1])])
 
-        # >> need to create dataset/dataloader here
+
         self.dataset=RADTorch_Dataset(
                                         data_directory=self.data_directory,
                                         table=self.table,
@@ -131,20 +137,28 @@ class GAN():
         if self.g=='dcgan':
           self.G=DCGAN_Generator(noise_size=self.g_noise_size, num_generator_features=self.g_num_features, num_output_channels=self.g_output_image_channels, target_image_size=self.g_output_image_size)
 
+        self.G.apply(self.weights_init)
         self.D = self.D.to(self.device)
         self.G = self.G.to(self.device)
 
         self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, **{'betas':(self.beta1, self.beta2)})
         self.G_optimizer=self.nn_optimizer(type=self.g_optimizer, model=self.G, learning_rate=self.g_learning_rate, **{'betas':(self.beta1, self.beta2)})
 
+        self.fixed_noise = torch.randn(self.batch_size, self.g_noise_size, 1, 1, device=self.device)
 
     def run(self, num_generated_images=16, show_images=True, figure_size=(10,10)):
+
+        real_label=1
+        fake_label=0
+
+        self.D = self.D.to(self.device)
+        self.G = self.G.to(self.device)
 
         self.training_metrics=[]
 
         self.generated_samples=[]
 
-        for epochs in tqdm(range(self.epochs)):
+        for epoch in tqdm(range(self.epochs)):
 
             epoch_start=time.time()
 
@@ -152,52 +166,78 @@ class GAN():
 
                 batch_start=time.time()
 
-                d_loss, d_real_loss, d_fake_loss = self.train_discriminator(generator=self.G,
-                                                                  discriminator=self.D,
-                                                                  train_images=images,
-                                                                  discriminator_optimizer=self.D_optimizer,
-                                                                  input_noise_size=self.g_noise_size,
-                                                                  label_smooth=self.label_smooth,
-                                                                  noise_type=self.g_noise_type)
+                # (1) Train D
+                ###########################
+                ## Train with all-real batch
+                self.D.zero_grad()
+                # Format batch
+                images = images.to(self.device)
+                b_size = images.size(0)
+                label = torch.full((b_size,), real_label, device=self.device)
+                # Forward pass real batch through D
+                output = self.D(images).view(-1)
+                # Calculate loss on all-real batch
+                errD_real = self.criterion(output, label)
+                # Calculate gradients for D in backward pass
+                errD_real.backward()
+                # D_x = output.mean().item()
 
-                g_loss = self.train_generator(generator=self.G,
-                               discriminator=self.D,
-                               train_images=images,
-                               generator_optimizer=self.G_optimizer,
-                               input_noise_size=self.g_noise_size,
-                               label_smooth=self.label_smooth,
-                               noise_type=self.g_noise_type)
+                ## Train with all-fake batch
+                # Generate batch of latent vectors
+                              # generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=b_size)
+                generated_noise=torch.randn((b_size,self.g_noise_size, 1, 1), device=self.device)
+                # Generate fake image batch with G
+                fake = self.G(generated_noise)
+                print (fake.shape)
+                label.fill_(fake_label)
+                # Classify all fake batch with D
+                output = self.D(fake.detach()).view(-1)
+                # Calculate D's loss on the all-fake batch
+                errD_fake = self.criterion(output, label)
+                # Calculate the gradients for this batch
+                errD_fake.backward()
+                # D_G_z1 = output.mean().item()
+                # Add the gradients from the all-real and all-fake batches
+                errD = errD_real + errD_fake
+                # Update D
+                self.D_optimizer.step()
 
-                training_metrics.append((d_loss.item(),  g_loss.item(), d_real_loss.item(), d_fake_loss.item()))
+                ############################
+                # (2) Train G
+                ###########################
+                self.G.zero_grad()
+                label.fill_(real_label)  # fake labels are real for generator cost
+                # Since we just updated D, perform another forward pass of all-fake batch through D
+                output = self.D(fake).view(-1)
+                # Calculate G's loss based on this output
+                errG = self.criterion(output, label)
+                # Calculate gradients for G
+                errG.backward()
+                # D_G_z2 = output.mean().item()
+                # Update G
+                self.G_optimizer.step()
+
+                self.training_metrics.append((errD.item(),  errG.item(), errD_real.item(), errD_fake.item()))
 
                 batch_end=time.time()
 
-                log("Epoch : {:03d}/{} : [D_loss: {:.4f}, d_loss_real_images {:.4f}%, d_loss_fake_images {:.4f}] [G_loss: {:.4f}%] [Time: {:.4f}s]".format(epoch, self.epochs, d_loss.item(), d_real_loss.item(), d_fake_loss.item(), g_loss.item(), batch_end-batch_start))
+                log("Epoch : {:03d}/{} : [D_loss: {:.4f}, d_loss_real_images {:.4f}%, d_loss_fake_images {:.4f}] [G_loss: {:.4f}%] [Time: {:.4f}s]".format(epoch, self.epochs, errD.item(), errD_real.item(), errD_fake.item(), errG.item(), batch_end-batch_start))
 
 
             self.G.eval()
-            generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=num_generated_images)
-            generated_noise.to(self.device)
-            sample = self.G(generated_noise)
-            generated_samples.append(sample)
+            # generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=num_generated_images)
+            sample = self.G(self.fixed_noise)
+            sample = sample.cpu().detach().numpy()
+            sample = [np.moveaxis(x, 0, -1) for x in sample]
+            self.generated_samples.append(sample)
             if show_images:
-                plot_images(generated_samples, titles=[], figure_size=figure_size)
+                plot_images(sample , titles=None, figure_size=figure_size)
             self.G.train()
 
         self.trained_G = self.G
         self.trained_D = self.D
-        return self.trained_D, self.trained_G, self.training_metrics, self.samples
+        return self.trained_D, self.trained_G, self.training_metrics, self.generated_samples
 
-
-    def generate_noise(self, noise_size, noise_type, num_images=25):
-      if noise_type =='normal': generated_noise = np.random.uniform(-1, 1, size=(num_images, noise_size))
-      elif noise_type == 'gaussian':generated_noise = np.random.normal(0, 1, size=(num_images, noise_size))
-      else:
-        # log('Noise type not specified/recognized. Please check.')
-        pass
-      generated_noise = torch.from_numpy(generated_noise).float()
-      generated_noise=generated_noise.to(self.device)
-      return generated_noise
 
 
     def nn_optimizer(self, type, model, learning_rate, **kw):
@@ -222,119 +262,39 @@ class GAN():
       return optimizer
 
 
-    def real_loss(self, D_out, smooth=False):
-      D_out=D_out.to(self.device)
-      batch_size = D_out.size(0)
-      # label smoothing
-      if smooth: labels = torch.ones(batch_size)*0.9 # smooth, real labels = 0.9
-      else: labels = torch.ones(batch_size) # real labels = 1
-      # move labels to GPU if available
-      labels=labels.to(self.device)
-      # binary cross entropy with logits loss
-      criterion = nn.BCEWithLogitsLoss()
-      # calculate loss
-      loss = criterion(D_out.squeeze(), labels)
-      return loss
+    def weights_init(self,m):
+        classname = m.__class__.__name__
+        if classname.find('Conv') != -1:
+            nn.init.normal_(m.weight.data, 0.0, 0.02)
+        elif classname.find('BatchNorm') != -1:
+            nn.init.normal_(m.weight.data, 1.0, 0.02)
+            nn.init.constant_(m.bias.data, 0)
 
 
-    def train_generator(self, generator, discriminator, train_images, generator_optimizer, input_noise_size, label_smooth, noise_type):
-        '''
-        Define steps to train the generator network
-        Input parameters:
-            generator = Generator Neural Network
-            discriminator = Discriminator Neural Network
-            train_images = Images within current training batch
-            generator_optimizer = current state of optimizer of the generator network
-            input_noise_size = size of the noise to be generated
-            noise_type = Noise type (Default=None)
-        Output:
-            g_loss = loss of generator network
-        Training Steps:
-            1. Obtain size of training real images batch tensor (batch_tensor_dim)
-            2. Generate fake images with same size (fake_images)
-            3. Calculate generator network loss on fake images with flipped lables(g_loss)
-            4. Back propagation (.backward)
-            5. Update optimizer (optimizer.step)
-        '''
-
-        generator=generator.to(self.device)
-        discriminator=discriminator.to(self.device)
-        train_images=train_images.to(self.device)
-
-        #1. Obtain size of training real images batch tensor (batch_tensor_dim)
-        batch_tensor_dim = train_images.size(0)
-
-        #2. Generate fake images with same size (fake_images)
-        z = self.generate_noise(noise_size=input_noise_size, noise_type=noise_type, num_images=batch_tensor_dim)
-        z = z.to(self.device)
-
-        generator_optimizer.zero_grad()
-        fake_images = generator(z)
-        D_fake = discriminator(fake_images)
-
-        #3. Calculate generator network loss on fake images with flipped lables(g_loss)
-        g_loss = self.real_loss(D_fake, smooth=label_smooth) # use real loss to flip labels
-
-        #4. Back propagation (.backward)
-        g_loss.backward()
-
-        #5. Update optimizer (optimizer.step)
-        generator_optimizer.step()
-        return g_loss
+    # def real_loss(self, D_out, smooth=False):
+    #   D_out=D_out.to(self.device)
+    #   batch_size = D_out.size(0)
+    #   # label smoothing
+    #   if smooth: labels = torch.ones(batch_size)*0.9 # smooth, real labels = 0.9
+    #   else: labels = torch.ones(batch_size) # real labels = 1
+    #   # move labels to GPU if available
+    #   labels=labels.to(self.device)
+    #   # binary cross entropy with logits loss
+    #   criterion = nn.BCEWithLogitsLoss()
+    #   # calculate loss
+    #   loss = criterion(D_out.squeeze(), labels)
+    #   return loss
 
 
-    def train_discriminator(self, generator, discriminator, train_images, discriminator_optimizer, input_noise_size, label_smooth, noise_type):
-        '''
-        Define steps to train the discriminator network
-        Input parameters:
-            generator = Generator Neural Network
-            discriminator = Discriminator Neural Network
-            train_images = Images within current training batch
-            discriminator_optimizer = current state of optimizer of the discriminator network
-            input_noise_size = size of the noise to be generated
-            noise_type = Noise type (Default=None)
-        Output:
-            d_loss = discriminator loss total
-            d_real_loss = discriminator loss on real images
-            d_fake_loss = discriminator loss on fake images
-        Training Steps:
-            1. Calculate discriminator network loss on real images (d_real_loss)
-            2. Obtain size of training real images batch tensor (batch_tensor_dim)
-            3. General fake images with same size (fake_images)
-            4. Calculate discriminator network loss on fake images (d_fake_loss)
-            5. Sum both losses into one total (d_loss)
-            6. Back propagation (.backward)
-            7. Update optimizer (optimizer.step)
-        '''
-        #1. Calculate discriminator network loss on real images (d_real_loss)
+    # def generate_noise(self, noise_size, noise_type, num_images=25):
+    #   if noise_type =='normal': generated_noise = np.random.uniform(-1, 1, size=(num_images, noise_size))
+    #   elif noise_type == 'gaussian':generated_noise = np.random.normal(0, 1, size=(num_images, noise_size))
+    #   else:
+    #     # log('Noise type not specified/recognized. Please check.')
+    #     pass
+    #   generated_noise = torch.from_numpy(generated_noise).float()
+    #   generated_noise=generated_noise.to(self.device)
+    #   return generated_noise
 
-        generator=generator.to(self.device)
-        discriminator=discriminator.to(self.device)
-        train_images=train_images.to(self.device)
-
-        discriminator_optimizer.zero_grad()
-
-        D_real = discriminator(train_images)
-        d_real_loss = self.real_loss(D_real, smooth=label_smooth) #Smooth noise applied by default to D_loss on real images
-
-        #2. Obtain size of training real images batch tensor (batch_tensor_dim)
-        batch_tensor_dim = train_images.size(0)
-
-        #3. General fake images with same size (fake_images)
-        z = self.generate_noise(noise_size=input_noise_size, noise_type=noise_type, num_images=batch_tensor_dim)
-        z = z.to(self.device)
-        fake_images = generator(z)
-
-        #4. Calculate discriminator network loss on fake images (d_fake_loss)
-        D_fake = discriminator(fake_images)
-        d_fake_loss = models.fake_loss(D_fake)
-
-        #5. Sum both losses into one total (d_loss)
-        d_loss = d_real_loss + d_fake_loss
-
-        #6. Back propagation (.backward)
-        d_loss.backward()
-
-        #7. Update optimizer (optimizer.step)
-        discriminator_optimizer.step()
-        return d_loss, d_real_loss, d_fake_loss
+    def metrics(self, figure_size=(700,350)):
+      return show_metrics([self],  figure_size=figure_size)
