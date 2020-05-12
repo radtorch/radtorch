@@ -53,87 +53,86 @@ class GAN():
                beta1=0.5,
                beta2=0.999):
 
-    self.data_directory=data_directory
-    self.is_dicom=is_dicom
-    self.table=table
-    self.image_path_column=image_path_column
-    self.image_label_column=image_label_column
-    self.is_path=is_path
-    selfl.num_workers=num_workers
-    self.sampling=sampling
-    self.mode=mode
-    self.wl=wl
+        self.data_directory=data_directory
+        self.is_dicom=is_dicom
+        self.table=table
+        self.image_path_column=image_path_column
+        self.image_label_column=image_label_column
+        self.is_path=is_path
+        selfl.num_workers=num_workers
+        self.sampling=sampling
+        self.mode=mode
+        self.wl=wl
 
-    self.d=discriminator
-    self.g=generator
-    self.g_output_image_size=generator_output_image_size
-    self.g_output_image_channels=generator_output_image_channels
-    self.d_input_image_size=discriminator_input_image_size
-    self.d_input_image_channels=discriminator_input_image_channels
-    self.g_noise_size=generator_noise_size
-    self.g_noise_type=generator_noise_type
-    self.d_num_features=discriminator_num_features
-    self.g_num_features=generator_num_features
+        self.d=discriminator
+        self.g=generator
+        self.g_output_image_size=generator_output_image_size
+        self.g_output_image_channels=generator_output_image_channels
+        self.d_input_image_size=discriminator_input_image_size
+        self.d_input_image_channels=discriminator_input_image_channels
+        self.g_noise_size=generator_noise_size
+        self.g_noise_type=generator_noise_type
+        self.d_num_features=discriminator_num_features
+        self.g_num_features=generator_num_features
 
-    self.g_learning_rate=generator_learning_rate
-    self.d_learning_rate=discriminator_learning_rate
-    self.d_optimizer=discrinimator_optimizer
-    self.g_optimizer=generator_optimizer
-    self.d_optimizer_param=discrinimator_optimizer_param
-    self.g_optimizer_param=generator_optimizer_param
-    self.epochs=epochs
-    self.label_smooth=lable_smooth
-    self.beta1=beta1
-    self.beta2=beta2
+        self.g_learning_rate=generator_learning_rate
+        self.d_learning_rate=discriminator_learning_rate
+        self.d_optimizer=discrinimator_optimizer
+        self.g_optimizer=generator_optimizer
+        self.d_optimizer_param=discrinimator_optimizer_param
+        self.g_optimizer_param=generator_optimizer_param
+        self.epochs=epochs
+        self.label_smooth=lable_smooth
+        self.beta1=beta1
+        self.beta2=beta2
 
-    if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    if isinstance(self.table, str):
-        if self.table!='':
-            self.table=pd.read_csv(self.table)
-    elif isinstance(self.table, pd.DataFrame):
-        self.table=self.table
-    else: self.table=create_data_table(directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
+        if isinstance(self.table, str):
+            if self.table!='':
+                self.table=pd.read_csv(self.table)
+        elif isinstance(self.table, pd.DataFrame):
+            self.table=self.table
+        else: self.table=create_data_table(directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
 
 
-    if self.transformations=='default':
-        if self.is_dicom:
-            self.transformations=transforms.Compose([
+        if self.transformations=='default':
+            if self.is_dicom:
+                self.transformations=transforms.Compose([
+                        transforms.Resize((self.d_input_image_size, self.d_input_image_size)),
+                        transforms.transforms.Grayscale(self.d_input_image_channels),
+                        transforms.ToTensor()])
+            else:
+                self.transformations=transforms.Compose([
                     transforms.Resize((self.d_input_image_size, self.d_input_image_size)),
-                    transforms.transforms.Grayscale(self.d_input_image_channels),
                     transforms.ToTensor()])
-        else:
-            self.transformations=transforms.Compose([
-                transforms.Resize((self.d_input_image_size, self.d_input_image_size)),
-                transforms.ToTensor()])
 
-    # >> need to create dataset/dataloader here
-    self.dataset=RADTorch_Dataset(
-                                    data_directory=self.data_directory,
-                                    table=self.table,
-                                    is_dicom=self.is_dicom,
-                                    mode=self.mode,
-                                    wl=self.wl,
-                                    image_path_column=self.image_path_column,
-                                    image_label_column=self.image_label_column,
-                                    is_path=self.is_path,
-                                    sampling=self.sampling,
-                                    transformations=self.transformations)
+        # >> need to create dataset/dataloader here
+        self.dataset=RADTorch_Dataset(
+                                        data_directory=self.data_directory,
+                                        table=self.table,
+                                        is_dicom=self.is_dicom,
+                                        mode=self.mode,
+                                        wl=self.wl,
+                                        image_path_column=self.image_path_column,
+                                        image_label_column=self.image_label_column,
+                                        is_path=self.is_path,
+                                        sampling=self.sampling,
+                                        transformations=self.transformations)
 
-    self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        self.dataloader=torch.utils.data.DataLoader(dataset=self.dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
-    if self.d='dcgan':
-      self.D=DCGAN_Discriminator(num_input_channels=self.d_input_image_channels,num_discriminator_features=self.d_num_features, input_image_size=self.d_input_image_size,  kernel_size=4)
+        if self.d='dcgan':
+          self.D=DCGAN_Discriminator(num_input_channels=self.d_input_image_channels,num_discriminator_features=self.d_num_features, input_image_size=self.d_input_image_size,  kernel_size=4)
 
-    if self.g='dcgan':
-      self.G=DCGAN_Generator(noise_size=self.noise_size, num_generator_features=self.g_num_features, num_output_channels=self.g_output_image_channels, target_image_size=self.g_output_image_size)
+        if self.g='dcgan':
+          self.G=DCGAN_Generator(noise_size=self.noise_size, num_generator_features=self.g_num_features, num_output_channels=self.g_output_image_channels, target_image_size=self.g_output_image_size)
 
-    self.D = self.D.to(self.device)
-    self.G = self.G.to(self.device)
+        self.D = self.D.to(self.device)
+        self.G = self.G.to(self.device)
 
-    self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, [self.beta1, self.beta2])
-    self.G_optimizer=self.nn_optimizer(type=self.g_optimizer, model=self.G, learning_rate=self.g_learning_rate, [self.beta1, self.beta2])
-
+        self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, [self.beta1, self.beta2])
+        self.G_optimizer=self.nn_optimizer(type=self.g_optimizer, model=self.G, learning_rate=self.g_learning_rate, [self.beta1, self.beta2])
 
 
     def run(self, num_generated_images=16, show_images=True, figure_size=(10,10)):
