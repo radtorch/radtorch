@@ -146,5 +146,6 @@ class DCGAN_Discriminator(nn.Module):
     def forward(self, input):
         output = self.network(input)
         ouptut = output.view(-1, self.num_discriminator_features*self.x*self.kernel_size*self.kernel_size)
+        output=output.to(self.device)
         fc = nn.Linear(self.num_discriminator_features*self.x*self.kernel_size*self.kernel_size, 1)
         output = fc(output)
