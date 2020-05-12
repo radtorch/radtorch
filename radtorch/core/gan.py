@@ -26,7 +26,7 @@ dcgan_generator_options = {
                             32: {'num_units':2, 'start_num_channels':4},
                             64: {'num_units':3, 'start_num_channels':8},
                             128: {'num_units':4, 'start_num_channels':16},
-                            265: {'num_units':5, 'start_num_channels':32},
+                            256: {'num_units':5, 'start_num_channels':32},
                             512: {'num_units':6, 'start_num_channels':64},
                             1024: {'num_units':7, 'start_num_channels':128},
                             }
@@ -36,7 +36,7 @@ dcgan_discriminator_options = {
                             32: {'num_units':2, 'end_num_channels':4},
                             64: {'num_units':3, 'end_num_channels':8},
                             128: {'num_units':4, 'end_num_channels':16},
-                            265: {'num_units':5, 'end_num_channels':32},
+                            256: {'num_units':5, 'end_num_channels':32},
                             512: {'num_units':6, 'end_num_channels':64},
                             1024: {'num_units':7, 'end_num_channels':128},
                             }
@@ -137,7 +137,7 @@ class DCGAN_Discriminator(nn.Module):
         layers=[self.conv_unit(input=self.num_input_channels, output=self.num_discriminator_features, kernel_size=self.kernel_size, stride=2, padding=1, bias=False, batch_norm=False, relu=True)]
         x=1
         for i in range (self.num_units):
-            layers.append(self.conv_unit(input=self.num_discriminator_features*x, output=self.num_discriminator_features*x*2, kernel_size=self.kernel_size, stride=2, padding=1, bias=False, batch_norm=True, relu=True))
+            layers.append(self.conv_unit(input=self.num_discriminator_features*x, output=self.num_discriminator_features*(x*2), kernel_size=self.kernel_size, stride=2, padding=1, bias=False, batch_norm=True, relu=True))
             x=x*2
         return layers
 

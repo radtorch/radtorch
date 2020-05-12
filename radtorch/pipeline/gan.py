@@ -16,7 +16,6 @@ from ..utils import *
 
 
 
-
 class GAN():
 
     def __init__(self,
@@ -51,7 +50,8 @@ class GAN():
                sampling=1.0,
                transformations='default',
                beta1=0.5,
-               beta2=0.999):
+               beta2=0.999,
+               device='auto'):
 
         self.data_directory=data_directory
         self.is_dicom=is_dicom
@@ -59,10 +59,13 @@ class GAN():
         self.image_path_column=image_path_column
         self.image_label_column=image_label_column
         self.is_path=is_path
-        selfl.num_workers=num_workers
+        self.num_workers=num_workers
         self.sampling=sampling
         self.mode=mode
         self.wl=wl
+        self.device=device
+        self.transformations=transformations
+        self.batch_size=batch_size
 
         self.d=discriminator
         self.g=generator
@@ -82,7 +85,7 @@ class GAN():
         self.d_optimizer_param=discrinimator_optimizer_param
         self.g_optimizer_param=generator_optimizer_param
         self.epochs=epochs
-        self.label_smooth=lable_smooth
+        self.label_smooth=label_smooth
         self.beta1=beta1
         self.beta2=beta2
 
@@ -126,7 +129,7 @@ class GAN():
           self.D=DCGAN_Discriminator(num_input_channels=self.d_input_image_channels,num_discriminator_features=self.d_num_features, input_image_size=self.d_input_image_size,  kernel_size=4)
 
         if self.g=='dcgan':
-          self.G=DCGAN_Generator(noise_size=self.noise_size, num_generator_features=self.g_num_features, num_output_channels=self.g_output_image_channels, target_image_size=self.g_output_image_size)
+          self.G=DCGAN_Generator(noise_size=self.g_noise_size, num_generator_features=self.g_num_features, num_output_channels=self.g_output_image_channels, target_image_size=self.g_output_image_size)
 
         self.D = self.D.to(self.device)
         self.G = self.G.to(self.device)
@@ -141,7 +144,7 @@ class GAN():
 
         self.generated_samples=[]
 
-        for epochs in tqdm(range(self.epochs))):
+        for epochs in tqdm(range(self.epochs)):
 
             epoch_start=time.time()
 
@@ -162,7 +165,7 @@ class GAN():
                                train_images=images,
                                generator_optimizer=self.G_optimizer,
                                input_noise_size=self.g_noise_size,
-                               label_smooth=self.label_smooth
+                               label_smooth=self.label_smooth,
                                noise_type=self.g_noise_type)
 
                 training_metrics.append((d_loss.item(),  g_loss.item(), d_real_loss.item(), d_fake_loss.item()))
@@ -193,6 +196,7 @@ class GAN():
         # log('Noise type not specified/recognized. Please check.')
         pass
       generated_noise = torch.from_numpy(generated_noise).float()
+      generated_noise=generated_noise.to(self.device)
       return generated_noise
 
 
@@ -214,22 +218,23 @@ class GAN():
           optimizer=torch.optim.RMSprop(params=model.parameters(), lr=learning_rate, **kw)
       elif type=='SGD':
           optimizer=torch.optim.SGD(params=model.parameters(), lr=learning_rate, **kw)
-      log('Optimizer selected is '+type)
+      # log('Optimizer selected is '+type)
       return optimizer
 
 
     def real_loss(self, D_out, smooth=False):
-        batch_size = D_out.size(0)
-        # label smoothing
-        if smooth: labels = torch.ones(batch_size)*0.9 # smooth, real labels = 0.9
-        else: labels = torch.ones(batch_size) # real labels = 1
-        # move labels to GPU if available
-        labels=labels.to(self.device)
-        # binary cross entropy with logits loss
-        criterion = nn.BCEWithLogitsLoss()
-        # calculate loss
-        loss = criterion(D_out.squeeze(), labels)
-        return loss
+      D_out=D_out.to(self.device)
+      batch_size = D_out.size(0)
+      # label smoothing
+      if smooth: labels = torch.ones(batch_size)*0.9 # smooth, real labels = 0.9
+      else: labels = torch.ones(batch_size) # real labels = 1
+      # move labels to GPU if available
+      labels=labels.to(self.device)
+      # binary cross entropy with logits loss
+      criterion = nn.BCEWithLogitsLoss()
+      # calculate loss
+      loss = criterion(D_out.squeeze(), labels)
+      return loss
 
 
     def train_generator(self, generator, discriminator, train_images, generator_optimizer, input_noise_size, label_smooth, noise_type):
@@ -252,12 +257,17 @@ class GAN():
             5. Update optimizer (optimizer.step)
         '''
 
+        generator=generator.to(self.device)
+        discriminator=discriminator.to(self.device)
+        train_images=train_images.to(self.device)
+
         #1. Obtain size of training real images batch tensor (batch_tensor_dim)
         batch_tensor_dim = train_images.size(0)
 
         #2. Generate fake images with same size (fake_images)
         z = self.generate_noise(noise_size=input_noise_size, noise_type=noise_type, num_images=batch_tensor_dim)
         z = z.to(self.device)
+
         generator_optimizer.zero_grad()
         fake_images = generator(z)
         D_fake = discriminator(fake_images)
@@ -297,7 +307,13 @@ class GAN():
             7. Update optimizer (optimizer.step)
         '''
         #1. Calculate discriminator network loss on real images (d_real_loss)
+
+        generator=generator.to(self.device)
+        discriminator=discriminator.to(self.device)
+        train_images=train_images.to(self.device)
+
         discriminator_optimizer.zero_grad()
+
         D_real = discriminator(train_images)
         d_real_loss = self.real_loss(D_real, smooth=label_smooth) #Smooth noise applied by default to D_loss on real images
 
