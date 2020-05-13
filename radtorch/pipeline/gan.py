@@ -256,7 +256,6 @@ class GAN():
         # self.fixed_noise = torch.randn(self.batch_size, self.g_noise_size, 1, 1, device=self.device)
         self.fixed_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=self.batch_size)
 
-
     def run(self, verbose='batch', show_images=True, figure_size=(10,10)):
         if self.label_smooth:
             real_label=0.9
@@ -365,7 +364,6 @@ class GAN():
         self.trained_D = self.D
         self.train_metrics=pd.DataFrame(data=self.train_metrics, columns = ['D_loss', 'd_loss_real_images', 'd_loss_fake_images', 'G_loss'])
 
-
     def nn_optimizer(self, type, model, learning_rate, **kw):
       if type not in supported_nn_optimizers:
           log('Error! Optimizer not supported yet. Please check radtorch.settings.supported_nn_optimizers')
@@ -386,7 +384,6 @@ class GAN():
           optimizer=torch.optim.SGD(params=model.parameters(), lr=learning_rate, **kw)
       return optimizer
 
-
     def weights_init(self,m):
         classname = m.__class__.__name__
         if classname.find('Conv') != -1:
@@ -394,7 +391,6 @@ class GAN():
         elif classname.find('BatchNorm') != -1:
             nn.init.normal_(m.weight.data, 1.0, 0.02)
             nn.init.constant_(m.bias.data, 0)
-
 
     def generate_noise(self, noise_size, noise_type, num_images=25):
         if noise_type =='normal': generated_noise = np.random.uniform(-1, 1, size=(num_images, noise_size))
@@ -408,16 +404,13 @@ class GAN():
         generated_noise=generated_noise.unsqueeze(-1)
         return generated_noise
 
-
     def metrics(self, figure_size=(700,350)): #<<<<<<<<<<<<<<<<<<<< NEEDS FIX
       return show_metrics([self],  figure_size=figure_size)
-
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns=['Property', 'Value']
         return info
 
-
-    def sample(figure_size=(10,10), show_labels=True):
+    def sample(self, figure_size=(10,10), show_labels=True):
         show_dataloader_sample(self.dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name = False,)
