@@ -233,7 +233,7 @@ class GAN():
                 epoch_d_loss_fake=[errD_fake.item()]
 
                 batch_end=time.time()
-                if verbose=='batch'
+                if verbose=='batch':
                     log("[Epoch:{:03d}/{:03d}, Batch{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, batch_number, num_batches, errD.item(),errG.item(), errD_real.item(), errD_fake.item(), batch_end-batch_start))
 
             epoch_end=time.time()
