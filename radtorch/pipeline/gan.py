@@ -110,12 +110,17 @@ class GAN():
                         transforms.transforms.Grayscale(self.d_input_image_channels),
                         transforms.ToTensor(),
                         transforms.Normalize(mean=self.normalize[0], std=self.normalize[1])])
+            elif d_input_image_channels != 3:
+                self.transformations=transforms.Compose([
+                    transforms.Resize((self.d_input_image_size, self.d_input_image_size)),
+                    transforms.transforms.Grayscale(self.d_input_image_channels),
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean=self.normalize[0], std=self.normalize[1])])
             else:
                 self.transformations=transforms.Compose([
                     transforms.Resize((self.d_input_image_size, self.d_input_image_size)),
                     transforms.ToTensor(),
                     transforms.Normalize(mean=self.normalize[0], std=self.normalize[1])])
-
 
         self.dataset=RADTorch_Dataset(
                                         data_directory=self.data_directory,
