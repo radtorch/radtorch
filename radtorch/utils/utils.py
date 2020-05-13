@@ -306,7 +306,10 @@ def plot_images(images, titles=None, figure_size=(10,10)):
     for n, (image, title) in enumerate(zip(images, titles)):
         a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
         if image.ndim == 2:
+
             plt.gray()
+        if image.shape[2]==1:
+            image=np.squeeze(image, axis=2)
         image_max = np.amax(image)
         image_min = np.amin(image)
         if image_max >255 or image_min <0 :
