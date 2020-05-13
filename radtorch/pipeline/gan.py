@@ -260,7 +260,8 @@ class GAN():
     def run(self, verbose='batch', show_images=True, figure_size=(10,10)):
         set_random_seed(100)
         if self.label_smooth:
-            real_label=random.uniform(0.9, 1.1)
+            real_label=0.9
+            # real_label=random.uniform(0.9, 1.1)
             # fake_label=random.uniform(0.0, 0.3)
         else:
             real_label=1.0
