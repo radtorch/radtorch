@@ -186,7 +186,7 @@ class GAN_Generator(nn.Module):
     def forward(self, input):
         output = self.network(input)
         output = output.view(-1, self.output_num_channels ,self.target_image_size, self.target_image_size)
-        return self.network(input)
+        return output
 
 
 class GAN_Discriminator(nn.Module):
@@ -222,6 +222,6 @@ class GAN_Discriminator(nn.Module):
         return layers
 
     def forward(self, input):
-        output = output.view(self.intput_num_channels ,self.input_image_size, self.input_image_size, -1)
-        output = self.network(input)
-        return self.network(input)
+        output = input.view(self.intput_num_channels ,self.input_image_size, self.input_image_size, -1)
+        output = self.network(output)
+        return output
