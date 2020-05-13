@@ -238,7 +238,7 @@ class GAN():
 
             epoch_end=time.time()
             if verbose=='epoch':
-                log("[Epoch:{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, mean(epoch_errD), mean(epoch_errG), mean(epoch_d_loss_real), mean(epoch_d_loss_fake) epoch_end-epoch_start))
+                log("[Epoch:{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, mean(epoch_errD), mean(epoch_errG), mean(epoch_d_loss_real), mean(epoch_d_loss_fake), epoch_end-epoch_start))
             self.G.eval()
             # generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=num_generated_images)
             sample = self.G(self.fixed_noise)
