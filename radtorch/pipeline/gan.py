@@ -408,3 +408,9 @@ class GAN():
 
     def metrics(self, figure_size=(700,350)):
       return show_metrics([self],  figure_size=figure_size)
+
+
+    def info(self):
+        info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
+        info.columns=['Property', 'Value']
+        return info
