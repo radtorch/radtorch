@@ -409,7 +409,7 @@ class GAN():
         return generated_noise
 
 
-    def metrics(self, figure_size=(700,350)):
+    def metrics(self, figure_size=(700,350)): #<<<<<<<<<<<<<<<<<<<< NEEDS FIX
       return show_metrics([self],  figure_size=figure_size)
 
 
@@ -417,3 +417,7 @@ class GAN():
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
         info.columns=['Property', 'Value']
         return info
+
+
+    def sample(figure_size=(10,10), show_labels=True):
+        show_dataloader_sample(self.dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name = False,)
