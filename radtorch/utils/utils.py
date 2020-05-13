@@ -307,8 +307,11 @@ def plot_images(images, titles=None, figure_size=(10,10)):
         a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
         if image.ndim == 2:
             plt.gray()
-        # plt.imshow(image)
-        plt.imshow(image.astype(np.uint8))
+        image_max = np.amax(image)
+        image_min = np.amin(image)
+        if image_max >255 or image_min <0 :
+          image=np.clip(image, 0, 255)
+        plt.imshow(image)
         plt.axis('off')
         a.set_title(title)
     plt.axis('off')
