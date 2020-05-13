@@ -141,8 +141,8 @@ class GAN():
                epochs=10,
                discrinimator_optimizer='Adam',
                generator_optimizer='Adam',
-               discrinimator_optimizer_param={},
-               generator_optimizer_param={},
+               discrinimator_optimizer_param={'betas':(0.5,0.999)},
+               generator_optimizer_param={'betas':(0.5,0.999)},
                generator_learning_rate=0.0001,
                discriminator_learning_rate=0.0001,
                generator_output_image_channels=3,
@@ -209,12 +209,12 @@ class GAN():
                         transforms.transforms.Grayscale(self.d_input_image_channels),
                         transforms.ToTensor(),
                         transforms.Normalize(mean=self.normalize[0], std=self.normalize[1])])
-            elif self.d_input_image_channels != 3:
-                self.transformations=transforms.Compose([
-                    transforms.Resize((self.d_input_image_size, self.d_input_image_size)),
-                    transforms.transforms.Grayscale(self.d_input_image_channels),
-                    transforms.ToTensor(),
-                    transforms.Normalize(mean=self.normalize[0], std=self.normalize[1])])
+            # elif self.d_input_image_channels != 3:
+            #     self.transformations=transforms.Compose([
+            #         transforms.Resize((self.d_input_image_size, self.d_input_image_size)),
+            #         transforms.transforms.Grayscale(self.d_input_image_channels),
+            #         transforms.ToTensor(),
+            #         transforms.Normalize(mean=self.normalize[0], std=self.normalize[1])])
             else:
                 self.transformations=transforms.Compose([
                     transforms.Resize((self.d_input_image_size, self.d_input_image_size)),
