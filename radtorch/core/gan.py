@@ -176,10 +176,10 @@ class GAN_Generator(nn.Module):
     def network_layers(self):
         output_size=self.target_image_size*self.target_image_size*self.output_num_channels
         layers=[]
-        layers.append(decoder_unit(input=self.noise_size, output=256, relu=True, batch_norm=True))
-        layers.append(decoder_unit(input=256, output=512, relu=True, batch_norm=True))
-        layers.append(decoder_unit(input=512, output=1024, relu=True, batch_norm=True))
-        layers.append(decoder_unit(input=1024, output=output_size, relu=False, batch_norm=False))
+        layers.append(self.decoder_unit(input=self.noise_size, output=256, relu=True, batch_norm=True))
+        layers.append(self.decoder_unit(input=256, output=512, relu=True, batch_norm=True))
+        layers.append(self.decoder_unit(input=512, output=1024, relu=True, batch_norm=True))
+        layers.append(self.decoder_unit(input=1024, output=output_size, relu=False, batch_norm=False))
         layers.append(nn.Tanh())
         return layers
 
@@ -214,10 +214,10 @@ class GAN_Discriminator(nn.Module):
     def network_layers(self):
         input_size=self.intput_num_channels*self.input_image_size*self.input_image_size
         layers=[]
-        layers.append(encoder_unit(input=input_size, output=1024, relu=True, batch_norm=True))
-        layers.append(encoder_unit(input=1024, output=512, relu=True, batch_norm=True))
-        layers.append(encoder_unit(input=512, output=256, relu=True, batch_norm=True))
-        layers.append(encoder_unit(input=256, output=1, relu=False, batch_norm=False))
+        layers.append(self.encoder_unit(input=input_size, output=1024, relu=True, batch_norm=True))
+        layers.append(self.encoder_unit(input=1024, output=512, relu=True, batch_norm=True))
+        layers.append(self.encoder_unit(input=512, output=256, relu=True, batch_norm=True))
+        layers.append(self.encoder_unit(input=256, output=1, relu=False, batch_norm=False))
         layers.append(nn.Sigmoid())
         return layers
 
