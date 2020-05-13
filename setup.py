@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
       name='radtorch',
-      version='1.0.1',
+      version='1.1.1',
       version_date='5.5.2020',
       description='RADTorch, The Radiology Machine Learning Framework',
       url='https://radtorch.github.io/radtorch/',
@@ -16,7 +16,6 @@ setup(
 
       zip_safe=False,
       classifiers=[
-      "Development Status :: 4 - Beta",
       "License :: OSI Approved :: MIT License",
       "Natural Language :: English",
       "Programming Language :: Python :: 3 :: Only",
