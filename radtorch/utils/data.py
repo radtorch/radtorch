@@ -16,6 +16,7 @@
 from ..settings import *
 from .dicom import  *
 from .utils import *
+from .general import *
 
 def load_predefined_datatables(*args, **kwargs):
 
