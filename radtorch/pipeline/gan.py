@@ -68,15 +68,15 @@ class GAN():
 
     - generator_noise_type (string, optional): shape of noise to sample from. Options={'normal', 'gaussian'}. default='noramal'. (https://github.com/soumith/ganhacks#3-use-a-spherical-z)
 
-    - generator_noise_size (integer, required): size of the noise sample to be generated.
+    - generator_noise_size (integer, required): size of the noise sample to be generated. default=100
 
-    - generator_num_features (integer, required): number of features/convolutions for generator network.
+    - generator_num_features (integer, required): number of features/convolutions for generator network. default=64
 
-    - generator_output_image_size (integer, required): generator output image size.
+    - generator_output_image_size (integer, required): generator output image size.default=128
 
-    - discriminator_num_features (integer, required): number of features/convolutions for discriminator network.
+    - discriminator_num_features (integer, required): number of features/convolutions for discriminator network.default=64
 
-    - discriminator_input_image_size (integer, required): discriminatorinput image size.
+    - discriminator_input_image_size (integer, required): discriminatorinput image size.default=128
 
     - generator_optimizer (string, required): generator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
 
@@ -119,11 +119,11 @@ class GAN():
 
     def __init__(self,
                data_directory,
-               generator_noise_size,
-               generator_num_features,
-               generator_output_image_size,
-               discriminator_num_features,
-               discriminator_input_image_size,
+               generator_noise_size=100,
+               generator_num_features=64,
+               generator_output_image_size=128,
+               discriminator_num_features=64,
+               discriminator_input_image_size=128,
                generator_noise_type='normal',
                table=None,
                image_path_column='IMAGE_PATH',
