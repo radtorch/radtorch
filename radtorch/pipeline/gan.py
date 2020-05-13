@@ -18,6 +18,105 @@ from ..utils import *
 
 class GAN():
 
+    """
+
+    Description
+    -----------
+    Generative Advarsarial Networks Pipeline.
+
+
+    Parameters
+    ----------
+
+    - data_directory (string, required): path to target data directory/folder.
+
+    - is_dicom (bollean, optional): True if images are DICOM. default=False.
+
+    - table (string or pandas dataframe, optional): path to label table csv or name of pandas data table. default=None.
+
+    - image_path_column (string, optional): name of column that has image path/image file name. default='IMAGE_PATH'.
+
+    - image_label_column (string, optional): name of column that has image label. default='IMAGE_LABEL'.
+
+    - is_path (boolean, optional): True if file_path column in table is file path. If False, this assumes that the column contains file names only and will append the data_directory to all files. default=True.
+
+    - mode (string, optional): mode of handling pixel values from DICOM to numpy array. Option={'RAW': raw pixel values, 'HU': converts pixel values to HU using slope and intercept, 'WIN':Applies a certain window/level to HU converted DICOM image, 'MWIN': converts DICOM image to 3 channel HU numpy array with each channel adjusted to certain window/level. default='RAW'.
+
+    - wl (tuple or list of tuples, optional): value of Window/Levelto be used. If mode is set to 'WIN' then wl takes the format (level, window). If mode is set to 'MWIN' then wl takes the format [(level1, window1), (level2, window2), (level3, window3)]. default=None.
+
+    - batch_size (integer, optional): Batch size for dataloader. defult=16.
+
+    - num_workers (integer, optional): Number of CPU workers for dataloader. default=0.
+
+    - sampling (float, optional): fraction of the whole dataset to be used. default=1.0.
+
+    - transformations (list, optional): list of pytorch transformations to be applied to all datasets. By default, the images are resized, channels added up to 3 and greyscaled. default='default'.
+
+    - normalize (bolean/False or Tuple, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=((0,0,0), (1,1,1)).
+
+    - label_smooth (boolean, optioanl): by default, labels for real images as assigned to 1. If label smoothing is set to True, lables of real images will be assigned to 0.9. default=False. (Source: https://github.com/soumith/ganhacks#6-use-soft-and-noisy-labels)
+
+    - epochs (integer, required): training epochs. default=10.
+
+    - generator (string, required): type of generator network. Options = {'dcgan', 'vanilla'}. default='dcgan'
+
+    - discriminator (string, required): type of discriminator network. Options = {'dcgan', 'vanilla'}. default='dcgan'
+
+    - generator_output_image_channels (integer, required): number of output channels for generator image output. default=3
+
+    - discriminator_input_image_channels (integer, required): number of output channels for discriminator image input. default=3
+
+    - generator_noise_type (string, optional): shape of noise to sample from. Options={'normal', 'gaussian'}. default='noramal'. (https://github.com/soumith/ganhacks#3-use-a-spherical-z)
+
+    - generator_noise_size (integer, required): size of the noise sample to be generated.
+
+    - generator_num_features (integer, required): number of features/convolutions for generator network.
+
+    - generator_output_image_size (integer, required): generator output image size.
+
+    - discriminator_num_features (integer, required): number of features/convolutions for discriminator network.
+
+    - discriminator_input_image_size (integer, required): discriminatorinput image size.
+
+    - generator_optimizer (string, required): generator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
+
+    - generator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation.
+
+    - discrinimator_optimizer (string, required): discrinimator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
+
+    - discrinimator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation.
+
+    - beta1 (float, optioal): beta1 hyperparameters of Adam optimizer. default=0.5
+
+    - beta2 (float, optioal): beta2 hyperparameters of Adam optimizer. default=0.999
+
+    - generator_learning_rate (float, required): generator network learning rate. default=0.0001.
+
+    - discriminator_learning_rate (float, required): discrinimator network learning rate. default=0.0001.
+
+    - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
+
+
+
+    Methods
+    -------
+
+    .run(self, verbose='batch', show_images=True, figure_size=(10,10))
+
+        - Runs the GAN training.
+
+        - Parameters:
+
+            - verbose (string, required): amount of data output. Options {'batch': display info after each batch, 'epoch': display info after each epoch}.default='batch'
+
+            - show_images (boolean, optional): True to show sample of generatot generated images after each epoch.
+
+            - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(10,10)
+
+
+
+    """
+
     def __init__(self,
                data_directory,
                generator_noise_size,
@@ -300,6 +399,7 @@ class GAN():
         generated_noise=generated_noise.unsqueeze(-1)
         generated_noise=generated_noise.unsqueeze(-1)
         return generated_noise
+
 
     def metrics(self, figure_size=(700,350)):
       return show_metrics([self],  figure_size=figure_size)
