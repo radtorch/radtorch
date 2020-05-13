@@ -192,8 +192,8 @@ class GAN_Generator(nn.Module):
 class GAN_Discriminator(nn.Module):
     def __init__(self, input_image_size, intput_num_channels, device='auto'):
         super(GAN_Discriminator, self).__init__()
-        self.input_image_size=target_image_size
-        self.intput_num_channels=output_num_channels
+        self.input_image_size=input_image_size
+        self.intput_num_channels=intput_num_channels
         self.device=device
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
