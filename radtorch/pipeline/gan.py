@@ -54,7 +54,7 @@ class GAN():
 
     - normalize (bolean/False or Tuple, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=((0.5,0.5,0.5),(0.5,0.5,0.5)).
 
-    - label_smooth (boolean, optioanl): by default, labels for real images as assigned to 1. If label smoothing is set to True, lables of real images will be assigned to 0.9. default=False. (Source: https://github.com/soumith/ganhacks#6-use-soft-and-noisy-labels)
+    - label_smooth (boolean, optioanl): by default, labels for real images as assigned to 1. If label smoothing is set to True, lables of real images will be assigned to 0.9. default=True. (Source: https://github.com/soumith/ganhacks#6-use-soft-and-noisy-labels)
 
     - epochs (integer, required): training epochs. default=10.
 
@@ -135,7 +135,7 @@ class GAN():
                batch_size=16,
                normalize=((0.5,0.5,0.5),(0.5,0.5,0.5)),
                num_workers=0,
-               label_smooth=False,
+               label_smooth=True,
                discriminator='dcgan',
                generator='dcgan',
                epochs=10,
@@ -259,9 +259,12 @@ class GAN():
 
     def run(self, verbose='batch', show_images=True, figure_size=(10,10)):
         set_random_seed(100)
-        if self.label_smooth: real_label=0.9
-        else: real_label=1
-        fake_label=0
+        if self.label_smooth:
+            real_label=random.uniform(0.7, 1.2)
+            fake_label=random.uniform(0.0, 0.3)
+        else:
+            real_label=1.0
+            fake_label=0.0
 
         self.D = self.D.to(self.device)
         self.G = self.G.to(self.device)
