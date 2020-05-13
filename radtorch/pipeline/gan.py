@@ -52,7 +52,7 @@ class GAN():
 
     - transformations (list, optional): list of pytorch transformations to be applied to all datasets. By default, the images are resized, channels added up to 3 and greyscaled. default='default'.
 
-    - normalize (bolean/False or Tuple, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=((0,0,0), (1,1,1)).
+    - normalize (bolean/False or Tuple, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=((0.5,0.5,0.5),(0.5,0.5,0.5)).
 
     - label_smooth (boolean, optioanl): by default, labels for real images as assigned to 1. If label smoothing is set to True, lables of real images will be assigned to 0.9. default=False. (Source: https://github.com/soumith/ganhacks#6-use-soft-and-noisy-labels)
 
@@ -66,7 +66,7 @@ class GAN():
 
     - discriminator_input_image_channels (integer, required): number of output channels for discriminator image input. default=3
 
-    - generator_noise_type (string, optional): shape of noise to sample from. Options={'normal', 'gaussian'}. default='noramal'. (https://github.com/soumith/ganhacks#3-use-a-spherical-z)
+    - generator_noise_type (string, optional): shape of noise to sample from. Options={'normal', 'gaussian'}. default='normal'. (https://github.com/soumith/ganhacks#3-use-a-spherical-z)
 
     - generator_noise_size (integer, required): size of the noise sample to be generated. default=100
 
@@ -82,7 +82,7 @@ class GAN():
 
     - generator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation.
 
-    - discrinimator_optimizer (string, required): discrinimator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
+    - discrinimator_optimizer (string, required): discrinimator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='SGD'.
 
     - discrinimator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation.
 
@@ -133,13 +133,13 @@ class GAN():
                mode='RAW',
                wl=None,
                batch_size=16,
-               normalize=((0,0,0),(1,1,1)),
+               normalize=((0.5,0.5,0.5),(0.5,0.5,0.5)),
                num_workers=0,
                label_smooth=False,
                discriminator='dcgan',
                generator='dcgan',
                epochs=10,
-               discrinimator_optimizer='Adam',
+               discrinimator_optimizer='SGD',
                generator_optimizer='Adam',
                discrinimator_optimizer_param={},
                generator_optimizer_param={},
