@@ -82,7 +82,7 @@ class GAN():
 
     - generator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation.
 
-    - discrinimator_optimizer (string, required): discrinimator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='SGD'.
+    - discrinimator_optimizer (string, required): discrinimator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
 
     - discrinimator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation.
 
@@ -139,7 +139,7 @@ class GAN():
                discriminator='dcgan',
                generator='dcgan',
                epochs=10,
-               discrinimator_optimizer='SGD',
+               discrinimator_optimizer='Adam',
                generator_optimizer='Adam',
                discrinimator_optimizer_param={},
                generator_optimizer_param={},
@@ -258,7 +258,7 @@ class GAN():
 
 
     def run(self, verbose='batch', show_images=True, figure_size=(10,10)):
-
+        set_random_seed(100)
         if self.label_smooth: real_label=0.9
         else: real_label=1
         fake_label=0
