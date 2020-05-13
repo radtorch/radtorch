@@ -144,11 +144,14 @@ class GAN():
         self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, **{'betas':(self.beta1, self.beta2)})
         self.G_optimizer=self.nn_optimizer(type=self.g_optimizer, model=self.G, learning_rate=self.g_learning_rate, **{'betas':(self.beta1, self.beta2)})
 
-        self.fixed_noise = torch.randn(self.batch_size, self.g_noise_size, 1, 1, device=self.device)
+        # self.fixed_noise = torch.randn(self.batch_size, self.g_noise_size, 1, 1, device=self.device)
+        self.fixed_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=self.batch_size)
 
-    def run(self, num_generated_images=16, show_images=True, figure_size=(10,10)):
 
-        real_label=1
+    def run(self, verbose='batch', show_images=True, figure_size=(10,10)):
+
+        if self.label_smooth: real_label=0.9
+        else: real_label=1
         fake_label=0
 
         self.D = self.D.to(self.device)
@@ -161,6 +164,11 @@ class GAN():
         num_batches=len(self.dataloader)
 
         for epoch in tqdm(range(self.epochs)):
+
+            epoch_errD=[]
+            epoch_errG=[]
+            epoch_d_loss_real=[]
+            epoch_d_loss_fake=[]
 
             epoch_start=time.time()
 
@@ -186,8 +194,8 @@ class GAN():
 
                 ## Train with all-fake batch
                 # Generate batch of latent vectors
-                              # generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=b_size)
-                generated_noise=torch.randn((b_size,self.g_noise_size, 1, 1), device=self.device)
+                generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=b_size)
+                # generated_noise=torch.randn((b_size,self.g_noise_size, 1, 1), device=self.device)
                 # Generate fake image batch with G
                 fake = self.G(generated_noise)
                 label.fill_(fake_label)
@@ -219,12 +227,18 @@ class GAN():
                 self.G_optimizer.step()
 
                 self.train_metrics.append([errD.item(),  errG.item(), errD_real.item(), errD_fake.item()])
+                epoch_errD=[errD.item()]
+                epoch_errG=[errG.item()]
+                epoch_d_loss_real=[errD_real.item()]
+                epoch_d_loss_fake=[errD_fake.item()]
 
                 batch_end=time.time()
+                if verbose=='batch'
+                    log("[Epoch:{:03d}/{:03d}, Batch{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, batch_number, num_batches, errD.item(),errG.item(), errD_real.item(), errD_fake.item(), batch_end-batch_start))
 
-                log("[Epoch:{:03d}/{:03d}, Batch{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, batch_number, num_batches, errD.item(),errG.item(), errD_real.item(), errD_fake.item(), batch_end-batch_start))
-
-
+            epoch_end=time.time()
+            if verbose=='epoch':
+                log("[Epoch:{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, mean(epoch_errD), mean(epoch_errG), mean(epoch_d_loss_real), mean(epoch_d_loss_fake) epoch_end-epoch_start))
             self.G.eval()
             # generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=num_generated_images)
             sample = self.G(self.fixed_noise)
@@ -258,7 +272,6 @@ class GAN():
           optimizer=torch.optim.RMSprop(params=model.parameters(), lr=learning_rate, **kw)
       elif type=='SGD':
           optimizer=torch.optim.SGD(params=model.parameters(), lr=learning_rate, **kw)
-      # log('Optimizer selected is '+type)
       return optimizer
 
 
@@ -271,30 +284,17 @@ class GAN():
             nn.init.constant_(m.bias.data, 0)
 
 
-    # def real_loss(self, D_out, smooth=False):
-    #   D_out=D_out.to(self.device)
-    #   batch_size = D_out.size(0)
-    #   # label smoothing
-    #   if smooth: labels = torch.ones(batch_size)*0.9 # smooth, real labels = 0.9
-    #   else: labels = torch.ones(batch_size) # real labels = 1
-    #   # move labels to GPU if available
-    #   labels=labels.to(self.device)
-    #   # binary cross entropy with logits loss
-    #   criterion = nn.BCEWithLogitsLoss()
-    #   # calculate loss
-    #   loss = criterion(D_out.squeeze(), labels)
-    #   return loss
-
-
-    # def generate_noise(self, noise_size, noise_type, num_images=25):
-    #   if noise_type =='normal': generated_noise = np.random.uniform(-1, 1, size=(num_images, noise_size))
-    #   elif noise_type == 'gaussian':generated_noise = np.random.normal(0, 1, size=(num_images, noise_size))
-    #   else:
-    #     # log('Noise type not specified/recognized. Please check.')
-    #     pass
-    #   generated_noise = torch.from_numpy(generated_noise).float()
-    #   generated_noise=generated_noise.to(self.device)
-    #   return generated_noise
+    def generate_noise(self, noise_size, noise_type, num_images=25):
+        if noise_type =='normal': generated_noise = np.random.uniform(-1, 1, size=(num_images, noise_size))
+        elif noise_type == 'gaussian':generated_noise = np.random.normal(0, 1, size=(num_images, noise_size))
+        else:
+            log('Noise type not specified/recognized. Please check.')
+            pass
+        generated_noise=torch.from_numpy(generated_noise).float()
+        generated_noise=generated_noise.to(self.device)
+        generated_noise=generated_noise.unsqueeze(-1)
+        generated_noise=generated_noise.unsqueeze(-1)
+        return generated_noise
 
     def metrics(self, figure_size=(700,350)):
       return show_metrics([self],  figure_size=figure_size)
