@@ -164,7 +164,7 @@ class GAN_Generator(nn.Module):
     def decoder_unit(self,input, output, batch_norm, relu):
         layer1=nn.Linear(input, output)
         layer2=nn.BatchNorm1d(output)
-        layer3=nn.LeakyReLU(0.2, inplace=True))
+        layer3=nn.LeakyReLU(0.2, inplace=True)
 
         if batch_norm:
             if relu: return nn.Sequential(*[layer1, layer2, layer3])
@@ -202,7 +202,7 @@ class GAN_Discriminator(nn.Module):
     def encoder_unit(self,input, output, batch_norm, relu):
         layer1=nn.Linear(input, output)
         layer2=nn.BatchNorm1d(output)
-        layer3=nn.LeakyReLU(0.2, inplace=True))
+        layer3=nn.LeakyReLU(0.2, inplace=True)
 
         if batch_norm:
             if relu: return nn.Sequential(*[layer1, layer2, layer3])
