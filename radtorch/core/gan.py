@@ -222,6 +222,6 @@ class GAN_Discriminator(nn.Module):
         return layers
 
     def forward(self, input):
-        output = input.view(self.intput_num_channels ,self.input_image_size, self.input_image_size, -1)
+        output = input.view(self.intput_num_channels ,self.input_image_size, -1)
         output = self.network(output)
         return output
