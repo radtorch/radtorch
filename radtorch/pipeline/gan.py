@@ -250,8 +250,8 @@ class GAN():
         self.D = self.D.to(self.device)
         self.G = self.G.to(self.device)
 
-        self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, **{self.discrinimator_optimizer_param})
-        self.G_optimizer=self.nn_optimizer(type=self.g_optimizer, model=self.G, learning_rate=self.g_learning_rate, **{self.generator_optimizer_param})
+        self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, **{self.d_optimizer_param})
+        self.G_optimizer=self.nn_optimizer(type=self.g_optimizer, model=self.G, learning_rate=self.g_learning_rate, **{self.g_optimizer_param})
 
         # self.fixed_noise = torch.randn(self.batch_size, self.g_noise_size, 1, 1, device=self.device)
         self.fixed_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=self.batch_size)
