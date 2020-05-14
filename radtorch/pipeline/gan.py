@@ -113,6 +113,15 @@ class GAN():
 
             - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(10,10)
 
+     .sample(figure_size=(10,10), show_labels=True)
+
+        - Displays a sample of real data.
+
+        - Parameters:
+
+            - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(10,10).
+
+            - show_labels (boolean, optional): show labels on top of images. default=True.
 
 
     """

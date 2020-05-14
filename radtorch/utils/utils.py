@@ -725,6 +725,8 @@ def show_metrics(classifer_list, figure_size=(700,400), type=None):
 
     - figure_size (tuple, optional): size of the figure as width, height. default=(700,400).
 
+    - type (string, optional): set to 'GAN' to display GAN metrics.
+
     Returns
     --------
     Bokeh Graph of training/validation accuracy/loss for all target classifiers.
@@ -757,6 +759,35 @@ def show_metrics(classifer_list, figure_size=(700,400), type=None):
                 legend_items.append(('Discriminator Loss on Real Images' , [x]))
                 legend_items.append(('Discriminator Loss on Fake Images' , [y]))
                 ind = ind +1
+
+            legend = Legend(items=legend_items, location=(10, -20))
+            p.add_layout(legend, 'right')
+            # p.legend.location = "top_center"
+            p.legend.inactive_fill_alpha = 0.7
+            p.legend.border_line_width = 0
+            p.legend.click_policy="hide"
+            p.xaxis.axis_line_color = '#D6DBDF'
+            p.yaxis.axis_line_color = '#D6DBDF'
+            p.xgrid.grid_line_color=None
+            p.yaxis.axis_line_width = 2
+            p.xaxis.axis_line_width = 2
+            p.xaxis.major_tick_line_color = '#D6DBDF'
+            p.yaxis.major_tick_line_color = '#D6DBDF'
+            p.xaxis.minor_tick_line_color = '#D6DBDF'
+            p.yaxis.minor_tick_line_color = '#D6DBDF'
+            p.yaxis.major_tick_line_width = 2
+            p.xaxis.major_tick_line_width = 2
+            p.yaxis.minor_tick_line_width = 0
+            p.xaxis.minor_tick_line_width = 0
+            p.xaxis.major_label_text_color = '#99A3A4'
+            p.yaxis.major_label_text_color = '#99A3A4'
+            p.outline_line_color = None
+            p.xaxis.axis_label = 'Epoch'
+            p.xaxis.axis_label_text_align = 'right'
+            p.toolbar.autohide = True
+            output.append(p)
+
+
     else:
         for m in ['Loss', 'Accuracy',]:
             ind = 0
