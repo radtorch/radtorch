@@ -737,74 +737,75 @@ def show_metrics(classifer_list, figure_size=(700,400), type=None):
     output = []
     if type=='GAN':
         for m in ['D_loss and G_loss', 'D_loss',]:
-                    ind = 0
-                    if m =='D_loss and G_loss':
-                      legend_items = []
-                      p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('D_loss and G_loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
-                      for i in metrics_list:
-                        x = p.line(i.index.to_list(), i.D_loss.to_list() , line_width=2, line_color= COLORS2[ind])
-                        y = p.line(i.index.to_list(), i.G_loss.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
-                        legend_items.append(('Discriminator Loss', [x]))
-                        legend_items.append(('Generator Loss' , [y]))
-                        ind = ind +1
+            ind = 0
+            if m =='D_loss and G_loss':
+              legend_items = []
+              p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('D_loss and G_loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+              for i in metrics_list:
+                x = p.line(i.index.to_list(), i.D_loss.to_list() , line_width=2, line_color= COLORS2[ind])
+                y = p.line(i.index.to_list(), i.G_loss.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
+                legend_items.append(('Discriminator Loss', [x]))
+                legend_items.append(('Generator Loss' , [y]))
+                ind = ind +1
 
-                    elif m == "D_loss":
-                      legend_items = []
-                      p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('D_loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
-                      for i in metrics_list:
-                        x = p.line(i.index.to_list(), i.d_loss_real_images.to_list() , line_width=2, line_color= COLORS2[ind])
-                        y = p.line(i.index.to_list(), i.d_loss_fake_images.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
-                        legend_items.append(('Discriminator Loss on Real Images' , [x]))
-                        legend_items.append(('Discriminator Loss on Fake Images' , [y]))
-                        ind = ind +1
+            elif m == "D_loss":
+              legend_items = []
+              p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('D_loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+              for i in metrics_list:
+                x = p.line(i.index.to_list(), i.d_loss_real_images.to_list() , line_width=2, line_color= COLORS2[ind])
+                y = p.line(i.index.to_list(), i.d_loss_fake_images.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
+                legend_items.append(('Discriminator Loss on Real Images' , [x]))
+                legend_items.append(('Discriminator Loss on Fake Images' , [y]))
+                ind = ind +1
     else:
-        ind = 0
-        if m =='Loss':
-          legend_items = []
-          p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
-          for i in metrics_list:
-            x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= COLORS2[ind])
-            y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
-            legend_items.append((('Model '+str(ind)+' Train Loss') , [x]))
-            legend_items.append(('Model '+str(ind)+' Valid Loss' , [y]))
-            ind = ind +1
+        for m in ['Loss', 'Accuracy',]:
+            ind = 0
+            if m =='Loss':
+              legend_items = []
+              p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('Loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+              for i in metrics_list:
+                x = p.line(i.index.to_list(), i.Train_Loss.to_list() , line_width=2, line_color= COLORS2[ind])
+                y = p.line(i.index.to_list(), i.Valid_Loss.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
+                legend_items.append((('Model '+str(ind)+' Train Loss') , [x]))
+                legend_items.append(('Model '+str(ind)+' Valid Loss' , [y]))
+                ind = ind +1
 
-        elif m == "Accuracy":
-          legend_items = []
-          p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
-          for i in metrics_list:
-            x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= COLORS2[ind])
-            y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
-            legend_items.append((('Model '+str(ind)+' Train Accuracy') , [x]))
-            legend_items.append(('Model '+str(ind)+' Valid Accuracy' , [y]))
-            ind = ind +1
+            elif m == "Accuracy":
+              legend_items = []
+              p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('Accuracy'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+              for i in metrics_list:
+                x = p.line(i.index.to_list(), i.Train_Accuracy.to_list() , line_width=2, line_color= COLORS2[ind])
+                y = p.line(i.index.to_list(), i.Valid_Accuracy.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
+                legend_items.append((('Model '+str(ind)+' Train Accuracy') , [x]))
+                legend_items.append(('Model '+str(ind)+' Valid Accuracy' , [y]))
+                ind = ind +1
 
-        legend = Legend(items=legend_items, location=(10, -20))
-        p.add_layout(legend, 'right')
-        # p.legend.location = "top_center"
-        p.legend.inactive_fill_alpha = 0.7
-        p.legend.border_line_width = 0
-        p.legend.click_policy="hide"
-        p.xaxis.axis_line_color = '#D6DBDF'
-        p.yaxis.axis_line_color = '#D6DBDF'
-        p.xgrid.grid_line_color=None
-        p.yaxis.axis_line_width = 2
-        p.xaxis.axis_line_width = 2
-        p.xaxis.major_tick_line_color = '#D6DBDF'
-        p.yaxis.major_tick_line_color = '#D6DBDF'
-        p.xaxis.minor_tick_line_color = '#D6DBDF'
-        p.yaxis.minor_tick_line_color = '#D6DBDF'
-        p.yaxis.major_tick_line_width = 2
-        p.xaxis.major_tick_line_width = 2
-        p.yaxis.minor_tick_line_width = 0
-        p.xaxis.minor_tick_line_width = 0
-        p.xaxis.major_label_text_color = '#99A3A4'
-        p.yaxis.major_label_text_color = '#99A3A4'
-        p.outline_line_color = None
-        p.xaxis.axis_label = 'Epoch'
-        p.xaxis.axis_label_text_align = 'right'
-        p.toolbar.autohide = True
-        output.append(p)
+            legend = Legend(items=legend_items, location=(10, -20))
+            p.add_layout(legend, 'right')
+            # p.legend.location = "top_center"
+            p.legend.inactive_fill_alpha = 0.7
+            p.legend.border_line_width = 0
+            p.legend.click_policy="hide"
+            p.xaxis.axis_line_color = '#D6DBDF'
+            p.yaxis.axis_line_color = '#D6DBDF'
+            p.xgrid.grid_line_color=None
+            p.yaxis.axis_line_width = 2
+            p.xaxis.axis_line_width = 2
+            p.xaxis.major_tick_line_color = '#D6DBDF'
+            p.yaxis.major_tick_line_color = '#D6DBDF'
+            p.xaxis.minor_tick_line_color = '#D6DBDF'
+            p.yaxis.minor_tick_line_color = '#D6DBDF'
+            p.yaxis.major_tick_line_width = 2
+            p.xaxis.major_tick_line_width = 2
+            p.yaxis.minor_tick_line_width = 0
+            p.xaxis.minor_tick_line_width = 0
+            p.xaxis.major_label_text_color = '#99A3A4'
+            p.yaxis.major_label_text_color = '#99A3A4'
+            p.outline_line_color = None
+            p.xaxis.axis_label = 'Epoch'
+            p.xaxis.axis_label_text_align = 'right'
+            p.toolbar.autohide = True
+            output.append(p)
 
 
     show(column(output))
