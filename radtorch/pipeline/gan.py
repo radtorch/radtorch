@@ -62,9 +62,7 @@ class GAN():
 
     - discriminator (string, required): type of discriminator network. Options = {'dcgan', 'vanilla'}. default='dcgan'
 
-    - generator_output_image_channels (integer, required): number of output channels for generator image output. default=3
-
-    - discriminator_input_image_channels (integer, required): number of output channels for discriminator image input. default=3
+    - image_channels (integer, required): number of output channels for discriminator input and generator output. default=1
 
     - generator_noise_type (string, optional): shape of noise to sample from. Options={'normal', 'gaussian'}. default='normal'. (https://github.com/soumith/ganhacks#3-use-a-spherical-z)
 
@@ -72,23 +70,17 @@ class GAN():
 
     - generator_num_features (integer, required): number of features/convolutions for generator network. default=64
 
-    - generator_output_image_size (integer, required): generator output image size.default=128
+    - image_size (integer, required): iamge size for discriminator input and generator output.default=128
 
     - discriminator_num_features (integer, required): number of features/convolutions for discriminator network.default=64
 
-    - discriminator_input_image_size (integer, required): discriminatorinput image size.default=128
-
     - generator_optimizer (string, required): generator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
 
-    - generator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation.
+    - generator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation. default={'betas':(0.5,0.999)} for Adam optimizer.
 
     - discrinimator_optimizer (string, required): discrinimator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
 
-    - discrinimator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation.
-
-    - beta1 (float, optioal): beta1 hyperparameters of Adam optimizer. default=0.5
-
-    - beta2 (float, optioal): beta2 hyperparameters of Adam optimizer. default=0.999
+    - discrinimator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation. default={'betas':(0.5,0.999)} for Adam optimizer.
 
     - generator_learning_rate (float, required): generator network learning rate. default=0.0001.
 
@@ -123,6 +115,28 @@ class GAN():
 
             - show_labels (boolean, optional): show labels on top of images. default=True.
 
+    .info()
+
+        - Displays different parameters of the generative adversarial network.
+
+
+    .metrics(figure_size=(700,350))
+
+        - Displays training metrics for the GAN.
+
+        - Explanation of metrics:
+
+            - D_loss: Total loss of discriminator network on both real and fake images.
+
+            - G_loss: Loss of discriminator network on detecting fake images as real.
+
+            _ d_loss_real: Loss of discriminator network on detecting real images as real.
+
+            - d_loss_fake: Loss of discriminator network on detecting fake images as fake.
+
+        - Parameters:
+
+            - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(700,350).
 
     """
 
@@ -130,9 +144,8 @@ class GAN():
                data_directory,
                generator_noise_size=100,
                generator_num_features=64,
-               generator_output_image_size=128,
+               image_size=128,
                discriminator_num_features=64,
-               discriminator_input_image_size=128,
                generator_noise_type='normal',
                table=None,
                image_path_column='IMAGE_PATH',
@@ -154,12 +167,9 @@ class GAN():
                generator_optimizer_param={'betas':(0.5,0.999)},
                generator_learning_rate=0.0001,
                discriminator_learning_rate=0.0001,
-               generator_output_image_channels=3,
-               discriminator_input_image_channels=3,
+               image_channels=1,
                sampling=1.0,
                transformations='default',
-               beta1=0.5,
-               beta2=0.999,
                device='auto'):
 
         self.data_directory=data_directory
@@ -179,10 +189,10 @@ class GAN():
 
         self.d=discriminator
         self.g=generator
-        self.g_output_image_size=generator_output_image_size
-        self.g_output_image_channels=generator_output_image_channels
-        self.d_input_image_size=discriminator_input_image_size
-        self.d_input_image_channels=discriminator_input_image_channels
+        self.g_output_image_size=image_size
+        self.g_output_image_channels=image_channels
+        self.d_input_image_size=image_size
+        self.d_input_image_channels=image_channels
         self.g_noise_size=generator_noise_size
         self.g_noise_type=generator_noise_type
         self.d_num_features=discriminator_num_features
@@ -196,8 +206,6 @@ class GAN():
         self.g_optimizer_param=generator_optimizer_param
         self.epochs=epochs
         self.label_smooth=label_smooth
-        self.beta1=beta1
-        self.beta2=beta2
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

@@ -1,12 +1,6 @@
 
 # Core Module <small> radtorch.core </small>
 
-<!-- !!! bug "DOCUMENTATION OUT OF DATE"
-    Documentation not updated. Please check again later. -->
-
-<!-- ![](img/1.png) -->
-
-<!-- <div style="text-align:center"><img src="/img/1.png" /></div> -->
 
 ```
 from radtorch import core
@@ -23,13 +17,21 @@ The core module has all the core functionalities of RADTorch framework. These in
 
 5. NN_Classifier
 
-6. Feature_Selector
+6. DCGAN_Discriminator
+
+7. DCGAN_Generator
+
+8. GAN_Discriminator
+
+9. GAN_Generator
+
+10. Feature_Selector (Coming Soon)
 
 
 
+## Image classification
 
-
-## RADTorch_Dataset
+### RADTorch_Dataset
     core.RADTorch_Dataset(data_directory,transformations,
                           table=None,is_dicom=False,
                           mode='RAW', wl=None,
@@ -103,7 +105,7 @@ The core module has all the core functionalities of RADTorch framework. These in
 
 
 
-## Data_Processor
+### Data_Processor
 
     core.Data_Processor(data_directory,is_dicom=False,table=None,
                         image_path_column='IMAGE_PATH',
@@ -226,7 +228,7 @@ The core module has all the core functionalities of RADTorch framework. These in
 
 
 
-## Feature_Extractor
+### Feature_Extractor
 
     core.Feature_Extractor(model_arch, dataloader,pre_trained=True, unfreeze=False,
                            device='auto',)
@@ -319,7 +321,7 @@ The core module has all the core functionalities of RADTorch framework. These in
 
 
 
-## Classifier
+### Classifier
 
     core.Classifier(extracted_feature_dictionary, feature_table=None,
                     image_label_column=None, image_path_column=None,
@@ -429,7 +431,7 @@ The core module has all the core functionalities of RADTorch framework. These in
 
 
 
-## NN_Classifier
+### NN_Classifier
 
     core.NN_Classifier(feature_extractor, data_processor, unfreeze=False,
                       learning_rate=0.0001, epochs=10, optimizer='Adam',
@@ -526,6 +528,103 @@ The core module has all the core functionalities of RADTorch framework. These in
 
 
 
-## Feature_Selector
+## Generative Adversarial Networks
 
-    Coming Soon
+### DCGAN_Discriminator
+
+    core.DCGAN_Discriminator(num_input_channels, kernel_size, num_discriminator_features,
+                             input_image_size, device='auto')
+
+
+!!! quote ""
+
+     **Description**
+
+     Core Deep Convolutional GAN Discriminator Network.
+
+
+     **Parameters**
+
+     - kernel_size (integer, required): size of kernel/filter to be used for convolution.
+
+     - num_discriminator_features (integer, required): number of features/convolutions for discriminator network.
+
+     - num_input_channels (integer, required): number of channels for input image.
+
+     - input_image_size (integer, required): size of input image.
+
+     - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
+
+
+
+### DCGAN_Generator
+
+    core.DCGAN_Generator(noise_size, num_generator_features, num_output_channels,
+                        target_image_size, device='auto')
+
+
+!!! quote ""
+
+      **Description**
+
+      Core Deep Convolutional GAN Generator Network.
+
+
+      **Parameters**
+
+      - noise_size (integer, required): size of the noise sample to be generated.
+
+      - num_generator_features (integer, required): number of features/convolutions for generator network.
+
+      - num_output_channels (integer, required): number of channels for output image.
+
+      - target_image_size (integer, required): size of output image.
+
+      - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
+
+
+### GAN_Discriminator
+
+      core.GAN_Discriminator(input_image_size, intput_num_channels, device='auto')
+
+
+!!! quote ""      
+
+      **Description**
+
+      Core Vanilla GAN Discriminator Network.
+
+
+      **Parameters**
+
+      - num_input_channels (integer, required): number of channels for input image.
+
+      - input_image_size (integer, required): size of input image.
+
+      - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
+
+
+### GAN_Generator
+
+      core.GAN_Generator(noise_size, target_image_size, output_num_channels, device='auto')
+
+
+!!! quote ""  
+
+      **Description**
+
+      Core Vanilla Convolutional GAN Generator Network.
+
+
+      **Parameters**
+
+      - noise_size (integer, required): size of the noise sample to be generated.
+
+      - num_output_channels (integer, required): number of channels for output image.
+
+      - target_image_size (integer, required): size of output image.
+
+      - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
+
+
+<small> Documentation Update: 5/14/2020 </small>

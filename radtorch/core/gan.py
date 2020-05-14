@@ -48,10 +48,20 @@ class DCGAN_Generator(nn.Module):
 
     Description
     -----------
+    Core Deep Convolutional GAN Generator Network.
 
 
     Parameters
     ----------
+    - noise_size (integer, required): size of the noise sample to be generated.
+
+    - num_generator_features (integer, required): number of features/convolutions for generator network.
+
+    - num_output_channels (integer, required): number of channels for output image.
+
+    - target_image_size (integer, required): size of output image.
+
+    - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
 
     """
 
@@ -101,10 +111,21 @@ class DCGAN_Discriminator(nn.Module):
 
     Description
     -----------
+    Core Deep Convolutional GAN Discriminator Network.
 
 
     Parameters
     ----------
+
+    - kernel_size (integer, required): size of kernel/filter to be used for convolution.
+
+    - num_discriminator_features (integer, required): number of features/convolutions for discriminator network.
+
+    - num_input_channels (integer, required): number of channels for input image.
+
+    - input_image_size (integer, required): size of input image.
+
+    - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
 
     """
 
@@ -151,6 +172,27 @@ class DCGAN_Discriminator(nn.Module):
 
 
 class GAN_Generator(nn.Module):
+
+    """
+
+    Description
+    -----------
+    Core Deep Convolutional GAN Generator Network.
+
+
+    Parameters
+    ----------
+    
+    - noise_size (integer, required): size of the noise sample to be generated.
+
+    - num_output_channels (integer, required): number of channels for output image.
+
+    - target_image_size (integer, required): size of output image.
+
+    - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
+
+    """
+
     def __init__(self, noise_size, target_image_size, output_num_channels, device='auto'):
         super(GAN_Generator, self).__init__()
         self.noise_size=noise_size
@@ -190,6 +232,25 @@ class GAN_Generator(nn.Module):
 
 
 class GAN_Discriminator(nn.Module):
+
+    """
+
+    Description
+    -----------
+    Core Vanilla GAN Discriminator Network.
+
+
+    Parameters
+    ----------
+
+    - num_input_channels (integer, required): number of channels for input image.
+
+    - input_image_size (integer, required): size of input image.
+
+    - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
+
+    """
+
     def __init__(self, input_image_size, intput_num_channels, device='auto'):
         super(GAN_Discriminator, self).__init__()
         self.input_image_size=input_image_size

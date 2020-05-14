@@ -10,7 +10,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
-# Documentation update: 5/8/2020
+# Documentation update: 5/14/2020
 
 
 from ..settings import *
@@ -782,7 +782,7 @@ def show_metrics(classifer_list, figure_size=(700,400), type=None):
             p.xaxis.major_label_text_color = '#99A3A4'
             p.yaxis.major_label_text_color = '#99A3A4'
             p.outline_line_color = None
-            p.xaxis.axis_label = 'Epoch'
+            p.xaxis.axis_label = 'Batch'
             p.xaxis.axis_label_text_align = 'right'
             p.toolbar.autohide = True
             output.append(p)
