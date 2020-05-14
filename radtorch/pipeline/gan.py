@@ -362,7 +362,7 @@ class GAN():
 
         self.trained_G = self.G
         self.trained_D = self.D
-        self.train_metrics=pd.DataFrame(data=self.train_metrics, columns = ['D_loss', 'd_loss_real_images', 'd_loss_fake_images', 'G_loss'])
+        self.train_metrics=pd.DataFrame(data=self.train_metrics, columns = ['D_loss', 'G_loss', 'd_loss_real_images', 'd_loss_fake_images', ])
 
     def nn_optimizer(self, type, model, learning_rate, **kw):
       if type not in supported_nn_optimizers:
@@ -405,7 +405,7 @@ class GAN():
         return generated_noise
 
     def metrics(self, figure_size=(700,350)): #<<<<<<<<<<<<<<<<<<<< NEEDS FIX
-      return show_metrics([self],  figure_size=figure_size)
+      return show_metrics([self],  figure_size=figure_size, type='GAN')
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
@@ -415,7 +415,7 @@ class GAN():
     def sample(self, figure_size=(10,10), show_labels=True):
         show_dataloader_sample(self.dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name = False,)
 
-    def export_generated_images(self, output_folder, figure_size=(10,10), zip=False):
+    def export_generated_images(self, output_folder, figure_size=(10,10), zip=False):#<<<<<<<<<<<<<<<<<<<< NEEDS FIX
         for images in self.generated_samples:
             cols = int(math.sqrt(len(images)))
             n_images = len(images)

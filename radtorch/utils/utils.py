@@ -710,7 +710,7 @@ def show_nn_confusion_matrix(model, target_data_set, target_classes, device, fig
                           )
 
 
-def show_metrics(classifer_list, figure_size=(700,400)):
+def show_metrics(classifer_list, figure_size=(700,400), type=None):
 
     """
     Description
@@ -735,7 +735,29 @@ def show_metrics(classifer_list, figure_size=(700,400)):
     metrics_list = [x.train_metrics for x in classifer_list]
     output_notebook()
     output = []
-    for m in ['Accuracy', 'Loss',]:
+    if type=='GAN':
+        for m in ['D_loss and G_loss', 'D_loss',]:
+                    ind = 0
+                    if m =='D_loss and G_loss':
+                      legend_items = []
+                      p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('D_loss and G_loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+                      for i in metrics_list:
+                        x = p.line(i.index.to_list(), i.D_loss.to_list() , line_width=2, line_color= COLORS2[ind])
+                        y = p.line(i.index.to_list(), i.G_loss.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
+                        legend_items.append(('Discriminator Loss', [x]))
+                        legend_items.append(('Generator Loss' , [y]))
+                        ind = ind +1
+
+                    elif m == "D_loss":
+                      legend_items = []
+                      p = figure(plot_width=figure_size[0], plot_height=figure_size[1], title=('D_loss'), tools=TOOLS, toolbar_location='below', tooltips=[('','@x'), ('','@y')])
+                      for i in metrics_list:
+                        x = p.line(i.index.to_list(), i.d_loss_real_images.to_list() , line_width=2, line_color= COLORS2[ind])
+                        y = p.line(i.index.to_list(), i.d_loss_fake_images.to_list() , line_width=2, line_color= COLORS2[-ind], line_dash='dotted')
+                        legend_items.append(('Discriminator Loss on Real Images' , [x]))
+                        legend_items.append(('Discriminator Loss on Fake Images' , [y]))
+                        ind = ind +1
+    else:
         ind = 0
         if m =='Loss':
           legend_items = []
