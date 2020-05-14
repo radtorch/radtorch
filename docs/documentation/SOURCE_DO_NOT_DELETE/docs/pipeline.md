@@ -251,9 +251,10 @@ core.GAN(
 
 
       **Methods**
-```
+      ```
       .run(self, verbose='batch', show_images=True, figure_size=(10,10))
-```
+      ```
+
       - Runs the GAN training.
 
       - Parameters:
@@ -263,9 +264,12 @@ core.GAN(
           - show_images (boolean, optional): True to show sample of generatot generated images after each epoch.
 
           - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(10,10)
-```
-       .sample(figure_size=(10,10), show_labels=True)
-```
+
+
+      ```
+      .sample(figure_size=(10,10), show_labels=True)
+      ```
+
       - Displays a sample of real data.
 
       - Parameters:
@@ -273,26 +277,29 @@ core.GAN(
           - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(10,10).
 
           - show_labels (boolean, optional): show labels on top of images. default=True.
-```
+
+      ```
       .info()
-```
+      ```
+
       - Displays different parameters of the generative adversarial network.
 
-```
+      ```
       .metrics(figure_size=(700,350))
-```
+      ```
+
       - Displays training metrics for the GAN.
 
       - Explanation of metrics:
 
-          - D_loss: Total loss of discriminator network on both real and fake images.
+          - *D_loss*: Total loss of discriminator network on both real and fake images.
 
-          - G_loss: Loss of discriminator network on detecting fake images as real.
+          - *G_loss*: Loss of discriminator network on detecting fake images as real.
 
-          _ d_loss_real: Loss of discriminator network on detecting real images as real.
+          - *d_loss_real*: Loss of discriminator network on detecting real images as real.
 
-          - d_loss_fake: Loss of discriminator network on detecting fake images as fake.
+          - *d_loss_fake*: Loss of discriminator network on detecting fake images as fake.
 
       - Parameters:
 
-              - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(700,350).
+          - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(700,350).
