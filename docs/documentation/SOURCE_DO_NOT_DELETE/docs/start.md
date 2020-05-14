@@ -15,3 +15,7 @@ The above 3 lines of code will run an image classifier pipeline using alexnet  a
 
 ## Playground
 RADTorch playground for testing is provided on [Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
+
+
+
+<small> Documentation Update: 5/14/2020 </small>

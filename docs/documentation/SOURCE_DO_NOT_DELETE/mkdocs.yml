@@ -5,12 +5,7 @@ nav:
     - Installation: install.md
     - radtorch.core: core.md
     - radtorch.pipeline: pipeline.md
-    # - pipeline.Image_Classification: image_classification.md
-    # - pipeline.Feature_Extraction: feature_extraction.md
-    # - pipeline.Compare_Classifiers: compare_classifiers.md
-    # - Team: team.md
     - Get Involved: involve.md
-    - Releases/Versions: version.md
     - Copyrights: copyright.md
     - License: license.md
 

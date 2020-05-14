@@ -1,11 +1,8 @@
 # Pipeline Module <small> radtorch.pipeline </small>
 
-!!! bug "DOCUMENTATION OUT OF DATE"
-    Documentation not updated. Please check again later.
 
-    
 <p style='text-align: justify;'>
-Pipelines are probably the most exciting feature of RADTorch tool kit. With few lines of code, the pipeline module allows you to run state-of-the-art image classification algorithms and much more.
+Pipelines are probably the most exciting feature of RADTorch Framework. With only few lines of code, the pipeline module allows you to run state-of-the-art machine learning algorithms and much more.
 </p>
 
 
@@ -30,559 +27,283 @@ can be used to access the dataset information for that particular Image Classifi
 </p>
 
 ## Image_Classification
+```
+pipeline.Image_Classification(
+              data_directory, is_dicom=False, table=None,
+              image_path_column='IMAGE_PATH', image_label_column='IMAGE_LABEL',
+              is_path=True, mode='RAW', wl=None, balance_class=False,
+              balance_class_method='upsample', interaction_terms=False,
+              normalize=((0,0,0), (1,1,1)), batch_size=16, num_workers=0,
+              sampling=1.0, test_percent=0.2, valid_percent=0.2, custom_resize=False,
+              model_arch='alexnet', pre_trained=True, unfreeze=False,
+              type='nn_classifier', cv=True, stratified=True, num_splits=5, parameters={},
+              learning_rate=0.0001, epochs=10, optimizer='Adam',
+              loss_function='CrossEntropyLoss',lr_scheduler=None,
+              custom_nn_classifier=None, loss_function_parameters={},
+              optimizer_parameters={}, transformations='default',
+              extra_transformations=None, device='auto',)
+```
 
-      pipeline.Image_Classification(data_directory, name = None,
-      transformations='default',custom_resize = 'default', device='default',
-      optimizer='Adam', is_dicom=True, label_from_table=False, is_csv=None,
-      table_source=None, path_col = 'IMAGE_PATH', label_col = 'IMAGE_LABEL',
-      balance_class = False, predefined_datasets = False, mode='RAW', wl=None,
-      normalize='default', batch_size=16, test_percent = 0.2, valid_percent = 0.2,
-      model_arch='vgg16', pre_trained=True, unfreeze_weights=False,train_epochs=20,
-      learning_rate=0.0001, loss_function='CrossEntropyLoss')
+!!! quote ""
 
-!!! abstract "Description"
 
-    The Image Classification pipeline simplifies the process of binary and multi-class image classification into a single line of code.
-    Under the hood, the following happens:
+      **Description**
 
-    1. The pipeline creates a master dataset from the provided data directory and source of labels/classes either from [folder structre](https://pytorch.org/docs/stable/torchvision/datasets.html#datasetfolder) or pandas/csv table.
+      Complete end-to-end image classification pipeline.
 
-    2. Master dataset is subdivided into train, valid and test subsets using the percentages defined by user.
+      **Parameters**
 
-    3. The following transformations are applied on the dataset images:
-        1. Resize to the default image size allowed by the model architecture.
-        2. Window/Level adjustment according to values specified by user.
-        3. Single channel grayscale DICOM images are converted into 3 channel grayscale images to fit into the model.
+      - data_directory (string, required): path to target data directory/folder.
 
-    3. Selected Model architecture, optimizer, and loss function are downloaded/created.
+      - is_dicom (bollean, optional): True if images are DICOM. default=False.
 
-    4. Model is trained.
+      - table (string or pandas dataframe, optional): path to label table csv or name of pandas data table. default=None.
 
-    5. Training metrics are saved as training progresses and can be displayed after training is done.
+      - image_path_column (string, optional): name of column that has image path/image file name. default='IMAGE_PATH'.
 
-    6. Confusion Matrix and ROC (for binary classification) can be displayed as well (by default, the test subset is used to calculate the confusion matrix and the ROC)
+      - image_label_column (string, optional): name of column that has image label. default='IMAGE_LABEL'.
 
-    7. Misclassifed samples can be displayed.
+      - is_path (boolean, optional): True if file_path column in table is file path. If False, this assumes that the column contains file names only and will append the data_directory to all files. default=True.
 
-    8. Trained model can be exported to outside file for future use.
+      - mode (string, optional): mode of handling pixel values from DICOM to numpy array. Option={'RAW': raw pixel values, 'HU': converts pixel values to HU using slope and intercept, 'WIN':Applies a certain window/level to HU converted DICOM image, 'MWIN': converts DICOM image to 3 channel HU numpy array with each channel adjusted to certain window/level. default='RAW'.
 
+      - wl (tuple or list of tuples, optional): value of Window/Levelto be used. If mode is set to 'WIN' then wl takes the format (level, window). If mode is set to 'MWIN' then wl takes the format [(level1, window1), (level2, window2), (level3, window3)]. default=None.
 
-<!-- ####Parameters -->
+      - balance_class (bollean, optional): True to perform oversampling in the train dataset to solve class imbalance. default=False.
 
-!!! info  "Parameters"
+      - balance_class_method (string, optional): methodology used to balance classes. Options={'upsample', 'downsample'}. default='upsample'.
 
-    **data_directory:**
+      - interaction_terms (boolean, optional): create interaction terms between different features and add them as new features to feature table. default=False.
 
-    - _(str)_ target data directory. **(Required)**
+      - normalize (bolean/False or Tuple, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=((0,0,0), (1,1,1)).
 
-    **name:**
+      - batch_size (integer, optional): Batch size for dataloader. defult=16.
 
-    - _(str)_ preferred name to be given to classifier.
+      - num_workers (integer, optional): Number of CPU workers for dataloader. default=0.
 
-    **is_dicom:**
+      - sampling (float, optional): fraction of the whole dataset to be used. default=1.0.
 
-    - _(boolean)_ True for DICOM images. (default=True)
+      - test_percent (float, optional): percentage of data for testing.default=0.2.
 
-    **label_from_table:**
+      - valid_percent (float, optional): percentage of data for validation (ONLY with NN_Classifier) .default=0.2.
 
-    - _(boolean)_ True if labels are to extracted from table, False if labels are to be extracted from subfolders names. (default=False)
+      - custom_resize (integer, optional): By default, the data processor resizes the image in dataset into the size expected bu the different CNN architectures. To override this and use a custom resize, set this to desired value. default=False.
 
-    **is_csv:**
+      - transformations (list, optional): list of pytorch transformations to be applied to all datasets. By default, the images are resized, channels added up to 3 and greyscaled. default='default'.
 
-    - _(boolean)_ True for csv, False for pandas dataframe.
+      - extra_transformations (list, optional): list of pytorch transformations to be extra added to train dataset specifically. default=None.
 
-    **table_source:**
+      - model_arch (string, required): CNN model architecture that this data will be used for. Used to resize images as detailed above. default='alexnet' .
 
-    - _(str or pandas dataframe object)_ source for labelling data.This is path to csv file or name of pandas dataframe if pandas to be used. (default=None).
+      - pre_trained (boolean, optional): Initialize with ImageNet pretrained weights or not. default=True.
 
-    **predefined_datasets**
+      - unfreeze (boolean, required): Unfreeze all layers of network for future retraining. default=False.
 
-    - _(dict)_ dictionary of predefined pandas dataframes for training. This follows the following scheme: {'train': dataframe, 'valid': dataframe, 'test':dataframe }
+      - type (string, required): type of classifier. For complete list refer to settings. default='logistic_regression'.
 
-    **path_col:**
+      ***Classifier specific parameters***
 
-    - _(str)_  name of the column with the image path. (default='IMAGE_PATH')
+      - cv (boolean, required): True for cross validation. default=True.
 
-    **label_col:**
+      - stratified (boolean, required): True for stratified cross validation. default=True.
 
-    - _(str)_  name of the label/class column. (default='IMAGE_LABEL')
+      - num_splits (integer, required): Number of K-fold cross validation splits. default=5.
 
-    **mode:**
+      - parameters (dictionary, optional): optional parameters passed to the classifier. Please refer to sci-kit learn documentaion.
 
-    - _(str)_  output mode for DICOM images only where RAW= Raw pixels, HU= Image converted to Hounsefield Units, WIN= 'window' image windowed to certain W and L, MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together. (default='RAW')
+      ***NN_Classifier specific parameters***
 
-    **wl:**
+      - learning_rate (float, required): Learning rate. default=0.0001.
 
-    - _(list)_ list of lists of combinations of window level and widths to be used with WIN and MWIN.In the form of : [[Level,Width], [Level,Width],...].  
-    - Only 3 combinations are allowed for MWIN (for now). (default=None)
+      - epochs (integer, required): training epochs. default=10.
 
-    **balance_class:**
+      - optimizer (string, required): neural network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
 
-    - _(boolen)_ balance classes in train/valid/test subsets. Under the hood, oversampling is done for the classes with fewer number of instances. (default=False)
+      - optimizer_parameters (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation.
 
-    **normalize:**
+      - loss_function (string, required): neural network loss function. Please see radtorch.settings for list of approved loss functions. default='CrossEntropyLoss'.
 
-    - _(str)_ Normalization algorithm applied to data. Options: 'default' normalizes data with mean of 0.5 and standard deviation of 0.5, 'auto' normalizes the data using mean and standard deviation calculated from the datasets, 'False' applies no normalization. (default='default')
+      - loss_function_parameters (dictionary, optional): optional extra parameters for loss function as per pytorch documentation.
 
-    **transformations:**
+      - lr_scheduler (string, optional): learning rate scheduler - upcoming soon.
 
-    - _(pytorch transforms list)_ pytroch transforms to be performed on the dataset. (default=Convert to tensor)
+      - custom_nn_classifier (pytorch model, optional): Option to use a custom made neural network classifier that will be added after feature extracted layers. default=None.
 
-    **custom_resize:**
-    - _(int)_ by default, a radtorch pipeline will resize the input images into the default training model input image size as demonstrated in the table shown below. This default size can be changed here if needed.
+      - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
 
-    **batch_size:**
+      **Methods**
 
-    - _(int)_ batch size of the dataset (default=16)
+      - In addition to [core component methods](https://www.radtorch.com/documentation/core/), pipeline accessible methods include:
+      ```
+      .info()
+      ```
+        Displays information of the image classification pipeline.
+      ```
+      .run()
+      ```
+        Starts the image classification pipeline training.
+      ```
+      .metrics(figure_size=(700, 350))
+      ```
+        Displays the training metrics of the image classification pipeline.
+      ```
+      .export(output_path):
+      ```
+        Exports the pipeline to output path.
 
-    **test_percent:**
 
-    - _(float)_ percentage of dataset to use for testing. Float value between 0 and 1.0. (default=0.2)
 
-    **valid_percent:**
 
-    - _(float)_ percentage of dataset to use for validation. Float value between 0 and 1.0. (default=0.2)
+## GAN
 
-    **model_arch:**
+```
+core.GAN(
+        data_directory, table=None, is_dicom=False, is_path=True,
+        image_path_column='IMAGE_PATH', image_label_column='IMAGE_LABEL',
+        mode='RAW', wl=None, batch_size=16, normalize=((0,0,0),(1,1,1)),
+        num_workers=0, label_smooth=True, sampling=1.0, transformations='default',
 
-    - _(str)_ PyTorch neural network architecture (default='vgg16')
+        discriminator='dcgan', generator='dcgan',
+        generator_noise_size=100, generator_noise_type='normal',
+        discriminator_num_features=64, generator_num_features=64,
+        image_size=128, image_channels=1,
 
-    **pre_trained:**
+        discrinimator_optimizer='Adam', generator_optimizer='Adam',
+        discrinimator_optimizer_param={'betas':(0.5,0.999)},
+        generator_optimizer_param={'betas':(0.5,0.999)},
+        generator_learning_rate=0.0001, discriminator_learning_rate=0.0001,        
 
-    - _(boolean)_ Load the pretrained weights of the neural network. (default=True)
+        epochs=10, device='auto')
 
-    **unfreeze_weights:**
 
-    - _(boolean)_ if True, all model weights will be retrained. This note that if no pre_trained weights are applied, this option will be set to True automatically. (default=False)
+```
 
-    **train_epochs:**
+!!! quote ""
 
-    - _(int)_ Number of training epochs. (default=20)
 
-    **learning_rate:**
+      **Description**
 
-    - _(str)_ training learning rate. (default = 0.0001)
+      Generative Advarsarial Networks Pipeline.
 
-    **loss_function:**
 
-    - _(str)_ training loss function. (default='CrossEntropyLoss')
+      **Parameters**
 
-    **optimizer:**
+      - data_directory (string, required): path to target data directory/folder.
 
-    - _(str)_ Optimizer to be used during training. (default='Adam')
+      - is_dicom (bollean, optional): True if images are DICOM. default=False.
 
-    **device:**
+      - table (string or pandas dataframe, optional): path to label table csv or name of pandas data table. default=None.
 
-    - _(str)_ device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if CUDA is available and trains on it.
+      - image_path_column (string, optional): name of column that has image path/image file name. default='IMAGE_PATH'.
 
+      - image_label_column (string, optional): name of column that has image label. default='IMAGE_LABEL'.
 
-<!-- ####Methods -->
+      - is_path (boolean, optional): True if file_path column in table is file path. If False, this assumes that the column contains file names only and will append the data_directory to all files. default=True.
 
-!!! info "Methods"
+      - mode (string, optional): mode of handling pixel values from DICOM to numpy array. Option={'RAW': raw pixel values, 'HU': converts pixel values to HU using slope and intercept, 'WIN':Applies a certain window/level to HU converted DICOM image, 'MWIN': converts DICOM image to 3 channel HU numpy array with each channel adjusted to certain window/level. default='RAW'.
 
+      - wl (tuple or list of tuples, optional): value of Window/Levelto be used. If mode is set to 'WIN' then wl takes the format (level, window). If mode is set to 'MWIN' then wl takes the format [(level1, window1), (level2, window2), (level3, window3)]. default=None.
 
-    **.info()**
+      - batch_size (integer, optional): Batch size for dataloader. defult=16.
 
-    - Display table with properties of the Image Classification Pipeline.
+      - num_workers (integer, optional): Number of CPU workers for dataloader. default=0.
 
-    **.dataset_info(plot=True, plot_size=(500,300))**
+      - sampling (float, optional): fraction of the whole dataset to be used. default=1.0.
 
-    - Display Dataset Information.
+      - transformations (list, optional): list of pytorch transformations to be applied to all datasets. By default, the images are resized, channels added up to 3 and greyscaled. default='default'.
 
-    - Arguments:
-        - plot: _(boolean)_ displays dataset information in graphical representation. (default=True)
-        - plot_size: _(tuple)_ figures size.
+      - normalize (bolean/False or Tuple, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=((0,0,0),(1,1,1)).
 
-    **.sample(fig_size=(10,10), show_labels=True, show_file_name=False)**
+      - label_smooth (boolean, optioanl): by default, labels for real images as assigned to 1. If label smoothing is set to True, lables of real images will be assigned to 0.9. default=True. (Source: https://github.com/soumith/ganhacks#6-use-soft-and-noisy-labels)
 
-    - Display sample of the training dataset.
+      - epochs (integer, required): training epochs. default=10.
 
-    - Arguments:
-        - fig_size: _(tuple)_ figure size. (default=(10,10))
-        - show_labels: _(boolean)_ show the image label idx. (default=True)
-        - show_file_name: _(boolean)_ show the file name as label. (default=False)
+      - generator (string, required): type of generator network. Options = {'dcgan', 'vanilla'}. default='dcgan'
 
-    **.run(verbose=True)**
+      - discriminator (string, required): type of discriminator network. Options = {'dcgan', 'vanilla'}. default='dcgan'
 
-    - Start the image classification pipeline training.
+      - image_channels (integer, required): number of output channels for discriminator input and generator output. default=1
 
-    - Arguments:
-        - verbose: _(boolean)_ Show display progress after each epoch. (default=True)
+      - generator_noise_type (string, optional): shape of noise to sample from. Options={'normal', 'gaussian'}. default='normal'. (https://github.com/soumith/ganhacks#3-use-a-spherical-z)
 
-    **.metrics(fig_size=(500,300))**
+      - generator_noise_size (integer, required): size of the noise sample to be generated. default=100
 
-    - Display the training metrics.
+      - generator_num_features (integer, required): number of features/convolutions for generator network. default=64
 
-    **.export_model(output_path)**
+      - image_size (integer, required): iamge size for discriminator input and generator output.default=128
 
-    - Export the trained model into a target file.
+      - discriminator_num_features (integer, required): number of features/convolutions for discriminator network.default=64
 
-    - Arguments:
-        - output_path: _(str)_ path to output file. For example 'foler/folder/model.pth'
+      - generator_optimizer (string, required): generator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
 
-    **.export(output_path)**
+      - generator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation. default={'betas':(0.5,0.999)} for Adam optimizer.
 
-    - Exports the whole image classification pipeline for future use
+      - discrinimator_optimizer (string, required): discrinimator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
 
-    - Arguments:
-        - target_path: _(str)_ target location for export.
+      - discrinimator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation. default={'betas':(0.5,0.999)} for Adam optimizer.
 
+      - generator_learning_rate (float, required): generator network learning rate. default=0.0001.
 
-    **.set_trained_model(model_path, mode)**
+      - discriminator_learning_rate (float, required): discrinimator network learning rate. default=0.0001.
 
-    - Loads a previously trained model into pipeline
+      - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
 
-    - Arguments:
-        - model_path: _(str)_ path to target model
-        - mode: _(str)_ either 'train' or 'infer'.'train' will load the model to be trained. 'infer' will load the model for inference.
 
 
-    **.inference(test_img_path, transformations='default',  all_predictions=False)**
+      **Methods**
+      ```
+      .run(self, verbose='batch', show_images=True, figure_size=(10,10))
+      ```
 
-    - Performs inference using the trained model on a target image.
+      - Runs the GAN training.
 
-    - Arguments:
-        - test_img_path: _(str)_ path to target image.
-        - transformations: _(pytorch transforms list)_ list of transforms to be performed on the target image. (default='default' which is the same transforms using for training the pipeline)
-        - all_predictions: _(boolean)_  if True , shows table of all prediction classes and accuracy percentages. (default=False)
+      - Parameters:
 
+          - verbose (string, required): amount of data output. Options {'batch': display info after each batch, 'epoch': display info after each epoch}.default='batch'
 
-    **.roc(target_data_set='default', figure_size=(600,400))**
+          - show_images (boolean, optional): True to show sample of generatot generated images after each epoch.
 
-    - Display ROC and AUC.
+          - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(10,10)
 
-    - Arguments:
-        - target_data_set: _(pytorch dataset object)_ dataset used for predictions to create the ROC. By default, the image classification pipeline uses the test dataset created to calculate the ROC. If no test dataset was created in the pipeline (e.g. test_percent=0), then an external test dataset is required. (default=default')
-        - figure_size: _(tuple)_ figure size. (default=(600,400))
 
+      ```
+      .sample(figure_size=(10,10), show_labels=True)
+      ```
 
-    **.confusion_matrix(target_data_set='default', target_classes='default', figure_size=(7,7), cmap=None)**
+      - Displays a sample of real data.
 
-    - Display Confusion Matrix
+      - Parameters:
 
-    - Arguments:
-        - target_data_set: _(pytorch dataset object)_ dataset used for predictions to create the confusion matrix. By default, the image classification - pipeline uses the test dataset created to calculate the matrix.
-        - target_classes: _(list)_ list of classes. By default, the image classification pipeline uses the training classes.
-        - figure_size: _(tuple)_ figure size. (default=(7,7))
-        - cmap: _(str)_ user specific matplotlib cmap.
+          - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(10,10).
 
+          - show_labels (boolean, optional): show labels on top of images. default=True.
 
-    **.misclassfied(target_data_set='default', num_of_images=16, figure_size=(10,10), show_table=False)**
+      ```
+      .info()
+      ```
 
-    - Displays sample of misclassfied images from confusion matrix or ROC.
+      - Displays different parameters of the generative adversarial network.
 
-    - Arguments:
-      - target_data_set: _(pytorch dataset object)_ dataset used for predictions. By default, the image classification pipeline uses the test dataset. If no test dataset was created in the pipeline (e.g. test_percent=0), then an external test dataset is required. (default=default')
-      - num_of_images: _(int)_ number of images to be displayed.
-      - figure_size: _(tuple)_ figure size (default=(10,10))
-      - show_table: _(boolean)_ display table of misclassied images. (default=False)
+      ```
+      .metrics(figure_size=(700,350))
+      ```
 
+      - Displays training metrics for the GAN.
 
+      - Explanation of metrics:
 
-<!-- ####Examples -->
+          - *D_loss*: Total loss of discriminator network on both real and fake images.
 
-!!! success "Example"
+          - *G_loss*: Loss of discriminator network on detecting fake images as real.
 
-    Full example for Image Classification Pipeline can be found [HERE](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=njIH9PnCLhHp)
+          - *d_loss_real*: Loss of discriminator network on detecting real images as real.
 
+          - *d_loss_fake*: Loss of discriminator network on detecting fake images as fake.
 
-<hr>
+      - Parameters:
 
+          - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(700,350).
 
 
-## Feature_Extraction
 
-    pipeline.Feature_Extraction(data_directory, transformations='default',
-    custom_resize = 'default', is_dicom=True,label_from_table=False,
-    is_csv=None,table_source=None, device='default', path_col = 'IMAGE_PATH',
-    label_col = 'IMAGE_LABEL', mode='RAW', wl=None, model_arch='vgg16',
-    pre_trained=True, unfreeze_weights=False, shuffle=True)
-
-!!! abstract "Description"
-
-    The feature extraction pipeline utilizes a pre-trained model to extract a set of features that can be used in another machine learning algorithms e.g. Adaboost or KNN.
-
-    The trained model by default can one of the supported model architectures trained with default weights trained on the ImageNet dataset. (The ability to use a model that has been trained and exported using the image classification pipeline will be added later.)
-
-    The output is a pandas dataframe that has feature columns, label column and file path column.
-
-    Under the hood, the pipeline removes the last FC layer of the pretrained models to output the features.
-
-    The number of extracted features depends on the model architecture selected:
-
-  <div align='center'>
-
-  | Model Architecture | Default Input Image Size | Output Features |
-  |--------------------|:------------------------:|:---------------:|
-  | vgg11              |         224 x 224        |       4096      |
-  | vgg13              |         224 x 224        |       4096      |
-  | vgg16              |         224 x 224        |       4096      |
-  | vgg19              |         224 x 224        |       4096      |
-  | vgg11_bn           |         224 x 224        |       4096      |
-  | vgg13_bn           |         224 x 224        |       4096      |
-  | vgg16_bn           |         224 x 224        |       4096      |
-  | vgg19_bn           |         224 x 224        |       4096      |
-  | resnet18           |         224 x 224        |       512       |
-  | resnet34           |         224 x 224        |       512       |
-  | resnet50           |         224 x 224        |       2048      |
-  | resnet101          |         224 x 224        |       2048      |
-  | resnet152          |         224 x 224        |       2048      |
-  | wide_resnet50_2    |         224 x 224        |       2048      |
-  | wide_resnet101_2   |         224 x 224        |       2048      |
-  | alexnet            |         256 x 256        |       4096      |
-
-  </div>
-
-
-<!-- ####Parameters -->
-
-!!! info "Parameters"
-
-    **data_directory:**
-
-    - _(str)_ target data directory. **(Required)**
-
-    **is_dicom:**
-
-    - _(boolean)_  True for DICOM images, False for regular images.(default=True)
-
-    **label_from_table:**
-
-    - _(boolean)_ True if labels are to extracted from table, False if labels are to be extracted from subfolders. (default=False)
-
-    **is_csv:**
-
-    - _(boolean)_  True for csv, False for pandas dataframe.
-
-    **table_source:**
-
-    - _(str or pandas dataframe object)_ source for labelling data. (default=None). This is path to csv file or name of pandas dataframe if pandas to be used.
-
-    **path_col:**
-
-    - _(str)_ name of the column with the image path. (default='IMAGE_PATH')
-
-    **label_col:**
-
-    - _(str)_ name of the label/class column. (default='IMAGE_LABEL')
-
-
-    **shuffle**
-    - _(boolean)_ shuffles items in dataset.(default=True)
-
-    **mode:**
-
-    - _(str)_ output mode for DICOM images only.
-    - Options:
-                   RAW= Raw pixels,
-                   HU= Image converted to Hounsefield Units,
-                   WIN= 'window' image windowed to certain W and L,
-                   MWIN = 'multi-window' converts image to 3 windowed images of different W and L (specified in wl argument) stacked together]. (default='RAW')
-
-    **wl:**
-
-    - _(list)_ list of lists of combinations of window level and widths to be used with WIN and MWIN.
-              In the form of : [[Level,Width], [Level,Width],...].
-              Only 3 combinations are allowed for MWIN (for now).(default=None)
-
-    **transformations:**
-
-    - _(pytorch transforms)_ pytroch transforms to be performed on the dataset. (default=Convert to tensor)
-
-    **custom_resize:**
-
-    - _(int)_ by default, a radtorch pipeline will resize the input images into the default training model input image
-    size as demosntrated in the table shown in radtorch home page. This default size can be changed here if needed.
-    model_arch: [str] PyTorch neural network architecture (default='vgg16')
-
-    **pre_trained:**
-
-    - _(boolean)_  Load the pretrained weights of the neural network. If False, the last layer is only retrained = Transfer Learning. (default=True)
-
-
-    **device:**
-
-    - _(str)_ device to be used for training. This can be adjusted to 'cpu' or 'cuda'. If nothing is selected, the pipeline automatically detects if cuda is available and trains on it.
-
-
-<!-- ####Methods -->
-
-!!! info "Methods"
-
-
-    **.info()**
-
-    - Display Pandas Dataframe with properties of the Pipeline.
-
-    **.dataset_info(plot=True)**
-
-    - Display Dataset Information.
-
-    - Arguments:
-        - plot: _(boolean)_ displays dataset information in graphical representation. (default=True)
-
-    **.sample(fig_size=(10,10), show_labels=True, show_file_name=False)**
-
-    - Display sample of the training dataset.
-
-    - Arguments:
-        - fig_size: _(tuple)_ figure size. (default=(10,10))
-        - show_labels: _(boolean)_ show the image label idx. (default=True)
-        - show_file_name: _(boolean)_ show the image name as label. (default=False)
-
-    **.num_features()**
-
-    - Displays number of features to be extracted.
-
-    **.run(verbose=True)**
-
-    - Extracts features from dataset.
-
-    - Arguments:
-        - verbose: _(boolean)_ Show the feature table. (default=True)
-
-    **.export_features(csv_path)**
-
-    - Exports the features to csv.
-
-    - Arguments:
-        - csv_path: _(str)_ Path to output csv file.
-
-    **.export(target_path)**
-
-    - Exports the whole image classification pipeline for future use
-
-    - Arguments:
-        - target_path: _(str)_ target location for export.
-
-    **.plot_extracted_features(feature_table=None, feature_names=None, num_features=100, num_images=100,image_path_col='img_path', image_label_col='label_idx')**
-
-    - Plots a graphical representation of extracted features.
-
-    - Arguments:
-        - num_features: _(int)_ number of features to be displayed (default=100)
-        - num_images: _(int)_ number of images to display features for (default=100)
-        - image_path_col: _(str)_ name of column containing image paths in the feature table. (default='img_path')
-        - image_label_col: _(str)_ name of column containing image label idx in the feature table. (default='label_idx')
-
-
-
-!!! success "Examples"
-
-    Full example for Feature Extraction Pipeline can be found [HERE](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=iTAp7Zz6CrJ3)
-
-
-    <hr>
-
-
-## Compare_Image_Classifier
-      pipeline.Compare_Image_Classifier(data_directory,transformations='default',
-      custom_resize = 'default', device='default', optimizer='Adam', is_dicom=True,
-      label_from_table=False, is_csv=None, table_source=None, path_col = 'IMAGE_PATH',
-      label_col = 'IMAGE_LABEL', balance_class =[False], multi_label = False,
-      mode='RAW', wl=None,  normalize=['default'], batch_size=[8],
-      test_percent = [0.2], valid_percent = [0.2], model_arch=['vgg16'],
-      pre_trained=[True], unfreeze_weights=False, train_epochs=[10],
-      learning_rate=[0.0001],loss_function='CrossEntropyLoss')
-
-!!! abstract "Description"
-    The Compare Image Classifier class performs analysis and comparison of different image classification pipelines. This is particularly useful when comparing different model architectures and/or different training parameters.
-
-!!! warning "Important"  
-    Please note that this pipeline performs training from scratch on the selected model architectures. The ability to compared outside trained models will be added in a future release.
-
-!!! warning "Supported Parameters"    
-    The currently supported parameters that can be compared include:
-
-    1. balance_class
-    2. normalize
-    3. batch_size
-    4. test_percent
-    5. valid_percent
-    6. train_epochs
-    7. learning_rate
-    8. model_arch
-    9. self.pre_trained
-
-!!! warning "Use of supported parameters "  
-    Please note that the supported parameters are supplied as **List** e.g. model_arch=['renet50'] or train_epochs=[10,20].
-
-!!! info "Parameters"
-    This pipeline follows the same parameters used for the image classification as above. **Please take note of the warning on how to use the supported parameters above.**
-
-!!! info "Methods"
-    **.info()**
-
-    - Display Pandas Dataframe with properties of the Pipeline.
-
-    **.grid()**
-
-    - Display table with all generated image classifier objects that will be used for comparison.
-
-    **.parameters()**
-
-    - Displays a list of supported comparison parameters.
-
-    **.dataset_info(plot=True)**
-
-    - Display Dataset Information.
-
-    - Arguments:
-        - plot: _(boolean)_ displays dataset information in graphical representation. (default=True)
-
-    **.sample(fig_size=(10,10), show_labels=True, show_file_name=False)**
-
-    - Display sample of the training dataset.
-
-    - Arguments:
-        - fig_size: _(tuple)_ figure size. (default=(10,10))
-        - show_labels: _(boolean)_ show the image label idx. (default=True)
-        - show_file_name: _(boolean)_ show the image name as label. (default=False)
-
-    **.run(verbose=True)**
-
-    - Runs the pipeline.
-
-    **.metrics(fig_size=(650,400)))**
-
-    - Display the training metrics.
-
-
-    **.roc(fig_size=(700,400))**
-
-    - Displays comparison between ROC curves of different classifiers with AUC.
-
-
-    **.best(path=None, export_classifier=False, export_model=False))**
-
-    - Displays the best classifier based on AUC.
-
-    - Arguments:
-        - path: _(str)_ exporting path.
-        - export_classifier: _(boolen)_ export the best classifier.
-        - export_model: _(boolen)_ export the best model.
-
-
-
-!!! success "Examples"
-
-    Full example for Compare_Image_Classifier can be found [HERE](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i#scrollTo=HNBKoWg_WyUW&line=1&uniqifier=1)
-
-
-<hr>
-
-
-
-## load_pipeline
-      pipeline.load_pipeline(target_path)
-
-!!! abstract "Description"
-    Loads a previously saved pipeline for future use.
-
-    **Arguments**
-
-    - target_path: _(str)_ target path of the target pipeline.
-
-!!! success "Examples"
-
-        my_classifier = load_pipeline('/path/to/pipeline.dump')
+<small> Documentation Update: 5/14/2020 </small>

@@ -53,7 +53,8 @@ from bokeh.models import BasicTicker, ColorBar, LinearColorMapper, PrintfTickFor
 from bokeh.plotting import figure, show
 from bokeh.layouts import row, gridplot, column
 from bokeh.transform import factor_cmap, cumsum
-from bokeh.palettes import viridis, Paired, inferno, brewer, d3, Turbo256
+from bokeh.palettes import viridis, Paired, inferno, brewer, d3
+from statistics import mean
 
 
 # RADTOrch settings
@@ -183,6 +184,7 @@ DEFAULT_DATASET_SETTINGS={
 'custom_resize':False,
 'multi_label':False,
 'num_workers':0,
+'sampling':1.0,
 
 }
 
