@@ -52,7 +52,7 @@ class GAN():
 
     - transformations (list, optional): list of pytorch transformations to be applied to all datasets. By default, the images are resized, channels added up to 3 and greyscaled. default='default'.
 
-    - normalize (bolean/False or Tuple, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=((0.5,0.5,0.5),(0.5,0.5,0.5)).
+    - normalize (bolean/False or Tuple, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=((0,0,0),(1,1,1)).
 
     - label_smooth (boolean, optioanl): by default, labels for real images as assigned to 1. If label smoothing is set to True, lables of real images will be assigned to 0.9. default=True. (Source: https://github.com/soumith/ganhacks#6-use-soft-and-noisy-labels)
 
@@ -133,7 +133,7 @@ class GAN():
                mode='RAW',
                wl=None,
                batch_size=16,
-               normalize=((0.5,0.5,0.5),(0.5,0.5,0.5)),
+               normalize=((0,0,0),(1,1,1)),
                num_workers=0,
                label_smooth=True,
                discriminator='dcgan',
@@ -414,3 +414,24 @@ class GAN():
 
     def sample(self, figure_size=(10,10), show_labels=True):
         show_dataloader_sample(self.dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name = False,)
+
+    def export_generated_images(output_folder, zip=False):
+        for images in self.generated_samples:
+            cols = int(math.sqrt(len(images)))
+            n_images = len(images)
+            titles = ['Image (%d)' % i for i in range(1,n_images + 1)]
+            fig = plt.figure(figsize=figure_size)
+            for n, (image, title) in enumerate(zip(images, titles)):
+                a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
+                if image.shape[2]==1:
+                    image=np.squeeze(image, axis=2)
+                    plt.gray()
+                image_max = np.amax(image)
+                image_min = np.amin(image)
+                if image_max >255 or image_min <0 :
+                  image=np.clip(image, 0, 255)
+                plt.axis('off')
+            plt.axis('off')
+            plt.savefig(fname=output_folder+str(self.generated_samples.index(images))+'.png', transparent=True)
+        if zip:
+            ! zip -r output_folder/generated_images.zip output_folder
