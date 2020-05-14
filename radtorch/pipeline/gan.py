@@ -415,7 +415,7 @@ class GAN():
     def sample(self, figure_size=(10,10), show_labels=True):
         show_dataloader_sample(self.dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name = False,)
 
-    def export_generated_images(output_folder, figure_size=(10,10), zip=False):
+    def export_generated_images(self, output_folder, figure_size=(10,10), zip=False):
         for images in self.generated_samples:
             cols = int(math.sqrt(len(images)))
             n_images = len(images)
