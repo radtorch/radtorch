@@ -434,4 +434,4 @@ class GAN():
             plt.axis('off')
             plt.savefig(fname=output_folder+str(self.generated_samples.index(images))+'.png', transparent=True)
         if zip:
-            ! zip -r output_folder/generated_images.zip output_folder
+            os.system("zip -r output_folder/generated_images.zip output_folder")
