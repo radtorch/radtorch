@@ -303,3 +303,7 @@ core.GAN(
       - Parameters:
 
           - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(700,350).
+
+
+
+<small> Documentation Update: 5/14/2020 </small>

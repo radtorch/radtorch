@@ -41,3 +41,6 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 4. Bokeh, Matplotlib and Seaborn for Data Visualization.
 
 <!-- ![](img/radtorch_stack.png) -->
+
+
+<small> Documentation Update: 5/14/2020 </small>

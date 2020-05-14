@@ -15,10 +15,13 @@ pip3 uninstall radtorch
 
 
 ## Requirements
-- Internet connection is required for installation and model weight download.
+
+- Internet connection is required for installation and to download trained model weights.
+
 - Python 3.5 or later.
 
 ## Dependencies
+
 RADTorch depends on the following packages which are installed automatically during the installation process.
 
 - torch  1.4.0
@@ -42,3 +45,6 @@ RADTorch depends on the following packages which are installed automatically dur
 - Bokeh 2.0.0
 
 - seaborn 0.10.0      
+
+
+<small> Documentation Update: 5/14/2020 </small>

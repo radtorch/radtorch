@@ -135,3 +135,6 @@ without specific prior written permission.
 
 Code snippet adapted with modification from : https://www.kaggle.com/grfiv4/plot-a-confusion-matrix
  </small>
+
+
+ <small> Documentation Update: 5/14/2020 </small>
