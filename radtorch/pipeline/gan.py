@@ -260,7 +260,7 @@ class GAN():
           self.D=DCGAN_Discriminator(num_input_channels=self.d_input_image_channels,num_discriminator_features=self.d_num_features, input_image_size=self.d_input_image_size,  kernel_size=4)
         elif self.d=='vanilla':
           self.D=GAN_Discriminator(input_image_size=self.d_input_image_size, intput_num_channels=self.d_input_image_channels, device=self.device)
-       elif self.d=='wgan':
+        elif self.d=='wgan':
           self.D=WGAN_Discriminator(num_input_channels=self.d_input_image_channels,num_discriminator_features=self.d_num_features, input_image_size=self.d_input_image_size,  kernel_size=4)
 
 
