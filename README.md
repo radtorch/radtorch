@@ -8,10 +8,23 @@
 
 
 <p style='text-align: justify;'>
-RADTorch provides a package of higher level functions and classes that significantly decrease the amount of time needed for implementation of different machine and deep learning algorithms on DICOM medical images.
-</p>
 
-![](/docs/documentation/img/radtorch_stack.png)
+RADTorch provides a framework of higher level classes and functions that aim at significantly reducing the time needed for implementation of different machine and deep learning algorithms on DICOM medical images.
+
+RADTorch was **built by radiologists for radiologists** so they can build, test and implement state-of-the-art machine learning algorithms in minutes.
+
+
+RADTorch is built upon widely used machine learning and deep learning frameworks. These include:
+
+1. PyTorch for Deep Learning and Neural Networks.
+
+2. Scikit-learn for Data Management and Machine Learning Algorithms.
+
+3. PyDICOM for handling of DICOM data.
+
+4. Bokeh, Matplotlib and Seaborn for Data Visualization.
+
+</p>
 
 
 ## How
@@ -26,11 +39,6 @@ classifier.run()
 <small>
 The above 3 lines of code will run an image classifier using Alexnet model architecture with pre-trained weights for feature extraction and 'ridge' classifier.
 </small>
-
-## See it in action
-1. [Using RADTorch for classification of Normal vs COVID-19 Chest X-Rays.](https://www.kaggle.com/elbanan/radtorch-covid-19)
-2. [Using RADTorch for classifying different animal images.](https://www.kaggle.com/elbanan/radtorch-animal-classification)
-
 
 
 ## Try it yourself
@@ -53,6 +61,7 @@ RADTorch was developed by Mohamed Elbanan, MD: a Radiology Resident at Yale New 
 
 ## Contribute
 Bug reports and pull requests are welcome.
+
 
 ## Cite us
 This framework is provided for free and opensource to anyone who would like to use it and/or update it.
