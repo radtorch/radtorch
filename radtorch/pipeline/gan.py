@@ -386,9 +386,9 @@ class GAN():
                 # Calculate loss on all-real batch
                 if self.d in ['dcgan, vanilla']:
                     errD_real = self.criterion(output, label)
-                # Calculate gradients for D in backward pass
+                    # Calculate gradients for D in backward pass
                     errD_real.backward()
-                # D_x = output.mean().item()
+                    # D_x = output.mean().item()
 
                 ## Train with all-fake batch
                 # Generate batch of latent vectors
@@ -396,10 +396,10 @@ class GAN():
                 # generated_noise=torch.randn((b_size,self.g_noise_size, 1, 1), device=self.device)
                 # Generate fake image batch with G
                 fake = self.G(generated_noise)
-                label.fill_(fake_label)
-                # Classify all fake batch with D
-                output = self.D(fake.detach()).view(-1)
                 if self.d in ['dcgan, vanilla']:
+                    label.fill_(fake_label)
+                    # Classify all fake batch with D
+                    output = self.D(fake.detach()).view(-1)
                     # Calculate D's loss on the all-fake batch
                     errD_fake = self.criterion(output, label)
                     # Calculate the gradients for this batch
@@ -419,18 +419,8 @@ class GAN():
                 if self.g=='wgan':
                     if epoch % self.num_critics == 0:
                         self.G.zero_grad()
-                        label.fill_(real_label)  # fake labels are real for generator cost
-                        # Since we just updated D, perform another forward pass of all-fake batch through D
-                        if self.g in ['dcgan', 'vanilla']:
-                            output = self.D(fake).view(-1)
-                            # Calculate G's loss based on this output
-                            errG = self.criterion(output, label)
-                            # Calculate gradients for G
-                        if self.g == 'wgan':
-                            errG=-torch.mean(self.D(fake))
+                        errG=-torch.mean(self.D(fake))
                         errG.backward()
-                        # D_G_z2 = output.mean().item()
-                        # Update G
                         self.G_optimizer.step()
                     else:
                         pass
@@ -438,14 +428,11 @@ class GAN():
                     self.G.zero_grad()
                     label.fill_(real_label)  # fake labels are real for generator cost
                     # Since we just updated D, perform another forward pass of all-fake batch through D
-                    if self.g in ['dcgan', 'vanilla']:
-                        output = self.D(fake).view(-1)
-                        # Calculate G's loss based on this output
-                        errG = self.criterion(output, label)
-                        # Calculate gradients for G
-                    if self.g == 'wgan':
-                        errG=-torch.mean(self.D(fake))
-                    errG.backward(retain_graph=True)
+                    output = self.D(fake).view(-1)
+                    # Calculate G's loss based on this output
+                    errG = self.criterion(output, label)
+                    # Calculate gradients for G
+                    errG.backward()
                     # D_G_z2 = output.mean().item()
                     # Update G
                     self.G_optimizer.step()
