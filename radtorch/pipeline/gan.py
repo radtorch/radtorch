@@ -445,7 +445,7 @@ class GAN():
                         # Calculate gradients for G
                     if self.g == 'wgan':
                         errG=-torch.mean(self.D(fake))
-                    errG.backward()
+                    errG.backward(retain_graph=True)
                     # D_G_z2 = output.mean().item()
                     # Update G
                     self.G_optimizer.step()
