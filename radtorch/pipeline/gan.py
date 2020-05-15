@@ -209,7 +209,6 @@ class GAN():
         self.g_optimizer_param=generator_optimizer_param
         self.epochs=epochs
         self.label_smooth=label_smooth
-        self.loss=loss
         self.num_critics=num_critics
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
