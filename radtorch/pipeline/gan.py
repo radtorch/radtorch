@@ -421,12 +421,12 @@ class GAN():
                         self.G.zero_grad()
                         label.fill_(real_label)  # fake labels are real for generator cost
                         # Since we just updated D, perform another forward pass of all-fake batch through D
-                        if self.generator in ['dcgan', 'vanilla']:
+                        if self.g in ['dcgan', 'vanilla']:
                             output = self.D(fake).view(-1)
                             # Calculate G's loss based on this output
                             errG = self.criterion(output, label)
                             # Calculate gradients for G
-                        if self.generator == 'wgan':
+                        if self.g == 'wgan':
                             errG=-torch.mean(self.D(fake))
                         errG.backward()
                         # D_G_z2 = output.mean().item()
