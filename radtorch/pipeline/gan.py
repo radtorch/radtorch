@@ -463,7 +463,7 @@ class GAN():
       return show_metrics([self],  figure_size=figure_size, type='GAN')
 
 
-    def wasserstein_loss(y_true, y_pred):
+    def wasserstein_loss(self, y_true, y_pred):
         return np.mean(y_true * y_pred)
 
 
