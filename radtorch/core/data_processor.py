@@ -307,6 +307,7 @@ class Data_Processor():
             plot_dataset_info(info_dict, plot_size= figure_size)
         else:
             for k, v in info_dict.items():
+                print (k)
                 display(v)
 
     def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
