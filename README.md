@@ -2,8 +2,8 @@
 # RADTorch, The Radiology Machine Learning Framework
 
 
-![](https://img.shields.io/badge/stable%20version-1.0.0-brightgreen?style=for-the-badge)
-![](https://img.shields.io/badge/nightly%20version-1.1.1-blue?style=for-the-badge)
+![](https://img.shields.io/badge/stable%20version-1.1.1-brightgreen?style=for-the-badge)
+
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen?style=for-the-badge)
 ![](https://img.shields.io/badge/license-AGPL3.0-red?style=for-the-badge)
 
