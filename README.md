@@ -2,8 +2,10 @@
 
 
 ![](https://img.shields.io/badge/stable%20version-1.1.1-blue)
+![](https://zenodo.org/badge/DOI/10.5281/zenodo.3827986.svg)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen)
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
+
 
 <p style='text-align: justify;'>
 <br>
@@ -76,12 +78,14 @@ This framework is provided for free and opensource to anyone who would like to u
 Please cite us as :
 
 ```
-@software{mohamed_elbanan_md_2020_3732781,
-  author       = {Mohamed Elbanan, MD},
-  title        = {RADTorch - The Radiology Machine Learning Tool Kit},
+@software{mohamed_elbanan_2020_3827986,
+  author       = {Mohamed Elbanan},
+  title        = {radtorch/radtorch: 1.1.1},
+  month        = may,
   year         = 2020,
   publisher    = {Zenodo},
-  doi          = {10.5281/zenodo.3732781},
-  url          = {https://doi.org/10.5281/zenodo.3732781}
+  version      = {1.1.1},
+  doi          = {10.5281/zenodo.3827986},
+  url          = {https://doi.org/10.5281/zenodo.3827986}
 }
 ```
