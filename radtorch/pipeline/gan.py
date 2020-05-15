@@ -423,7 +423,7 @@ class GAN():
                     label.fill_(real_label)  # fake labels are real for generator cost
                     # Since we just updated D, perform another forward pass of all-fake batch through D
                     if self.generator in ['dcgan', 'vanilla']:
-                        output = self.D(f ake).view(-1)
+                        output = self.D(fake).view(-1)
                         # Calculate G's loss based on this output
                         errG = self.criterion(output, label)
                         # Calculate gradients for G
