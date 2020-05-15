@@ -1,14 +1,13 @@
-
-# RADTorch, The Radiology Machine Learning Framework
+![](https://github.com/radtorch/radtorch/blob/master/docs/assets/img/welcome.png?raw=true)
 
 
 ![](https://img.shields.io/badge/stable%20version-1.1.1-brightgreen?style=for-the-badge)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen?style=for-the-badge)
 ![](https://img.shields.io/badge/license-AGPL3.0-red?style=for-the-badge)
 
-
 <p style='text-align: justify;'>
-
+<br>
+  
 RADTorch provides a framework of higher level classes and functions that aim at significantly reducing the time needed for implementation of different machine and deep learning algorithms on DICOM medical images.
 
 RADTorch was **built by radiologists for radiologists** so they can build, test and implement state-of-the-art machine learning algorithms in minutes.
@@ -26,8 +25,9 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 
 </p>
 
+<br>
 
-## How
+### How
 
 Running a state-of-the-art DICOM image classifier can be run using the Image Classification Pipeline using the commands:
 ```
@@ -40,30 +40,35 @@ classifier.run()
 The above 3 lines of code will run an image classifier using Alexnet model architecture with pre-trained weights for feature extraction and 'ridge' classifier.
 </small>
 
+<br>
 
-## Try it yourself
+### Try it yourself
 RADTorch playground for testing is provided on [Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
 
+<br>
 
-## Documentation
+### Documentation
 Full Documentation at official website: https://docs.radtorch.com
 
-
-## Requests
+<br>
+### Requests
 Feature requests are more than welcomed on our discussion board [HERE](https://github.com/radtorch/radtorch/issues/4#issue-573590182)
 
+<br>
 
-## Who are we?
+### Who are we?
 <p style='text-align: justify;'>
 RADTorch was developed by Mohamed Elbanan, MD: a Radiology Resident at Yale New Haven Health System, Clinical Research Affiliate at Yale School of Medicine and a Machine-learning enthusiast.
 </p>
 
+<br>
 
-## Contribute
+### Contribute
 Bug reports and pull requests are welcome.
 
+<br>
 
-## Cite us
+### Cite us
 This framework is provided for free and opensource to anyone who would like to use it and/or update it.
 
 Please cite us as :
