@@ -438,19 +438,30 @@ class GAN():
                     # Update G
                     self.G_optimizer.step()
 
-                self.train_metrics.append([errD.item(),  errG.item(), errD_real.item(), errD_fake.item()])
+                if self.d=='wgan':
+                    self.train_metrics.append([errD.item(),  errG.item(), 0, 0])
+                else:
+                    self.train_metrics.append([errD.item(),  errG.item(), errD_real.item(), errD_fake.item()])
+                    epoch_d_loss_real=[errD_real.item()]
+                    epoch_d_loss_fake=[errD_fake.item()]
                 epoch_errD=[errD.item()]
                 epoch_errG=[errG.item()]
-                epoch_d_loss_real=[errD_real.item()]
-                epoch_d_loss_fake=[errD_fake.item()]
+
 
                 batch_end=time.time()
                 if verbose=='batch':
-                    log("[Epoch:{:03d}/{:03d}, Batch{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, batch_number, num_batches, errD.item(),errG.item(), errD_real.item(), errD_fake.item(), batch_end-batch_start))
+                    if self.d=='wgan'
+                        log("[Epoch:{:03d}/{:03d}, Batch{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, batch_number, num_batches, errD.item(),errG.item(), batch_end-batch_start))
+                    else:
+                        log("[Epoch:{:03d}/{:03d}, Batch{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, batch_number, num_batches, errD.item(),errG.item(), errD_real.item(), errD_fake.item(), batch_end-batch_start))
 
             epoch_end=time.time()
             if verbose=='epoch':
-                log("[Epoch:{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, mean(epoch_errD), mean(epoch_errG), mean(epoch_d_loss_real), mean(epoch_d_loss_fake), epoch_end-epoch_start))
+                if self.d=='wgan':
+                    log("[Epoch:{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, mean(epoch_errD), mean(epoch_errG), epoch_end-epoch_start))
+                else:
+                    log("[Epoch:{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, mean(epoch_errD), mean(epoch_errG), mean(epoch_d_loss_real), mean(epoch_d_loss_fake), epoch_end-epoch_start))
+
             self.G.eval()
             # generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=num_generated_images)
             sample = self.G(self.fixed_noise)
