@@ -324,7 +324,7 @@ class WGAN_Generator(nn.Module):
     """
 
     def __init__(self, noise_size, num_generator_features, num_output_channels, target_image_size, device='auto'):
-        super(DCGAN_Generator, self).__init__()
+        super(WGAN_Generator, self).__init__()
         self.noise_size=noise_size
         self.num_generator_features=num_generator_features
         self.num_output_channels=num_output_channels
@@ -391,7 +391,7 @@ class WGAN_Discriminator(nn.Module):
     """
 
     def __init__(self, num_input_channels, kernel_size, num_discriminator_features, input_image_size, device='auto'):
-        super(DCGAN_Discriminator, self).__init__()
+        super(WGAN_Discriminator, self).__init__()
         self.num_input_channels=num_input_channels
         self.num_discriminator_features=num_discriminator_features
         self.input_image_size=input_image_size

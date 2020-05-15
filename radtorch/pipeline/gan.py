@@ -260,12 +260,16 @@ class GAN():
           self.D=DCGAN_Discriminator(num_input_channels=self.d_input_image_channels,num_discriminator_features=self.d_num_features, input_image_size=self.d_input_image_size,  kernel_size=4)
         elif self.d=='vanilla':
           self.D=GAN_Discriminator(input_image_size=self.d_input_image_size, intput_num_channels=self.d_input_image_channels, device=self.device)
+       elif self.d=='wgan':
+          self.D=WGAN_Discriminator(num_input_channels=self.d_input_image_channels,num_discriminator_features=self.d_num_features, input_image_size=self.d_input_image_size,  kernel_size=4)
 
 
         if self.g=='dcgan':
           self.G=DCGAN_Generator(noise_size=self.g_noise_size, num_generator_features=self.g_num_features, num_output_channels=self.g_output_image_channels, target_image_size=self.g_output_image_size)
         elif self.g=='vanilla':
           self.G=GAN_Generator(noise_size=self.g_noise_size, target_image_size=self.g_output_image_size, output_num_channels=self.g_output_image_channels, device=self.device)
+        elif self.g=='wgan':
+          self.G=WGAN_Generator(noise_size=self.g_noise_size, num_generator_features=self.g_num_features, num_output_channels=self.g_output_image_channels, target_image_size=self.g_output_image_size)
 
         self.G.apply(self.weights_init)
         self.D = self.D.to(self.device)
