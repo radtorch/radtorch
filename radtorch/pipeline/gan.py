@@ -172,7 +172,7 @@ class GAN():
                image_channels=1,
                sampling=1.0,
                transformations='default',
-               num_critics=2
+               num_critics=2,
                device='auto'):
 
         self.data_directory=data_directory
