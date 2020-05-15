@@ -47,6 +47,7 @@ The above 3 lines of code will run an image classifier using Alexnet model archi
 RADTorch playground for testing is provided on [Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
 
 <br>
+
 ### Documentation
 Full Documentation at official website: https://docs.radtorch.com
 
