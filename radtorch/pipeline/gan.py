@@ -88,6 +88,8 @@ class GAN():
 
     - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
 
+    - loss (string, optional): type of loss to be applied. Options{'minmax', 'wasserstein'}. default='minmax'
+
 
 
     Methods
@@ -170,6 +172,7 @@ class GAN():
                image_channels=1,
                sampling=1.0,
                transformations='default',
+               loss='minmax'
                device='auto'):
 
         self.data_directory=data_directory
@@ -206,6 +209,7 @@ class GAN():
         self.g_optimizer_param=generator_optimizer_param
         self.epochs=epochs
         self.label_smooth=label_smooth
+        self.loss=loss
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -365,7 +369,7 @@ class GAN():
                 # Calculate loss on all-real batch
                 errD_real = self.criterion(output, label)
                 # Calculate gradients for D in backward pass
-                errD_real.backward()
+                if self.loss=='minmax': errD_real.backward()
                 # D_x = output.mean().item()
 
                 ## Train with all-fake batch
@@ -380,11 +384,15 @@ class GAN():
                 # Calculate D's loss on the all-fake batch
                 errD_fake = self.criterion(output, label)
                 # Calculate the gradients for this batch
-                errD_fake.backward()
+                if self.loss=='minmax': errD_fake.backward()
                 # D_G_z1 = output.mean().item()
                 # Add the gradients from the all-real and all-fake batches
                 errD = errD_real + errD_fake
                 # Update D
+
+                if self.loss=='wasserstein':
+                    w_loss = errD_real-errD_fake
+                    w_loss.backward()
                 self.D_optimizer.step()
 
                 ############################
