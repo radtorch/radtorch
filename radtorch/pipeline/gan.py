@@ -275,7 +275,7 @@ class GAN():
         self.D = self.D.to(self.device)
         self.G = self.G.to(self.device)
 
-        if self.d_optimizer='auto':
+        if self.d_optimizer=='auto':
             if self.d in ['dcgan', 'vanilla']:
                 self.D_optimizer=self.nn_optimizer(type='Adam', model=self.D, learning_rate=self.d_learning_rate, **self.d_optimizer_param)
             elif self.d =='wgan':
@@ -283,7 +283,7 @@ class GAN():
         else:
             self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, **self.d_optimizer_param)
 
-        if self.g_optimizer='auto':
+        if self.g_optimizer=='auto':
             if self.g in ['dcgan', 'vanilla']:
                 self.G_optimizer=self.nn_optimizer(type='Adam', model=self.G, learning_rate=self.d_learning_rate, **self.d_optimizer_param)
             elif self.g =='wgan':
