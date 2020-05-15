@@ -393,10 +393,10 @@ class GAN():
                 ## Train with all-fake batch
                 # Generate batch of latent vectors
                 generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=b_size)
-                # generated_noise=torch.randn((b_size,self.g_noise_size, 1, 1), device=self.device)
-                # Generate fake image batch with G
                 fake = self.G(generated_noise)
                 if self.d in ['dcgan, vanilla']:
+                    # Generate fake image batch with G
+                    fake = self.G(generated_noise)
                     label.fill_(fake_label)
                     # Classify all fake batch with D
                     output = self.D(fake.detach()).view(-1)
@@ -406,6 +406,7 @@ class GAN():
                     errD_fake.backward()
                     errD = errD_real + errD_fake
                 if self.d =='wgan':
+                    fake = self.G(generated_noise).detach()
                     errD = -torch.mean(self.D(images)) + torch.mean(self.D(fake))
                     errD.backward()
                 # D_G_z1 = output.mean().item()
