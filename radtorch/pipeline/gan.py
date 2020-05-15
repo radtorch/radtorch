@@ -402,8 +402,9 @@ class GAN():
                     errD.backward()
                 self.D_optimizer.step()
 
-                for p in self.D.parameters():
-                    p.data.clamp_(-0.01, 0.01)
+                if self.d=='wgan':
+                    for p in self.D.parameters():
+                        p.data.clamp_(-0.01, 0.01)
 
                 #(2) Train G
                 if self.g=='wgan':
