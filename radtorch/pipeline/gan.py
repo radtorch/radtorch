@@ -351,6 +351,10 @@ class GAN():
             real_label=1.0
         fake_label=0.0
 
+        if self.d=='wgan':
+            real_label = -1
+            fake_label = 1
+
         self.D = self.D.to(self.device)
         self.G = self.G.to(self.device)
 
@@ -373,54 +377,44 @@ class GAN():
 
                 batch_start=time.time()
 
-                # (1) Train D
-                ###########################
+                #(1) Train D
                 ## Train with all-real batch
                 self.D.zero_grad()
-                # Format batch
                 images = images.to(self.device)
                 b_size = images.size(0)
                 label = torch.full((b_size,), real_label, dtype=torch.float, device=self.device)
-                # Forward pass real batch through D
                 output = self.D(images).view(-1)
-                # Calculate loss on all-real batch
-                if self.d in ['dcgan, vanilla']:
+                if self.d=='wgan':
+                    errD_real = self.wasserstein_loss(label, output)
+                else:
                     errD_real = self.criterion(output, label)
-                    # Calculate gradients for D in backward pass
-                    errD_real.backward()
-                    # D_x = output.mean().item()
+                errD_real.backward()
 
                 ## Train with all-fake batch
-                # Generate batch of latent vectors
                 generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=b_size)
                 fake = self.G(generated_noise)
-                if self.d in ['dcgan, vanilla']:
-                    # Generate fake image batch with G
-                    fake = self.G(generated_noise)
-                    label.fill_(fake_label)
-                    # Classify all fake batch with D
-                    output = self.D(fake.detach()).view(-1)
-                    # Calculate D's loss on the all-fake batch
+                fake = self.G(generated_noise)
+                label.fill_(fake_label)
+                output = self.D(fake.detach()).view(-1)
+                if self.d=='wgan':
+                    errD_fake = self.wasserstein_loss(label, output)
+                else:
                     errD_fake = self.criterion(output, label)
-                    # Calculate the gradients for this batch
-                    errD_fake.backward()
-                    errD = errD_real + errD_fake
-                if self.d =='wgan':
-                    fake = self.G(generated_noise).detach()
-                    errD = -torch.mean(self.D(images)) + torch.mean(self.D(fake))
-                    errD.backward()
-                # D_G_z1 = output.mean().item()
-                # Add the gradients from the all-real and all-fake batches
-                # Update D
+                errD_fake.backward()
+                errD = errD_real + errD_fake
+
                 self.D_optimizer.step()
 
-                ############################
-                # (2) Train G
-                ############################
+                for p in self.D.parameters():
+                    p.data.clamp_(-0.01, 0.01)
+
+                #(2) Train G
                 if self.g=='wgan':
                     if epoch % self.num_critics == 0:
                         self.G.zero_grad()
-                        errG=-torch.mean(self.D(fake))
+                        label.fill_(real_label)
+                        output = self.D(fake).view(-1)
+                        errG=self.wasserstein_loss(label, output)
                         errG.backward()
                         self.G_optimizer.step()
                     else:
@@ -428,39 +422,28 @@ class GAN():
                 else:
                     self.G.zero_grad()
                     label.fill_(real_label)  # fake labels are real for generator cost
-                    # Since we just updated D, perform another forward pass of all-fake batch through D
                     output = self.D(fake).view(-1)
-                    # Calculate G's loss based on this output
                     errG = self.criterion(output, label)
-                    # Calculate gradients for G
                     errG.backward()
-                    # D_G_z2 = output.mean().item()
-                    # Update G
                     self.G_optimizer.step()
 
-                if self.d=='wgan':
-                    self.train_metrics.append([errD.item(),  errG.item(), 0, 0])
-                else:
-                    self.train_metrics.append([errD.item(),  errG.item(), errD_real.item(), errD_fake.item()])
-                    epoch_d_loss_real=[errD_real.item()]
-                    epoch_d_loss_fake=[errD_fake.item()]
+
+
+
+                self.train_metrics.append([errD.item(),  errG.item(), errD_real.item(), errD_fake.item()])
+                epoch_d_loss_real=[errD_real.item()]
+                epoch_d_loss_fake=[errD_fake.item()]
                 epoch_errD=[errD.item()]
                 epoch_errG=[errG.item()]
 
 
                 batch_end=time.time()
                 if verbose=='batch':
-                    if self.d=='wgan':
-                        log("[Epoch:{:03d}/{:03d}, Batch{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, batch_number, num_batches, errD.item(),errG.item(), batch_end-batch_start))
-                    else:
-                        log("[Epoch:{:03d}/{:03d}, Batch{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, batch_number, num_batches, errD.item(),errG.item(), errD_real.item(), errD_fake.item(), batch_end-batch_start))
+                    log("[Epoch:{:03d}/{:03d}, Batch{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, batch_number, num_batches, errD.item(),errG.item(), errD_real.item(), errD_fake.item(), batch_end-batch_start))
 
             epoch_end=time.time()
             if verbose=='epoch':
-                if self.d=='wgan':
-                    log("[Epoch:{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, mean(epoch_errD), mean(epoch_errG), epoch_end-epoch_start))
-                else:
-                    log("[Epoch:{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, mean(epoch_errD), mean(epoch_errG), mean(epoch_d_loss_real), mean(epoch_d_loss_fake), epoch_end-epoch_start))
+                log("[Epoch:{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, mean(epoch_errD), mean(epoch_errG), mean(epoch_d_loss_real), mean(epoch_d_loss_fake), epoch_end-epoch_start))
 
             self.G.eval()
             # generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=num_generated_images)
@@ -478,6 +461,11 @@ class GAN():
 
     def metrics(self, figure_size=(700,350)):
       return show_metrics([self],  figure_size=figure_size, type='GAN')
+
+
+    def wasserstein_loss(y_true, y_pred):
+        return np.mean(y_true * y_pred)
+
 
     def export_generated_images(self, output_folder, figure_size=(10,10), zip=False):#<<<<<<<<<<<<<<<<<<<< NEEDS FIX
         for images in self.generated_samples:
