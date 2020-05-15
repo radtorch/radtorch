@@ -105,7 +105,7 @@ class DCGAN_Generator(nn.Module):
         return self.network(input)
 
     def summary(self):
-        summary(self.model, (1, self.noise_size))
+        summary(self.model, (1, self.noise_size), device=self.device)
 
 
 class DCGAN_Discriminator(nn.Module):
@@ -174,7 +174,7 @@ class DCGAN_Discriminator(nn.Module):
         return self.network(input)
 
     def summary(self):
-        summary(self.model, (self.num_input_channels, self.input_image_size, self.input_image_size))
+        summary(self.model, (self.num_input_channels, self.input_image_size, self.input_image_size), device=self.device)
 
 
 
@@ -238,7 +238,7 @@ class GAN_Generator(nn.Module):
         return output
 
     def summary(self):
-        summary(self.model, (1, self.noise_size))
+        summary(self.model, (1, self.noise_size), device=self.device)
 
 class GAN_Discriminator(nn.Module):
 
@@ -297,4 +297,4 @@ class GAN_Discriminator(nn.Module):
         return output
 
     def summary(self):
-        summary(self.model, (self.num_input_channels, self.input_image_size, self.input_image_size))
+        summary(self.model, (self.num_input_channels, self.input_image_size, self.input_image_size), device=self.device)
