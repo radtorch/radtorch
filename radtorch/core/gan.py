@@ -104,6 +104,9 @@ class DCGAN_Generator(nn.Module):
     def forward(self, input):
         return self.network(input)
 
+    def summary(self):
+        summary(self.model, (1, self.noise_size))
+
 
 class DCGAN_Discriminator(nn.Module):
 
@@ -170,6 +173,10 @@ class DCGAN_Discriminator(nn.Module):
     def forward(self, input):
         return self.network(input)
 
+    def summary(self):
+        summary(self.model, (self.num_input_channels, self.input_image_size, self.input_image_size))
+
+
 
 class GAN_Generator(nn.Module):
 
@@ -182,7 +189,7 @@ class GAN_Generator(nn.Module):
 
     Parameters
     ----------
-    
+
     - noise_size (integer, required): size of the noise sample to be generated.
 
     - num_output_channels (integer, required): number of channels for output image.
@@ -230,6 +237,8 @@ class GAN_Generator(nn.Module):
         output = output.view(-1, self.output_num_channels ,self.target_image_size, self.target_image_size)
         return output
 
+    def summary(self):
+        summary(self.model, (1, self.noise_size))
 
 class GAN_Discriminator(nn.Module):
 
@@ -286,3 +295,6 @@ class GAN_Discriminator(nn.Module):
         output = input.view(self.intput_num_channels ,self.input_image_size, -1)
         output = self.network(output)
         return output
+
+    def summary(self):
+        summary(self.model, (self.num_input_channels, self.input_image_size, self.input_image_size))

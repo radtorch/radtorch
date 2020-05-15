@@ -20,6 +20,8 @@ import torch.optim as optim
 import torch.nn.functional as F
 import torchvision.datasets as datasets
 
+from torchsummary import summary
+
 import numpy as np
 import pandas as pd
 import seaborn as sns

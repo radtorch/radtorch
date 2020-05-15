@@ -190,3 +190,6 @@ class Feature_Extractor():
             log('Feature Extractor exported successfully.')
         except:
             raise TypeError('Error! Feature Extractor could not be exported.')
+
+    def summary(self):
+        summary(self.model, (3, model_dict[self.model_arch]['input_size'], model_dict[self.model_arch]['input_size']))

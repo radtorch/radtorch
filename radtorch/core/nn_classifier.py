@@ -473,3 +473,6 @@ class NN_Classifier():
         misclassified_table = show_nn_misclassified(model=self.trained_model, target_data_set=self.test_dataset, num_of_images=num_of_images, device=self.device, transforms=self.data_processor.transformations, is_dicom = self.is_dicom, figure_size=figure_size)
         if table:
             return misclassified_table
+
+    def summary(self):
+        summary(self.model, (3, model_dict[self.model_arch]['input_size'], model_dict[self.model_arch]['input_size']))

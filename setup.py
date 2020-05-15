@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
       name='radtorch',
-      version='1.1.1',
+      version='1.1.2',
       version_date='5.14.2020',
       description='RADTorch, The Radiology Machine Learning Framework',
       url='https://radtorch.github.io/radtorch/',
@@ -12,7 +12,7 @@ setup(
       author_email = "https://www.linkedin.com/in/mohamedelbanan/",
       license='MIT',
       packages=find_packages(),
-      install_requires=['torch', 'torchvision', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn'],
+      install_requires=['torch', 'torchvision', 'torchsummary', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn'],
 
       zip_safe=False,
       classifiers=[
