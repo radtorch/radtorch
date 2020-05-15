@@ -77,6 +77,8 @@ class Classifier(object):
                 parameters={},
                 **kwargs):
 
+        for v, k in kwargs.items():
+            setattr(self, k, v)
 
         self.extracted_feature_dictionary=extracted_feature_dictionary
         self.feature_table=feature_table
