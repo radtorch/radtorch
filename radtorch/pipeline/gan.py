@@ -74,11 +74,11 @@ class GAN():
 
     - discriminator_num_features (integer, required): number of features/convolutions for discriminator network.default=64
 
-    - generator_optimizer (string, required): generator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
+    - generator_optimizer (string, required): generator network optimizer type. If set to 'auto', pipeline assigns appropriate optimizer automatically. Please see radtorch.settings for list of approved optimizers. default='auto'.
 
     - generator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation. default={'betas':(0.5,0.999)} for Adam optimizer.
 
-    - discrinimator_optimizer (string, required): discrinimator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
+    - discrinimator_optimizer (string, required): discrinimator network optimizer type. If set to 'auto', pipeline assigns appropriate optimizer automatically. Please see radtorch.settings for list of approved optimizers. default='auto'.
 
     - discrinimator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation. default={'betas':(0.5,0.999)} for Adam optimizer.
 
@@ -163,8 +163,8 @@ class GAN():
                discriminator='dcgan',
                generator='dcgan',
                epochs=10,
-               discrinimator_optimizer='Adam',
-               generator_optimizer='Adam',
+               discrinimator_optimizer='auto',
+               generator_optimizer='auto',
                discrinimator_optimizer_param={'betas':(0.5,0.999)},
                generator_optimizer_param={'betas':(0.5,0.999)},
                generator_learning_rate=0.0001,
@@ -275,8 +275,21 @@ class GAN():
         self.D = self.D.to(self.device)
         self.G = self.G.to(self.device)
 
-        self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, **self.d_optimizer_param)
-        self.G_optimizer=self.nn_optimizer(type=self.g_optimizer, model=self.G, learning_rate=self.g_learning_rate, **self.g_optimizer_param)
+        if self.d_optimizer='auto':
+            if self.d in ['dcgan', 'vanilla']:
+                self.D_optimizer=self.nn_optimizer(type='Adam', model=self.D, learning_rate=self.d_learning_rate, **self.d_optimizer_param)
+            elif self.d =='wgan':
+                self.D_optimizer=self.nn_optimizer(type='RMSprop', model=self.D, learning_rate=self.d_learning_rate)
+        else:
+            self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, **self.d_optimizer_param)
+
+        if self.g_optimizer='auto':
+            if self.g in ['dcgan', 'vanilla']:
+                self.G_optimizer=self.nn_optimizer(type='Adam', model=self.G, learning_rate=self.d_learning_rate, **self.d_optimizer_param)
+            elif self.g =='wgan':
+                self.G_optimizer=self.nn_optimizer(type='RMSprop', model=self.G, learning_rate=self.d_learning_rate)
+        else:
+            self.G_optimizer=self.nn_optimizer(type=self.g_optimizer, model=self.G, learning_rate=self.g_learning_rate, **self.g_optimizer_param)
 
         # self.fixed_noise = torch.randn(self.batch_size, self.g_noise_size, 1, 1, device=self.device)
         self.fixed_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=self.batch_size)
