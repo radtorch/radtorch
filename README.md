@@ -2,6 +2,7 @@
 
 
 ![](https://img.shields.io/badge/stable%20version-1.1.1-blue)
+![](https://img.shields.io/badge/nightly%20version-1.1.2-lightgrey)
 ![](https://zenodo.org/badge/DOI/10.5281/zenodo.3827986.svg)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-brightgreen)
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
