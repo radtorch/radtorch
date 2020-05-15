@@ -408,7 +408,7 @@ class GAN():
 
                 #(2) Train G
                 if self.g=='wgan':
-                    if epoch % self.num_critics == 0:
+                    if batch_number % self.num_critics == 0:
                         self.G.zero_grad()
                         label.fill_(real_label)
                         output = self.D(fake).view(-1)
