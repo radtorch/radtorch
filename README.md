@@ -40,17 +40,18 @@ classifier.run()
 The above 3 lines of code will run an image classifier using Alexnet model architecture with pre-trained weights for feature extraction and 'ridge' classifier.
 </small>
 
+
 <br>
 
 ### Try it yourself
 RADTorch playground for testing is provided on [Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
 
 <br>
-
 ### Documentation
 Full Documentation at official website: https://docs.radtorch.com
 
 <br>
+
 ### Requests
 Feature requests are more than welcomed on our discussion board [HERE](https://github.com/radtorch/radtorch/issues/4#issue-573590182)
 
