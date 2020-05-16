@@ -274,13 +274,13 @@ class Image_Classification():
     def cam(self, target_image_path, target_layer, type='scorecam', figure_size=(10,5), cmap='rainbow'):
 
         if type =='cam':
-            wrapped_model = CAM(model=self.classifier.trained_model, target_layer=target_layer)
+            wrapped_model = CAM(model=self.classifier.trained_model, target_layer=target_layer, device=self.device)
         elif type == 'gradcam':
             wrapped_model = GradCAM(model=self.classifier.trained_model, target_layer=target_layer)
         elif type == 'gradcampp':
             wrapped_model = GradCAMpp(model=self.classifier.trained_model, target_layer=target_layer)
         elif type == 'scorecam':
-            wrapped_model = ScoreCAM(model=self.classifier.trained_model, target_layer=target_layer)
+            wrapped_model = ScoreCAM(model=self.classifier.trained_model, target_layer=target_layer,  device=self.device)
 
         if self.is_dicom:
             image=dicom_to_narray(target_image_path, self.mode, self.wl)
