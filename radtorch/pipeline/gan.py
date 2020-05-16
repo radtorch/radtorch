@@ -384,15 +384,16 @@ class GAN():
                     images = images.to(self.device)
                     b_size = images.size(0)
                     label = torch.full((b_size,), real_label, dtype=torch.float, device=self.device)
-                    output1 = self.D(images).view(-1)
-                    errD_real = self.criterion(output1, label)
+                    output = self.D(images).view(-1)
+                    errD_real = self.criterion(output, label)
                     errD_real.backward()
 
                     generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=b_size)
+
                     fake = self.G(generated_noise)
                     label.fill_(fake_label)
-                    output2 = self.D(fake.detach()).view(-1)
-                    errD_fake = self.criterion(output1, label)
+                    output = self.D(fake.detach()).view(-1)
+                    errD_fake = self.criterion(output, label)
                     errD_fake.backward()
                     errD = errD_real + errD_fake
                     self.D_optimizer.step()
