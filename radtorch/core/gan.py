@@ -31,6 +31,7 @@ dcgan_generator_options = {
                             1024: {'num_units':7, 'start_num_channels':128},
                             }
 
+
 dcgan_discriminator_options = {
                             16: {'num_units':1, 'end_num_channels':2},
                             32: {'num_units':2, 'end_num_channels':4},
@@ -321,6 +322,11 @@ class WGAN_Generator(nn.Module):
 
     - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
 
+
+    Reference
+    ---------
+    https://arxiv.org/abs/1701.07875
+
     """
 
     def __init__(self, noise_size, num_generator_features, num_output_channels, target_image_size, device='auto'):
@@ -387,6 +393,12 @@ class WGAN_Discriminator(nn.Module):
     - input_image_size (integer, required): size of input image.
 
     - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
+
+
+    Reference
+    ---------
+    https://arxiv.org/abs/1701.07875
+
 
     """
 

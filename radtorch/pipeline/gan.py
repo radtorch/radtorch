@@ -121,7 +121,6 @@ class GAN():
 
         - Displays different parameters of the generative adversarial network.
 
-
     .metrics(figure_size=(700,350))
 
         - Displays training metrics for the GAN.
@@ -139,6 +138,8 @@ class GAN():
         - Parameters:
 
             - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(700,350).
+
+    .generate(noise_size=100, figure_size=(5,5))
 
     """
 
@@ -345,8 +346,7 @@ class GAN():
     def run(self, verbose='batch', show_images=True, figure_size=(10,10)):
         if self.label_smooth:
             real_label=0.9
-            # real_label=random.uniform(0.9, 1.1)
-            # fake_label=random.uniform(0.0, 0.3)
+
         else:
             real_label=1.0
         fake_label=0.0
@@ -444,7 +444,6 @@ class GAN():
                 log("[Epoch:{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, mean(epoch_errD), mean(epoch_errG), mean(epoch_d_loss_real), mean(epoch_d_loss_fake), epoch_end-epoch_start))
 
             self.G.eval()
-            # generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=num_generated_images)
             sample = self.G(self.fixed_noise)
             sample = sample.cpu().detach().numpy()
             sample = [np.moveaxis(x, 0, -1) for x in sample]
@@ -460,10 +459,12 @@ class GAN():
     def metrics(self, figure_size=(700,350)):
       return show_metrics([self],  figure_size=figure_size, type='GAN')
 
-
-    def wasserstein_loss(self, y_true, y_pred):
-        return np.mean(y_true * y_pred)
-
+    def generate(self, noise_type='normal', figure_size=(4,4)):
+        generated_noise = generate_noise(noise_size=self.noise_size, noise_type=noise_type, num_images=1)
+        generated_image = self.trained_G(generated_noise).detach().cpu()
+        generated_image = generated_image.data.cpu().numpy()
+        fig = plt.figure(figsize=figure_size)
+        implot = plt.imshow(generated_image[-1][-1], cmap='gray')
 
     def export_generated_images(self, output_folder, figure_size=(10,10), zip=False):#<<<<<<<<<<<<<<<<<<<< NEEDS FIX
         for images in self.generated_samples:
