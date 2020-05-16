@@ -469,7 +469,7 @@ class GAN():
       return show_metrics([self],  figure_size=figure_size, type='GAN')
 
     def generate(self, noise_type='normal', figure_size=(4,4), cmap='gray'):
-        generated_noise = self.generate_noise(noise_size=self.noise_size, noise_type=noise_type, num_images=1)
+        generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=noise_type, num_images=1)
         generated_image = self.trained_G(generated_noise).detach().cpu()
         generated_image = generated_image.data.cpu().numpy()
         fig = plt.figure(figsize=figure_size)
