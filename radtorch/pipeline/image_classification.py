@@ -241,13 +241,12 @@ class Image_Classification():
             pass
 
     def view_score_cam(self, image_path, target_layer, figure_size=(15,5), cmap='rainbow'):
-        classifier_pipeline=self
         image=Image.open(image_path).convert('RGB')
-        prep_img=classifier_pipeline.data_processor.transformations(image)
+        prep_img=self.data_processor.transformations(image)
         prep_img=prep_img.unsqueeze(0)
         prep_img = prep_img.to(classifier_pipeline.device)
-        score_cam = ScoreCam(clf.classifier.trained_model.to(classifier_pipeline.device), target_layer=target_layer, image_size=classifier_pipeline.data_processor.resize)
-        for class_name, class_idx in classifier_pipeline.data_processor.classes().items():
+        score_cam = ScoreCam(self.classifier.trained_model.to(self.device), target_layer=target_layer, image_size=self.data_processor.resize)
+        for class_name, class_idx in self.data_processor.classes().items():
             cams[class_name] = score_cam.generate_cam(prep_img, class_idx)
         output_image=prep_img.squeeze(0).squeeze(0).cpu().numpy()
         output_image=np.moveaxis(output_image, 0, -1)
