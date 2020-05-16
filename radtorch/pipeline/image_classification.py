@@ -290,7 +290,7 @@ class Image_Classification():
 
         prep_img=self.data_processor.transformations(image)
         prep_img=prep_img.unsqueeze(0)
-        # prep_img = prep_img.to(self.device)
+        prep_img = prep_img.to(self.device)
         cam, idx = wrapped_model(prep_img)
 
         output_image=prep_img.squeeze(0).squeeze(0).cpu().numpy()
