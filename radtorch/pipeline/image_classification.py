@@ -245,6 +245,7 @@ class Image_Classification():
         prep_img=self.data_processor.transformations(image)
         prep_img=prep_img.unsqueeze(0)
         prep_img = prep_img.to(self.device)
+        cams={}
         score_cam = ScoreCam(self.classifier.trained_model.to(self.device), target_layer=target_layer, image_size=self.data_processor.resize)
         for class_name, class_idx in self.data_processor.classes().items():
             cams[class_name] = score_cam.generate_cam(prep_img, class_idx)
