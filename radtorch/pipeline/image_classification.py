@@ -276,9 +276,11 @@ class Image_Classification():
         if type =='cam':
             wrapped_model = CAM(model=self.classifier.trained_model.to(self.device), target_layer=target_layer, device=self.device)
         elif type == 'gradcam':
-            wrapped_model = GradCAM(model=self.classifier.trained_model.to(self.device), target_layer=target_layer)
+            wrapped_model = GradCAM(model=self.classifier.trained_model.to(self.device), target_layer=target_layer, device=self.device)
         elif type == 'gradcampp':
-            wrapped_model = GradCAMpp(model=self.classifier.trained_model.to(self.device), target_layer=target_layer)
+            wrapped_model = GradCAMpp(model=self.classifier.trained_model.to(self.device), target_layer=target_layer, device=self.device)
+        elif type == 'smoothgradcampp':
+            wrapped_model = SmoothGradCAMpp(model=self.classifier.trained_model.to(self.device), target_layer=target_layer, device=self.device)
         elif type == 'scorecam':
             wrapped_model = ScoreCAM(model=self.classifier.trained_model.to(self.device), target_layer=target_layer,  device=self.device)
 
