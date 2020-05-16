@@ -271,7 +271,7 @@ class Image_Classification():
     #
     #     plt.show()
 
-    def cam(self, target_image, target_layer, type='scorecam', figure_size=(10,5), cmap='rainbow'):
+    def cam(self, target_image_path, target_layer, type='scorecam', figure_size=(10,5), cmap='rainbow'):
 
         if type =='cam':
             wrapped_model = CAM(model=self.classifier.trained_model, target_layer=target_layer)
@@ -283,10 +283,10 @@ class Image_Classification():
             wrapped_model = ScoreCAM(model=self.classifier.trained_model, target_layer=target_layer)
 
         if self.is_dicom:
-            image=dicom_to_narray(target_image, self.mode, self.wl)
+            image=dicom_to_narray(target_image_path, self.mode, self.wl)
             image=Image.fromarray(image)
         else:
-            image=Image.open(image_path).convert('RGB')
+            image=Image.open(target_image_path).convert('RGB')
 
         prep_img=self.data_processor.transformations(image)
         prep_img=prep_img.unsqueeze(0)
