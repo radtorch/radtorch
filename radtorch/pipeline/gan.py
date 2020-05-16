@@ -223,6 +223,20 @@ class GAN():
             self.table=self.table
         else: self.table=create_data_table(directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
 
+        # Sample from dataset
+        if isinstance (self.sampling, float):
+            if self.sampling > 1.0 :
+                log('Error! Sampling cannot be more than 1.0.')
+                pass
+            elif self.sampling == 0:
+                log ('Error! Sampling canot be Zero.')
+                pass
+            else:
+                self.table=self.table.sample(frac=self.sampling, random_state=100)
+        else:
+            log ('Error! Sampling is not float')
+            pass
+
 
         if self.transformations=='default':
             if self.is_dicom:
