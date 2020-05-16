@@ -391,7 +391,7 @@ class ScoreCAM(CAM):
             act_max, _ = self.activations.view(1, C, -1).max(dim=2)
             act_max = act_max.view(1, C, 1, 1)
             denominator = torch.where(
-                (act_max - act_min) != 0., act_max - act_min, torch.tensor(1.)
+                (act_max - act_min) != 0., act_max - act_min, torch.tensor(1.).to(self.device)  #<<<<<<<<<<<<<<<<
             )
 
             self.activations = self.activations / denominator
