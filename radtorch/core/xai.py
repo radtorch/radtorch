@@ -343,7 +343,7 @@ class ScoreCAM(CAM):
     """ Score CAM """
 
     def __init__(self, model, target_layer, device, n_batch=32):
-        super().__init__(model, target_layer)
+        super().__init__(model, target_layer, device)
         """
         Args:
             model: a base model
