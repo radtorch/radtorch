@@ -377,47 +377,26 @@ class GAN():
 
                 batch_start=time.time()
 
-                #(1) Train D
-                ## Train with all-real batch
-                self.D.zero_grad()
-                images = images.to(self.device)
-                b_size = images.size(0)
-                label = torch.full((b_size,), real_label, dtype=torch.float, device=self.device)
-                output1 = self.D(images).view(-1)
-                errD_real = self.criterion(output1, label)
+
                 if self.d in ['vanilla', 'dcgan']:
+
+                    self.D.zero_grad()
+                    images = images.to(self.device)
+                    b_size = images.size(0)
+                    label = torch.full((b_size,), real_label, dtype=torch.float, device=self.device)
+                    output1 = self.D(images).view(-1)
+                    errD_real = self.criterion(output1, label)
                     errD_real.backward()
 
-                ## Train with all-fake batch
-                generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=b_size)
-                fake = self.G(generated_noise)
-                label.fill_(fake_label)
-                output2 = self.D(fake.detach()).view(-1)
-                errD_fake = self.criterion(output1, label)
-                if self.d in ['vanilla', 'dcgan']:
+                    generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=b_size)
+                    fake = self.G(generated_noise)
+                    label.fill_(fake_label)
+                    output2 = self.D(fake.detach()).view(-1)
+                    errD_fake = self.criterion(output1, label)
                     errD_fake.backward()
                     errD = errD_real + errD_fake
-                if self.d=='wgan':
-                    errD = torch.mean(output2)-torch.mean(output1)
-                    errD.backward()
-                self.D_optimizer.step()
+                    self.D_optimizer.step()
 
-                if self.d=='wgan':
-                    for p in self.D.parameters():
-                        p.data.clamp_(-0.01, 0.01)
-
-                #(2) Train G
-                if self.g=='wgan':
-                    if batch_number % self.num_critics == 0:
-                        self.G.zero_grad()
-                        label.fill_(real_label)
-                        output = self.D(fake).view(-1)
-                        errG=-torch.mean(output)
-                        errG.backward()
-                        self.G_optimizer.step()
-                    else:
-                        pass
-                else:
                     self.G.zero_grad()
                     label.fill_(real_label)  # fake labels are real for generator cost
                     output = self.D(fake).view(-1)
@@ -425,6 +404,35 @@ class GAN():
                     errG.backward()
                     self.G_optimizer.step()
 
+
+                elif self.d =='wgan':
+
+                    self.D.zero_grad()
+                    images = images.to(self.device)
+                    b_size = images.size(0)
+                    label = torch.full((b_size,), real_label, dtype=torch.float, device=self.device)
+                    output1 = self.D(images).view(-1)
+                    errD_real = self.criterion(output1, label)
+
+                    generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=b_size)
+                    fake = self.G(generated_noise)
+                    label.fill_(fake_label)
+                    output2 = self.D(fake.detach()).view(-1)
+                    errD_fake = self.criterion(output1, label)
+                    errD = torch.mean(output2)-torch.mean(output1)
+                    errD.backward()
+                    self.D_optimizer.step()
+
+                    for p in self.D.parameters():
+                        p.data.clamp_(-0.01, 0.01)
+
+                    if batch_number % self.num_critics == 0:
+                        self.G.zero_grad()
+                        label.fill_(real_label)
+                        output = self.D(fake).view(-1)
+                        errG=-torch.mean(output)
+                        errG.backward()
+                        self.G_optimizer.step()
 
 
 
