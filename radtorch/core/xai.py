@@ -342,7 +342,7 @@ class SmoothGradCAMpp(CAM):
 class ScoreCAM(CAM):
     """ Score CAM """
 
-    def __init__(self, model, target_layer, n_batch=32, device):
+    def __init__(self, model, target_layer, device, n_batch=32):
         super().__init__(model, target_layer)
         """
         Args:
