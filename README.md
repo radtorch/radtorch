@@ -1,15 +1,25 @@
 ![](welcome.png?raw=true)
 
 
-![](https://img.shields.io/badge/stable%20version-1.1.1-green)
-![](https://img.shields.io/badge/nightly%20version-1.1.2-lightgrey)
+![](https://img.shields.io/badge/stable%20version-1.1.2-green)
+![](https://img.shields.io/badge/nightly%20version-1.1.3-lightgrey)
 ![](https://zenodo.org/badge/DOI/10.5281/zenodo.3827986.svg)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-green)
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
 
 
-<p style='text-align: justify;'>
+## New in 1.1.2:
+
+1. CNN visualization with Class Actication Maps.
+
+2. Deep Learning Model Summary.
+
+3. WGAN added to GAN models.
+
 <br>
+
+## What is RADTorch ?
+<p style='text-align: justify;'>
 
 RADTorch provides a framework of higher level classes and functions that aim at significantly reducing the time needed for implementation of different machine and deep learning algorithms on DICOM medical images.
 
@@ -30,6 +40,7 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 
 <br>
 
+
 ### How
 
 Running a state-of-the-art DICOM image classifier can be run using the Image Classification Pipeline using the commands:
@@ -43,7 +54,7 @@ classifier.run()
 The above 3 lines of code will run an image classifier using Alexnet model architecture with pre-trained weights for feature extraction and 'ridge' classifier.
 </small>
 
-
+<br>
 <br>
 
 ### Try it yourself
