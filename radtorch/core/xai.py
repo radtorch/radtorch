@@ -106,8 +106,8 @@ class CAM(object):
 class GradCAM(CAM):
     """ Grad CAM """
 
-    def __init__(self, model, target_layer):
-        super().__init__(model, target_layer)
+    def __init__(self, model, target_layer, device):
+        super().__init__(model, target_layer, device)
 
         """
         Args:
@@ -174,8 +174,8 @@ class GradCAM(CAM):
 class GradCAMpp(CAM):
     """ Grad CAM plus plus """
 
-    def __init__(self, model, target_layer):
-        super().__init__(model, target_layer)
+    def __init__(self, model, target_layer, device):
+        super().__init__(model, target_layer, device)
         """
         Args:
             model: a base model
@@ -251,8 +251,8 @@ class GradCAMpp(CAM):
 class SmoothGradCAMpp(CAM):
     """ Smooth Grad CAM plus plus """
 
-    def __init__(self, model, target_layer, n_samples=25, stdev_spread=0.15):
-        super().__init__(model, target_layer)
+    def __init__(self, model, target_layer, device, n_samples=25, stdev_spread=0.15):
+        super().__init__(model, target_layer, device)
         """
         Args:
             model: a base model
