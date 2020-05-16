@@ -475,4 +475,4 @@ class NN_Classifier():
             return misclassified_table
 
     def summary(self):
-        summary(self.model, (3, model_dict[self.model_arch]['input_size'], model_dict[self.model_arch]['input_size']), device=self.device)
+        summary(self.model, (3, model_dict[self.model_arch]['input_size'], model_dict[self.model_arch]['input_size']), device=str(self.device))
