@@ -306,6 +306,6 @@ class Image_Classification():
         plt.subplot(1, 2, 2)
         plt.axis('off')
         plt.gca().set_title(type)
-        plt.imshow(cam.squeeze().numpy(), cmap=cmap, alpha=1)
+        plt.imshow(cam.squeeze().cpu().numpy(), cmap=cmap, alpha=1)
 
         plt.show()
