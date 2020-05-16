@@ -37,7 +37,7 @@ class SaveValues():
 class CAM(object):
     """ Class Activation Mapping """
 
-    def __init__(self, model, target_layer):
+    def __init__(self, model, target_layer, device):
         """
         Args:
             model: a base model to get CAM which have global pooling and fully connected layer.
@@ -49,6 +49,7 @@ class CAM(object):
 
         # save values of activations and gradients in target_layer
         self.values = SaveValues(self.target_layer)
+        self.device=device #<<<<<<<<<<<<<<<<
 
     def forward(self, x, idx=None):
         """
@@ -71,7 +72,7 @@ class CAM(object):
 
         # cam can be calculated from the weights of linear layer and activations
         weight_fc = list(
-            self.model._modules.get('fc').parameters())[0].to('cpu').data
+            self.model._modules.get('fc').parameters())[0].to(self.device).data #<<<<<<<<<<<<<<<<
 
         cam = self.getCAM(self.values, weight_fc, idx)
 
@@ -341,7 +342,7 @@ class SmoothGradCAMpp(CAM):
 class ScoreCAM(CAM):
     """ Score CAM """
 
-    def __init__(self, model, target_layer, n_batch=32):
+    def __init__(self, model, target_layer, n_batch=32, device):
         super().__init__(model, target_layer)
         """
         Args:
@@ -349,6 +350,7 @@ class ScoreCAM(CAM):
             target_layer: conv_layer you want to visualize
         """
         self.n_batch = n_batch
+        self.device=device #<<<<<<<<<<<<<<<<
 
     def forward(self, x, idx=None):
         """
@@ -375,7 +377,7 @@ class ScoreCAM(CAM):
             # # calculate the derivate of probabilities, not that of scores
             # prob[0, idx].backward(retain_graph=True)
 
-            self.activations = self.values.activations.to('cpu').clone()
+            self.activations = self.values.activations.to(self.device).clone() #<<<<<<<<<<<<<<<<
             # put activation maps through relu activation
             # because the values are not normalized with eq.(1) without relu.
             self.activations = F.relu(self.activations)
@@ -401,7 +403,7 @@ class ScoreCAM(CAM):
                 mask = mask.to(device)
                 masked_x = x * mask
                 score = self.model(masked_x)
-                probs.append(F.softmax(score, dim=1)[:, idx].to('cpu').data)
+                probs.append(F.softmax(score, dim=1)[:, idx].to(self.device).data) #<<<<<<<<<<<<<<<<
 
             probs = torch.stack(probs)
             weights = probs.view(1, C, 1, 1)
