@@ -56,7 +56,8 @@ from bokeh.plotting import figure, show
 from bokeh.layouts import row, gridplot, column
 from bokeh.transform import factor_cmap, cumsum
 from bokeh.palettes import viridis, Paired, inferno, brewer, d3
-from statistics import mean
+from statistics import mode, mean
+
 
 
 # RADTOrch settings

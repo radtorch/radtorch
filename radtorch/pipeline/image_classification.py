@@ -240,33 +240,72 @@ class Image_Classification():
             log ('Error! Pipeline could not be exported.')
             pass
 
-    def view_score_cam(self, image_path, target_layer, figure_size=(15,5), cmap='rainbow'):
-        image=Image.open(image_path).convert('RGB')
+    # def view_score_cam(self, image_path, target_layer, figure_size=(15,5), cmap='rainbow'):
+    #     image=Image.open(image_path).convert('RGB')
+    #     prep_img=self.data_processor.transformations(image)
+    #     prep_img=prep_img.unsqueeze(0)
+    #     prep_img = prep_img.to(self.device)
+    #     cams={}
+    #     score_cam = ScoreCam(self.classifier.trained_model.to(self.device), target_layer=target_layer, image_size=self.data_processor.resize)
+    #     for class_name, class_idx in self.data_processor.classes().items():
+    #         cams[class_name] = score_cam.generate_cam(prep_img, class_idx)
+    #     output_image=prep_img.squeeze(0).squeeze(0).cpu().numpy()
+    #     output_image=np.moveaxis(output_image, 0, -1)
+    #
+    #     num_columns = len(cams)+1
+    #
+    #     plt.figure(figsize=figure_size)
+    #
+    #     plt.subplot(1, num_columns, 1)
+    #     plt.axis('off')
+    #     plt.gca().set_title('Image')
+    #     plt.imshow(output_image, cmap=plt.cm.gray)
+    #
+    #     z = 2
+    #     for class_name, cam in cams.items():
+    #         plt.subplot(1, num_columns, z)
+    #         plt.axis('off')
+    #         plt.gca().set_title(class_name)
+    #         plt.imshow(cam, cmap=cmap, alpha=1)
+    #         z = z+1
+    #
+    #     plt.show()
+
+    def cam(self, target_image, target_layer, type='scorecam', figure_size=(10,5), cmap='rainbow'):
+
+        if type =='cam':
+            wrapped_model = CAM(model=self.classifier.trained_model, target_layer=target_layer)
+        elif type == 'gradcam':
+            wrapped_model = GradCAM(model=self.classifier.trained_model, target_layer=target_layer)
+        elif type == 'gradcampp':
+            wrapped_model = GradCAMpp(model=self.classifier.trained_model, target_layer=target_layer)
+        elif type == 'scorecam':
+            wrapped_model = ScoreCAM(model=self.classifier.trained_model, target_layer=target_layer)
+
+        if self.is_dicom:
+            image=dicom_to_narray(target_image, self.mode, self.wl)
+            image=Image.fromarray(image)
+        else:
+            image=Image.open(image_path).convert('RGB')
+
         prep_img=self.data_processor.transformations(image)
         prep_img=prep_img.unsqueeze(0)
         prep_img = prep_img.to(self.device)
-        cams={}
-        score_cam = ScoreCam(self.classifier.trained_model.to(self.device), target_layer=target_layer, image_size=self.data_processor.resize)
-        for class_name, class_idx in self.data_processor.classes().items():
-            cams[class_name] = score_cam.generate_cam(prep_img, class_idx)
+        cam, idx = wrapped_model(prep_img)
+
         output_image=prep_img.squeeze(0).squeeze(0).cpu().numpy()
         output_image=np.moveaxis(output_image, 0, -1)
 
-        num_columns = len(cams)+1
-
         plt.figure(figsize=figure_size)
 
-        plt.subplot(1, num_columns, 1)
+        plt.subplot(1, 2, 1)
         plt.axis('off')
-        plt.gca().set_title('Image')
+        plt.gca().set_title('Target Image')
         plt.imshow(output_image, cmap=plt.cm.gray)
 
-        z = 2
-        for class_name, cam in cams.items():
-            plt.subplot(1, num_columns, z)
-            plt.axis('off')
-            plt.gca().set_title(class_name)
-            plt.imshow(cam, cmap=cmap, alpha=1)
-            z = z+1
+        plt.subplot(1, 2, 2)
+        plt.axis('off')
+        plt.gca().set_title(type)
+        plt.imshow(cam.squeeze().numpy(), cmap=cmap, alpha=1)
 
         plt.show()

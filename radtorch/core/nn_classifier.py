@@ -476,3 +476,7 @@ class NN_Classifier():
 
     def summary(self):
         summary(self.model.to(self.device), (3, model_dict[self.model_arch]['input_size'], model_dict[self.model_arch]['input_size']), device=str(self.device))
+
+
+    def show_model_layers(self):
+        return [x for x, y in self.trained_model.named_modules()]
