@@ -468,12 +468,12 @@ class GAN():
     def metrics(self, figure_size=(700,350)):
       return show_metrics([self],  figure_size=figure_size, type='GAN')
 
-    def generate(self, noise_type='normal', figure_size=(4,4)):
-        generated_noise = generate_noise(noise_size=self.noise_size, noise_type=noise_type, num_images=1)
+    def generate(self, noise_type='normal', figure_size=(4,4), cmap='gray'):
+        generated_noise = self.generate_noise(noise_size=self.noise_size, noise_type=noise_type, num_images=1)
         generated_image = self.trained_G(generated_noise).detach().cpu()
         generated_image = generated_image.data.cpu().numpy()
         fig = plt.figure(figsize=figure_size)
-        implot = plt.imshow(generated_image[-1][-1], cmap='gray')
+        implot = plt.imshow(generated_image[-1][-1], cmap=cmap)
 
     def export_generated_images(self, output_folder, figure_size=(10,10), zip=False):#<<<<<<<<<<<<<<<<<<<< NEEDS FIX
         for images in self.generated_samples:
