@@ -55,7 +55,14 @@ The above 3 lines of code will run an image classifier using Alexnet model archi
 </small>
 
 <br>
+
+
+### Demo:
+Image classification demo on Kaggle : https://www.kaggle.com/elbanan/radtorch-demo
+
+
 <br>
+
 
 ### Try it yourself
 RADTorch playground for testing is provided on [Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
@@ -92,11 +99,11 @@ Please cite us as :
 ```
 @software{mohamed_elbanan_2020_3827986,
   author       = {Mohamed Elbanan},
-  title        = {radtorch/radtorch: 1.1.1},
-  month        = may,
+  title        = {radtorch/radtorch: 1.1.2},
+  month        = june,
   year         = 2020,
   publisher    = {Zenodo},
-  version      = {1.1.1},
+  version      = {1.1.2},
   doi          = {10.5281/zenodo.3827986},
   url          = {https://doi.org/10.5281/zenodo.3827986}
 }
