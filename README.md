@@ -8,7 +8,9 @@
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
 
 
-### :zap: New in 1.1.2 
+---
+
+### :zap: New in 1.1.2
 
 1. CNN visualization with Class Activation Maps.
 
@@ -16,7 +18,8 @@
 
 3. WGAN added to GAN models.
 
-<br>
+---
+
 
 ### :question: What is RADTorch
 <p style='text-align: justify;'>
@@ -87,7 +90,7 @@ RADTorch was developed by Mohamed Elbanan, MD: a Radiology Resident at Yale New 
 
 <br>
 
-### :speech_balloon: Cite us	
+### :speech_balloon: Cite us
 This framework is provided for free and opensource to anyone who would like to use it and/or update it.
 
 Please cite us as :
