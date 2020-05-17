@@ -271,7 +271,7 @@ class Image_Classification():
     #
     #     plt.show()
 
-    def cam(self, target_image_path, target_layer, type='scorecam', figure_size=(10,5), cmap='rainbow', alpha=0.5):
+    def cam(self, target_image_path, target_layer, type='scorecam', figure_size=(10,5), cmap='jet', alpha=0.5):
 
         if type =='cam':
             wrapped_model = CAM(model=self.classifier.trained_model.to(self.device), target_layer=target_layer, device=self.device)
