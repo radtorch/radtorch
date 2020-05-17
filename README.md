@@ -41,7 +41,7 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 <br>
 
 
-### Getting Started
+### :snowboarder: Getting Started
 
 1. Running a state-of-the-art DICOM image classifier can be run using the Image Classification Pipeline using the commands:
 ```
@@ -69,20 +69,21 @@ Full Documentation at official website: https://docs.radtorch.com
 
 <br>
 
-### Requests
+### :bookmark: Requests
 Feature requests are more than welcomed on our discussion board [HERE](https://github.com/radtorch/radtorch/issues/4#issue-573590182)
 
 <br>
 
-### Who are we?
-<p style='text-align: justify;'>
-RADTorch was developed by Mohamed Elbanan, MD: a Radiology Resident at Yale New Haven Health System, Clinical Research Affiliate at Yale School of Medicine and a Machine-learning enthusiast.
-</p>
+
+### :memo: Contribute
+Bug reports and pull requests are welcome.
 
 <br>
 
-### Contribute
-Bug reports and pull requests are welcome.
+### :construction_worker: Contributors
+<p style='text-align: justify;'>
+RADTorch was developed by Mohamed Elbanan, MD: a Radiology Resident at Yale New Haven Health System, Clinical Research Affiliate at Yale School of Medicine and a Machine-learning enthusiast.
+</p>
 
 <br>
 
