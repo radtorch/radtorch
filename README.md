@@ -45,11 +45,11 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 
 ### :telescope: See it in Action
 
-1. Image Classification for identification of contrast on CT DICOM images: https://www.kaggle.com/elbanan/radtorch-ct-contrast-id
+1. [Image Classification for identification of contrast on CT DICOM images](https://www.kaggle.com/elbanan/radtorch-ct-contrast-id)
 
-2. Image classification demo on Kaggle : https://www.kaggle.com/elbanan/radtorch-demo
+2. [Image classification demo/non medical on Kaggle](https://www.kaggle.com/elbanan/radtorch-demo)
 
-3. RADTorch playground for testing is provided on [Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
+3. [RADTorch playground on Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
 
 <br>
 
