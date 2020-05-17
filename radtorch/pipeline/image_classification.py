@@ -300,7 +300,7 @@ class Image_Classification():
 
         plt.figure(figsize=figure_size)
 
-        plt.subplot(1, 2, 1)
+        plt.subplot(1, 3, 1)
         plt.axis('off')
         plt.gca().set_title('Target Image')
         plt.imshow(output_image, cmap=plt.cm.gray)
