@@ -272,7 +272,7 @@ class Data_Processor():
         """
         Returns table of classes/class_idx in data.
         """
-        return pd.DataFrame(list(zip(self.master_dataset.class_to_idx.keys(), self.master_dataset.class_to_idx.values())))
+        return pd.DataFrame(list(zip(self.master_dataset.class_to_idx.keys(), self.master_dataset.class_to_idx.values())), columns=['Label', 'Label_idx'])
 
     def info(self):
         """
