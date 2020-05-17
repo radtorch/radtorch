@@ -317,8 +317,8 @@ class Classifier(object):
                 pass
         else:
             if self.type=='xgboost':
-                prediction=self.classifier.predict(image_features.iloc[0])
-            else:    
+                prediction=self.classifier.predict(image_features.iloc[0].to_numpy())
+            else:
                 prediction=self.classifier.predict(image_features)
 
             return (prediction[0], [k for k,v in class_to_idx.items() if v==prediction][0])
