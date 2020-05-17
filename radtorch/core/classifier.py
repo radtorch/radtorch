@@ -301,6 +301,7 @@ class Classifier(object):
             target_img_tensor.to('cpu')
             model.eval()
             out=model(target_img_tensor)
+            out=out.tolist()
         image_features=pd.DataFrame(out, columns=self.feature_names)
 
         class_to_idx = self.data_processor.classes()
@@ -316,10 +317,7 @@ class Classifier(object):
                 log('All predictions could not be generated. Please set all_predictions to False.')
                 pass
         else:
-            if self.type=='xgboost':
-                prediction=self.classifier.predict(image_features.values)
-            else:
-                prediction=self.classifier.predict(image_features)
+            prediction=self.classifier.predict(image_features)
 
             return (prediction[0], [k for k,v in class_to_idx.items() if v==prediction][0])
 
