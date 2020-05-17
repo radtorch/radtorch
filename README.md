@@ -43,10 +43,19 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 
 <br>
 
+### :telescope: See it in Action
+
+1. Image Classification for identification of contrast on CT DICOM images: https://www.kaggle.com/elbanan/radtorch-ct-contrast-id
+
+2. Image classification demo on Kaggle : https://www.kaggle.com/elbanan/radtorch-demo
+
+3. RADTorch playground for testing is provided on [Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
+
+<br>
 
 ### :snowboarder: Getting Started
 
-1. Running a state-of-the-art DICOM image classifier can be run using the Image Classification Pipeline using the commands:
+Running a state-of-the-art DICOM image classifier can be run using the Image Classification Pipeline using the commands:
 ```
 from radtorch import pipeline
 
@@ -58,12 +67,6 @@ The above 3 lines of code will run an image classifier using vgg16 model archite
 </small>
 
 
-<br>
-
-
-2. Image classification demo on Kaggle : https://www.kaggle.com/elbanan/radtorch-demo
-
-3. RADTorch playground for testing is provided on [Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
 
 <br>
 
