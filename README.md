@@ -66,7 +66,7 @@ classifier.run()
 The above 3 lines of code will run an image classifier using vgg16 model architecture with pre-trained weights for feature extraction and 'logistic_regression' classifier.
 </small>
 
-
+<br>
 
 <br>
 
