@@ -294,6 +294,8 @@ class Image_Classification():
         prep_img=prep_img.unsqueeze(0)
         prep_img = prep_img.to(self.device)
         cam, idx = wrapped_model(prep_img)
+        _, _, H, W = prep_img.shape
+        cam = F.interpolate(cam, size=(H, W), mode='bilinear', align_corners=True)
 
         output_image=prep_img.squeeze(0).squeeze(0).cpu().numpy()
         output_image=np.moveaxis(output_image, 0, -1)
