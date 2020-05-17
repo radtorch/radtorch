@@ -271,7 +271,7 @@ class Image_Classification():
     #
     #     plt.show()
 
-    def cam(self, target_image_path, target_layer, type='scorecam', figure_size=(10,5), cmap='rainbow'):
+    def cam(self, target_image_path, target_layer, type='scorecam', figure_size=(10,5), cmap='rainbow', alpha=0.5):
 
         if type =='cam':
             wrapped_model = CAM(model=self.classifier.trained_model.to(self.device), target_layer=target_layer, device=self.device)
@@ -305,9 +305,15 @@ class Image_Classification():
         plt.gca().set_title('Target Image')
         plt.imshow(output_image, cmap=plt.cm.gray)
 
-        plt.subplot(1, 2, 2)
+        plt.subplot(1, 3, 2)
         plt.axis('off')
         plt.gca().set_title(type.upper())
         plt.imshow(cam.squeeze().cpu().numpy(), cmap=cmap, alpha=1)
+
+        plt.subplot(1, 3, 3)
+        plt.axis('off')
+        plt.gca().set_title('OVERLAY')
+        plt.imshow(output_image, cmap=plt.cm.gray)
+        plt.imshow(cam.squeeze().cpu().numpy(), cmap=cmap, alpha=alpha)
 
         plt.show()
