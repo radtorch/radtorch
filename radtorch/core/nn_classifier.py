@@ -79,6 +79,7 @@ class NN_Classifier():
                 **kwargs):
 
         self.classifier_type='nn_classifier'
+        self.type='nn_classifier'
         self.feature_extractor=feature_extractor
         self.data_processor=data_processor
         self.unfreeze=unfreeze
