@@ -78,6 +78,7 @@ class NN_Classifier():
                 optimizer_parameters={},
                 **kwargs):
 
+        self.type='nn_classifier'
         self.feature_extractor=feature_extractor
         self.data_processor=data_processor
         self.unfreeze=unfreeze
