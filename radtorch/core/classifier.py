@@ -316,7 +316,10 @@ class Classifier(object):
                 log('All predictions could not be generated. Please set all_predictions to False.')
                 pass
         else:
-            prediction=self.classifier.predict(image_features)
+            if self.type=='xgboost':
+                prediction=self.classifier.predict(image_features.iloc[0])
+            else:    
+                prediction=self.classifier.predict(image_features)
 
             return (prediction[0], [k for k,v in class_to_idx.items() if v==prediction][0])
 
