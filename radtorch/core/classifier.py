@@ -317,7 +317,7 @@ class Classifier(object):
                 pass
         else:
             if self.type=='xgboost':
-                prediction=self.classifier.predict(out.numpy())
+                prediction=self.classifier.predict(image_features.values)
             else:
                 prediction=self.classifier.predict(image_features)
 
