@@ -133,7 +133,7 @@ class Feature_Extractor():
                 self.model.eval()
                 imgs=imgs.to(self.device)
                 if 'efficientnet' in self.model_arch:
-                    output = self.model.extract_features(imgs)
+                    output = (self.model.extract_features(imgs)).tolist()
                 else:
                     output=(self.model(imgs)).tolist()
                 self.features=self.features+(output)
