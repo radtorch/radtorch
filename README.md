@@ -18,6 +18,8 @@
 
 3. WGAN added to GAN models.
 
+4. EfficientNet models added to Image Classification
+
 ---
 
 
