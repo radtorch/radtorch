@@ -312,7 +312,7 @@ class Classifier(object):
                 B = self.data_processor.classes().values()
                 C = self.classifier.predict_proba(image_features)[0]
                 C = [("%.4f" % x) for x in C]
-                return pd.DataFrame(list(zip(A, B, C)), columns=['LABEL', 'LAEBL_IDX', 'PREDICTION_ACCURACY'])
+                return pd.DataFrame(list(zip(A, B, C)), columns=['LABEL', 'LABEL_IDX', 'PREDICTION_ACCURACY'])
             except:
                 log('All predictions could not be generated. Please set all_predictions to False.')
                 pass
