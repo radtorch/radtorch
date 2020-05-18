@@ -114,7 +114,7 @@ class NN_Classifier():
 
         # MODEL
         self.model_arch=self.feature_extractor.model_arch
-        self.pre_trained-self.feature_extractor.pre_trained
+        self.pre_trained=self.feature_extractor.pre_trained
         if 'efficientnet' in self.model_arch:
             if self.pre_trained:
                 self.model=EfficientNet.from_pretrained(self.model_arch, num_classes=self.output_classes)
