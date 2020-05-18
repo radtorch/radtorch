@@ -1,4 +1,4 @@
-![](https://github.com/radtorch/radtorch/blob/master/docs/assets/img/welcome.png?raw=true)
+![](welcome.png?raw=true)
 
 
 ![](https://img.shields.io/badge/stable%20version-1.1.1-green)
@@ -10,7 +10,7 @@
 
 <p style='text-align: justify;'>
 <br>
-  
+
 RADTorch provides a framework of higher level classes and functions that aim at significantly reducing the time needed for implementation of different machine and deep learning algorithms on DICOM medical images.
 
 RADTorch was **built by radiologists for radiologists** so they can build, test and implement state-of-the-art machine learning algorithms in minutes.
