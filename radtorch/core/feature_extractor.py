@@ -84,12 +84,19 @@ class Feature_Extractor():
         elif self.model_arch=='wide_resnet50_2': self.model=torchvision.models.wide_resnet50_2(pretrained=self.pre_trained)
         elif self.model_arch=='wide_resnet101_2': self.model=torchvision.models.wide_resnet101_2(pretrained=self.pre_trained)
         elif self.model_arch=='alexnet': self.model=torchvision.models.alexnet(pretrained=self.pre_trained)
+        elif 'efficientnet' in self.model_arch:
+            if self.pre_trained:
+                self.model=EfficientNet.from_pretrained(self.model_arch)
+            else:
+                self.model=EfficientNet.from_name(self.model_arch)
 
         if 'alexnet' in self.model_arch or 'vgg' in self.model_arch:
             self.model.classifier[6]=torch.nn.Identity()
 
         elif 'resnet' in self.model_arch:
             self.model.fc=torch.nn.Identity()
+
+
 
         if self.unfreeze:
             for param in self.model.parameters():
@@ -125,7 +132,10 @@ class Feature_Extractor():
             with torch.no_grad():
                 self.model.eval()
                 imgs=imgs.to(self.device)
-                output=(self.model(imgs)).tolist()
+                if 'efficientnet' in self.model_arch:
+                    output = self.model.extract_features(imgs)
+                else:
+                    output=(self.model(imgs)).tolist()
                 self.features=self.features+(output)
         self.feature_names=['f_'+str(i) for i in range(0,self.num_features())]
         feature_table=pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['IMAGE_PATH','IMAGE_LABEL', 'FEATURES'])

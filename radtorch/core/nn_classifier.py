@@ -113,13 +113,23 @@ class NN_Classifier():
 
 
         # MODEL
-        self.model=copy.deepcopy(self.feature_extractor.model)
         self.model_arch=self.feature_extractor.model_arch
+        self.pre_trained-self.feature_extractor.pre_trained
+        if 'efficientnet' in self.model_arch:
+            if self.pre_trained:
+                self.model=EfficientNet.from_pretrained(self.model_arch, num_classes=self.output_classes)
+            else:
+                self.model=EfficientNet.from_name(self.model_arch, num_classes=self.output_classes)
+        else:
+            self.model=copy.deepcopy(self.feature_extractor.model)
         self.in_features=model_dict[self.model_arch]['output_features']
 
         if self.custom_nn_classifier !=None:
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier=self.custom_nn_classifier
             elif 'resnet' in self.model_arch: self.model.fc=self.custom_nn_classifier
+            elif 'efficientnet' in self.model_arch:
+                log ('Error! Custom NN_Classifier is not yet supported with EfficientNet.')
+                pass
 
         else:
             if 'vgg' in self.model_arch:

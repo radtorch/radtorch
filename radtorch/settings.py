@@ -57,8 +57,7 @@ from bokeh.layouts import row, gridplot, column
 from bokeh.transform import factor_cmap, cumsum
 from bokeh.palettes import viridis, Paired, inferno, brewer, d3
 from statistics import mode, mean
-
-
+from efficientnet_pytorch import EfficientNet
 
 # RADTOrch settings
 
@@ -95,8 +94,17 @@ model_dict={
 'resnet152':{'name':'resnet152','input_size':224, 'output_features':2048},
 'wide_resnet50_2':{'name':'wide_resnet50_2','input_size':224, 'output_features':2048},
 'wide_resnet101_2':{'name':'wide_resnet101_2','input_size':224, 'output_features':2048},
-# 'inception_v3':{'name':'inception_v3','input_size':299, 'output_features':2048},
 'alexnet':{'name':'alexnet','input_size':256, 'output_features':4096},
+'efficientnet-b0':{'name':'efficientnet-b0','input_size':224, 'output_features':2304},
+'efficientnet-b1':{'name':'efficientnet-b1','input_size':224, 'output_features':2304},
+'efficientnet-b2':{'name':'efficientnet-b2','input_size':224, 'output_features':2304},
+'efficientnet-b3':{'name':'efficientnet-b3','input_size':224, 'output_features':2304},
+'efficientnet-b4':{'name':'efficientnet-b4','input_size':224, 'output_features':2304},
+'efficientnet-b5':{'name':'efficientnet-b5','input_size':224, 'output_features':2304},
+'efficientnet-b6':{'name':'efficientnet-b6','input_size':224, 'output_features':2304},
+'efficientnet-b7':{'name':'efficientnet-b7','input_size':224, 'output_features':2304},
+# 'inception_v3':{'name':'inception_v3','input_size':299, 'output_features':2048},
+
               }
 
 supported_models=[x for x in model_dict.keys()]
