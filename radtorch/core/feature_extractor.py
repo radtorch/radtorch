@@ -132,10 +132,10 @@ class Feature_Extractor():
             with torch.no_grad():
                 self.model.eval()
                 imgs=imgs.to(self.device)
-                if 'efficientnet' in self.model_arch:
-                    output = (self.model.extract_features(imgs)).tolist()
-                else:
-                    output=(self.model(imgs)).tolist()
+                # if 'efficientnet' in self.model_arch:
+                #     output = (self.model.extract_features(imgs)).tolist()
+                # else:
+                output=(self.model(imgs)).tolist()
                 self.features=self.features+(output)
         self.feature_names=['f_'+str(i) for i in range(0,self.num_features())]
         feature_table=pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['IMAGE_PATH','IMAGE_LABEL', 'FEATURES'])
