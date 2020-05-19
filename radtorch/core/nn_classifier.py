@@ -452,7 +452,10 @@ class NN_Classifier():
             target_img_tensor.to('cpu')
             model.eval()
             out=model(target_img_tensor)
-            softmax=torch.exp(out).cpu()
+            if 'efficientnet' in self.model_arch:
+                softmax = out.cpu()
+            else:
+                softmax=torch.exp(out).cpu()
             prediction_percentages=softmax.cpu().numpy()[0]
             # prediction_percentages=[i*100 for i in prediction_percentages]
             prediction_percentages = [("%.4f" % x) for x in prediction_percentages]
