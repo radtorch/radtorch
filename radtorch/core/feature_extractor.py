@@ -89,6 +89,7 @@ class Feature_Extractor():
                 self.model=EfficientNet.from_pretrained(self.model_arch)
             else:
                 self.model=EfficientNet.from_name(self.model_arch)
+            self.model._fc=torch.nn.Identity()
 
         if 'alexnet' in self.model_arch or 'vgg' in self.model_arch:
             self.model.classifier[6]=torch.nn.Identity()
