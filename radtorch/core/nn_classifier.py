@@ -161,7 +161,7 @@ class NN_Classifier():
                                 torch.nn.LogSoftmax(dim=1))
 
             elif 'efficientnet' in self.model_arch:
-                self.model.fc=torch.nn.Sequential(
+                self.model._fc=torch.nn.Sequential(
                                 torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),
                                 torch.nn.LogSoftmax(dim=1))
 
