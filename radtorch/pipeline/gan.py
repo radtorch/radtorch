@@ -237,6 +237,9 @@ class GAN():
             log ('Error! Sampling is not float')
             pass
 
+        if len(self.normalize[0]) != self.d_input_image_channels or len(self.normalize[0] != self.d_input_image_channels):
+            log ('Error! Shape of supplied mean and/or std error. Please check that the mean/std values have the same number of elements as number of input image channels.')
+            pass
 
         if self.transformations=='default':
             if self.is_dicom:

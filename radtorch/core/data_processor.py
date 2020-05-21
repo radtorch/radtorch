@@ -184,7 +184,11 @@ class Data_Processor():
                 self.train_transformations.transforms.insert(1, i)
         if isinstance (self.normalize, tuple):
             mean, std=self.normalize
-            self.train_transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
+            if len(mean) != 3 or len(std) != 3:
+                log ('Error! Shape of supplied mean and/or std does not equal 3. Please check that the mean/std follow the following format: ((mean, mean, mean), (std, std, std))')
+                pass
+            else:
+                self.train_transformations.transforms.append(transforms.Normalize(mean=mean, std=std))
         elif self.normalize!=False:
             log('Error! Selected mean and standard deviation are not allowed.')
             pass
