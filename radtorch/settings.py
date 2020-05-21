@@ -22,6 +22,8 @@ import torchvision.datasets as datasets
 
 from torchsummary import summary
 
+from torch.utils.tensorboard import SummaryWriter
+
 import numpy as np
 import pandas as pd
 import seaborn as sns
