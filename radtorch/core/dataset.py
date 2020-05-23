@@ -151,7 +151,7 @@ class RADTorch_Dataset(Dataset):
             label=[v for k, v in self.class_to_idx.items() if k == label][0]
             target['labels']=torch.tensor([label], dtype=torch.int64)
             target['area']=self.input_data.iloc[index]['area']
-            target['image_id']=torch.tensor(self.input_data.iloc['image_id'])
+            target['image_id']=torch.tensor([self.input_data.iloc['image_id']])
             target['iscrowd']=torch.zeros[1]
             return image, target
 
