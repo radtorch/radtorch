@@ -143,10 +143,10 @@ class RADTorch_Dataset(Dataset):
             image=Image.fromarray(image)
         else:
             image=Image.open(image_path).convert('RGB')
+        image=self.transformations(image)
         label=self.input_data.iloc[index][self.image_label_column]
         label_idx=[v for k, v in self.class_to_idx.items() if k == label][0]
         if self.data_type=='image_classification':
-            image=self.transformations(image)
             return image, label_idx, image_path
         elif self.data_type=='object_detection':
             target={}
@@ -157,7 +157,6 @@ class RADTorch_Dataset(Dataset):
             target['area']=self.input_data.iloc[index]['area']
             target['image_id']=torch.tensor([index])
             target['iscrowd']=torch.zeros((1), dtype=torch.int64)  # Needs changing later with increased number of objects
-            image, target = self.transformations(image, target)
             return image, target
 
 
