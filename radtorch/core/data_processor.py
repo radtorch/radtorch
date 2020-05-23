@@ -226,7 +226,7 @@ class Data_Processor():
                                                 image_label_column=self.image_label_column,
                                                 is_path=self.is_path,
                                                 sampling=1.0,
-                                                transformations=self.train_transformations
+                                                transformations=self.train_transformations,
                                                 data_type=self.data_type,
                                                 format=self.format
                                                 )
@@ -242,7 +242,7 @@ class Data_Processor():
                                                 image_label_column=self.image_label_column,
                                                 is_path=self.is_path,
                                                 sampling=1.0,
-                                                transformations=self.transformations
+                                                transformations=self.transformations,
                                                 data_type=self.data_type,
                                                 format=self.format
                                                 )
@@ -259,7 +259,7 @@ class Data_Processor():
                                                 image_label_column=self.image_label_column,
                                                 is_path=self.is_path,
                                                 sampling=1.0,
-                                                transformations=self.train_transformations
+                                                transformations=self.train_transformations,
                                                 data_type=self.data_type,
                                                 format=self.format
                                                 )
@@ -276,7 +276,7 @@ class Data_Processor():
                                             image_label_column=self.image_label_column,
                                             is_path=self.is_path,
                                             sampling=1.0,
-                                            transformations=self.transformations
+                                            transformations=self.transformations,
                                             data_type=self.data_type,
                                             format=self.format
                                             )
