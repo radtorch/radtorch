@@ -148,10 +148,10 @@ class RADTorch_Dataset(Dataset):
             target={}
             boxes=[self.input_data.iloc[index]['x_min'], self.input_data.iloc[index]['x_max'], self.input_data.iloc[index]['y_min'], self.input_data.iloc[index]['y_max']]
             target['boxes']=torch.as_tensor(boxes, dtype=torch.float32)
-            label=[v for k, v in self.class_to_idx.items() if k == label][0]
+            label=[v for k, v in self.class_to_idx.items() if k == self.input_data.iloc[index][self.image_label_column]][0]
             target['labels']=torch.tensor([label], dtype=torch.int64)
             target['area']=self.input_data.iloc[index]['area']
-            target['image_id']=torch.tensor([self.input_data.iloc['image_id']])
+            target['image_id']=torch.tensor([self.input_data.iloc[index]['image_id']])
             target['iscrowd']=torch.zeros[1]
             return image, target
 
