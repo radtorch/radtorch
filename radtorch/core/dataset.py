@@ -87,6 +87,10 @@ class RADTorch_Dataset(Dataset):
         self.data_type=data_type
         self.format=format
 
+
+        for k, v in kwargs.items():
+            setattr((self, k, v))
+
         # Create Data Table
         if isinstance(self.table, pd.DataFrame): self.input_data=self.table
         elif isinstance(self.table, string): self.input_data=pd.read_csv(self.table)

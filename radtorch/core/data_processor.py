@@ -132,6 +132,7 @@ class Data_Processor():
         self.valid_percent=valid_percent
 
 
+
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         # Create Initial Master Table
@@ -142,6 +143,7 @@ class Data_Processor():
             self.table=self.table
         else:
             if self.data_type=='object_detection':
+                self.collate_function=collate_fn
                 if self.format=='voc':
                     box_files=[x for x in list_of_files(self.data_directory) if x.endswith('.xml')]
                     parsed_data=[]
@@ -152,6 +154,7 @@ class Data_Processor():
                     self.table[self.image_label_column]=self.table['labels']
                     self.is_path=False
             else:
+                self.collate_function=builtins.function
                 self.table=create_data_table(directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
 
 
@@ -182,15 +185,24 @@ class Data_Processor():
 
         # 2- Image conversion from DICOM
         if self.transformations=='default':
-            if self.is_dicom:
-                self.transformations=transforms.Compose([
-                        transforms.Resize((self.resize, self.resize)),
-                        transforms.transforms.Grayscale(3),
+            if self.data_type=='object_detection':
+                if self.is_dicom:
+                    self.transformations=transforms.Compose([
+                            transforms.transforms.Grayscale(3),
+                            transforms.ToTensor()])
+                else:
+                    self.transformations=transforms.Compose([
                         transforms.ToTensor()])
             else:
-                self.transformations=transforms.Compose([
-                    transforms.Resize((self.resize, self.resize)),
-                    transforms.ToTensor()])
+                if self.is_dicom:
+                    self.transformations=transforms.Compose([
+                            transforms.Resize((self.resize, self.resize)),
+                            transforms.transforms.Grayscale(3),
+                            transforms.ToTensor()])
+                else:
+                    self.transformations=transforms.Compose([
+                        transforms.Resize((self.resize, self.resize)),
+                        transforms.ToTensor()])
 
 
         # 3- Normalize Training Dataset
@@ -258,7 +270,8 @@ class Data_Processor():
                                                 data_type=self.data_type,
                                                 format=self.format
                                                 )
-            self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+
+            self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers, collate_fn=self.collate_function)
 
         else:
             self.train_dataset=RADTorch_Dataset(
@@ -293,9 +306,9 @@ class Data_Processor():
                                             format=self.format
                                             )
 
-        self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset,batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-        self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
-        self.test_dataloader=torch.utils.data.DataLoader(dataset=self.test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset,batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers, collate_fn=self.collate_function)
+        self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers, collate_fn=self.collate_function)
+        self.test_dataloader=torch.utils.data.DataLoader(dataset=self.test_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers, collate_fn=self.collate_function)
 
     def classes(self):
         """
