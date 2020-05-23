@@ -140,7 +140,19 @@ class Data_Processor():
                 self.table=pd.read_csv(self.table)
         elif isinstance(self.table, pd.DataFrame):
             self.table=self.table
-        else: self.table=create_data_table(directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
+        else:
+            if self.data_type=='object_detection':
+                if self.format=='voc':
+                    box_files=[x for x in list_of_files(self.data_directory) if x.endswith('.xml')]
+                    parsed_data=[]
+                    for i in box_files:
+                        parsed_data.append(parse_voc_xml(i))
+                    self.input_data=pd.DataFrame(parsed_data)
+                    self.input_data[self.image_path_column]=self.input_data['image_id']
+                    self.input_data[self.image_label_column]=self.input_data['labels']
+                    self.is_path=False
+            else:
+                self.table=create_data_table(directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
 
 
         # Sample from dataset if necessary
