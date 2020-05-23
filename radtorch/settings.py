@@ -13,7 +13,7 @@
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools, ntpath, copy
+import torch, torchvision, datetime, time, pickle, pydicom, os, math, random, itertools, ntpath, copy, xmltodict
 import torchvision.models as models
 import torch.nn as nn
 import torch.optim as optim

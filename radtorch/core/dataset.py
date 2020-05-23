@@ -70,6 +70,8 @@ class RADTorch_Dataset(Dataset):
                 image_label_column='IMAGE_LABEL',
                 is_path=True,
                 sampling=1.0,
+                data_type='image_classification',
+                format='voc',
                 **kwargs):
 
         self.data_directory=data_directory
@@ -82,11 +84,25 @@ class RADTorch_Dataset(Dataset):
         self.image_label_column=image_label_column
         self.is_path=is_path
         self.sampling=sampling
+        self.data_type=data_type
+        self.format=format
 
         # Create Data Table
         if isinstance(self.table, pd.DataFrame): self.input_data=self.table
         elif isinstance(self.table, string): self.input_data=pd.read_csv(self.table)
-        else: self.input_data=create_data_table(data_directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
+        else:
+            if self.data_type=='object_detection':
+                if self.format=='voc':
+                    box_files=[x for x in list_of_files(self.data_directory) if x.endswith('.xml')]
+                    parsed_data=[]
+                    for i in box_files:
+                        parsed_data.append(parse_voc_xml(i))
+                    self.input_data=pd.DataFrame(parsed_data)
+                    self.input_data[self.image_path_column]=self.input_data['image_id']
+                    self.input_data[self.image_label_column]=self.input_data['labels']
+                    self.is_path=False
+            else:
+                self.input_data=create_data_table(data_directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
 
         # Check if file path or file name and fix
         if self.is_path==False:
@@ -103,6 +119,11 @@ class RADTorch_Dataset(Dataset):
         # Get list of labels and create label dictionary
         self.classes= list(self.input_data[self.image_label_column].unique())
         self.class_to_idx=class_to_idx(self.classes)
+        if self.data_type=='object_detection':
+            self.class_to_idx={k:v+1 for k, v in self.class_to_idx.items()} # Add 1 so that the first class will not be zero
+            if 'background' in self.class_to_idx.keys():
+                self.class_to_idx['background']=0
+
 
         # Print Errors if classes or files = 0
         if len(self.dataset_files)==0: log ('Error! No data files found in directory:'+ self.data_directory)
@@ -121,7 +142,19 @@ class RADTorch_Dataset(Dataset):
         image=self.transformations(image)
         label=self.input_data.iloc[index][self.image_label_column]
         label_idx=[v for k, v in self.class_to_idx.items() if k == label][0]
-        return image, label_idx, image_path
+        if self.data_type='image_classification':
+            return image, label_idx, image_path
+        elif self.data_type='object_detection':
+            target={}
+            boxes=[self.input_data.iloc[index]['x_min'], self.input_data.iloc[index]['x_max'], self.input_data.iloc[index]['y_min'], self.input_data.iloc[index]['y_max']]
+            target['boxes']=torch.as_tensor(boxes, dtype=torch.float32)
+            label=[v for k, v in self.class_to_idx.items() if k == label][0]
+            target['labels']=torch.tensor([label], dtype=torch.int64)
+            target['area']=self.input_data.iloc[index]['area']
+            target['image_id']=torch.tensor(self.input_data.iloc['image_id'])
+            target['iscrowd']=torch.zeros[1]
+            return image, target
+
 
     def __len__(self):
         """

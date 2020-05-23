@@ -83,6 +83,8 @@ class Data_Processor():
                 data_directory,
                 is_dicom=False,
                 table=None,
+                data_type='image_classification',
+                format='voc',
                 image_path_column='IMAGE_PATH',
                 image_label_column='IMAGE_LABEL',
                 is_path=True,
@@ -107,6 +109,8 @@ class Data_Processor():
         self.data_directory=data_directory
         self.is_dicom=is_dicom
         self.table=table
+        self.data_type=data_type
+        self.format=format
         self.image_path_column=image_path_column
         self.image_label_column=image_label_column
         self.is_path=is_path
@@ -204,7 +208,10 @@ class Data_Processor():
                                             image_label_column=self.image_label_column,
                                             is_path=self.is_path,
                                             sampling=1.0,
-                                            transformations=self.transformations)
+                                            transformations=self.transformations,
+                                            data_type=self.data_type,
+                                            format=self.format
+                                            )
 
         self.num_output_classes=len(self.master_dataset.classes)
 
@@ -219,7 +226,10 @@ class Data_Processor():
                                                 image_label_column=self.image_label_column,
                                                 is_path=self.is_path,
                                                 sampling=1.0,
-                                                transformations=self.train_transformations)
+                                                transformations=self.train_transformations
+                                                data_type=self.data_type,
+                                                format=self.format
+                                                )
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance(method=self.balance_class_method)
             self.valid_dataset=RADTorch_Dataset(
@@ -232,7 +242,10 @@ class Data_Processor():
                                                 image_label_column=self.image_label_column,
                                                 is_path=self.is_path,
                                                 sampling=1.0,
-                                                transformations=self.transformations)
+                                                transformations=self.transformations
+                                                data_type=self.data_type,
+                                                format=self.format
+                                                )
             self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
 
         else:
@@ -246,7 +259,10 @@ class Data_Processor():
                                                 image_label_column=self.image_label_column,
                                                 is_path=self.is_path,
                                                 sampling=1.0,
-                                                transformations=self.train_transformations)
+                                                transformations=self.train_transformations
+                                                data_type=self.data_type,
+                                                format=self.format
+                                                )
             if self.balance_class:
                 self.train_dataset=self.train_dataset.balance(method=self.balance_class_method)
 
@@ -260,7 +276,10 @@ class Data_Processor():
                                             image_label_column=self.image_label_column,
                                             is_path=self.is_path,
                                             sampling=1.0,
-                                            transformations=self.transformations)
+                                            transformations=self.transformations
+                                            data_type=self.data_type,
+                                            format=self.format
+                                            )
 
         self.master_dataloader=torch.utils.data.DataLoader(dataset=self.master_dataset,batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
         self.train_dataloader=torch.utils.data.DataLoader(dataset=self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
