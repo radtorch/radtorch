@@ -142,9 +142,9 @@ class RADTorch_Dataset(Dataset):
         image=self.transformations(image)
         label=self.input_data.iloc[index][self.image_label_column]
         label_idx=[v for k, v in self.class_to_idx.items() if k == label][0]
-        if self.data_type='image_classification':
+        if self.data_type=='image_classification':
             return image, label_idx, image_path
-        elif self.data_type='object_detection':
+        elif self.data_type=='object_detection':
             target={}
             boxes=[self.input_data.iloc[index]['x_min'], self.input_data.iloc[index]['x_max'], self.input_data.iloc[index]['y_min'], self.input_data.iloc[index]['y_max']]
             target['boxes']=torch.as_tensor(boxes, dtype=torch.float32)
