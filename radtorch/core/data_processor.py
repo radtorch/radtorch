@@ -147,9 +147,9 @@ class Data_Processor():
                     parsed_data=[]
                     for i in box_files:
                         parsed_data.append(parse_voc_xml(i))
-                    self.input_data=pd.DataFrame(parsed_data)
-                    self.input_data[self.image_path_column]=self.input_data['image_id']
-                    self.input_data[self.image_label_column]=self.input_data['labels']
+                    self.table=pd.DataFrame(parsed_data)
+                    self.table[self.image_path_column]=self.table['image_id']
+                    self.table[self.image_label_column]=self.table['labels']
                     self.is_path=False
             else:
                 self.table=create_data_table(directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
