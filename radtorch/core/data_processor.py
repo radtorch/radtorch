@@ -138,7 +138,7 @@ class Data_Processor():
         if self.data_type=='object_detection':
             self.collate_function=collate_fn
         else:
-            self.collate_function=builtins.function            
+            self.collate_function=torch.builtins.function            
             
             
         # Create Initial Master Table
