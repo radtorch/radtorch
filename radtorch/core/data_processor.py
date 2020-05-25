@@ -135,6 +135,12 @@ class Data_Processor():
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+        if self.data_type=='object_detection':
+            self.collate_function=collate_fn
+        else:
+            self.collate_function=builtins.function            
+            
+            
         # Create Initial Master Table
         if isinstance(self.table, str):
             if self.table!='':
@@ -143,7 +149,6 @@ class Data_Processor():
             self.table=self.table
         else:
             if self.data_type=='object_detection':
-                self.collate_function=collate_fn
                 if self.format=='voc':
                     box_files=[x for x in list_of_files(self.data_directory) if x.endswith('.xml')]
                     parsed_data=[]
@@ -154,7 +159,6 @@ class Data_Processor():
                     self.table[self.image_label_column]=self.table['labels']
                     self.is_path=False
             else:
-                self.collate_function=builtins.function
                 self.table=create_data_table(directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
 
 
