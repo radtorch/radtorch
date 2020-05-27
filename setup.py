@@ -12,7 +12,8 @@ setup(
       author_email = "https://www.linkedin.com/in/mohamedelbanan/",
       license='MIT',
       packages=find_packages(),
-      install_requires=['torch', 'torchvision', 'torchsummary', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn', 'torchsummary', 'efficientnet_pytorch', 'xmltodict', 'detectron2'],
+      install_requires=['torch', 'torchvision', 'torchsummary', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn', 'torchsummary', 'efficientnet_pytorch', 'xmltodict'],
+      dependency_links=['http://github.com/facebookresearch/detectron2/tarball/master#egg=v0.1.3'],
 
       zip_safe=False,
       classifiers=[
