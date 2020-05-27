@@ -12,7 +12,7 @@ setup(
       author_email = "https://www.linkedin.com/in/mohamedelbanan/",
       license='MIT',
       packages=find_packages(),
-      install_requires=['torch', 'torchvision', 'torchsummary', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn', 'torchsummary', 'efficientnet_pytorch', 'xmltodict'],
+      install_requires=['torch', 'torchvision', 'torchsummary', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn', 'torchsummary', 'efficientnet_pytorch', 'xmltodict', 'detectron2'],
 
       zip_safe=False,
       classifiers=[
