@@ -15,7 +15,7 @@ setup(
       install_requires=['torch', 'torchvision', 'torchsummary', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 
                         'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn', 'torchsummary', 'efficientnet_pytorch', 
                         'xmltodict',
-                        'detectron2==0.1.3'
+                        'detectron2 @ git+https://github.com/facebookresearch/detectron2.gitr#egg=v0.1.3'
                        ],
 #       dependency_links=['http://github.com/facebookresearch/detectron2/tarball/master#egg=v0.1.3'],
 
