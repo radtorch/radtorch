@@ -15,8 +15,8 @@ setup(
       install_requires=['torch', 'torchvision', 'torchsummary', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow', 
                         'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn', 'torchsummary', 'efficientnet_pytorch', 
                         'xmltodict',
-                        'detectron2 @ git+https://github.com/facebookresearch/detectron2.git#egg=v0.1.3',
-                        'pyyaml>=5.1'
+#                         'detectron2 @ git+https://github.com/facebookresearch/detectron2.git#egg=v0.1.3',
+#                         'pyyaml>=5.1'
                        ],
 
       zip_safe=False,
