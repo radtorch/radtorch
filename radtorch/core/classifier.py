@@ -111,7 +111,7 @@ class Classifier(object):
                     except:
                         log('Loading feature table failed. Please check the location of the feature table.')
                         pass
-                 elif isinstance(self.feature_table, pd.DataFrame):
+                elif isinstance(self.feature_table, pd.DataFrame):
                     self.feature_table=self.feature_table
                 
             self.feature_names=[x for x in self.feature_table.columns if x not in [self.image_label_column,self.image_path_column]]
