@@ -104,13 +104,16 @@ class Classifier(object):
 
         # Or Load user specified features
         else:
-            if self.feature_table !=None:
+            if self.feature_table is not None:
                 if isinstance(self.feature_table, str):
                     try:
                         self.feature_table=pd.read_csv(self.feature_table)
                     except:
                         log('Loading feature table failed. Please check the location of the feature table.')
                         pass
+                 elif isinstance(self.feature_table, pd.DataFrame):
+                    self.feature_table=self.feature_table
+                
             self.feature_names=[x for x in self.feature_table.columns if x not in [self.image_label_column,self.image_path_column]]
             self.labels=self.feature_table[self.image_label_column]
             self.features=self.feature_table[self.feature_names]
