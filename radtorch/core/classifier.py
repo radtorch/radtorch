@@ -64,7 +64,7 @@ class Classifier(object):
     """
 
     def __init__(self,
-                extracted_feature_dictionary,
+                extracted_feature_dictionary=None,
                 feature_table=None,
                 image_label_column=None,
                 image_path_column=None,
@@ -94,7 +94,7 @@ class Classifier(object):
 
 
         # Load extracted feature dictionary
-        if 'extracted_feature_dictionary' in self.__dict__.keys():
+        if self.extracted_feature_dictionary != None:
             self.feature_names=self.extracted_feature_dictionary['train']['features_names']
             self.train_features=self.extracted_feature_dictionary['train']['features']
             self.train_labels=np.array(self.extracted_feature_dictionary['train']['labels'])
