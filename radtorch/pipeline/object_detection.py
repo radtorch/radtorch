@@ -13,14 +13,13 @@
 from ..settings import *
 from ..core import *
 from ..utils import *
-from ..beta import *
 
 class Image_Classification():
 
     """
     Description
     -----------
-    Complete end-to-end image classification pipeline.
+    Complete end-to-end Object Detection Pipeline.
 
     Parameters
     ----------
@@ -170,7 +169,7 @@ class Image_Classification():
         self.unfreeze=unfreeze
         self.type=type
         self.cv=cv
-        self.stratified=stratified
+        self.stratified=xstratified
         self.num_splits=num_splits
         self.parameters=parameters
         self.learning_rate=learning_rate
@@ -186,7 +185,7 @@ class Image_Classification():
         self.device=device
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        if 'data_processor' not in self.__dict__.keys(): self.data_processor=beta_Data_Processor(**self.__dict__)
+        if 'data_processor' not in self.__dict__.keys(): self.data_processor=Data_Processor(**self.__dict__)
         if 'feature_extractor' not in self.__dict__.keys(): self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.master_dataloader, **self.__dict__)
         if 'extracted_feature_dictionary' not in self.__dict__.keys():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)

@@ -74,11 +74,11 @@ class GAN():
 
     - discriminator_num_features (integer, required): number of features/convolutions for discriminator network.default=64
 
-    - generator_optimizer (string, required): generator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
+    - generator_optimizer (string, required): generator network optimizer type. If set to 'auto', pipeline assigns appropriate optimizer automatically. Please see radtorch.settings for list of approved optimizers. default='auto'.
 
     - generator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation. default={'betas':(0.5,0.999)} for Adam optimizer.
 
-    - discrinimator_optimizer (string, required): discrinimator network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
+    - discrinimator_optimizer (string, required): discrinimator network optimizer type. If set to 'auto', pipeline assigns appropriate optimizer automatically. Please see radtorch.settings for list of approved optimizers. default='auto'.
 
     - discrinimator_optimizer_param (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation. default={'betas':(0.5,0.999)} for Adam optimizer.
 
@@ -88,7 +88,9 @@ class GAN():
 
     - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
 
+    - loss (string, optional): type of loss to be applied. Options{'minmax', 'wasserstein'}. default='minmax'
 
+    - num_critics (integer, required with wgan): number of critics/disciminator to train before training generator. default=2
 
     Methods
     -------
@@ -119,7 +121,6 @@ class GAN():
 
         - Displays different parameters of the generative adversarial network.
 
-
     .metrics(figure_size=(700,350))
 
         - Displays training metrics for the GAN.
@@ -137,6 +138,8 @@ class GAN():
         - Parameters:
 
             - figure_size (tuple, optional): Tuple of width and length of figure plotted. default=(700,350).
+
+    .generate(noise_size=100, figure_size=(5,5))
 
     """
 
@@ -161,8 +164,8 @@ class GAN():
                discriminator='dcgan',
                generator='dcgan',
                epochs=10,
-               discrinimator_optimizer='Adam',
-               generator_optimizer='Adam',
+               discrinimator_optimizer='auto',
+               generator_optimizer='auto',
                discrinimator_optimizer_param={'betas':(0.5,0.999)},
                generator_optimizer_param={'betas':(0.5,0.999)},
                generator_learning_rate=0.0001,
@@ -170,6 +173,7 @@ class GAN():
                image_channels=1,
                sampling=1.0,
                transformations='default',
+               num_critics=2,
                device='auto'):
 
         self.data_directory=data_directory
@@ -206,6 +210,7 @@ class GAN():
         self.g_optimizer_param=generator_optimizer_param
         self.epochs=epochs
         self.label_smooth=label_smooth
+        self.num_critics=num_critics
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -218,6 +223,23 @@ class GAN():
             self.table=self.table
         else: self.table=create_data_table(directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
 
+        # Sample from dataset
+        if isinstance (self.sampling, float):
+            if self.sampling > 1.0 :
+                log('Error! Sampling cannot be more than 1.0.')
+                pass
+            elif self.sampling == 0:
+                log ('Error! Sampling canot be Zero.')
+                pass
+            else:
+                self.table=self.table.sample(frac=self.sampling, random_state=100)
+        else:
+            log ('Error! Sampling is not float')
+            pass
+
+        if len(self.normalize[0]) != self.d_input_image_channels or len(self.normalize[0] != self.d_input_image_channels):
+            log ('Error! Shape of supplied mean and/or std error. Please check that the mean/std values have the same number of elements as number of input image channels.')
+            pass
 
         if self.transformations=='default':
             if self.is_dicom:
@@ -256,19 +278,36 @@ class GAN():
           self.D=DCGAN_Discriminator(num_input_channels=self.d_input_image_channels,num_discriminator_features=self.d_num_features, input_image_size=self.d_input_image_size,  kernel_size=4)
         elif self.d=='vanilla':
           self.D=GAN_Discriminator(input_image_size=self.d_input_image_size, intput_num_channels=self.d_input_image_channels, device=self.device)
+        elif self.d=='wgan':
+          self.D=WGAN_Discriminator(num_input_channels=self.d_input_image_channels,num_discriminator_features=self.d_num_features, input_image_size=self.d_input_image_size,  kernel_size=4)
 
 
         if self.g=='dcgan':
           self.G=DCGAN_Generator(noise_size=self.g_noise_size, num_generator_features=self.g_num_features, num_output_channels=self.g_output_image_channels, target_image_size=self.g_output_image_size)
         elif self.g=='vanilla':
           self.G=GAN_Generator(noise_size=self.g_noise_size, target_image_size=self.g_output_image_size, output_num_channels=self.g_output_image_channels, device=self.device)
+        elif self.g=='wgan':
+          self.G=WGAN_Generator(noise_size=self.g_noise_size, num_generator_features=self.g_num_features, num_output_channels=self.g_output_image_channels, target_image_size=self.g_output_image_size)
 
         self.G.apply(self.weights_init)
         self.D = self.D.to(self.device)
         self.G = self.G.to(self.device)
 
-        self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, **self.d_optimizer_param)
-        self.G_optimizer=self.nn_optimizer(type=self.g_optimizer, model=self.G, learning_rate=self.g_learning_rate, **self.g_optimizer_param)
+        if self.d_optimizer=='auto':
+            if self.d in ['dcgan', 'vanilla']:
+                self.D_optimizer=self.nn_optimizer(type='Adam', model=self.D, learning_rate=self.d_learning_rate, **self.d_optimizer_param)
+            elif self.d =='wgan':
+                self.D_optimizer=self.nn_optimizer(type='RMSprop', model=self.D, learning_rate=self.d_learning_rate)
+        else:
+            self.D_optimizer=self.nn_optimizer(type=self.d_optimizer, model=self.D, learning_rate=self.d_learning_rate, **self.d_optimizer_param)
+
+        if self.g_optimizer=='auto':
+            if self.g in ['dcgan', 'vanilla']:
+                self.G_optimizer=self.nn_optimizer(type='Adam', model=self.G, learning_rate=self.d_learning_rate, **self.d_optimizer_param)
+            elif self.g =='wgan':
+                self.G_optimizer=self.nn_optimizer(type='RMSprop', model=self.G, learning_rate=self.d_learning_rate)
+        else:
+            self.G_optimizer=self.nn_optimizer(type=self.g_optimizer, model=self.G, learning_rate=self.g_learning_rate, **self.g_optimizer_param)
 
         # self.fixed_noise = torch.randn(self.batch_size, self.g_noise_size, 1, 1, device=self.device)
         self.fixed_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=self.batch_size)
@@ -324,11 +363,14 @@ class GAN():
     def run(self, verbose='batch', show_images=True, figure_size=(10,10)):
         if self.label_smooth:
             real_label=0.9
-            # real_label=random.uniform(0.9, 1.1)
-            # fake_label=random.uniform(0.0, 0.3)
+
         else:
             real_label=1.0
         fake_label=0.0
+
+        if self.d=='wgan':
+            real_label = -1
+            fake_label = 1
 
         self.D = self.D.to(self.device)
         self.G = self.G.to(self.device)
@@ -352,61 +394,72 @@ class GAN():
 
                 batch_start=time.time()
 
-                # (1) Train D
-                ###########################
-                ## Train with all-real batch
-                self.D.zero_grad()
-                # Format batch
-                images = images.to(self.device)
-                b_size = images.size(0)
-                label = torch.full((b_size,), real_label, dtype=torch.float, device=self.device)
-                # Forward pass real batch through D
-                output = self.D(images).view(-1)
-                # Calculate loss on all-real batch
-                errD_real = self.criterion(output, label)
-                # Calculate gradients for D in backward pass
-                errD_real.backward()
-                # D_x = output.mean().item()
 
-                ## Train with all-fake batch
-                # Generate batch of latent vectors
-                generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=b_size)
-                # generated_noise=torch.randn((b_size,self.g_noise_size, 1, 1), device=self.device)
-                # Generate fake image batch with G
-                fake = self.G(generated_noise)
-                label.fill_(fake_label)
-                # Classify all fake batch with D
-                output = self.D(fake.detach()).view(-1)
-                # Calculate D's loss on the all-fake batch
-                errD_fake = self.criterion(output, label)
-                # Calculate the gradients for this batch
-                errD_fake.backward()
-                # D_G_z1 = output.mean().item()
-                # Add the gradients from the all-real and all-fake batches
-                errD = errD_real + errD_fake
-                # Update D
-                self.D_optimizer.step()
+                if self.d in ['vanilla', 'dcgan']:
 
-                ############################
-                # (2) Train G
-                ###########################
-                self.G.zero_grad()
-                label.fill_(real_label)  # fake labels are real for generator cost
-                # Since we just updated D, perform another forward pass of all-fake batch through D
-                output = self.D(fake).view(-1)
-                # Calculate G's loss based on this output
-                errG = self.criterion(output, label)
-                # Calculate gradients for G
-                errG.backward()
-                # D_G_z2 = output.mean().item()
-                # Update G
-                self.G_optimizer.step()
+                    self.D.zero_grad()
+                    images = images.to(self.device)
+                    b_size = images.size(0)
+                    label = torch.full((b_size,), real_label, dtype=torch.float, device=self.device)
+                    output = self.D(images).view(-1)
+                    errD_real = self.criterion(output, label)
+                    errD_real.backward()
+
+                    generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=b_size)
+
+                    fake = self.G(generated_noise)
+                    label.fill_(fake_label)
+                    output = self.D(fake.detach()).view(-1)
+                    errD_fake = self.criterion(output, label)
+                    errD_fake.backward()
+                    errD = errD_real + errD_fake
+                    self.D_optimizer.step()
+
+                    self.G.zero_grad()
+                    label.fill_(real_label)  # fake labels are real for generator cost
+                    output = self.D(fake).view(-1)
+                    errG = self.criterion(output, label)
+                    errG.backward()
+                    self.G_optimizer.step()
+
+
+                elif self.d =='wgan':
+
+                    self.D.zero_grad()
+                    images = images.to(self.device)
+                    b_size = images.size(0)
+                    label = torch.full((b_size,), real_label, dtype=torch.float, device=self.device)
+                    output1 = self.D(images).view(-1)
+                    errD_real = self.criterion(output1, label)
+
+                    generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=b_size)
+                    fake = self.G(generated_noise)
+                    label.fill_(fake_label)
+                    output2 = self.D(fake.detach()).view(-1)
+                    errD_fake = self.criterion(output1, label)
+                    errD = torch.mean(output2)-torch.mean(output1)
+                    errD.backward()
+                    self.D_optimizer.step()
+
+                    for p in self.D.parameters():
+                        p.data.clamp_(-0.01, 0.01)
+
+                    if batch_number % self.num_critics == 0:
+                        self.G.zero_grad()
+                        label.fill_(real_label)
+                        output = self.D(fake).view(-1)
+                        errG=-torch.mean(output)
+                        errG.backward()
+                        self.G_optimizer.step()
+
+
 
                 self.train_metrics.append([errD.item(),  errG.item(), errD_real.item(), errD_fake.item()])
-                epoch_errD=[errD.item()]
-                epoch_errG=[errG.item()]
                 epoch_d_loss_real=[errD_real.item()]
                 epoch_d_loss_fake=[errD_fake.item()]
+                epoch_errD=[errD.item()]
+                epoch_errG=[errG.item()]
+
 
                 batch_end=time.time()
                 if verbose=='batch':
@@ -415,8 +468,8 @@ class GAN():
             epoch_end=time.time()
             if verbose=='epoch':
                 log("[Epoch:{:03d}/{:03d}] : [D_loss: {:.4f}, G_loss: {:.4f}] [d_loss_real {:.4f}, d_loss_fake {:.4f}] [Time: {:.4f}s]".format(epoch, self.epochs, mean(epoch_errD), mean(epoch_errG), mean(epoch_d_loss_real), mean(epoch_d_loss_fake), epoch_end-epoch_start))
+
             self.G.eval()
-            # generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=self.g_noise_type, num_images=num_generated_images)
             sample = self.G(self.fixed_noise)
             sample = sample.cpu().detach().numpy()
             sample = [np.moveaxis(x, 0, -1) for x in sample]
@@ -431,6 +484,13 @@ class GAN():
 
     def metrics(self, figure_size=(700,350)):
       return show_metrics([self],  figure_size=figure_size, type='GAN')
+
+    def generate(self, noise_type='normal', figure_size=(4,4), cmap='gray'):
+        generated_noise = self.generate_noise(noise_size=self.g_noise_size, noise_type=noise_type, num_images=1)
+        generated_image = self.trained_G(generated_noise).detach().cpu()
+        generated_image = generated_image.data.cpu().numpy()
+        fig = plt.figure(figsize=figure_size)
+        implot = plt.imshow(generated_image[-1][-1], cmap=cmap)
 
     def export_generated_images(self, output_folder, figure_size=(10,10), zip=False):#<<<<<<<<<<<<<<<<<<<< NEEDS FIX
         for images in self.generated_samples:

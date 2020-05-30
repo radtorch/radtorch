@@ -184,3 +184,25 @@ def datatable_from_filepath(*filelist,classes:list): #KareemElFatairy
             data['IMAGE_LABEL'].append(item)
     df=pd.DataFrame(data)
     return df
+
+
+def parse_voc_xml(label_file):
+    '''
+
+    '''
+    output = {}
+
+    label_data=xmltodict.parse(open(label_file , 'rb'))
+
+    output['width']=int(label_data['annotation']['size']['width'])
+    output['height']=int(label_data['annotation']['size']['height'])
+    output['depth']=int(label_data['annotation']['size']['depth'])
+    output['x_min']=int(label_data['annotation']['object']['bndbox']['xmin'])
+    output['x_max']=int(label_data['annotation']['object']['bndbox']['xmax'])
+    output['y_min']=int(label_data['annotation']['object']['bndbox']['ymin'])
+    output['y_max']=int(label_data['annotation']['object']['bndbox']['ymax'])
+    output['image_id']=label_data['annotation']['filename']
+    output['labels']=label_data['annotation']['object']['name']
+    output['area']= (output['x_max']-output['x_min'])*(output['y_max']-output['y_min'])
+
+    return output

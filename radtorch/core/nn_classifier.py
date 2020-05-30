@@ -78,6 +78,8 @@ class NN_Classifier():
                 optimizer_parameters={},
                 **kwargs):
 
+        self.classifier_type='nn_classifier'
+        self.type='nn_classifier'
         self.feature_extractor=feature_extractor
         self.data_processor=data_processor
         self.unfreeze=unfreeze
@@ -111,13 +113,23 @@ class NN_Classifier():
 
 
         # MODEL
-        self.model=copy.deepcopy(self.feature_extractor.model)
         self.model_arch=self.feature_extractor.model_arch
+        self.pre_trained=self.feature_extractor.pre_trained
+        if 'efficientnet' in self.model_arch:
+            if self.pre_trained:
+                self.model=EfficientNet.from_pretrained(self.model_arch, num_classes=self.output_classes)
+            else:
+                self.model=EfficientNet.from_name(self.model_arch, num_classes=self.output_classes)
+        else:
+            self.model=copy.deepcopy(self.feature_extractor.model)
         self.in_features=model_dict[self.model_arch]['output_features']
 
         if self.custom_nn_classifier !=None:
             if 'vgg' in self.model_arch or 'alexnet' in self.model_arch: self.model.classifier=self.custom_nn_classifier
             elif 'resnet' in self.model_arch: self.model.fc=self.custom_nn_classifier
+            elif 'efficientnet' in self.model_arch:
+                log ('Error! Custom NN_Classifier is not yet supported with EfficientNet.')
+                pass
 
         else:
             if 'vgg' in self.model_arch:
@@ -145,6 +157,11 @@ class NN_Classifier():
 
             elif 'resnet' in self.model_arch:
                 self.model.fc=torch.nn.Sequential(
+                                torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),
+                                torch.nn.LogSoftmax(dim=1))
+
+            elif 'efficientnet' in self.model_arch:
+                self.model._fc=torch.nn.Sequential(
                                 torch.nn.Linear(in_features=self.in_features, out_features=self.output_classes, bias=True),
                                 torch.nn.LogSoftmax(dim=1))
 
@@ -445,7 +462,7 @@ class NN_Classifier():
             # prediction_percentages=[i*100 for i in prediction_percentages]
             prediction_percentages = [("%.4f" % x) for x in prediction_percentages]
             _, final_prediction=torch.max(out, 1)
-            prediction_table=pd.DataFrame(list(zip(self.data_processor.classes().keys(), [*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['label','label_idx', 'prediction_accuracy'])
+            prediction_table=pd.DataFrame(list(zip(self.data_processor.classes().keys(), [*range(0, len(prediction_percentages), 1)], prediction_percentages)), columns=['LABEL','LABEL_IDX', 'PREDICTION_ACCURACY'])
 
         if all_predictions:
             return prediction_table
@@ -473,3 +490,10 @@ class NN_Classifier():
         misclassified_table = show_nn_misclassified(model=self.trained_model, target_data_set=self.test_dataset, num_of_images=num_of_images, device=self.device, transforms=self.data_processor.transformations, is_dicom = self.is_dicom, figure_size=figure_size)
         if table:
             return misclassified_table
+
+    def summary(self):
+        summary(self.model.to(self.device), (3, model_dict[self.model_arch]['input_size'], model_dict[self.model_arch]['input_size']), device=str(self.device))
+
+
+    def show_model_layers(self):
+        return [x for x, y in self.trained_model.named_modules()]

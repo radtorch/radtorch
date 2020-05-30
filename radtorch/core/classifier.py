@@ -64,7 +64,7 @@ class Classifier(object):
     """
 
     def __init__(self,
-                extracted_feature_dictionary,
+                extracted_feature_dictionary=None,
                 feature_table=None,
                 image_label_column=None,
                 image_path_column=None,
@@ -94,7 +94,7 @@ class Classifier(object):
 
 
         # Load extracted feature dictionary
-        if 'extracted_feature_dictionary' in self.__dict__.keys():
+        if self.extracted_feature_dictionary != None:
             self.feature_names=self.extracted_feature_dictionary['train']['features_names']
             self.train_features=self.extracted_feature_dictionary['train']['features']
             self.train_labels=np.array(self.extracted_feature_dictionary['train']['labels'])
@@ -104,13 +104,16 @@ class Classifier(object):
 
         # Or Load user specified features
         else:
-            if self.feature_table !=None:
+            if self.feature_table is not None:
                 if isinstance(self.feature_table, str):
                     try:
                         self.feature_table=pd.read_csv(self.feature_table)
                     except:
                         log('Loading feature table failed. Please check the location of the feature table.')
                         pass
+                elif isinstance(self.feature_table, pd.DataFrame):
+                    self.feature_table=self.feature_table
+                
             self.feature_names=[x for x in self.feature_table.columns if x not in [self.image_label_column,self.image_path_column]]
             self.labels=self.feature_table[self.image_label_column]
             self.features=self.feature_table[self.feature_names]
@@ -301,6 +304,7 @@ class Classifier(object):
             target_img_tensor.to('cpu')
             model.eval()
             out=model(target_img_tensor)
+            out=out.tolist()
         image_features=pd.DataFrame(out, columns=self.feature_names)
 
         class_to_idx = self.data_processor.classes()
@@ -311,7 +315,7 @@ class Classifier(object):
                 B = self.data_processor.classes().values()
                 C = self.classifier.predict_proba(image_features)[0]
                 C = [("%.4f" % x) for x in C]
-                return pd.DataFrame(list(zip(A, B, C)), columns=['LABEL', 'LAEBL_IDX', 'PREDICTION_ACCURACY'])
+                return pd.DataFrame(list(zip(A, B, C)), columns=['LABEL', 'LABEL_IDX', 'PREDICTION_ACCURACY'])
             except:
                 log('All predictions could not be generated. Please set all_predictions to False.')
                 pass

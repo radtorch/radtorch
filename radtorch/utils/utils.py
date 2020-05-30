@@ -996,3 +996,10 @@ def show_nn_misclassified(model, target_data_set, num_of_images, transforms, dev
     output = pd.DataFrame(misses_all.values())
 
     return output
+
+
+def collate_fn(batch):
+    '''
+    from torchvision/references/utils
+    '''
+    return tuple(zip(*batch))
