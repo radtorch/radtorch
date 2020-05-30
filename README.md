@@ -10,7 +10,7 @@
 
 ---
 
-### :zap: New in 1.1.2
+### :zap: New
 
 1. CNN visualization with Class Activation Maps.
 
