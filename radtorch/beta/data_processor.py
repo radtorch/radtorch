@@ -18,7 +18,7 @@ from ..core import *
 from .beta import *
 
 
-class Data_Processor():
+class beta_Data_Processor():
 
     """
 
