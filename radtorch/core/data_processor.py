@@ -138,9 +138,9 @@ class Data_Processor():
         if self.data_type=='object_detection':
             self.collate_function=collate_fn
         else:
-            self.collate_function=None        
-            
-            
+            self.collate_function=None
+
+
         # Create Initial Master Table
         if isinstance(self.table, str):
             if self.table!='':
@@ -368,7 +368,7 @@ class Data_Processor():
                 print (k)
                 display(v)
 
-    def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False):
+    def sample(self, figure_size=(10,10), show_labels=True, show_file_name=False, gui=False):
         """
         Displays a sample from the training dataset. Number of images displayed is the same as batch size.
 
@@ -380,7 +380,7 @@ class Data_Processor():
 
 
         """
-        show_dataloader_sample(self.train_dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name=show_file_name)
+        show_dataloader_sample(self.train_dataloader, figure_size=figure_size, show_labels=show_labels, show_file_name=show_file_name, gui=gui)
 
     def check_leak(self, show_file=False):
         """

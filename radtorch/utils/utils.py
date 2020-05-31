@@ -272,7 +272,7 @@ def plot_dataset_info(dataframe_dictionary, plot_size=(500,300)):
     show(column(output))
 
 
-def plot_images(images, titles=None, figure_size=(10,10)):
+def plot_images(images, titles=None, figure_size=(10,10), gui=False):
 
     """
     Description
@@ -316,10 +316,13 @@ def plot_images(images, titles=None, figure_size=(10,10)):
         plt.axis('off')
         a.set_title(title)
     plt.axis('off')
-    plt.show()
+    if gui:
+        st.pyplot()
+    else:
+        plt.show()
 
 
-def show_dataloader_sample(dataloader, figure_size=(10,10), show_labels=True, show_file_name = False,):
+def show_dataloader_sample(dataloader, figure_size=(10,10), show_labels=True, show_file_name = False, gui=False):
 
     """
     Description
@@ -353,7 +356,7 @@ def show_dataloader_sample(dataloader, figure_size=(10,10), show_labels=True, sh
       titles = [((list(dataloader.dataset.class_to_idx.keys())[list(dataloader.dataset.class_to_idx.values()).index(i)]), i) for i in titles]
     if show_file_name:
       titles = [ntpath.basename(x) for x in paths]
-    plot_images(images=images, titles=titles, figure_size=figure_size)
+    plot_images(images=images, titles=titles, figure_size=figure_size, gui=gui)
 
 
 def plot_features(feature_table, feature_names, num_features, num_images,image_path_col, image_label_col):

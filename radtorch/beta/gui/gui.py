@@ -162,32 +162,33 @@ class Image_Classification_Module():
 
     def show_sample(self, figure_size=(10,10)):
         clf=self.state.clf
-        dataloader = clf.data_processor.train_dataloader
-        batch = next(iter(dataloader))
-        images, labels, paths = batch
-        images = images.numpy()
-        images = [np.moveaxis(x, 0, -1) for x in images]
-        titles = labels.numpy()
-        titles = [((list(dataloader.dataset.class_to_idx.keys())[list(dataloader.dataset.class_to_idx.values()).index(i)]), i) for i in titles]
-        cols = int(math.sqrt(len(images)))
-        assert((titles is None)or (len(images) == len(titles)))
-        n_images = len(images)
-        if titles is None: titles = ['Image (%d)' % i for i in range(1,n_images + 1)]
-        fig = plt.figure(figsize=figure_size)
-        for n, (image, title) in enumerate(zip(images, titles)):
-            a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
-            if image.shape[2]==1:
-                image=np.squeeze(image, axis=2)
-                plt.gray()
-            image_max = np.amax(image)
-            image_min = np.amin(image)
-            if image_max >255 or image_min <0 :
-              image=np.clip(image, 0, 255)
-            plt.imshow(image)
-            plt.axis('off')
-            a.set_title(title)
-        plt.axis('off')
-        st.pyplot()
+        clf.data_processor.sample(figure_size=figure_size, gui=True)
+        # dataloader = clf.data_processor.train_dataloader
+        # batch = next(iter(dataloader))
+        # images, labels, paths = batch
+        # images = images.numpy()
+        # images = [np.moveaxis(x, 0, -1) for x in images]
+        # titles = labels.numpy()
+        # titles = [((list(dataloader.dataset.class_to_idx.keys())[list(dataloader.dataset.class_to_idx.values()).index(i)]), i) for i in titles]
+        # cols = int(math.sqrt(len(images)))
+        # assert((titles is None)or (len(images) == len(titles)))
+        # n_images = len(images)
+        # if titles is None: titles = ['Image (%d)' % i for i in range(1,n_images + 1)]
+        # fig = plt.figure(figsize=figure_size)
+        # for n, (image, title) in enumerate(zip(images, titles)):
+        #     a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
+        #     if image.shape[2]==1:
+        #         image=np.squeeze(image, axis=2)
+        #         plt.gray()
+        #     image_max = np.amax(image)
+        #     image_min = np.amin(image)
+        #     if image_max >255 or image_min <0 :
+        #       image=np.clip(image, 0, 255)
+        #     plt.imshow(image)
+        #     plt.axis('off')
+        #     a.set_title(title)
+        # plt.axis('off')
+        # st.pyplot()
 
 if app == 'Image Classification':
     Image_Classification_Module()
