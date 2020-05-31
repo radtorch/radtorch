@@ -10,12 +10,31 @@ app=st.sidebar.selectbox('Select a Pipeline', ('Home', 'Image Classification', '
 
 
 
-
 class Image_Classification_Module():
 
     def __init__(self):
+
+        st.markdown('''
+        <style>
+            body {background-color: #1C2833;}
+            h1   {color: #F5B041;}
+            p    {color: white;}
+            input {background-color: #1C2833 !important}
+            input {border-color: #F5B041 !important}
+            input {color: white !important}
+            .Widget>label {color: white !important}
+            button  {background-color: #1C2833 !important}
+            button  {color: #F5B041 !important}
+
+
+        </style>230, 234, 241
+        ''', unsafe_allow_html=True)
         ## Main Content
         st.markdown('# Image Classification <small>pipeline</small>', unsafe_allow_html=True)
+        st.markdown('''
+
+        ''', unsafe_allow_html=True)
+
         self.data_directory= st.text_input('Data Directory (required)', value='/Users/elbanan/Projects/alexmed_data')
 
 
@@ -103,7 +122,10 @@ class Image_Classification_Module():
 
         self.state = SessionState.get(clf=None)
 
-        if self.save: self.state.clf = self.create_classifier()
+        if self.save:
+            st.spinner('Creating Classification Pipeline .... ')
+            self.state.clf = self.create_classifier()
+            st.success('Pipeline Created Successfully!')
         if self.data_info: self.show_data_info()
         if self.sample: self.show_sample()
         if self.clear : st.write('')
@@ -167,6 +189,40 @@ class Image_Classification_Module():
         clf.data_processor.sample(figure_size=figure_size, gui=True)
 
 
+
+
+def home():
+    st.markdown('''
+    <style>
+        body {background-color: #1C2833;}
+        h1   {color: #F5B041;}
+        p    {color: white;}
+        .sidebar  {background-color: #1C2833;}
+    </style>
+    ''', unsafe_allow_html=True)
+    st.markdown('<h1>Welcome to <b>RADTorch</b></h2>', unsafe_allow_html=True)
+    st.markdown('''
+        <p style='text-align: justify;'>
+        RADTorch provides a framework of higher level classes and functions that aim at significantly reducing the time needed for implementation of different machine and deep learning algorithms on DICOM medical images.
+        </p>
+    ''', unsafe_allow_html=True)
+
+    st.markdown('''
+    RADTorch is built upon widely used machine learning and deep learning frameworks. These include:
+
+    1. PyTorch for Deep Learning and Neural Networks.
+
+    2. Scikit-learn for Data Management and Machine Learning Algorithms.
+
+    3. PyDICOM for handling of DICOM data.
+
+    4. Bokeh, Matplotlib for data visualization.'''
+
+    , unsafe_allow_html=True)
+
+
+if app == 'Home':
+    home()
 if app == 'Image Classification':
     Image_Classification_Module()
 # /Users/elbanan/Projects/alexmed_data
