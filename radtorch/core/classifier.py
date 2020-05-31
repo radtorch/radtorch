@@ -183,35 +183,30 @@ class Classifier(object):
         if self.cv:
           if self.stratified:
             kf=StratifiedKFold(n_splits=self.num_splits, shuffle=True, random_state=100)
-            log('Training '+str(self.classifier_type)+ ' with '+str(self.num_splits)+' split stratified cross validation.')
-            if gui: st.write('Training '+str(self.classifier_type)+ ' with '+str(self.num_splits)+' split stratified cross validation.')
+            log('Training '+str(self.classifier_type)+ ' with '+str(self.num_splits)+' split stratified cross validation.', gui=gui)
           else:
             kf=KFold(n_splits=self.num_splits, shuffle=True, random_state=100)
-            log('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.')
-            if gui: st.write('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.')
+            log('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.', gui=gui)
           split_id=0
           if gui: my_bar = st.progress(0)
           for train, test in tqdm(kf.split(self.train_features, self.train_labels), total=self.num_splits):
             self.classifier.fit(self.train_features.iloc[train], self.train_labels[train])
             split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels[test])
             self.scores.append(split_score)
-            log('Split '+str(split_id)+' Accuracy = ' +str(split_score))
-            if gui:
-                st.write('Split '+str(split_id)+' Accuracy = ' +str(split_score))
+            log('Split '+str(split_id)+' Accuracy = ' +str(split_score), gui=gui)
             self.train_metrics.append([[0],[0],[split_score],[0]])
             split_id+=1
             if gui: my_bar.progress(split_id)
         else:
-          log('Training '+str(self.type)+' classifier without cross validation.')
-          if gui: st.write('Training '+str(self.type)+' classifier without cross validation.')
+          log('Training '+str(self.type)+' classifier without cross validation.', gui=gui)
           self.classifier.fit(self.train_features, self.train_labels)
           score=self.classifier.score(self.test_features, self.test_labels)
           self.scores.append(score)
           self.train_metrics.append([[0],[0],[score],[0]])
         self.scores = np.asarray(self.scores )
         self.classes=self.classifier.classes_.tolist()
-        log(str(self.classifier_type)+ ' model training finished successfully.')
-        log(str(self.classifier_type)+ ' overall training accuracy: %0.2f (+/- %0.2f)' % ( self.scores .mean(),  self.scores .std() * 2))
+        log(str(self.classifier_type)+ ' model training finished successfully.', gui=gui)
+        log(str(self.classifier_type)+ ' overall training accuracy: %0.2f (+/- %0.2f)' % ( self.scores .mean(),  self.scores .std() * 2), gui=gui)
         self.train_metrics = pd.DataFrame(data=self.train_metrics, columns = ['Train_Loss', 'Valid_Loss', 'Train_Accuracy', 'Valid_Accuracy'])
         return self.classifier, self.train_metrics
 
@@ -224,7 +219,7 @@ class Classifier(object):
         if self.cv:
           return self.scores.mean()
         else:
-          log('Error! Training was done without cross validation. Please use test_accuracy() instead.')
+          log('Error! Training was done without cross validation. Please use test_accuracy() instead.', gui=gui)
 
     def test_accuracy(self) :
 

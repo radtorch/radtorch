@@ -39,12 +39,13 @@ def export(item, path):
     outfile.close()
 
 
-def log(msg):
+def log(msg, gui=False):
     logfile=os.getcwd()+'logfile.txt'
     now = datetime.now()
     timestamp = now.strftime("%m/%d/%Y %H:%M:%S")
     message='['+timestamp+']: '+msg
     print (message)
+    if gui: st.write(message)
     file_operation=open(logfile, 'a')
     file_operation.write('\n')
     file_operation.write(message)
