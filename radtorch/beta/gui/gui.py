@@ -101,10 +101,11 @@ class Image_Classification_Module():
 
         self.state = SessionState.get(clf=None)
 
-        if self.save:
-            self.state.clf = self.create_classifier()
+        if self.save: self.state.clf = self.create_classifier()
+        if self.data_info: self.show_data_info()
+        if self.sample: self.show_sample()
+        if self.clear : st.write('')
 
-        if self.data_info:self.show_data_info(clf=self.state.clf)
 
 
     def create_classifier(self):
@@ -140,7 +141,8 @@ class Image_Classification_Module():
                         device=self.device)
         return clf
 
-    def show_data_info(self, clf):
+    def show_data_info(self):
+        clf=self.state.clf
         info_dict={}
         info_dict['dataset']=show_dataset_info(clf.data_processor.master_dataset)
         info_dict['dataset'].style.set_caption('Overall Dataset')
@@ -155,9 +157,37 @@ class Image_Classification_Module():
                     info_dict[i].style.set_caption('valid_dataset')
             for k, v in info_dict.items():
                 print (k)
+                st.write(k)
                 st.dataframe(v)
 
-
+    def show_sample(self, figure_size=(10,10)):
+        clf=self.state.clf
+        dataloader = clf.data_processor.train_dataloader
+        batch = next(iter(dataloader))
+        images, labels, paths = batch
+        images = images.numpy()
+        images = [np.moveaxis(x, 0, -1) for x in images]
+        titles = labels.numpy()
+        titles = [((list(dataloader.dataset.class_to_idx.keys())[list(dataloader.dataset.class_to_idx.values()).index(i)]), i) for i in titles]
+        cols = int(math.sqrt(len(images)))
+        assert((titles is None)or (len(images) == len(titles)))
+        n_images = len(images)
+        if titles is None: titles = ['Image (%d)' % i for i in range(1,n_images + 1)]
+        fig = plt.figure(figsize=figure_size)
+        for n, (image, title) in enumerate(zip(images, titles)):
+            a = fig.add_subplot(cols, np.ceil(n_images/float(cols)), n + 1)
+            if image.shape[2]==1:
+                image=np.squeeze(image, axis=2)
+                plt.gray()
+            image_max = np.amax(image)
+            image_min = np.amin(image)
+            if image_max >255 or image_min <0 :
+              image=np.clip(image, 0, 255)
+            plt.imshow(image)
+            plt.axis('off')
+            a.set_title(title)
+        plt.axis('off')
+        st.pyplot()
 
 if app == 'Image Classification':
     Image_Classification_Module()

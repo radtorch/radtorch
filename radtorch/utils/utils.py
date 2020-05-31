@@ -317,7 +317,6 @@ def plot_images(images, titles=None, figure_size=(10,10)):
         a.set_title(title)
     plt.axis('off')
     plt.show()
-    return plt
 
 
 def show_dataloader_sample(dataloader, figure_size=(10,10), show_labels=True, show_file_name = False,):
