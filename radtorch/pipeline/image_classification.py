@@ -202,32 +202,40 @@ class Image_Classification():
         set_random_seed(100)
         if self.type!='nn_classifier':
             log('Phase 1: Feature Extraction.')
+            if gui: st.write('Phase 1: Feature Extraction.')
 
             if 'extracted_feature_dictionary' in self.__dict__.keys():
                 log('Features Already Extracted. Loading Previously Extracted Features')
+                if gui: st.write('Features Already Extracted. Loading Previously Extracted Features')
             else:
                 log('Extracting Training Features')
+                if gui: st.write('Extracting Training Features')
                 self.train_feature_extractor.run()
                 log('Extracting Testing Features')
-                self.test_feature_extractor.run()
+                if gui: st.write('Extracting Testing Features')
+                self.test_feature_extractor.run(gui=gui)
                 self.extracted_feature_dictionary={
                                                     'train':{'features':self.train_feature_extractor.features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': self.train_feature_extractor.feature_names,},
                                                     'test':{'features':self.test_feature_extractor.features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': self.test_feature_extractor.feature_names,}
                                                     }
 
             log('Phase 2: Classifier Training.')
+            if gui: st.write('Phase 2: Classifier Training.')
             log ('Running Classifier Training.')
+            if gui: st.write('Running Classifier Training.')
             self.classifier=Classifier(**self.__dict__, )
             self.classifier.run()
             self.trained_model=self.classifier
             self.train_metrics=self.classifier.train_metrics
             # self.feature_selector=Feature_Selector(type=self.classifier.type, feature_table=self.feature_extractor.feature_table, feature_names=self.feature_extractor.feature_names)
             log ('Classifier Training completed successfully.')
+            if gui: st.write('Classifier Training completed successfully.')
+
         else:
             self.classifier=NN_Classifier(**self.__dict__)
             self.trained_model, self.train_metrics=self.classifier.run()
             log ('Classifier Training completed successfully.')
-
+            if gui: st.write('Classifier Training completed successfully.')
     def metrics(self, figure_size=(700,350)):
         return show_metrics([self.classifier],  figure_size=figure_size)
 

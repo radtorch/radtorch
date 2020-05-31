@@ -113,7 +113,7 @@ class Classifier(object):
                         pass
                 elif isinstance(self.feature_table, pd.DataFrame):
                     self.feature_table=self.feature_table
-                
+
             self.feature_names=[x for x in self.feature_table.columns if x not in [self.image_label_column,self.image_path_column]]
             self.labels=self.feature_table[self.image_label_column]
             self.features=self.feature_table[self.feature_names]
@@ -172,7 +172,7 @@ class Classifier(object):
         info.columns=['Property', 'Value']
         return info
 
-    def run(self):
+    def run(self, gui=False):
 
         """
         Runs Image Classifier.
@@ -184,19 +184,24 @@ class Classifier(object):
           if self.stratified:
             kf=StratifiedKFold(n_splits=self.num_splits, shuffle=True, random_state=100)
             log('Training '+str(self.classifier_type)+ ' with '+str(self.num_splits)+' split stratified cross validation.')
+            if gui: st.write('Training '+str(self.classifier_type)+ ' with '+str(self.num_splits)+' split stratified cross validation.')
           else:
             kf=KFold(n_splits=self.num_splits, shuffle=True, random_state=100)
             log('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.')
+            if gui: st.write('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.')
           split_id=0
           for train, test in tqdm(kf.split(self.train_features, self.train_labels), total=self.num_splits):
             self.classifier.fit(self.train_features.iloc[train], self.train_labels[train])
             split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels[test])
             self.scores.append(split_score)
             log('Split '+str(split_id)+' Accuracy = ' +str(split_score))
+            if gui:
+                st.write('Split '+str(split_id)+' Accuracy = ' +str(split_score))
             self.train_metrics.append([[0],[0],[split_score],[0]])
             split_id+=1
         else:
           log('Training '+str(self.type)+' classifier without cross validation.')
+          if gui: st.write('Training '+str(self.type)+' classifier without cross validation.')
           self.classifier.fit(self.train_features, self.train_labels)
           score=self.classifier.score(self.test_features, self.test_labels)
           self.scores.append(score)

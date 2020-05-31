@@ -104,7 +104,7 @@ class Image_Classification_Module():
         if self.data_info: self.show_data_info()
         if self.sample: self.show_sample()
         if self.clear : st.write('')
-
+        if self.run: self.state.clf.run(gui=True)
 
 
     def create_classifier(self):
