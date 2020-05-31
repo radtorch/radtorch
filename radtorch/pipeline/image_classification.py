@@ -197,7 +197,7 @@ class Image_Classification():
         info.columns=['Property', 'Value']
         return info
 
-    def run(self, **kw):
+    def run(self, gui=False):
         log('Starting Image Classification Pipeline')
         set_random_seed(100)
         if self.type!='nn_classifier':
