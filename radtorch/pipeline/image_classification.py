@@ -207,9 +207,9 @@ class Image_Classification():
                 log('Features Already Extracted. Loading Previously Extracted Features', gui=gui)
             else:
                 log('Extracting Training Features', gui=gui)
-                self.train_feature_extractor.run()
+                self.train_feature_extractor.run(gui=gui)
                 log('Extracting Testing Features', gui=gui)
-                self.test_feature_extractor.run()
+                self.test_feature_extractor.run(gui=gui)
                 self.extracted_feature_dictionary={
                                                     'train':{'features':self.train_feature_extractor.features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': self.train_feature_extractor.feature_names,},
                                                     'test':{'features':self.test_feature_extractor.features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': self.test_feature_extractor.feature_names,}

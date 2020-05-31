@@ -109,7 +109,7 @@ class Feature_Extractor():
         """
         return model_dict[self.model_arch]['output_features']
 
-    def run(self, verbose=False):
+    def run(self, verbose=False, gui=False):
         """
         Runs the feature exraction process
 
