@@ -196,7 +196,7 @@ class Classifier(object):
             log('Split '+str(split_id)+' Accuracy = ' +str(split_score), gui=gui)
             self.train_metrics.append([[0],[0],[split_score],[0]])
             split_id+=1
-            if gui: my_bar.progress(split_id*100/self.num_splits)
+            if gui: my_bar.progress(int(split_id*100/self.num_splits))
         else:
           log('Training '+str(self.type)+' classifier without cross validation.', gui=gui)
           self.classifier.fit(self.train_features, self.train_labels)
