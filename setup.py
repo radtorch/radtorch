@@ -14,7 +14,7 @@ setup(
       packages=find_packages(),
       install_requires=['torch', 'torchvision', 'torchsummary', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow',
                         'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn', 'torchsummary', 'efficientnet_pytorch',
-                        'xmltodict',
+                        'xmltodict','streamlit',
 #                         'detectron2 @ git+https://github.com/facebookresearch/detectron2.git#egg=v0.1.3',
 #                         'pyyaml>=5.1'
                        ],
