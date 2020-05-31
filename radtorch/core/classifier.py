@@ -190,6 +190,7 @@ class Classifier(object):
             log('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.')
             if gui: st.write('Training '+str(self.classifier_type)+ ' classifier with '+str(self.num_splits)+' splits cross validation.')
           split_id=0
+          if gui: my_bar = st.progress(0)
           for train, test in tqdm(kf.split(self.train_features, self.train_labels), total=self.num_splits):
             self.classifier.fit(self.train_features.iloc[train], self.train_labels[train])
             split_score=self.classifier.score(self.train_features.iloc[test], self.train_labels[test])
@@ -199,6 +200,7 @@ class Classifier(object):
                 st.write('Split '+str(split_id)+' Accuracy = ' +str(split_score))
             self.train_metrics.append([[0],[0],[split_score],[0]])
             split_id+=1
+            if gui: my_bar.progress(split_id)
         else:
           log('Training '+str(self.type)+' classifier without cross validation.')
           if gui: st.write('Training '+str(self.type)+' classifier without cross validation.')
