@@ -218,7 +218,7 @@ class Image_Classification():
             log('Phase 2: Classifier Training.', gui=gui)
             log ('Running Classifier Training.', gui=gui)
             self.classifier=Classifier(**self.__dict__, )
-            self.classifier.run()
+            self.classifier.run(gui=gui)
             self.trained_model=self.classifier
             self.train_metrics=self.classifier.train_metrics
             # self.feature_selector=Feature_Selector(type=self.classifier.type, feature_table=self.feature_extractor.feature_table, feature_names=self.feature_extractor.feature_names)

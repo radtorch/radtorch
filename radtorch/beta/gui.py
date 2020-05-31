@@ -1,11 +1,13 @@
-import SessionState
 
+import streamlit as st
 from radtorch.settings import *
 from radtorch import pipeline, core, utils
 from radtorch.utils import *
+import SessionState
 
 h = st.sidebar.markdown('# RADTorch<small> v1.1.3</small>', unsafe_allow_html=True)
 app=st.sidebar.selectbox('Select a Pipeline', ('Home', 'Image Classification', 'Generative Adversarial Networks'))
+
 
 
 
@@ -15,6 +17,11 @@ class Image_Classification_Module():
         ## Main Content
         st.markdown('# Image Classification <small>pipeline</small>', unsafe_allow_html=True)
         self.data_directory= st.text_input('Data Directory (required)', value='/Users/elbanan/Projects/alexmed_data')
+
+
+        # 
+        # st.markdown('<style>body{background-color: #1c1e21;} .d8{background-color: #1c1e21 !important;} body{color: white;} p{color: white;} .reportview-container .dataframe.col-header, .reportview-container .dataframe.corner, .reportview-container .dataframe.row-header {background-color: #1c1e21 !important; color: white !important;} .br {background-color: #1c1e21;!important} h2{color: white;} .reportview-container .main .block-container {flex: 1 1 !important; max-width: 1000px !important;width: 100% !important; padding: 0 !important;} .btn-outline-secondary{border-color: white !important; color: white !important;} .bi{color: white !important} h1{color: white;} li{color: white;} .Widget>label {color: white !important;} .sidebar-content{background-color: #1c1e21 !important; background-image:none !important;}</style>', unsafe_allow_html=True)
+        #
 
         ## Controls
         self.save = st.button('SAVE')

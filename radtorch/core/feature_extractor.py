@@ -120,9 +120,9 @@ class Feature_Extractor():
         """
 
         if 'balance_class' in self.__dict__.keys() and 'normalize' in self.__dict__.keys():
-            log('Running Feature Extraction using '+str(self.model_arch)+' architecture with balance_class = '+str(self.balance_class)+' and normalize = '+str(self.normalize)+".")
+            log('Running Feature Extraction using '+str(self.model_arch)+' architecture with balance_class = '+str(self.balance_class)+' and normalize = '+str(self.normalize)+".", gui=gui)
         else:
-            log('Running Feature Extraction using '+str(self.model_arch)+' architecture')
+            log('Running Feature Extraction using '+str(self.model_arch)+' architecture', gui=gui)
         self.features=[]
         self.labels_idx=[]
         self.img_path_list=[]
@@ -142,7 +142,7 @@ class Feature_Extractor():
         feature_table=pd.DataFrame(list(zip(self.img_path_list, self.labels_idx, self.features)), columns=['IMAGE_PATH','IMAGE_LABEL', 'FEATURES'])
         feature_table[self.feature_names]=pd.DataFrame(feature_table.FEATURES.values.tolist(), index= feature_table.index)
         feature_table=feature_table.drop(['FEATURES'], axis=1)
-        log('Features extracted successfully.')
+        log('Features extracted successfully.', gui=gui)
         self.feature_table=feature_table
         self.features=self.feature_table[self.feature_names]
         return self.feature_table, self.features, self.feature_names
