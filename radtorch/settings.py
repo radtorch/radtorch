@@ -61,17 +61,13 @@ from bokeh.palettes import viridis, Paired, inferno, brewer, d3
 from statistics import mode, mean
 from efficientnet_pytorch import EfficientNet
 
-import streamlit as st
-
-# RADTOrch settings
+# import streamlit as st
 
 
-################################################################################################################################################
 
 # GENERAL
 logfile='/content/log.text'
 
-################################################################################################################################################
 
 # VIS
 TOOLS="hover,save,box_zoom,reset,wheel_zoom, box_select"
@@ -79,7 +75,6 @@ COLORS3=["#d11141","#00b159","#00aedb","#f37735","#ffc425","#cccccc","#8c8c8c","
 COLORS2=['#1C1533', '#3C6FAA', '#10D8B8', '#FBD704', '#FF7300','#F82716','#FF7300', '#FBD704', '#10D8B8', '#3C6FAA']*100
 COLORS=['#93D5ED', '#45A5F5', '#4285F4', '#2F5EC4', '#0D47A1','#2F5EC4', '#4285F4', '#45A5F5',]*100
 
-################################################################################################################################################
 
 # CORE
 model_dict={
@@ -137,35 +132,6 @@ supported_nn_loss_functions=[
 'CosineSimilarity',
 ]
 
-CLASSIFER_DEFAULT_SETTINGS={
-'type':'logistic_regression',
-'test_percent':0.2,
-'cv':True,
-'stratified':True,
-'num_splits':5,
-'image_label_col':'IMAGE_LABEL',
-'interaction_terms':False,
-'parameters':{},
-}
-
-
-NN_CLASSIFIER_DEFAULT_SETTINGS={
-'type':'nn_classifier',
-'classifier_type':'NN-FCN with Softmax',
-'batch_size':16,
-'num_workers':0,
-'unfreeze':False,
-'valid_percent':0.2,
-'test_percent':0.2,
-'learning_rate':0.0001,
-'epochs':10,
-'optimizer':'Adam',
-'loss_function':'CrossEntropyLoss',
-'output_features':False,
-'optimizer_parameters':{},
-'loss_function_parameters':{}
-}
-
 
 SUPPORTED_CLASSIFIER=[
 'nn_classifier',
@@ -181,28 +147,6 @@ SUPPORTED_CLASSIFIER=[
 'xgboost',
 ]
 
-DEFAULT_DATASET_SETTINGS={
-'is_dicom':True,
-'mode':'RAW',
-'wl':None,
-'table':None,
-'normalize':((0, 0, 0), (1, 1, 1)),
-'balance_class':False,
-'image_path_column':'IMAGE_PATH',
-'image_label_column':'IMAGE_LABEL',
-'type':'logistic_regression',
-'model_arch':'alexnet',
-'batch_size':16,
-'valid_percent':0.2,
-'test_percent':0.2,
-'custom_resize':False,
-'multi_label':False,
-'num_workers':0,
-'sampling':1.0,
-
-}
-
-################################################################################################################################################
 
 # DATA
 IMG_EXTENSIONS=(
@@ -215,30 +159,6 @@ IMG_EXTENSIONS=(
 '.tif',
 '.tiff',
 '.webp')
-
-################################################################################################################################################
-
-#pipeline
-IMAGE_CLASSIFICATION_PIPELINE_SETTINGS={
-'table':None,
-'is_dicom':True,
-'normalize':((0,0,0), (1,1,1)),
-'balance_class':False,
-'batch_size':16,
-'num_workers':0,
-'model_arch':'alexnet',
-'custom_resize':False,
-'pre_trained':True,
-'unfreeze':False,
-'type':'logistic_regression',
-'test_percent':0.2,
-'cv':True,
-'stratified':True,
-'num_splits':5,
-'label_column':'label_idx',
-'parameters':{},
-'custom_nn_classifier':False,
-}
 
 
 FEATURE_EXTRACTION_PIPELINE_SETTINGS={
