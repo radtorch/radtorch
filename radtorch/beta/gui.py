@@ -10,27 +10,54 @@ app=st.sidebar.selectbox('Select a Pipeline', ('Home', 'Image Classification', '
 
 
 
-class Image_Classification_Module():
+class Image_classification_gui():
 
     def __init__(self):
 
-        st.markdown('''
-        <style>
-            body {background-color: #1C2833;}
-            h1   {color: #F5B041;}
-            p    {color: white;}
-            input {background-color: #1C2833 !important}
-            input {border-color: #F5B041 !important}
-            input {color: white !important}
-            .Widget>label {color: white !important}
-            button  {background-color: #1C2833 !important}
-            button  {color: #F5B041 !important}
-
-
-        </style>230, 234, 241
-        ''', unsafe_allow_html=True)
+        # st.markdown('''
+        # <style>
+        #     body {background-color: #FFFF;}
+        #     h1   {color: #ffd700;}
+        #     p    {color: #FFFF;}
+        #
+        #     input {background-color: #115173 !important}
+        #     input {border-color: #FFFF !important}
+        #     input {color: #FFFF !important}
+        #
+        #     .Widget>label {color: white !important}
+        #
+        #     button  {background-color: #022c43 !important}
+        #     button  {color: white !important}
+        #
+        #     .st-dr {background-color: #022c43 !important}
+        #     .st-dr {border-color: #022c43 !important}
+        #
+        #     .st-d1 {color: white !important}
+        #
+        #     .sidebar-close {background-color: #14213D !important}
+        #     .sidebar-close {color: #86BBD8 !important}
+        #     .sidebar-close {border-color: #86BBD8 !important}
+        #
+        #     .sidebar-collapse-control{background-color: #14213D !important}
+        #     .sidebar-collapse-control {color: #86BBD8 !important}
+        #     .sidebar-collapse-control {border-color: #86BBD8 !important}
+        #
+        #     .sidebar .sidebar-content {background-color: #022c43 !important}
+        #     .sidebar .sidebar-content {background-image: -webkit-linear-gradient(top,#022c43,#022c43) !important}
+        #     .sidebar .sidebar-content h3 {color: white !important}
+        #
+        #     .dropdown-item {background-color: #FFFF !important}
+        #     .dropdown-item {color: #14213D !important}
+        #
+        #     #MainMenuButton {background-color: #14213D !important}
+        #     #MainMenuButton {color: #86BBD8 !important}
+        #     #MainMenuButton {border-color: #86BBD8 !important}
+        #
+        # </style>
+        # ''', unsafe_allow_html=True)
         ## Main Content
-        st.markdown('# Image Classification <small>pipeline</small>', unsafe_allow_html=True)
+
+        st.title('Image Classification pipeline')
         st.markdown('''
 
         ''', unsafe_allow_html=True)
@@ -191,21 +218,21 @@ class Image_Classification_Module():
 
 
 
-def home():
-    st.markdown('''
-    <style>
-        body {background-color: #1C2833;}
-        h1   {color: #F5B041;}
-        p    {color: white;}
-        .sidebar  {background-color: #1C2833;}
-    </style>
-    ''', unsafe_allow_html=True)
-    st.markdown('<h1>Welcome to <b>RADTorch</b></h2>', unsafe_allow_html=True)
-    st.markdown('''
-        <p style='text-align: justify;'>
-        RADTorch provides a framework of higher level classes and functions that aim at significantly reducing the time needed for implementation of different machine and deep learning algorithms on DICOM medical images.
-        </p>
-    ''', unsafe_allow_html=True)
+def home_gui():
+    # st.markdown('''
+    # <style>
+    #     body {background-color: #14213D;}
+    #     h1   {color: #F5B041;}
+    #     p    {color: white;}
+    #     .sidebar  {background-color: #1C2833;}
+    # </style>
+    # ''', unsafe_allow_html=True)
+    # st.markdown('<h1>Welcome to <b>RADTorch</b></h2>', unsafe_allow_html=True)
+    # st.markdown('''
+    #     <p style='text-align: justify;'>
+    #     RADTorch provides a framework of higher level classes and functions that aim at significantly reducing the time needed for implementation of different machine and deep learning algorithms on DICOM medical images.
+    #     </p>
+    # ''', unsafe_allow_html=True)
 
     st.markdown('''
     RADTorch is built upon widely used machine learning and deep learning frameworks. These include:
@@ -222,7 +249,6 @@ def home():
 
 
 if app == 'Home':
-    home()
+    home_gui()
 if app == 'Image Classification':
-    Image_Classification_Module()
-# /Users/elbanan/Projects/alexmed_data
+    Image_classification_gui()

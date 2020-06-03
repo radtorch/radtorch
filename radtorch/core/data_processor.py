@@ -244,6 +244,8 @@ class Data_Processor():
         self.num_output_classes=len(self.master_dataset.classes)
 
         if self.type=='nn_classifier':
+            if self.balance_class:
+                self.train_table=balance_dataframe(dataframe=self.train_table, method=self.balance_class_method, label_col=self.image_label_column)
             self.train_dataset=RADTorch_Dataset(
                                                 data_directory=self.data_directory,
                                                 table=self.train_table,
@@ -258,8 +260,7 @@ class Data_Processor():
                                                 data_type=self.data_type,
                                                 format=self.format
                                                 )
-            if self.balance_class:
-                self.train_dataset=self.train_dataset.balance(method=self.balance_class_method)
+
             self.valid_dataset=RADTorch_Dataset(
                                                 data_directory=self.data_directory,
                                                 table=self.valid_table,
@@ -278,9 +279,11 @@ class Data_Processor():
             self.valid_dataloader=torch.utils.data.DataLoader(dataset=self.valid_dataset, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers, collate_fn=self.collate_function)
 
         else:
+            if self.balance_class:
+                self.train_table=balance_dataframe(dataframe=self.temp_table, method=self.balance_class_method, label_col=self.image_label_column)
             self.train_dataset=RADTorch_Dataset(
                                                 data_directory=self.data_directory,
-                                                table=self.temp_table,
+                                                table=self.train_table,
                                                 is_dicom=self.is_dicom,
                                                 mode=self.mode,
                                                 wl=self.wl,
@@ -292,8 +295,6 @@ class Data_Processor():
                                                 data_type=self.data_type,
                                                 format=self.format
                                                 )
-            if self.balance_class:
-                self.train_dataset=self.train_dataset.balance(method=self.balance_class_method)
 
         self.test_dataset=RADTorch_Dataset(
                                             data_directory=self.data_directory,

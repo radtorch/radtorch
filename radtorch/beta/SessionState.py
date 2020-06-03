@@ -77,10 +77,10 @@ def get(**kwargs):
     ctx = ReportThread.get_report_ctx()
 
     this_session = None
-    
+
     current_server = Server.get_current()
     if hasattr(current_server, '_session_infos'):
-        # Streamlit < 0.56        
+        # Streamlit < 0.56
         session_infos = Server.get_current()._session_infos.values()
     else:
         session_infos = Server.get_current()._session_info_by_id.values()
