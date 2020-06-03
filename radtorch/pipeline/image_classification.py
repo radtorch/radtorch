@@ -185,7 +185,7 @@ class Image_Classification():
         self.device=device
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        if 'data_processor' not in self.__dict__.keys(): self.data_processor=beta_Data_Processor(**self.__dict__)
+        if 'data_processor' not in self.__dict__.keys(): self.data_processor=Data_Processor(**self.__dict__)
         if 'feature_extractor' not in self.__dict__.keys(): self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.master_dataloader, **self.__dict__)
         if 'extracted_feature_dictionary' not in self.__dict__.keys():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
