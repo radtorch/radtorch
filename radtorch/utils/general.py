@@ -38,7 +38,6 @@ def export(item, path):
     pickle.dump(item,outfile)
     outfile.close()
 
-
 def log(msg, gui=False):
     logfile=os.getcwd()+'logfile.txt'
     now = datetime.now()
@@ -51,6 +50,10 @@ def log(msg, gui=False):
     file_operation.write(message)
     file_operation.close()
 
+
+def set_log_dir(path):
+    global set_log_dir
+    log_dir = path
 
 def showlog():
     f = open(logfile, 'r')

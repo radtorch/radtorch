@@ -66,8 +66,9 @@ from efficientnet_pytorch import EfficientNet
 
 
 # GENERAL
+global log_dir
 logfile='/content/log.text'
-
+log_dir = '/'
 
 # VIS
 TOOLS="hover,save,box_zoom,reset,wheel_zoom, box_select"

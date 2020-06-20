@@ -13,6 +13,7 @@
 from ..settings import *
 from ..core import *
 from ..utils import *
+global log_dir
 
 class Image_Classification():
 
@@ -107,6 +108,7 @@ class Image_Classification():
 
     def __init__(
                 self,
+                name,
                 data_directory,
                 is_dicom=False,
                 table=None,
@@ -184,16 +186,23 @@ class Image_Classification():
         self.extra_transformations=extra_transformations
         self.device=device
 
+        if self.name not in self.__dict__.keys():
+            self.name = 'image_classification_'+datetime.now().strftime("%m%d%Y%H%M%S")+'.pipeline'
+
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
         if self.type not in SUPPORTED_CLASSIFIER:
             log('Error! Classifier type not supported.')
-            pass        
+            pass
         if 'data_processor' not in self.__dict__.keys(): self.data_processor=Data_Processor(**self.__dict__)
         if 'feature_extractor' not in self.__dict__.keys(): self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.master_dataloader, **self.__dict__)
         if 'extracted_feature_dictionary' not in self.__dict__.keys():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
             self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__)
 
+        outfile=open(log_dir+self.name,'wb')
+        pickle.dump(self,outfile)
+        outfile.close()    
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
