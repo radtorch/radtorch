@@ -108,8 +108,8 @@ class Image_Classification():
 
     def __init__(
                 self,
-                name,
                 data_directory,
+                name=None,
                 is_dicom=False,
                 table=None,
                 image_path_column='IMAGE_PATH',
@@ -186,7 +186,7 @@ class Image_Classification():
         self.extra_transformations=extra_transformations
         self.device=device
 
-        if self.name not in self.__dict__.keys():
+        if self.name==None:
             self.name = 'image_classification_'+datetime.now().strftime("%m%d%Y%H%M%S")+'.pipeline'
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -202,7 +202,7 @@ class Image_Classification():
 
         outfile=open(log_dir+self.name,'wb')
         pickle.dump(self,outfile)
-        outfile.close()    
+        outfile.close()
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())

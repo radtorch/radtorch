@@ -4,8 +4,8 @@ from setuptools import setup, find_packages
 
 setup(
       name='radtorch',
-      version='1.1.4',
-      version_date='5.14.2020',
+      version='1.1.5',
+      version_date='6.20.2020',
       description='RADTorch, The Radiology Machine Learning Framework',
       url='https://radtorch.github.io/radtorch/',
       author='Mohamed Elbanan, MD',
