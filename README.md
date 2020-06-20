@@ -7,21 +7,6 @@
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
 
 
----
-
-### :zap: New
-
-1. CNN visualization with Class Activation Maps.
-
-2. Deep Learning Model Summary.
-
-3. WGAN added to GAN models.
-
-4. EfficientNet models added to Image Classification
-
----
-
-
 ### :question: What is RADTorch
 <p style='text-align: justify;'>
 
@@ -44,6 +29,27 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 
 <br>
 
+
+
+### :zap: New
+
+6/20/2020
+
+    1. Hybrid Image Classification pipeline : Combines automatic image feature extraction with clinical features for image classification.
+
+5/20/2020
+
+    1. CNN visualization with Class Activation Maps.
+
+    2. Deep Learning Model Summary.
+
+    3. WGAN added to GAN models.
+
+    4. EfficientNet models added to Image Classification
+
+
+<br>
+
 ### :telescope: See it in Action
 
 1. [Image Classification for identification of contrast on CT DICOM images](https://www.kaggle.com/elbanan/radtorch-ct-contrast-id)
@@ -53,6 +59,7 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 3. [RADTorch playground on Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
 
 <br>
+
 
 ### :snowboarder: Getting Started
 
