@@ -224,7 +224,7 @@ class Hybrid_Image_Classification():
                 self.test_feature_extractor.run(gui=gui)
 
             log('Phase 2: Clinical Features Analysis.', gui=gui)
-            self.master_clinical_features_table = process_categorical(self.table[self.clinical_features+self.image_path_column], label_column)
+            self.master_clinical_features_table = process_categorical(self.table[self.clinical_features+[self.image_path_column]], label_column)
             self.clinical_features = [x for x in self.master_clinical_features_table.columns.tolist() if x not in [self.image_path_column]]
 
 
