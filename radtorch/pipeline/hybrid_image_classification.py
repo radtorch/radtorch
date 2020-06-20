@@ -205,9 +205,6 @@ class Hybrid_Image_Classification():
             self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__)
 
 
-        self.master_clinical_features_table = process_categorical(self.table[self.clinical_features+self.image_path_column], label_column)
-        self.clinical_features = [x for x in self.master_clinical_features_table.columns.tolist() if x not in [self.image_path_column]]
-
 
 
         if auto_safe:
@@ -230,24 +227,25 @@ class Hybrid_Image_Classification():
             if 'extracted_feature_dictionary' in self.__dict__.keys():
                 log('Features Already Extracted. Loading Previously Extracted Features', gui=gui)
             else:
-                log('Extracting Training Features', gui=gui)
+                log('Extracting Training Imaging Features', gui=gui)
                 self.train_feature_extractor.run(gui=gui)
-                log('Extracting Testing Features', gui=gui)
+                log('Extracting Testing Imaging Features', gui=gui)
                 self.test_feature_extractor.run(gui=gui)
 
-            log('Phase 2: Formatting Clinical Features.', gui=gui)
-
+            log('Phase 2: Clinical Features Analysis.', gui=gui)
+            self.master_clinical_features_table = process_categorical(self.table[self.clinical_features+self.image_path_column], label_column)
+            self.clinical_features = [x for x in self.master_clinical_features_table.columns.tolist() if x not in [self.image_path_column]]
 
 
             log('Phase 3: Combining Data.', gui=gui)
-                train_features_names = self.train_feature_extractor.feature_names + self.clinical_features
-                test_feature_names = self.test_feature_extractor.feature_names + self.clinical_features
-                train_features = pd.merge(self.train_feature_extractor.feature_table, self.master_clinical_features_table, on=['IMAGE_PATH', self.image_path_column])
-                test_features = pd.merge(self.test_feature_extractor.feature_table, self.master_clinical_features_table, on=['IMAGE_PATH', self.image_path_column])
-                self.extracted_feature_dictionary={
-                                                    'train':{'features':train_features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': train_features_names},
-                                                    'test':{'features':test_features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': test_features_names}
-                                                    }
+            train_features_names = self.train_feature_extractor.feature_names + self.clinical_features
+            test_feature_names = self.test_feature_extractor.feature_names + self.clinical_features
+            train_features = pd.merge(self.train_feature_extractor.feature_table, self.master_clinical_features_table, on=['IMAGE_PATH', self.image_path_column])
+            test_features = pd.merge(self.test_feature_extractor.feature_table, self.master_clinical_features_table, on=['IMAGE_PATH', self.image_path_column])
+            self.extracted_feature_dictionary={
+                                                'train':{'features':train_features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': train_features_names},
+                                                'test':{'features':test_features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': test_features_names}
+                                                }
 
             log('Phase 4: Classifier Training.', gui=gui)
             log ('Running Classifier Training.', gui=gui)
