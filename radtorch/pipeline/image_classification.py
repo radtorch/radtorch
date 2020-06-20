@@ -185,6 +185,7 @@ class Image_Classification():
         self.transformations=transformations
         self.extra_transformations=extra_transformations
         self.device=device
+        self.name=name
 
         if self.name==None:
             self.name = 'image_classification_'+datetime.now().strftime("%m%d%Y%H%M%S")+'.pipeline'
