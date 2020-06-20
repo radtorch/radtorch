@@ -1,8 +1,7 @@
 ![](welcome.png?raw=true)
 
 
-![](https://img.shields.io/badge/stable%20version-1.1.2-green)
-![](https://img.shields.io/badge/nightly%20version-1.1.3-lightgrey)
+![](https://img.shields.io/badge/stable%20version%20date-2020.06.20-green)
 ![](https://zenodo.org/badge/DOI/10.5281/zenodo.3827986.svg)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-green)
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
