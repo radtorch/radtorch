@@ -13,7 +13,7 @@
 from ..settings import *
 from ..core import *
 from ..utils import *
-global log_dir
+
 
 class Image_Classification():
 
@@ -201,6 +201,7 @@ class Image_Classification():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
             self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__)
 
+        global log_dir
         outfile=open(log_dir+self.name,'wb')
         pickle.dump(self,outfile)
         outfile.close()
