@@ -38,7 +38,7 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
     1. Hybrid Image Classification pipeline : 
             Combines automatic image feature extraction with clinical features for image classification.
 
-**5/20/2020**
+**5/14/2020**
 
     1. CNN visualization with Class Activation Maps.
 
@@ -108,14 +108,14 @@ This framework is provided for free and opensource to anyone who would like to u
 Please cite us as :
 
 ```
-@software{mohamed_elbanan_2020_3827986,
+@software{mohamed_elbanan_2020_3902428,
   author       = {Mohamed Elbanan},
-  title        = {radtorch/radtorch: 1.1.2},
-  month        = june,
+  title        = {radtorch/radtorch: 2020.06.20},
+  month        = jun,
   year         = 2020,
   publisher    = {Zenodo},
-  version      = {1.1.2},
-  doi          = {10.5281/zenodo.3827986},
-  url          = {https://doi.org/10.5281/zenodo.3827986}
+  version      = {2020.06.20},
+  doi          = {10.5281/zenodo.3902428},
+  url          = {https://doi.org/10.5281/zenodo.3902428}
 }
 ```
