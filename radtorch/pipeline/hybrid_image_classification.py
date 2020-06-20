@@ -205,7 +205,7 @@ class Hybrid_Image_Classification():
         path_col = self.table[self.image_path_column]
         self.master_clinical_features_table = process_categorical(dataframe=self.table[self.clinical_features], label_column=self.image_label_column)
         self.clinical_features = [x for x in self.master_clinical_features_table.columns.tolist() if x not in [self.image_label_column]]
-        self.master_clinical_features_table['IMAGE_PATH'] = path_col
+        self.master_clinical_features_table.insert(0, 'IMAGE_PATH',path_col)
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
