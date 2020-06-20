@@ -231,9 +231,9 @@ class Hybrid_Image_Classification():
             train_features_names = self.train_feature_extractor.feature_names + self.clinical_features
             test_features_names = self.test_feature_extractor.feature_names + self.clinical_features
             train_features = pd.merge(self.train_feature_extractor.feature_table, self.master_clinical_features_table, on=['IMAGE_PATH', 'IMAGE_PATH'])
-            train_features = train_features.loc[:, train_features.columns not in ['IMAGE_PATH', 'IMAGE_LABEL']]
+            train_features = train_features.loc[:, train_features.columns != 'IMAGE_PATH' and train_features.columns != 'IMAGE_LABEL']]
             test_features = pd.merge(self.test_feature_extractor.feature_table, self.master_clinical_features_table, on=['IMAGE_PATH', 'IMAGE_PATH'])
-            test_features = test_features.loc[:, test_features.columns not in ['IMAGE_PATH', 'IMAGE_LABEL']]
+            test_features = test_features.loc[:, test_features.columns != 'IMAGE_PATH' and test_features.columns != 'IMAGE_LABEL']]
             self.extracted_feature_dictionary={
                                                 'train':{'features':train_features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': train_features_names},
                                                 'test':{'features':test_features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': test_features_names}
