@@ -15,12 +15,12 @@ from ..core import *
 from ..utils import *
 
 
-class Image_Classification():
+class Hybrid_Image_Classification():
 
     """
     Description
     -----------
-    Complete end-to-end image classification pipeline.
+    Complete end-to-end image classification pipeline that uses combination of imaging and clinical features.
 
     Parameters
     ----------
@@ -117,6 +117,7 @@ class Image_Classification():
                 is_path=True,
                 mode='RAW',
                 wl=None,
+                clinical_features=None,
                 balance_class=False,
                 balance_class_method='upsample',
                 interaction_terms=False,
@@ -187,6 +188,7 @@ class Image_Classification():
         self.extra_transformations=extra_transformations
         self.device=device
         self.name=name
+        self.clinical_features=clinical_features
 
         if self.name==None:
             self.name = 'image_classification_'+datetime.now().strftime("%m%d%Y%H%M%S")+'.pipeline'
@@ -201,6 +203,13 @@ class Image_Classification():
         if 'extracted_feature_dictionary' not in self.__dict__.keys():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
             self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__)
+
+
+        self.master_clinical_features_table = process_categorical(self.table[self.clinical_features+self.image_path_column], label_column)
+        self.clinical_features = [x for x in self.master_clinical_features_table.columns.tolist() if x not in [self.image_path_column]]
+
+
+
         if auto_safe:
             global log_dir
             outfile=open(log_dir+self.name,'wb')
@@ -216,7 +225,7 @@ class Image_Classification():
         log('Starting Image Classification Pipeline', gui=gui)
         set_random_seed(100)
         if self.type!='nn_classifier':
-            log('Phase 1: Feature Extraction.', gui=gui)
+            log('Phase 1: Imaging Feature Extraction.', gui=gui)
 
             if 'extracted_feature_dictionary' in self.__dict__.keys():
                 log('Features Already Extracted. Loading Previously Extracted Features', gui=gui)
@@ -225,12 +234,22 @@ class Image_Classification():
                 self.train_feature_extractor.run(gui=gui)
                 log('Extracting Testing Features', gui=gui)
                 self.test_feature_extractor.run(gui=gui)
+
+            log('Phase 2: Formatting Clinical Features.', gui=gui)
+
+
+
+            log('Phase 3: Combining Data.', gui=gui)
+                train_features_names = self.train_feature_extractor.feature_names + self.clinical_features
+                test_feature_names = self.test_feature_extractor.feature_names + self.clinical_features
+                train_features = pd.merge(self.train_feature_extractor.feature_table, self.master_clinical_features_table, on=['IMAGE_PATH', self.image_path_column])
+                test_features = pd.merge(self.test_feature_extractor.feature_table, self.master_clinical_features_table, on=['IMAGE_PATH', self.image_path_column])
                 self.extracted_feature_dictionary={
-                                                    'train':{'features':self.train_feature_extractor.features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': self.train_feature_extractor.feature_names,},
-                                                    'test':{'features':self.test_feature_extractor.features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': self.test_feature_extractor.feature_names,}
+                                                    'train':{'features':train_features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': train_features_names},
+                                                    'test':{'features':test_features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': test_features_names}
                                                     }
 
-            log('Phase 2: Classifier Training.', gui=gui)
+            log('Phase 4: Classifier Training.', gui=gui)
             log ('Running Classifier Training.', gui=gui)
             self.classifier=Classifier(**self.__dict__, )
             self.classifier.run(gui=gui)

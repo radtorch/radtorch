@@ -16,7 +16,9 @@
 
 from ..settings import *
 
-
+global log_dir
+logfile='/content/log.text'
+log_dir = '/'
 
 def getDuplicatesWithCount(listOfElems):
     """
@@ -38,6 +40,7 @@ def export(item, path):
     pickle.dump(item,outfile)
     outfile.close()
 
+
 def log(msg, gui=False):
     logfile=os.getcwd()+'logfile.txt'
     now = datetime.now()
@@ -54,6 +57,7 @@ def log(msg, gui=False):
 def set_log_dir(path):
     global set_log_dir
     log_dir = path
+
 
 def showlog():
     f = open(logfile, 'r')
