@@ -33,11 +33,12 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 
 ### :zap: New
 
-6/20/2020
+**6/20/2020**
 
-    1. Hybrid Image Classification pipeline : Combines automatic image feature extraction with clinical features for image classification.
+    1. Hybrid Image Classification pipeline : 
+            Combines automatic image feature extraction with clinical features for image classification.
 
-5/20/2020
+**5/20/2020**
 
     1. CNN visualization with Class Activation Maps.
 
