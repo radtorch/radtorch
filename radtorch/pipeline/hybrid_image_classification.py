@@ -203,6 +203,8 @@ class Hybrid_Image_Classification():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
             self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__)
 
+        self.master_clinical_features_table = process_categorical(dataframe=self.table[self.clinical_features+[self.image_path_column]], label_column=self.image_label_column)
+        self.clinical_features = [x for x in self.master_clinical_features_table.columns.tolist() if x not in [self.image_path_column]]
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
@@ -223,12 +225,8 @@ class Hybrid_Image_Classification():
                 log('Extracting Testing Imaging Features', gui=gui)
                 self.test_feature_extractor.run(gui=gui)
 
-            log('Phase 2: Clinical Features Analysis.', gui=gui)
-            self.master_clinical_features_table = process_categorical(self.table[self.clinical_features+[self.image_path_column]], label_column)
-            self.clinical_features = [x for x in self.master_clinical_features_table.columns.tolist() if x not in [self.image_path_column]]
 
-
-            log('Phase 3: Combining Data.', gui=gui)
+            log('Phase 2: Combining Clinical and Imaging Features.', gui=gui)
             train_features_names = self.train_feature_extractor.feature_names + self.clinical_features
             test_feature_names = self.test_feature_extractor.feature_names + self.clinical_features
             train_features = pd.merge(self.train_feature_extractor.feature_table, self.master_clinical_features_table, on=['IMAGE_PATH', self.image_path_column])
@@ -238,7 +236,7 @@ class Hybrid_Image_Classification():
                                                 'test':{'features':test_features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': test_features_names}
                                                 }
 
-            log('Phase 4: Classifier Training.', gui=gui)
+            log('Phase 3: Classifier Training.', gui=gui)
             log ('Running Classifier Training.', gui=gui)
             self.classifier=Classifier(**self.__dict__, )
             self.classifier.run(gui=gui)
