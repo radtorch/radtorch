@@ -147,7 +147,6 @@ class Hybrid_Image_Classification():
                 transformations='default',
                 extra_transformations=None,
                 device='auto',
-                auto_save=False,
                 **kwargs):
 
         self.data_directory=data_directory
@@ -204,14 +203,6 @@ class Hybrid_Image_Classification():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
             self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__)
 
-
-
-
-        if auto_safe:
-            global log_dir
-            outfile=open(log_dir+self.name,'wb')
-            pickle.dump(self,outfile)
-            outfile.close()
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
