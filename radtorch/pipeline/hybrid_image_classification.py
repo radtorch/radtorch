@@ -229,7 +229,7 @@ class Hybrid_Image_Classification():
 
             log('Phase 2: Combining Clinical and Imaging Features.', gui=gui)
             train_features_names = self.train_feature_extractor.feature_names + self.clinical_features
-            test_feature_names = self.test_feature_extractor.feature_names + self.clinical_features
+            test_features_names = self.test_feature_extractor.feature_names + self.clinical_features
             train_features = pd.merge(self.train_feature_extractor.feature_table, self.master_clinical_features_table, on=['IMAGE_PATH', 'IMAGE_PATH'])
             test_features = pd.merge(self.test_feature_extractor.feature_table, self.master_clinical_features_table, on=['IMAGE_PATH', 'IMAGE_PATH'])
             self.extracted_feature_dictionary={
