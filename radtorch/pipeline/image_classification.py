@@ -350,7 +350,7 @@ if __name__ == "__main__":
   args = [arg for arg in sys.argv[1:] if not arg.startswith("--")]
 
   if args[0] == 'image_classification':
-    output = Image_Classification_UI(pipeline=args[1], title=args[2])
+    output = Image_Classification_UI(pipeline=args[1])
 
         '''
         file_operation=open('/deploy.py', 'a')
