@@ -201,11 +201,11 @@ class Image_Classification():
         if 'extracted_feature_dictionary' not in self.__dict__.keys():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
             self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__)
-        if auto_safe:
-            global log_dir
-            outfile=open(log_dir+self.name,'wb')
-            pickle.dump(self,outfile)
-            outfile.close()
+        # if auto_safe:
+        #     global log_dir
+        #     outfile=open(log_dir+self.name,'wb')
+        #     pickle.dump(self,outfile)
+        #     outfile.close()
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
