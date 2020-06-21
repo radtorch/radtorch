@@ -30,7 +30,7 @@ class Image_Classification_UI():
             self.pipeline = load_saved_pipeline(pipeline)
         else:
             self.pipeline = pipeline
-        st.markdown('<h1 style="display:inline">'+self.title+'  '+'</h1><span style="display:inline"><small>   ML Made with <a href="https://www.radtorch.com>RADTorch</a> / UI Made with <a href="https://www.streamlit.io/">Streamlit</a></small></span>', unsafe_allow_html=True)
+        st.markdown('<h1 style="display:inline">'+self.title+'  '+'</h1><span style="display:inline"><small>   ML Made with <a href="https://www.radtorch.com">RADTorch</a> / UI Made with <a href="https://www.streamlit.io/">Streamlit</a></small></span>', unsafe_allow_html=True)
         st.markdown('<br>', unsafe_allow_html=True)
         self.target_image = st.file_uploader(label='Please select target image:', encoding='auto', )
         self.run = st.button('Show Prediction')
