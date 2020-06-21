@@ -1038,3 +1038,10 @@ def process_categorical(dataframe, label_column):
   dummy_data = pd.get_dummies(dataframe[cat_col])
   output = pd.concat([dataframe[non_cat_col], dummy_data], axis=1)
   return output
+
+
+def colab_streamlit_crossover():
+    os.system("wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -A")
+    os.system("unzip -qq ngrok-stable-linux-amd64.zip")
+    get_ipython().system_raw('./ngrok http 8501 &')
+    os.system('curl -s http://localhost:4040/api/tunnels | python3 -c "import sys, json; print(json.load(sys.stdin)['"tunnels"'][0]['"public_url"'])")')

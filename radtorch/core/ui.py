@@ -10,7 +10,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
-ui = '''
+ui_framework = '''
 from radtorch.settings import *
 from radtorch import pipeline, core, utils
 from radtorch.utils import *
@@ -30,7 +30,7 @@ class Image_Classification_UI():
             self.pipeline = load_saved_pipeline(pipeline)
         else:
             self.pipeline = pipeline
-        st.markdown('<h1 style="display:inline">'+self.title+'  '+'</h1><span style="display:inline"><small>   ML Made with <a href="https://www.radtorch.com>RADTorch</a> / UI Made with <a href="https://www.streamlit.io/">Streamlit</a></small></span>', unsafe_allow_html=True)
+        st.markdown('<h1 style="display:inline">'+self.title+'  '+'</h1><span style="display:inline"><small>   Created with RADTorch and Streamlit</small></span>', unsafe_allow_html=True)
         st.markdown('<br>', unsafe_allow_html=True)
         self.target_image = st.file_uploader(label='Please select target image:', encoding='auto', )
         self.run = st.button('Show Prediction')

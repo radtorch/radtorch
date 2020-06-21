@@ -13,7 +13,7 @@
 from ..settings import *
 from ..core import *
 from ..utils import *
-from ..beta import *
+# from ..beta import *
 
 
 class Hybrid_Image_Classification():
@@ -317,9 +317,9 @@ class Hybrid_Image_Classification():
         plt.show()
 
     def deploy(self, title="Image Classification"):
-        file_operation=open('/RADTorch.py', 'a')
-        file_operation.write(ui)
+        file_operation=open('/ui_framework.py', 'a')
+        file_operation.write(ui_framework)
         file_operation.close()
 
         self.export('/saved_pipeline.temp')
-        os.system("streamlit run /RADTorch.py image_classification /saved_pipeline.temp")
+        os.system("streamlit run /ui_framework.py image_classification /saved_pipeline.temp")
