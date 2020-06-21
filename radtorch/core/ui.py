@@ -16,6 +16,7 @@ from radtorch import pipeline, core, utils
 from radtorch.utils import *
 import radtorch, sys, io
 import streamlit as st
+from random import randint
 
 def load_saved_pipeline(target_path):
     infile=open(target_path,'rb')
@@ -32,7 +33,8 @@ class Image_Classification_UI():
             self.pipeline = pipeline
         st.markdown('<h1 style="display:inline">'+self.title+'  '+'</h1><span style="display:inline"><small>   ML Made with <a href="https://www.radtorch.com">RADTorch</a> / UI Made with <a href="https://www.streamlit.io/">Streamlit</a></small></span>', unsafe_allow_html=True)
         st.markdown('<br>', unsafe_allow_html=True)
-        self.target_image = st.file_uploader(label='Please select target image:', encoding='auto', )
+        key=randint(10000, 99999)
+        self.target_image = st.file_uploader(label='Please select target image:', encoding='auto', key=key)
         self.run = st.button('Show Prediction')
         if self.run:
             self.run_prediction()
@@ -54,5 +56,5 @@ if __name__ == "__main__":
   args = [arg for arg in sys.argv[1:] if not arg.startswith("--")]
 
   if args[0] == 'image_classification':
-    output = Image_Classification_UI(pipeline=args[1])
+    Image_Classification_UI(pipeline=args[1])
 '''
