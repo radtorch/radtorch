@@ -3,7 +3,7 @@ import streamlit as st
 from radtorch.settings import *
 from radtorch import pipeline, core, utils
 from radtorch.utils import *
-import SessionState
+# import SessionState
 
 h = st.sidebar.markdown('# RADTorch<small> v1.1.3</small>', unsafe_allow_html=True)
 app=st.sidebar.selectbox('Select a Pipeline', ('Home', 'Image Classification', 'Generative Adversarial Networks'))
