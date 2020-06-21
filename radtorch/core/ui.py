@@ -57,5 +57,5 @@ if __name__ == "__main__":
   args = [arg for arg in sys.argv[1:] if not arg.startswith("--")]
 
   if args[0] == 'image_classification':
-    Image_Classification_UI(pipeline=args[1])
+    Image_Classification_UI(pipeline=args[1], title=args[2])
 '''

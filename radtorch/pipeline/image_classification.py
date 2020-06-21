@@ -307,7 +307,7 @@ class Image_Classification():
 
         plt.show()
 
-    def deploy(self, title="Image Classification"):
+    def deploy(self, title="Image Classification", colab=False):
         if os.path.exists("/ui_framework.py"):
             os.remove("/ui_framework.py")
         else:
@@ -316,5 +316,6 @@ class Image_Classification():
             file_operation.close()
         export_model_name='/'+self.name+'.saved_model'
         self.export(export_model_name)
-        # os.system("streamlit run /ui_framework.py image_classification $export_model_name")
-        subprocess.call(['streamlit', 'run', '/ui_framework.py',  'image_classification',export_model_name])
+        if colab:
+            colab_streamlit_crossover()
+        subprocess.call(['streamlit', 'run', '/ui_framework.py',  'image_classification', export_model_name, title])
