@@ -370,4 +370,4 @@ class Hybrid_Image_Classification():
         file_operation.close()
 
         self.export('/saved_pipeline.temp')
-        !streamlit run /deploy.py image_classification /saved_pipeline.temp $title
+        os.system("streamlit run /deploy.py image_classification /saved_pipeline.temp")
