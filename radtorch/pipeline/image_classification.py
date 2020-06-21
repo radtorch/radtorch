@@ -311,8 +311,7 @@ class Image_Classification():
 from radtorch.settings import *
 from radtorch import pipeline, core, utils
 from radtorch.utils import *
-import radtorch
-import io
+import radtorch, io, sys
 
 import streamlit as st
 
