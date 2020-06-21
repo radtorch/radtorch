@@ -308,9 +308,9 @@ class Image_Classification():
         plt.show()
 
     def deploy(self, title="Image Classification"):
-        file_operation=open('/deploy.py', 'a')
+        file_operation=open('/RADTorch.py', 'a')
         file_operation.write(ui)
         file_operation.close()
 
         self.export('/saved_pipeline.temp')
-        os.system("streamlit run /deploy.py image_classification /saved_pipeline.temp")
+        os.system("streamlit run /RADTorch.py image_classification /saved_pipeline.temp")

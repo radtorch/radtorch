@@ -14,19 +14,14 @@ ui = '''
 from radtorch.settings import *
 from radtorch import pipeline, core, utils
 from radtorch.utils import *
-import radtorch
-import io
-
+import radtorch, sys, io
 import streamlit as st
-
 
 def load_saved_pipeline(target_path):
     infile=open(target_path,'rb')
     pipeline=pickle.load(infile)
     infile.close()
     return pipeline
-
-
 
 class Image_Classification_UI():
     def __init__(self, pipeline, title='Image Classification', **kwargs):
@@ -51,6 +46,7 @@ class Image_Classification_UI():
         st.image(Image.open('temp.rt'))
         st.write(predictions)
         st.success('Done!')
+
 
 
 if __name__ == "__main__":
