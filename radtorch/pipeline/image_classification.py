@@ -314,6 +314,6 @@ class Image_Classification():
             file_operation=open('/ui_framework.py', 'a')
             file_operation.write(ui_framework)
             file_operation.close()
-
-        self.export('/saved_pipeline.temp')
-        os.system("streamlit run /ui_framework.py image_classification /saved_pipeline.temp")
+        export_model_name='/'+self.name+'.saved_model'
+        self.export(export_model_name)
+        os.system("streamlit run /ui_framework.py image_classification $export_model_name")
