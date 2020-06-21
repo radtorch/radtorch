@@ -34,9 +34,9 @@ class Image_Classification_UI():
         st.markdown('<h1 style="display:inline">'+self.title+'  '+'</h1><span style="display:inline"><small>   ML Made with <a href="https://www.radtorch.com">RADTorch</a> / UI Made with <a href="https://www.streamlit.io/">Streamlit</a></small></span>', unsafe_allow_html=True)
         st.markdown('<br>', unsafe_allow_html=True)
         key=randint(10000, 99999)
-        self.target_image = st.file_uploader(label='Please select target image:', encoding='auto', key=key)
+        self.target_image = st.file_uploader(label='Please select target image:', encoding='auto')
         key=randint(1000, 9999)
-        self.run = st.button('Show Prediction', key=key)
+        self.run = st.button('Show Prediction')
         if self.run:
             self.run_prediction()
 
