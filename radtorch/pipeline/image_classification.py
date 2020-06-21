@@ -316,4 +316,5 @@ class Image_Classification():
             file_operation.close()
         export_model_name='/'+self.name+'.saved_model'
         self.export(export_model_name)
-        os.system("streamlit run /ui_framework.py image_classification $export_model_name")
+        # os.system("streamlit run /ui_framework.py image_classification $export_model_name")
+        subprocess.call(['streamlit', 'run', '/ui_framework.py',  'image_classification',export_model_name])
