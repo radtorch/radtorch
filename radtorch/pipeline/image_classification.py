@@ -308,9 +308,12 @@ class Image_Classification():
         plt.show()
 
     def deploy(self, title="Image Classification"):
-        file_operation=open('/ui_framework.py', 'a')
-        file_operation.write(ui_framework)
-        file_operation.close()
+        if os.path.exists("/ui_framework.py"):
+            os.remove("/ui_framework.py")
+        else:
+            file_operation=open('/ui_framework.py', 'a')
+            file_operation.write(ui_framework)
+            file_operation.close()
 
         self.export('/saved_pipeline.temp')
         os.system("streamlit run /ui_framework.py image_classification /saved_pipeline.temp")
