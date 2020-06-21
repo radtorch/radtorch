@@ -35,7 +35,8 @@ class Image_Classification_UI():
         st.markdown('<br>', unsafe_allow_html=True)
         key=randint(10000, 99999)
         self.target_image = st.file_uploader(label='Please select target image:', encoding='auto', key=key)
-        self.run = st.button('Show Prediction')
+        key=randint(1000, 9999)
+        self.run = st.button('Show Prediction', key=key)
         if self.run:
             self.run_prediction()
 
