@@ -10,7 +10,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
-
+ui = '''
 from radtorch.settings import *
 from radtorch import pipeline, core, utils
 from radtorch.utils import *
@@ -27,14 +27,6 @@ def load_saved_pipeline(target_path):
     return pipeline
 
 
-# def run_server(port):
-#     !wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
-#     !unzip -qq ngrok-stable-linux-amd64.zip
-#     get_ipython().system_raw('./ngrok http 8501 &')
-#     ! curl -s http://localhost:4040/api/tunnels | python3 -c \
-#       "import sys, json; print(json.load(sys.stdin)['tunnels'][0]['public_url'])"
-#     ! streamlit run /content/deploy.py
-#
 
 class Image_Classification_UI():
     def __init__(self, pipeline, title='Image Classification', **kwargs):
@@ -61,13 +53,10 @@ class Image_Classification_UI():
         st.success('Done!')
 
 
-
-
-
-
 if __name__ == "__main__":
   opts = [opt for opt in sys.argv[1:] if opt.startswith("--")]
   args = [arg for arg in sys.argv[1:] if not arg.startswith("--")]
 
   if args[0] == 'image_classification':
-    output = Image_Classification_UI(pipeline=args[1], title=args[2])
+    output = Image_Classification_UI(pipeline=args[1])
+'''
