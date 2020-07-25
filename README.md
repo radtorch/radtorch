@@ -7,7 +7,7 @@
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
 
 
-### :question: What is RADTorch 
+### What is RADTorch 
 <p style='text-align: justify;'>
 
 RADTorch provides a framework of higher level classes and functions that aim at significantly reducing the time needed for implementation of different machine and deep learning algorithms on DICOM medical images.
@@ -31,7 +31,7 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 
 
 
-### :bookmark_tabs:   Update Log
+### Update Log
 
     6/20/2020
 
@@ -51,18 +51,8 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 
 <br>
 
-### :telescope: See it in Action
 
-1. [Image Classification for identification of contrast on CT DICOM images](https://www.kaggle.com/elbanan/radtorch-ct-contrast-id)
-
-2. [Image classification demo/non medical on Kaggle](https://www.kaggle.com/elbanan/radtorch-demo)
-
-3. [RADTorch playground on Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
-
-<br>
-
-
-### :snowboarder: Getting Started
+### Getting Started
 
 Running a state-of-the-art DICOM image classifier can be run using the Image Classification Pipeline using the commands:
 ```
@@ -79,30 +69,40 @@ The above 3 lines of code will run an image classifier using vgg16 model archite
 
 <br>
 
-### :blue_book:  Documentation
+### See it in Action
+
+1. [Image Classification for identification of contrast on CT DICOM images](https://www.kaggle.com/elbanan/radtorch-ct-contrast-id)
+
+2. [Image classification demo/non medical on Kaggle](https://www.kaggle.com/elbanan/radtorch-demo)
+
+3. [RADTorch playground on Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
+
+<br>
+
+### Documentation
 Full Documentation at official website: https://docs.radtorch.com
 
 <br>
 
-### :bookmark: Requests
+### Requests
 Feature requests are more than welcomed on our discussion board [HERE](https://github.com/radtorch/radtorch/issues/4#issue-573590182)
 
 <br>
 
 
-### :memo: Contribute
+### Contribute
 Bug reports and pull requests are welcome.
 
 <br>
 
-### :construction_worker: Contributors
+### Contributors
 <p style='text-align: justify;'>
 RADTorch was developed by Mohamed Elbanan, MD: a Radiology Resident at Yale New Haven Health System, Clinical Research Affiliate at Yale School of Medicine and a Machine-learning enthusiast.
 </p>
 
 <br>
 
-### :speech_balloon: Cite us
+### Cite us
 This framework is provided for free and opensource to anyone who would like to use it and/or update it.
 
 Please cite us as :
