@@ -80,7 +80,7 @@ The above 3 lines of code will run an image classifier using vgg16 model archite
 <br>
 
 ### Documentation
-Full Documentation at official website: https://docs.radtorch.com
+Full Documentation at official website: https://www.radtorch.com/documentation/
 
 <br>
 
@@ -111,10 +111,10 @@ Please cite us as :
 @software{mohamed_elbanan_2020_3902428,
   author       = {Mohamed Elbanan},
   title        = {radtorch/radtorch: 2020.06.20},
-  month        = jun,
+  month        = aug,
   year         = 2020,
   publisher    = {Zenodo},
-  version      = {2020.06.20},
+  version      = {2020.08.01},
   doi          = {10.5281/zenodo.3902428},
   url          = {https://doi.org/10.5281/zenodo.3902428}
 }
