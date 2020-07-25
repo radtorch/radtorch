@@ -7,7 +7,7 @@
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
 
 
-### :question: What is RADTorch
+### :question: What is RADTorch 
 <p style='text-align: justify;'>
 
 RADTorch provides a framework of higher level classes and functions that aim at significantly reducing the time needed for implementation of different machine and deep learning algorithms on DICOM medical images.
@@ -31,7 +31,7 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 
 
 
-### :zap: New
+### :bookmark_tabs:   Update Log
 
     6/20/2020
 
