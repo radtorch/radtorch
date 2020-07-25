@@ -1,7 +1,7 @@
 ![](welcome.png?raw=true)
 
 
-![](https://img.shields.io/badge/stable%20version%20date-2020.06.20-green)
+![](https://img.shields.io/badge/stable%20version%20date-2020.08.01-green)
 ![](https://zenodo.org/badge/DOI/10.5281/zenodo.3827986.svg)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-green)
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
@@ -33,20 +33,20 @@ RADTorch is built upon widely used machine learning and deep learning frameworks
 
 ### :zap: New
 
-**6/20/2020**
+    6/20/2020
 
-    1. Hybrid Image Classification pipeline : 
-            Combines automatic image feature extraction with clinical features for image classification.
+    - Hybrid Clinical Features/Imaging features Image Classification pipeline.
+    
 
-**5/14/2020**
+    5/14/2020
 
-    1. CNN visualization with Class Activation Maps.
+    - CNN visualization with Class Activation Maps.
 
-    2. Deep Learning Model Summary.
+    - Deep Learning Model Summary.
 
-    3. WGAN added to GAN models.
+    - WGAN added to GAN models.
 
-    4. EfficientNet models added to Image Classification
+    - EfficientNet models added to Image Classification
 
 
 <br>
