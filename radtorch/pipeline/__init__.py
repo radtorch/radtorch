@@ -5,7 +5,7 @@ from .hybrid_image_classification import Hybrid_Image_Classification
 from .gan import GAN
 from ..settings import *
 
-
+## Code Last Updated/Checked: 08/01/2020
 
 def load_pipeline(target_path):
     infile=open(target_path,'rb')

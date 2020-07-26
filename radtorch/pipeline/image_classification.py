@@ -10,7 +10,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
-## Code Last Updated: 08/01/2020
+## Code Last Updated/Checked: 08/01/2020
 
 from ..settings import *
 from ..core import *
@@ -19,7 +19,7 @@ from ..utils import *
 
 
 class Image_Classification():
-    
+
     def __init__(
                 self,
                 data_directory,
