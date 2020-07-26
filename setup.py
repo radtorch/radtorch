@@ -4,8 +4,8 @@ from setuptools import setup, find_packages
 
 setup(
       name='radtorch',
-      version='2020.06.21',
-      version_date='2020.06.21',
+      version='0.08.01b',
+      version_date='07.25.2020',
       description='RADTorch, The Radiology Machine Learning Framework',
       url='https://radtorch.github.io/radtorch/',
       author='Mohamed Elbanan, MD',
@@ -15,7 +15,7 @@ setup(
       install_requires=['torch', 'torchvision', 'torchsummary', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow',
                         'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn', 'torchsummary', 'efficientnet_pytorch',
                         'xmltodict',
-                        'streamlit',
+                        # 'streamlit',
 #                         'detectron2 @ git+https://github.com/facebookresearch/detectron2.git#egg=v0.1.3',
 #                         'pyyaml>=5.1'
                        ],
