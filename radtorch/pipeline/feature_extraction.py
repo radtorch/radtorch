@@ -18,13 +18,22 @@ from ..utils import *
 # NEEDS TESTING
 class Feature_Extraction():
 
-    def __init__(self, DEFAULT_SETTINGS=FEATURE_EXTRACTION_PIPELINE_SETTINGS, **kwargs):
+    def __init__(self,
+                table=None,
+                is_dicom=True,
+                normalize=((0, 0, 0), (1, 1, 1)),
+                balance_class=False,
+                batch_size=16,
+                num_workers=0,
+                model_arch='resnet50',
+                custom_resize=False,
+                pre_trained=True,
+                unfreeze=False,
+                label_column='IMAGE_LABEL',
+                **kwargs):
 
         for k, v in kwargs.items():
             setattr(self, k, v)
-        for k, v in DEFAULT_SETTINGS.items():
-            if k not in kwargs.keys():
-                setattr(self, k, v)
 
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.data_processor=Data_Processor(**self.__dict__)

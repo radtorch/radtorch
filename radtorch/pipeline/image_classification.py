@@ -128,7 +128,7 @@ class Image_Classification():
                 test_percent=0.2,
                 valid_percent=0.2,
                 custom_resize=False,
-                model_arch='alexnet',
+                model_arch='resnet50',
                 pre_trained=True,
                 unfreeze=False,
                 type='nn_classifier',
