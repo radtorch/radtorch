@@ -161,19 +161,19 @@ class Hybrid_Image_Classification():
 
 
             log('Phase 2: Combining Clinical and Imaging Features.', gui=gui)
-
             train_features_names = self.train_feature_extractor.feature_names + self.clinical_features_names
             train_features = pd.merge(self.train_feature_extractor.feature_table, self.clinical_features_table, on=['IMAGE_PATH', 'IMAGE_PATH'])
-            train_features = train_features[[x for x in train_features.columns.tolist() if x not in ['IMAGE_PATH','IMAGE_LABEL']]]
+            self.train_features = train_features[[x for x in train_features.columns.tolist() if x not in ['IMAGE_PATH','IMAGE_LABEL']]]
 
             test_features_names = self.test_feature_extractor.feature_names + self.clinical_features_names
             test_features = pd.merge(self.test_feature_extractor.feature_table, self.clinical_features_table, on=['IMAGE_PATH', 'IMAGE_PATH'])
-            test_features = test_features[[x for x in test_features.columns.tolist() if x not in ['IMAGE_PATH','IMAGE_LABEL']]]
+            self.test_features = test_features[[x for x in test_features.columns.tolist() if x not in ['IMAGE_PATH','IMAGE_LABEL']]]
 
             self.extracted_feature_dictionary={
-                                                'train':{'features':train_features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': train_features_names},
-                                                'test':{'features':test_features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': test_features_names}
+                                                'train':{'features':self.train_features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': train_features_names},
+                                                'test':{'features':self.test_features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': test_features_names}
                                                 }
+            log('Clinical and Imaging Features combined successfully.', gui=gui)
 
             log('Phase 3: Classifier Training.', gui=gui)
             log ('Running Classifier Training.', gui=gui)
