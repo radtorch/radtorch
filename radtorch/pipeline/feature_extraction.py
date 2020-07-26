@@ -38,7 +38,7 @@ class Feature_Extraction():
         self.normalize=normalize
         self.balance_class=balance_class
         self.batch_size=batch_size
-        self.num_workers=num
+        self.num_workers=num_workers
         self.model_arch=model_arch
         self.custom_resize=custom_resize
         self.pre_trained=pre_trained
