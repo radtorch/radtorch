@@ -19,6 +19,7 @@ from ..utils import *
 class Feature_Extraction():
 
     def __init__(self,
+                data_directory,
                 table=None,
                 is_dicom=True,
                 normalize=((0, 0, 0), (1, 1, 1)),
