@@ -15,7 +15,6 @@ from ..core import *
 from ..utils import *
 
 
-# NEEDS TESTING
 class Feature_Extraction():
 
     def __init__(self,
