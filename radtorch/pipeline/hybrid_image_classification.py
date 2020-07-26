@@ -116,6 +116,12 @@ class Hybrid_Image_Classification():
             log('Error! Classifier type not supported.')
             pass
 
+        if isinstance(self.table, str):
+            if self.table!='': # Read from csv file
+                self.table=pd.read_csv(self.table)
+        elif isinstance(self.table, pd.DataFrame): # Read from pandas dataframe
+            self.table=self.table
+
         if 'data_processor' not in self.__dict__.keys(): self.data_processor=Data_Processor(**self.__dict__)
 
         if 'feature_extractor' not in self.__dict__.keys(): self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.master_dataloader, **self.__dict__)
@@ -123,6 +129,7 @@ class Hybrid_Image_Classification():
         if 'extracted_feature_dictionary' not in self.__dict__.keys():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
             self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__)
+
 
         # path_col = self.data_processor.table[self.image_path_column]
 
