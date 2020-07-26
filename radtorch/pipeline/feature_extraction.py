@@ -50,7 +50,7 @@ class Feature_Extraction():
 
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.data_processor=Data_Processor(**self.__dict__)
-        self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.dataloader, **self.__dict__)
+        self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.master_dataloader, **self.__dict__)
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
