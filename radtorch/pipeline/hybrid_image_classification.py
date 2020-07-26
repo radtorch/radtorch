@@ -124,13 +124,14 @@ class Hybrid_Image_Classification():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
             self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__)
 
-        path_col = self.table[[self.image_path_column]]
+        # path_col = self.data_processor.table[self.image_path_column]
 
         self.clinical_features_names = [ x for x in self.table.columns.tolist() if x not in [self.image_label_column, self.image_path_column]]
         self.clinical_features_table = process_categorical(dataframe=self.table[self.clinical_features_names], image_label_column=self.image_label_column, image_path_column=self.image_path_column)
         # self.clinical_features_table = process_categorical(dataframe=self.table[self.clinical_features], image_label_column=self.image_label_column, image_path_column=self.image_path_column)
         # self.clinical_features_names = [x for x in self.clinical_features_table.columns.tolist() if x not in [self.image_label_column]]
-        self.clinical_features_table.insert(0, 'IMAGE_PATH',path_col)
+        # self.clinical_features_table.insert(0, self.image_path_column,path_col)
+        self.clinical_features_table.insert(0, self.image_path_column,self.data_processor.table[self.image_path_column])
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
