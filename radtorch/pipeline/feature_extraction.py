@@ -32,6 +32,19 @@ class Feature_Extraction():
                 label_column='IMAGE_LABEL',
                 **kwargs):
 
+        self.data_directory=data_directory
+        self.table=sable
+        self.is_dicom=is_dicom
+        self.normalize=normalize
+        self.balance_class=balance_class
+        self.batch_size=batch_size
+        self.num_workers=num
+        self.model_arch=model_arch
+        self.custom_resize=custom_resize
+        self.pre_trained=pre_trained
+        self.unfreeze=unfreeze
+        self.label_column=label_column
+
         for k, v in kwargs.items():
             setattr(self, k, v)
 
