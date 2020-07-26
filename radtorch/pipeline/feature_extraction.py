@@ -33,7 +33,7 @@ class Feature_Extraction():
                 **kwargs):
 
         self.data_directory=data_directory
-        self.table=sable
+        self.table=table
         self.is_dicom=is_dicom
         self.normalize=normalize
         self.balance_class=balance_class
