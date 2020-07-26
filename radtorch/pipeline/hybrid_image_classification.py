@@ -126,7 +126,7 @@ class Hybrid_Image_Classification():
 
         path_col = self.table[self.image_path_column]
 
-        self.clinical_features_names = [ x for x in self.table.columns.tolist() if x not in [self.image_label_column self.image_path_column]]
+        self.clinical_features_names = [ x for x in self.table.columns.tolist() if x not in [self.image_label_column, self.image_path_column]]
         self.clinical_features_table = process_categorical(dataframe=self.table[self.clinical_features_names], image_label_column=self.image_label_column, image_path_column=self.image_path_column)
         # self.clinical_features_table = process_categorical(dataframe=self.table[self.clinical_features], image_label_column=self.image_label_column, image_path_column=self.image_path_column)
         # self.clinical_features_names = [x for x in self.clinical_features_table.columns.tolist() if x not in [self.image_label_column]]
