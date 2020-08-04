@@ -1,6 +1,7 @@
-# VERSION = (2020,6,21)
+# VERSION = (0,8,1,b)
 #
 # __version__ = '.'.join(map(str, VERSION))
 
+## Code Last Updated/Checked: 08/01/2020
 
-__version__ = '2020.06.21'
+__version__ = '0.8.1.b'

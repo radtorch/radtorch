@@ -143,9 +143,9 @@ class Data_Processor():
 
         # Create Initial Master Table
         if isinstance(self.table, str):
-            if self.table!='':
+            if self.table!='': # Read from csv file
                 self.table=pd.read_csv(self.table)
-        elif isinstance(self.table, pd.DataFrame):
+        elif isinstance(self.table, pd.DataFrame): # Read from pandas dataframe
             self.table=self.table
         else:
             if self.data_type=='object_detection':
@@ -158,11 +158,11 @@ class Data_Processor():
                     self.table[self.image_path_column]=self.table['image_id']
                     self.table[self.image_label_column]=self.table['labels']
                     self.is_path=False
-            else:
+            else: # Create data table from folders/files
                 self.table=create_data_table(directory=self.data_directory, is_dicom=self.is_dicom, image_path_column=self.image_path_column, image_label_column=self.image_label_column)
 
 
-        # Sample from dataset if necessary
+        # Sample from dataset to be used
         if isinstance (self.sampling, float):
             if self.sampling > 1.0 :
                 log('Error! Sampling cannot be more than 1.0.')
@@ -181,13 +181,13 @@ class Data_Processor():
         self.temp_table, self.test_table=train_test_split(self.table, test_size=self.test_percent, random_state=100, shuffle=True)
         self.train_table, self.valid_table=train_test_split(self.temp_table, test_size=(len(self.table)*self.valid_percent/len(self.temp_table)), random_state=100, shuffle=True)
 
-        # Define Transformations
-        # 1- Custom Resize Adjustement
+        # Data Transformations
+        # 1- Image Resize
         if self.custom_resize in [False, '', 0, None]: self.resize=model_dict[self.model_arch]['input_size']
         elif isinstance(self.custom_resize, int): self.resize=self.custom_resize
-        else: log ('Image Custom Resize not allowed. Please recheck.')
+        else: log ('Image Custom Resize not allowed. Please recheck values specified.')
 
-        # 2- Image conversion from DICOM
+        # 2- Resize and convert single channel DICOM to 3 channel (Grayscale)
         if self.transformations=='default':
             if self.data_type=='object_detection':
                 if self.is_dicom:
@@ -209,7 +209,7 @@ class Data_Processor():
                         transforms.ToTensor()])
 
 
-        # 3- Normalize Training Dataset
+        # 3- Normalize Training Dataset (Notice that normalization is done only on train dataset using mean and standard deviation. No data leaks to test dataset.)
         self.train_transformations=copy.deepcopy(self.transformations)
         if self.extra_transformations != None :
             for i in self.extra_transformations:
@@ -217,7 +217,7 @@ class Data_Processor():
         if isinstance (self.normalize, tuple):
             mean, std=self.normalize
             if len(mean) != 3 or len(std) != 3:
-                log ('Error! Shape of supplied mean and/or std does not equal 3. Please check that the mean/std follow the following format: ((mean, mean, mean), (std, std, std))')
+                log ('Error! Shape of supplied mean and/or std does not equal 3 for a 3 channel input data. Please check that the mean/std follow the following format: ((mean, mean, mean), (std, std, std))')
                 pass
             else:
                 self.train_transformations.transforms.append(transforms.Normalize(mean=mean, std=std))

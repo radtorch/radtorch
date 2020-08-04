@@ -10,6 +10,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
+## Code Last Updated/Checked: 08/01/2020
+
+
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -161,18 +164,3 @@ IMG_EXTENSIONS=(
 '.tif',
 '.tiff',
 '.webp')
-
-
-FEATURE_EXTRACTION_PIPELINE_SETTINGS={
-'table':None,
-'is_dicom':True,
-'normalize':((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-'balance_class':False,
-'batch_size':16,
-'num_workers':0,
-'model_arch':'alexnet',
-'custom_resize':False,
-'pre_trained':True,
-'unfreeze':False,
-'label_column':'label_idx',
-}

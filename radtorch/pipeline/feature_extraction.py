@@ -10,25 +10,49 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
+## Code Last Updated/Checked: 08/01/2020
+
 from ..settings import *
 from ..core import *
 from ..utils import *
 
 
-# NEEDS TESTING
 class Feature_Extraction():
 
-    def __init__(self, DEFAULT_SETTINGS=FEATURE_EXTRACTION_PIPELINE_SETTINGS, **kwargs):
+    def __init__(self,
+                data_directory,
+                table=None,
+                is_dicom=True,
+                normalize=((0, 0, 0), (1, 1, 1)),
+                balance_class=False,
+                batch_size=16,
+                num_workers=0,
+                model_arch='resnet50',
+                custom_resize=False,
+                pre_trained=True,
+                unfreeze=False,
+                label_column='IMAGE_LABEL',
+                **kwargs):
+
+        self.data_directory=data_directory
+        self.table=table
+        self.is_dicom=is_dicom
+        self.normalize=normalize
+        self.balance_class=balance_class
+        self.batch_size=batch_size
+        self.num_workers=num_workers
+        self.model_arch=model_arch
+        self.custom_resize=custom_resize
+        self.pre_trained=pre_trained
+        self.unfreeze=unfreeze
+        self.label_column=label_column
 
         for k, v in kwargs.items():
             setattr(self, k, v)
-        for k, v in DEFAULT_SETTINGS.items():
-            if k not in kwargs.keys():
-                setattr(self, k, v)
 
         if 'device' not in kwargs.keys(): self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.data_processor=Data_Processor(**self.__dict__)
-        self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.dataloader, **self.__dict__)
+        self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.master_dataloader, **self.__dict__)
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())

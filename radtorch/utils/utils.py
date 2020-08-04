@@ -1032,8 +1032,8 @@ def balance_dataframe(dataframe, label_col, method='upsample'):
     return resampled_df
 
 
-def process_categorical(dataframe, label_column):
-  cat_col = [x for x in dataframe.select_dtypes(include='O').columns.tolist() if x != label_column]
+def process_categorical(dataframe, image_label_column, image_path_column):
+  cat_col = [x for x in dataframe.select_dtypes(include='O').columns.tolist() if x not in [image_label_column, image_path_column]]
   non_cat_col = [x for x in dataframe.columns.tolist() if x not in cat_col]
   dummy_data = pd.get_dummies(dataframe[cat_col])
   output = pd.concat([dataframe[non_cat_col], dummy_data], axis=1)

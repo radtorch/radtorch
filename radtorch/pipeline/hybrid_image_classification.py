@@ -10,6 +10,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see https://www.gnu.org/licenses/
 
+## Code Last Updated/Checked: 08/01/2020
+
 from ..settings import *
 from ..core import *
 from ..utils import *
@@ -17,95 +19,6 @@ from ..utils import *
 
 
 class Hybrid_Image_Classification():
-
-    """
-    Description
-    -----------
-    Complete end-to-end image classification pipeline that uses combination of imaging and clinical features.
-
-    Parameters
-    ----------
-
-    - data_directory (string, required): path to target data directory/folder.
-
-    - is_dicom (bollean, optional): True if images are DICOM. default=False.
-
-    - table (string or pandas dataframe, optional): path to label table csv or name of pandas data table. default=None.
-
-    - image_path_column (string, optional): name of column that has image path/image file name. default='IMAGE_PATH'.
-
-    - image_label_column (string, optional): name of column that has image label. default='IMAGE_LABEL'.
-
-    - is_path (boolean, optional): True if file_path column in table is file path. If False, this assumes that the column contains file names only and will append the data_directory to all files. default=True.
-
-    - mode (string, optional): mode of handling pixel values from DICOM to numpy array. Option={'RAW': raw pixel values, 'HU': converts pixel values to HU using slope and intercept, 'WIN':Applies a certain window/level to HU converted DICOM image, 'MWIN': converts DICOM image to 3 channel HU numpy array with each channel adjusted to certain window/level. default='RAW'.
-
-    - wl (tuple or list of tuples, optional): value of Window/Levelto be used. If mode is set to 'WIN' then wl takes the format (level, window). If mode is set to 'MWIN' then wl takes the format [(level1, window1), (level2, window2), (level3, window3)]. default=None.
-
-    - balance_class (bollean, optional): True to perform oversampling in the train dataset to solve class imbalance. default=False.
-
-    - balance_class_method (string, optional): methodology used to balance classes. Options={'upsample', 'downsample'}. default='upsample'.
-
-    - interaction_terms (boolean, optional): create interaction terms between different features and add them as new features to feature table. default=False.
-
-    - normalize (bolean/False or Tuple, optional): Normalizes all datasets by a specified mean and standard deviation. Since most of the used CNN architectures assumes 3 channel input, this follows the following format ((mean, mean, mean), (std, std, std)). default=((0,0,0), (1,1,1)).
-
-    - batch_size (integer, optional): Batch size for dataloader. defult=16.
-
-    - num_workers (integer, optional): Number of CPU workers for dataloader. default=0.
-
-    - sampling (float, optional): fraction of the whole dataset to be used. default=1.0.
-
-    - test_percent (float, optional): percentage of data for testing.default=0.2.
-
-    - valid_percent (float, optional): percentage of data for validation (ONLY with NN_Classifier) .default=0.2.
-
-    - custom_resize (integer, optional): By default, the data processor resizes the image in dataset into the size expected bu the different CNN architectures. To override this and use a custom resize, set this to desired value. default=False.
-
-    - transformations (list, optional): list of pytorch transformations to be applied to all datasets. By default, the images are resized, channels added up to 3 and greyscaled. default='default'.
-
-    - extra_transformations (list, optional): list of pytorch transformations to be extra added to train dataset specifically. default=None.
-
-    - model_arch (string, required): CNN model architecture that this data will be used for. Used to resize images as detailed above. default='alexnet' .
-
-    - pre_trained (boolean, optional): Initialize with ImageNet pretrained weights or not. default=True.
-
-    - unfreeze (boolean, required): Unfreeze all layers of network for future retraining. default=False.
-
-    - type (string, required): type of classifier. For complete list refer to settings. default='logistic_regression'.
-
-    ** Classifier specific parameters:
-
-    - cv (boolean, required): True for cross validation. default=True.
-
-    - stratified (boolean, required): True for stratified cross validation. default=True.
-
-    - num_splits (integer, required): Number of K-fold cross validation splits. default=5.
-
-    - parameters (dictionary, optional): optional parameters passed to the classifier. Please refer to sci-kit learn documentaion.
-
-    ** NN_Classifier specific parameters:
-
-    - learning_rate (float, required): Learning rate. default=0.0001.
-
-    - epochs (integer, required): training epochs. default=10.
-
-    - optimizer (string, required): neural network optimizer type. Please see radtorch.settings for list of approved optimizers. default='Adam'.
-
-    - optimizer_parameters (dictionary, optional): optional extra parameters for optimizer as per pytorch documentation.
-
-    - loss_function (string, required): neural network loss function. Please see radtorch.settings for list of approved loss functions. default='CrossEntropyLoss'.
-
-    - loss_function_parameters (dictionary, optional): optional extra parameters for loss function as per pytorch documentation.
-
-    - lr_scheduler (string, optional): learning rate scheduler - upcoming soon.
-
-    - custom_nn_classifier (pytorch model, optional): Option to use a custom made neural network classifier that will be added after feature extracted layers. default=None.
-
-    - device (string, optional): device to be used for training. Options{'auto': automatic detection of device type, 'cpu': cpu, 'cuda': gpu}. default='auto'.
-
-
-    """
 
     def __init__(
                 self,
@@ -118,7 +31,7 @@ class Hybrid_Image_Classification():
                 is_path=True,
                 mode='RAW',
                 wl=None,
-                clinical_features=None,
+                # clinical_features=None,
                 balance_class=False,
                 balance_class_method='upsample',
                 interaction_terms=False,
@@ -129,22 +42,22 @@ class Hybrid_Image_Classification():
                 test_percent=0.2,
                 valid_percent=0.2,
                 custom_resize=False,
-                model_arch='alexnet',
+                model_arch='resnet50',
                 pre_trained=True,
                 unfreeze=False,
-                type='nn_classifier',
+                type='xgboost',
                 cv=True,
                 stratified=True,
                 num_splits=5,
                 parameters={},
-                learning_rate=0.0001,
-                epochs=10,
-                optimizer='Adam',
-                loss_function='CrossEntropyLoss',
-                lr_scheduler=None,
-                custom_nn_classifier=None,
-                loss_function_parameters={},
-                optimizer_parameters={},
+                # learning_rate=0.0001,
+                # epochs=10,
+                # optimizer='Adam',
+                # loss_function='CrossEntropyLoss',
+                # lr_scheduler=None,
+                # custom_nn_classifier=None,
+                # loss_function_parameters={},
+                # optimizer_parameters={},
                 transformations='default',
                 extra_transformations=None,
                 device='auto',
@@ -176,37 +89,56 @@ class Hybrid_Image_Classification():
         self.stratified=stratified
         self.num_splits=num_splits
         self.parameters=parameters
-        self.learning_rate=learning_rate
-        self.epochs=epochs
-        self.optimizer=optimizer
-        self.loss_function=loss_function
-        self.lr_scheduler=lr_scheduler
-        self.custom_nn_classifier=custom_nn_classifier
-        self.loss_function_parameters=loss_function_parameters
-        self.optimizer_parameters=optimizer_parameters
+        # self.learning_rate=learning_rate
+        # self.epochs=epochs
+        # self.optimizer=optimizer
+        # self.loss_function=loss_function
+        # self.lr_scheduler=lr_scheduler
+        # self.custom_nn_classifier=custom_nn_classifier
+        # self.loss_function_parameters=loss_function_parameters
+        # self.optimizer_parameters=optimizer_parameters
         self.transformations=transformations
         self.extra_transformations=extra_transformations
         self.device=device
         self.name=name
-        self.clinical_features=clinical_features
+        # self.clinical_features=clinical_features
+
+        if self.type=='nn_classifier':
+            log ('Error! In hybrid pipeline, CNNs cannot be trained. CNNs are only used for feature extraction.', gui=gui)
+            pass
 
         if self.name==None:
-            self.name = 'image_classification_'+datetime.now().strftime("%m%d%Y%H%M%S")+'.pipeline'
+            self.name = 'hybrid_image_classification_'+datetime.now().strftime("%m%d%Y%H%M%S")+'.pipeline'
 
         if self.device=='auto': self.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         if self.type not in SUPPORTED_CLASSIFIER:
             log('Error! Classifier type not supported.')
             pass
+
+        if isinstance(self.table, str):
+            if self.table!='': # Read from csv file
+                self.table=pd.read_csv(self.table)
+        elif isinstance(self.table, pd.DataFrame): # Read from pandas dataframe
+            self.table=self.table
+
         if 'data_processor' not in self.__dict__.keys(): self.data_processor=Data_Processor(**self.__dict__)
+
         if 'feature_extractor' not in self.__dict__.keys(): self.feature_extractor=Feature_Extractor(dataloader=self.data_processor.master_dataloader, **self.__dict__)
+
         if 'extracted_feature_dictionary' not in self.__dict__.keys():
             self.train_feature_extractor=Feature_Extractor(dataloader=self.data_processor.train_dataloader, **self.__dict__)
             self.test_feature_extractor=Feature_Extractor(dataloader=self.data_processor.test_dataloader, **self.__dict__)
-        path_col = self.table[self.image_path_column]
-        self.clinical_features_table = process_categorical(dataframe=self.table[self.clinical_features], label_column=self.image_label_column)
-        self.clinical_features_names = [x for x in self.clinical_features_table.columns.tolist() if x not in [self.image_label_column]]
-        self.clinical_features_table.insert(0, 'IMAGE_PATH',path_col)
+
+
+        # path_col = self.data_processor.table[self.image_path_column]
+
+        self.clinical_features_names = [ x for x in self.table.columns.tolist() if x not in [self.image_label_column, self.image_path_column]]
+        self.clinical_features_table = process_categorical(dataframe=self.table[self.clinical_features_names], image_label_column=self.image_label_column, image_path_column=self.image_path_column)
+        # self.clinical_features_table = process_categorical(dataframe=self.table[self.clinical_features], image_label_column=self.image_label_column, image_path_column=self.image_path_column)
+        # self.clinical_features_names = [x for x in self.clinical_features_table.columns.tolist() if x not in [self.image_label_column]]
+        # self.clinical_features_table.insert(0, self.image_path_column,path_col)
+        self.clinical_features_table.insert(0, self.image_path_column,self.data_processor.table[self.image_path_column])
 
     def info(self):
         info=pd.DataFrame.from_dict(({key:str(value) for key, value in self.__dict__.items()}).items())
@@ -229,16 +161,19 @@ class Hybrid_Image_Classification():
 
 
             log('Phase 2: Combining Clinical and Imaging Features.', gui=gui)
-            train_features_names = self.train_feature_extractor.feature_names + self.clinical_features
-            test_features_names = self.test_feature_extractor.feature_names + self.clinical_features
+            train_features_names = self.train_feature_extractor.feature_names + self.clinical_features_names
             train_features = pd.merge(self.train_feature_extractor.feature_table, self.clinical_features_table, on=['IMAGE_PATH', 'IMAGE_PATH'])
-            train_features = train_features[[x for x in train_features.columns.tolist() if x not in ['IMAGE_PATH','IMAGE_LABEL']]]
+            self.train_features = train_features[[x for x in train_features.columns.tolist() if x not in ['IMAGE_PATH','IMAGE_LABEL']]]
+
+            test_features_names = self.test_feature_extractor.feature_names + self.clinical_features_names
             test_features = pd.merge(self.test_feature_extractor.feature_table, self.clinical_features_table, on=['IMAGE_PATH', 'IMAGE_PATH'])
-            test_features = test_features[[x for x in test_features.columns.tolist() if x not in ['IMAGE_PATH','IMAGE_LABEL']]]
+            self.test_features = test_features[[x for x in test_features.columns.tolist() if x not in ['IMAGE_PATH','IMAGE_LABEL']]]
+
             self.extracted_feature_dictionary={
-                                                'train':{'features':train_features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': train_features_names},
-                                                'test':{'features':test_features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': test_features_names}
+                                                'train':{'features':self.train_features, 'labels':self.train_feature_extractor.labels_idx, 'features_names': train_features_names},
+                                                'test':{'features':self.test_features, 'labels':self.test_feature_extractor.labels_idx, 'features_names': test_features_names}
                                                 }
+            log('Clinical and Imaging Features combined successfully.', gui=gui)
 
             log('Phase 3: Classifier Training.', gui=gui)
             log ('Running Classifier Training.', gui=gui)
@@ -249,10 +184,9 @@ class Hybrid_Image_Classification():
             # self.feature_selector=Feature_Selector(type=self.classifier.type, feature_table=self.feature_extractor.feature_table, feature_names=self.feature_extractor.feature_names)
             log ('Classifier Training completed successfully.', gui=gui)
 
-        else:
-            self.classifier=NN_Classifier(**self.__dict__)
-            self.trained_model, self.train_metrics=self.classifier.run()
-            log ('Classifier Training completed successfully.', gui=gui)
+        elif self.type=='nn_classifier':
+            log ('Error! In hybrid pipeline, CNNs cannot be trained. CNNs are only used for feature extraction.', gui=gui)
+            pass
 
     def metrics(self, figure_size=(700,350)):
         return show_metrics([self.classifier],  figure_size=figure_size)
@@ -266,60 +200,3 @@ class Hybrid_Image_Classification():
         except:
             log ('Error! Pipeline could not be exported.')
             pass
-
-    def cam(self, target_image_path, target_layer, type='scorecam', figure_size=(10,5), cmap='jet', alpha=0.5):
-
-        if type =='cam':
-            wrapped_model = CAM(model=self.classifier.trained_model.to(self.device), target_layer=target_layer, device=self.device)
-        elif type == 'gradcam':
-            wrapped_model = GradCAM(model=self.classifier.trained_model.to(self.device), target_layer=target_layer, device=self.device)
-        elif type == 'gradcampp':
-            wrapped_model = GradCAMpp(model=self.classifier.trained_model.to(self.device), target_layer=target_layer, device=self.device)
-        elif type == 'smoothgradcampp':
-            wrapped_model = SmoothGradCAMpp(model=self.classifier.trained_model.to(self.device), target_layer=target_layer, device=self.device)
-        elif type == 'scorecam':
-            wrapped_model = ScoreCAM(model=self.classifier.trained_model.to(self.device), target_layer=target_layer,  device=self.device)
-
-        if self.is_dicom:
-            image=dicom_to_narray(target_image_path, self.mode, self.wl)
-            image=Image.fromarray(image)
-        else:
-            image=Image.open(target_image_path).convert('RGB')
-
-        prep_img=self.data_processor.transformations(image)
-        prep_img=prep_img.unsqueeze(0)
-        prep_img = prep_img.to(self.device)
-        cam, idx = wrapped_model(prep_img)
-        _, _, H, W = prep_img.shape
-        cam = F.interpolate(cam, size=(H, W), mode='bilinear', align_corners=True)
-
-        output_image=prep_img.squeeze(0).squeeze(0).cpu().numpy()
-        output_image=np.moveaxis(output_image, 0, -1)
-
-        plt.figure(figsize=figure_size)
-
-        plt.subplot(1, 3, 1)
-        plt.axis('off')
-        plt.gca().set_title('Target Image')
-        plt.imshow(output_image, cmap=plt.cm.gray)
-
-        plt.subplot(1, 3, 2)
-        plt.axis('off')
-        plt.gca().set_title(type.upper())
-        plt.imshow(cam.squeeze().cpu().numpy(), cmap=cmap, alpha=1)
-
-        plt.subplot(1, 3, 3)
-        plt.axis('off')
-        plt.gca().set_title('OVERLAY')
-        plt.imshow(output_image, cmap=plt.cm.gray)
-        plt.imshow(cam.squeeze().cpu().numpy(), cmap=cmap, alpha=alpha)
-
-        plt.show()
-
-    def deploy(self, title="Image Classification"):
-        file_operation=open('/ui_framework.py', 'a')
-        file_operation.write(ui_framework)
-        file_operation.close()
-
-        self.export('/saved_pipeline.temp')
-        os.system("streamlit run /ui_framework.py image_classification /saved_pipeline.temp")
