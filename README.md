@@ -2,7 +2,6 @@
 
 
 ![](https://img.shields.io/badge/stable%20version%20date-2020.08.01-green)
-![](https://zenodo.org/badge/DOI/10.5281/zenodo.3827986.svg)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-green)
 ![](https://img.shields.io/badge/license-AGPL3.0-red)
 
@@ -108,14 +107,14 @@ This framework is provided for free and opensource to anyone who would like to u
 Please cite us as :
 
 ```
-@software{mohamed_elbanan_2020_3902428,
+@software{mohamed_elbanan_2020_3971826,
   author       = {Mohamed Elbanan},
-  title        = {radtorch/radtorch: 2020.06.20},
+  title        = {radtorch/radtorch: 0.8.1},
   month        = aug,
   year         = 2020,
   publisher    = {Zenodo},
-  version      = {2020.08.01},
-  doi          = {10.5281/zenodo.3902428},
-  url          = {https://doi.org/10.5281/zenodo.3902428}
+  version      = {0.8.1},
+  doi          = {10.5281/zenodo.3971826},
+  url          = {https://doi.org/10.5281/zenodo.3971826}
 }
 ```
