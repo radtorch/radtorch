@@ -12,7 +12,7 @@ setup(
       author_email = "https://www.linkedin.com/in/mohamedelbanan/",
       license='GNU Affero General Public License v3.0 License',
       packages=find_packages(),
-      install_requires=['torch', 'torchvision', 'torchsummary', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow',
+      install_requires=['tornado==5.1.1', 'torch', 'torchvision', 'torchsummary', 'numpy', 'pandas', 'pydicom', 'matplotlib', 'pillow',
                         'tqdm', 'sklearn','pathlib', 'bokeh', 'xgboost', 'seaborn', 'torchsummary', 'efficientnet_pytorch',
                         'xmltodict',
                         # 'streamlit',
