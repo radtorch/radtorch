@@ -70,7 +70,7 @@ class Feature_Extraction():
             self.feature_extractor.run()
             self.feature_table=self.feature_extractor.feature_table
             self.feature_names=self.feature_extractor.feature_names
-        return self.feature_table
+        # return self.feature_table
 
     def export(self, output_path):
         try:
