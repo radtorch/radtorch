@@ -145,7 +145,7 @@ class Feature_Extractor():
         log('Features extracted successfully.', gui=gui)
         self.feature_table=feature_table
         self.features=self.feature_table[self.feature_names]
-        return self.feature_table, self.features, self.feature_names
+        # return self.feature_table, self.features, self.feature_names
         if verbose:
             print (self.feature_table)
 
