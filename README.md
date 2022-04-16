@@ -58,6 +58,7 @@ Bug reports and pull requests are welcome.
 
 ### Cite us
 
+```
 @software{mohamed_elbanan_2022_6464087,
   author       = {Mohamed Elbanan},
   title        = {radtorch/radtorch: 1.0.0},
@@ -68,3 +69,4 @@ Bug reports and pull requests are welcome.
   doi          = {10.5281/zenodo.6464087},
   url          = {https://doi.org/10.5281/zenodo.6464087}
 }
+```
