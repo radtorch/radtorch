@@ -1,208 +1,192 @@
-# Copyright (C) 2020 RADTorch and Mohamed Elbanan, MD
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see https://www.gnu.org/licenses/
+import os, pydicom, torch, torchvision, glob, scipy.ndimage
+import numpy as np
+import pandas as pd
 
-from ..settings import *
-from .dicom import  *
-from .utils import *
+import SimpleITK as sitk
+from PIL import Image
+from pathlib import Path
+
+
 from .general import *
-
-def load_predefined_datatables(*args, **kwargs):
-
-    """
-    Description
-    -----------
-    Creates a dictionary of datasets from a dictionary of predfined tables for each of train/valid/test
+from .const import *
+from .dicom import *
 
 
-    Parameters
-    -----------
-    predefined_datasets (dictionary, required): Dictionary of tables containing data for train/valid/test as {'train':, 'valid':, 'test':}
-    Rest of parameters as with "Dataset_from_table"
 
-    Returns
-    -----------
-    Dictionary of dataset objects as {'train':train_dataset, 'valid':valid_dataset, 'test':test_dataset}
-    """
-
-    train_dataset=Dataset_from_table(**kwargs, table=kwargs['predefined_datasets']['train'])
-    valid_dataset=Dataset_from_table(**kwargs, table=kwargs['predefined_datasets']['valid'])
-    test_dataset=Dataset_from_table(**kwargs, table=kwargs['predefined_datasets']['test'])
-    output={'train':train_dataset, 'valid':valid_dataset, 'test':test_dataset}
-    return output
-
-
-def over_sample(dataset, shuffle=True, **kwargs):
-    balanced_dataset = copy.deepcopy(dataset)
-    max_size = balanced_dataset.input_data[balanced_dataset.image_label_column].value_counts().max()
-    lst = [balanced_dataset.input_data]
-    for class_index, group in balanced_dataset.input_data.groupby(balanced_dataset.image_label_column):
-      lst.append(group.sample(max_size-len(group), replace=True))
-    balanced_dataframe = pd.concat(lst)
-    if shuffle:
-        balanced_dataframe = balanced_dataframe.sample(frac=1).reset_index(drop=True)
-    balanced_dataset.input_data = balanced_dataframe
-    return balanced_dataset
-
-
-def calculate_mean_std(dataloader):
+def find_classes(directory):
     '''
-    Source
-    -------
-    https://discuss.pytorch.org/t/about-normalization-using-pre-trained-vgg16-networks/23560/6
+    Finds classes from folder names in a parent directory
     '''
-    mean = 0.
-    std = 0.
-    nb_samples = 0.
-    for data, labels, paths in tqdm(dataloader, total=len(dataloader)):
-        batch_samples = data.size(0)
-        data = data.view(batch_samples, data.size(1), -1)
-        mean += data.mean(2).sum(0)
-        std += data.std(2).sum(0)
-        nb_samples += batch_samples
-    mean /= nb_samples
-    std /= nb_samples
-    return (mean, std)
-
-
-# def balance_dataset(dataset, label_col, upsample=True):
-#   balanced_dataset=copy.deepcopy(dataset)
-#   df = balanced_dataset.input_data
-#   counts=df.groupby(label_col).count()
-#   classes=df[label_col].unique().tolist()
-#   max_class_num=counts.max()[0]
-#   max_class_id=counts.idxmax()[0]
-#   min_class_num=counts.min()[0]
-#   min_class_id=counts.idxmin()[0]
-#   if upsample:
-#     resampled_subsets = [df[df[label_col]==max_class_id]]
-#     for i in [x for x in classes if x != max_class_id]:
-#       class_subset=df[df[label_col]==i]
-#       upsampled_subset=resample(class_subset, n_samples=max_class_num, random_state=100)
-#       resampled_subsets.append(upsampled_subset)
-#   else:
-#     resampled_subsets = [df[df[label_col]==min_class_id]]
-#     for i in [x for x in classes if x != min_class_id]:
-#       class_subset=df[df[label_col]==i]
-#       upsampled_subset=resample(class_subset, n_samples=min_class_num, random_state=100)
-#       resampled_subsets.append(upsampled_subset)
-#   resampled_df = pd.concat(resampled_subsets)
-#   balanced_dataset.input_data=resampled_df
-#   return balanced_dataset
-
-
-def split_dataset(dataset, valid_percent=0.2, test_percent=0.2, equal_class_split=True, shuffle=True, sample=False,  **kwargs):
-    num_all = len(dataset)
-    train_percent = 1.0 - (valid_percent+test_percent)
-    num_classes = dataset.input_data[dataset.image_label_column].unique()
-    classes_df = []
-    for i in num_classes:
-        temp_df = dataset.input_data.loc[dataset.input_data[dataset.image_label_column]==i]
-        if shuffle:
-          temp_df = temp_df.sample(frac=1).reset_index(drop=True)
-        train, validate, test = np.split(temp_df.sample(frac=1), [int(train_percent*len(temp_df)), int((train_percent+valid_percent)*len(temp_df))])
-        if isinstance(sample, float):
-            train = train.sample(frac=sample)
-            validate = validate.sample(frac=sample)
-            test = test.sample(frac=sample)
-        classes_df.append((train, validate, test))
-    output = {}
-    train_df = (pd.concat([i[0] for i in classes_df])).sample(frac=1).reset_index(drop=True)
-    valid_df = (pd.concat([i[1] for i in classes_df])).sample(frac=1).reset_index(drop=True)
-    output['train'] =  Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=train_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
-    output['valid'] =  Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=valid_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
-    if test_percent != 0:
-        test_df = (pd.concat([i[2] for i in classes_df])).sample(frac=1).reset_index(drop=True)
-        output['test'] =Dataset_from_table(data_directory=dataset.data_directory,is_dicom=dataset.is_dicom, table=test_df, mode=dataset.mode, wl=dataset.wl, transformations=dataset.transformations)
-    return  output
-
-
-def set_random_seed(seed):
-    try:
-        torch.manual_seed(seed)
-        np.random.seed(seed)
-        log('Random seed '+str(seed)+' set successfully')
-    except:
-        raise TypeError('Error. Could not set Random Seed. Please check again.')
-        pass
-
-
-def list_of_files(root):
-    listOfFile = os.listdir(root)
-    allFiles = list()
-    for entry in listOfFile:
-        fullPath = os.path.join(root, entry)
-        if os.path.isdir(fullPath):
-            allFiles = allFiles + list_of_files(fullPath)
-        else:
-            allFiles.append(fullPath)
-    return allFiles
-
-
-def path_to_class(filepath):
-    item_class = (Path(filepath)).parts
-    return item_class[-2]
-
-
-def root_to_class(root):
-    classes = [d.name for d in os.scandir(root) if d.is_dir()]
-    classes.sort()
-    class_to_idx = {classes[i]: i for i in range(len(classes))}
+    classes = sorted(entry.name for entry in os.scandir(directory) if entry.is_dir())
+    if not classes:
+        raise FileNotFoundError(f"Couldn't find any class folder in {directory}.")
+    class_to_idx = {cls_name: i for i, cls_name in enumerate(classes)}
     return classes, class_to_idx
 
 
-def class_to_idx(classes):
-    classes.sort()
-    class_to_idx = {classes[i]: i for i in range(len(classes))}
-    return class_to_idx
+def check_zero_image(table, path_col='path'):
+    zero_img = []
+    for i, r in table.iterrows():
+        if np.max(pydicom.read_file(r[path_col]).pixel_array) == 0:
+            zero_img.append(True)
+        else:
+            zero_img.append(False)
+    table['zero_img'] = zero_img
+    return table[table['zero_img']==False]
 
 
-def datatable_from_filepath(*filelist,classes:list): #KareemElFatairy
-    """ purpose: Create dataframe of file pathes and labels extracted from supplied folders.
-        Argument:
-        *filelist: returns list of paths.
-        classes: a list of desired classes as seen in file name.
-    """
-    file_lists = map(list_of_files,filelist)  #get a list of files from folders
-    data={'IMAGE_PATH':[],'IMAGE_LABEL':[]}
-    for file_list in file_lists:
-      for file_path in file_list: #create lists of files with the specified label and append to the dictionary
-        for item in classes:
-          if item.casefold() in file_path.casefold():   #case insensitive match
-            data['IMAGE_PATH'].append(file_path)
-            data['IMAGE_LABEL'].append(item)
-    df=pd.DataFrame(data)
+def dicom_images_to_table(folder, extension='dcm', path_col='path', label_col='label'):
+    '''
+    Creates a table of image path and corresponding labels
+    '''
+    df = pd.DataFrame()
+    list_path = []
+    list_label =[]
+    for file in glob.glob(folder + "**/*."+extension, recursive=True):
+        list_path.append(file)
+        list_label.append(Path(os.path.join(folder, file)).parent.name)
+    df[path_col] = list_path
+    df[label_col] = list_label
     return df
 
 
-def parse_voc_xml(label_file):
+def dicom_volume_to_table(folder, extension='dcm', path_col='path', label_col='label', study_col='study_id', use_vol_file=False):
     '''
-
+    input parent folder > output class list, class_to_idx dictionary and series table
     '''
-    output = {}
+    classes, class_to_idx = find_classes(folder)
+    table = pd.DataFrame(columns=[study_col, path_col, "num_images", label_col])
+    if use_vol_file:
+        table = pd.DataFrame(columns=[study_col, path_col, "num_images", "H", "W", label_col])
+    else:
+        table = pd.DataFrame(columns=[study_col, path_col, "num_images", label_col])
 
-    label_data=xmltodict.parse(open(label_file , 'rb'))
+    for c in classes:
+        study_dir = os.path.join(folder, c)
+        study_idx = [x for x in os.walk(os.path.join(folder, c))][0][1]
+        study_paths = [x[0] for x in os.walk(os.path.join(folder, c))][1:]
+        if use_vol_file:
+            # table = pd.DataFrame(columns=[study_col, path_col, "num_images", "H", "W", label_col])
+            for i in range(len(study_idx)):
+                vol_path = path_fix(study_paths[i])+[y for y in [x[2] for x in os.walk(study_paths[i])][0] if y.endswith('.pt')][0]
+                vol = torch.load(vol_path)
+                # table.loc[len(table.index)] = [study_idx[i],vol_path,vol.shape[1],c]
+                table.loc[len(table.index)] = [study_idx[i],vol_path,vol.shape[1],vol.shape[2],vol.shape[3],c]
 
-    output['width']=int(label_data['annotation']['size']['width'])
-    output['height']=int(label_data['annotation']['size']['height'])
-    output['depth']=int(label_data['annotation']['size']['depth'])
-    output['x_min']=int(label_data['annotation']['object']['bndbox']['xmin'])
-    output['x_max']=int(label_data['annotation']['object']['bndbox']['xmax'])
-    output['y_min']=int(label_data['annotation']['object']['bndbox']['ymin'])
-    output['y_max']=int(label_data['annotation']['object']['bndbox']['ymax'])
-    output['image_id']=label_data['annotation']['filename']
-    output['labels']=label_data['annotation']['object']['name']
-    output['area']= (output['x_max']-output['x_min'])*(output['y_max']-output['y_min'])
+        else:
+            for i in range(len(study_idx)):
+                table.loc[len(table.index)] = [study_idx[i],study_paths[i],len([file for file in glob.glob(study_paths[i] + "/" + "**/*." + extension, recursive=True)]),c,]
+    return classes, class_to_idx, table
 
-    return output
+
+def directory_to_tensor(directory, extension='dcm', transforms=None, out_channels=1, WW=None, WL=None):
+    '''
+    input folder > output 4D tensor (channels, depth, H, W)
+    '''
+    directory=path_fix(directory)
+    file_list = [directory+i for i in os.listdir(directory) if i.endswith(extension)]
+    assert len(file_list) >1, 'Error: Not more than one image was found in directory: '+directory
+    file_list = sorted ([i for i in file_list],key=lambda x: (pydicom.read_file(x)).SliceLocation, reverse=True)
+    dcm_list = [pydicom.read_file(i) for i in file_list]
+    volume = np.stack([image_to_tensor(p, out_channels, transforms, WW, WL).numpy() for p in file_list])
+    volume = torch.from_numpy(volume).moveaxis(0,1)
+    original_spacing = [float(dcm_list[0].PixelSpacing[0]), float(dcm_list[0].PixelSpacing[1]), dcm_list[0].SliceLocation - dcm_list[1].SliceLocation]
+    min = torch.min(volume)
+    max = torch.max(volume)
+    return volume, min, max, original_spacing
+
+
+def resample_dicom_volume(volume, original_spacing, resample_spacing=[-1, -1, -1], resample_slices=None):
+    '''
+    input numpy array > ouput numpy array
+
+    Code modified from:
+    https://github.com/rachellea/ct-volume-preprocessing/blob/master/preprocess_volumes.py
+
+    Resamples a 4d numpy array/tensor of dicom data into a new 4d tensor ready for Conv3d.
+    The new array can either have a custom spacing or custom number of images.
+    If custom number of images is desired, the output spacing will be automatically determined.
+    '''
+    orig_shape = volume.shape
+    if torch.is_tensor(volume):
+        volume = volume.moveaxis(0,1)
+        volume = volume.numpy()
+
+    for index, value in enumerate(resample_spacing):
+        if value == -1:
+            resample_spacing[index] = original_spacing[index]
+
+    if resample_slices:
+        resample_spacing[2] = volume.shape[0] * original_spacing[2] / resample_slices
+
+    ctvol_itk = sitk.GetImageFromArray(volume)
+    ctvol_itk.SetSpacing(original_spacing)
+    original_size = ctvol_itk.GetSize()
+    out_shape = [int(np.round(original_size[0] * (original_spacing[0] / resample_spacing[0]))),
+        int(np.round(original_size[1] * (original_spacing[1] / resample_spacing[1]))),
+        int(np.round(original_size[2] * (original_spacing[2] / resample_spacing[2])))]
+    resample = sitk.ResampleImageFilter()
+    resample.SetOutputSpacing(resample_spacing)
+    resample.SetSize(out_shape)
+    resample.SetOutputDirection(ctvol_itk.GetDirection())
+    resample.SetOutputOrigin(ctvol_itk.GetOrigin())
+    resample.SetTransform(sitk.Transform())
+    resample.SetDefaultPixelValue(ctvol_itk.GetPixelIDValue())
+    resample.SetInterpolator(sitk.sitkBSpline)
+    resampled_volume = resample.Execute(ctvol_itk)
+    resampled_volume = sitk.GetArrayFromImage(resampled_volume)
+    resampled_volume = torch.from_numpy(resampled_volume).moveaxis(0,1)
+    return resampled_volume
+
+
+def save_checkpoint(classifier, epochs=None, current_epoch=None, output_file=None):
+    if classifier.type == 'torch':
+        checkpoint = {'timestamp': current_time(),
+                      'type':classifier.type,
+                      'classifier':classifier,
+                      'epochs':epochs,
+                      'current_epoch':current_epoch,
+                      'optimizer_state_dict' : classifier.optimizer.state_dict(),
+                      'train_losses': classifier.train_losses,
+                      'valid_losses': classifier.valid_losses,
+                      'valid_loss_min': classifier.valid_loss_min,}
+        if output_file == None:
+            output_file = classifier.name+'epoch_'+str(current_epoch)+'.checkpoint'
+    elif classifier.type == 'sklearn':
+        checkpoint = {'timestamp': current_time(),
+                      'type':classifier.type,
+                      'classifier':classifier,
+                      'model':classifier.best_model}
+        if output_file == None:
+            output_file = classifier.name+'.checkpoint'
+    torch.save(checkpoint, output_file)
+
+
+def load_checkpoint(classifier, checkpoint_path):
+    classifier.checkpoint = torch.load(checkpoint_path)
+    checkpoint_classifier = classifier.checkpoint['classifier']
+    classifier.__dict__.update(checkpoint_classifier.__dict__)
+    classifier.current_epoch = classifier.checkpoint['current_epoch']
+
+
+def image_to_tensor(path,  out_channels=1, transforms=None, WW=None, WL=None): #OK
+
+    img_type = os.path.splitext(path)[1]
+    if img_type in dicom_extensions:
+            img, min, max = dicom_image_processor(path, out_channels, WW, WL)
+    else:
+        img = Image.open(path).convert("RGB")
+        img = np.asarray(img)
+
+    if transforms:
+        img = transforms(image=img)['image']
+        img = torch.from_numpy(img)
+        if out_channels > 1:
+            img = torch.moveaxis(img, -1, 0) # Need to check the effect of that on non-DICOM images.
+        else:
+            img = img.unsqueeze(0)
+    else:
+        transforms = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+        img = transforms(img)
+    # img = img.unsqueeze(0)
+    return img.float()

@@ -1,85 +1,45 @@
-![](welcome.png?raw=true)
+<img width="1053" alt="radtorch_1 0_header" src="https://user-images.githubusercontent.com/17037319/163655603-d863a52f-3622-4e7f-925d-9635a675180e.png">
+
+![](https://img.shields.io/badge/stable%20version-01.0.0-brightgreen)
+![](https://img.shields.io/badge/preview%20version-01.0.0-red)
+![](https://img.shields.io/badge/dependencies-up%20to%20date-blue)
+![](https://img.shields.io/badge/license-AGPL3.0-inactive)
 
 
-![](https://img.shields.io/badge/stable%20version%20date-2020.08.01-green)
-![](https://img.shields.io/badge/dependencies-up%20to%20date-green)
-![](https://img.shields.io/badge/license-AGPL3.0-red)
-
-
-### What is RADTorch 
+## What is RADTorch ?
 <p style='text-align: justify;'>
 
-RADTorch provides a framework of higher level classes and functions that aim at significantly reducing the time needed for implementation of different machine and deep learning algorithms on DICOM medical images.
+RADTorch provides a framework of higher level classes and functions that significantly reduce the time needed for implementation of different machine and deep learning algorithms on DICOM and non-DICOM medical images.
 
-RADTorch was **built by radiologists for radiologists** so they can build, test and implement state-of-the-art machine learning algorithms in minutes.
+RADTorch was built by radiologists for radiologists so they can build, test and implement state-of-the-art machine learning algorithms in minutes.
 
+RADTorch is :
 
-RADTorch is built upon widely used machine learning and deep learning frameworks. These include:
+- User-Friendly: Minimal coding required.
 
-1. PyTorch for Deep Learning and Neural Networks.
+- Comprehensive: Includes data analysis and visualization.
 
-2. Scikit-learn for Data Management and Machine Learning Algorithms.
-
-3. PyDICOM for handling of DICOM data.
-
-4. Bokeh, Matplotlib and Seaborn for Data Visualization.
+- Backed by state-of-the-art machine learning and data visualization frameworks.
 
 </p>
 
-<br>
+
+![image](https://user-images.githubusercontent.com/17037319/163655659-bc7744f1-db9a-425a-95c8-202a6322536f.png)
 
 
+## Install RADTorch
+### Stable version
+To install stable version via pip, use the following command:
 
-### Update Log
-
-    6/20/2020
-
-    - Hybrid Clinical Features/Imaging features Image Classification pipeline.
-    
-
-    5/14/2020
-
-    - CNN visualization with Class Activation Maps.
-
-    - Deep Learning Model Summary.
-
-    - WGAN added to GAN models.
-
-    - EfficientNet models added to Image Classification
-
-
-<br>
-
-
-### Getting Started
-
-Running a state-of-the-art DICOM image classifier can be run using the Image Classification Pipeline using the commands:
 ```
-from radtorch import pipeline
-
-classifier = pipeline.Image_Classification(data_directory='path to data')
-classifier.run()
+pip3 install git+https://download.radtorch.com/
 ```
-<small>
-The above 3 lines of code will run an image classifier using vgg16 model architecture with pre-trained weights for feature extraction and 'logistic_regression' classifier.
-</small>
 
-<br>
-
-<br>
-
-### See it in Action
-
-1. [Image Classification for identification of contrast on CT DICOM images](https://www.kaggle.com/elbanan/radtorch-ct-contrast-id)
-
-2. [Image classification demo/non medical on Kaggle](https://www.kaggle.com/elbanan/radtorch-demo)
-
-3. [RADTorch playground on Google Colab](https://colab.research.google.com/drive/1O7op_RtuNs12uIs0QVbwoeZdtbyQ4Q9i).
-
-<br>
-
-### Documentation
-Full Documentation at official website: https://www.radtorch.com/documentation/
+Preview version
+To install Preview beta version via pip, use the following command:
+```
+pip3 install git+https://beta.radtorch.com/
+```
 
 <br>
 
@@ -94,27 +54,3 @@ Bug reports and pull requests are welcome.
 
 <br>
 
-### Contributors
-<p style='text-align: justify;'>
-RADTorch was developed by Mohamed Elbanan, MD: a Radiology Resident at Yale New Haven Health System, Clinical Research Affiliate at Yale School of Medicine and a Machine-learning enthusiast.
-</p>
-
-<br>
-
-### Cite us
-This framework is provided for free and opensource to anyone who would like to use it and/or update it.
-
-Please cite us as :
-
-```
-@software{mohamed_elbanan_2020_3971826,
-  author       = {Mohamed Elbanan},
-  title        = {radtorch/radtorch: 0.8.1},
-  month        = aug,
-  year         = 2020,
-  publisher    = {Zenodo},
-  version      = {0.8.1},
-  doi          = {10.5281/zenodo.3971826},
-  url          = {https://doi.org/10.5281/zenodo.3971826}
-}
-```
