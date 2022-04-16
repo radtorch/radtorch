@@ -4,6 +4,8 @@
 ![](https://img.shields.io/badge/preview%20version-01.0.0-red)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-blue)
 ![](https://img.shields.io/badge/license-AGPL3.0-inactive)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6464087.svg)](https://doi.org/10.5281/zenodo.6464087)
+
 
 
 ## What is RADTorch ?
