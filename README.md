@@ -40,7 +40,7 @@ pip3 install git+https://download.radtorch.com/
 Preview version
 To install Preview beta version via pip, use the following command:
 ```
-pip3 install git+https://beta.radtorch.com/
+pip3 install git+https://preview.radtorch.com/
 ```
 
 <br>
