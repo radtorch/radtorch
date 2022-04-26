@@ -27,7 +27,6 @@ setup(
                         'pillow',
                         'sklearn',
                         'tqdm',
-                        'pathlib',
                         'seaborn-image'
                         ],
 
