@@ -1,7 +1,7 @@
 <img width="1053" alt="radtorch_1 0_header" src="https://user-images.githubusercontent.com/17037319/163655603-d863a52f-3622-4e7f-925d-9635a675180e.png">
 
-![](https://img.shields.io/badge/stable%20version-01.0.0-brightgreen)
-![](https://img.shields.io/badge/preview%20version-01.0.0-red)
+![](https://img.shields.io/badge/stable%20version-01.0.1-brightgreen)
+![](https://img.shields.io/badge/preview%20version-01.0.1-red)
 ![](https://img.shields.io/badge/dependencies-up%20to%20date-blue)
 ![](https://img.shields.io/badge/license-AGPL3.0-inactive)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6464087.svg)](https://doi.org/10.5281/zenodo.6464087)
