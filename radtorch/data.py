@@ -236,19 +236,22 @@ class ImageDataset(Dataset): #OK
             self.idx_train = self.table_train.index.tolist()
             self.dataset_train = self
 
+
         # Determine class weights for imbalanced datasets. This can be used to weight the loss functions.
         self.class_weights = class_weight.compute_class_weight( class_weight="balanced", classes=self.classes, y=self.table_train.loc[:, self.label_col].values,)
         self.class_weights = torch.tensor(self.class_weights, dtype=torch.float)
 
-        # Create weights for WeightedRandomSampler : https://stackoverflow.com/a/60813495
-        class_counts = [r["Count"] for i, r in self.data_stat(plot=False).iterrows() if r["Dataset"] == "train" and r["Class"] in self.classes]
-        num_samples = sum(class_counts)
-        labels = [self.class_to_idx[i] for i in self.table_train[self.label_col].tolist()]
-        class_weights = [num_samples/class_counts[i] for i in range(len(class_counts))]
-        self.sampler_weights = torch.DoubleTensor([class_weights[labels[i]] for i in range(int(num_samples))])
+        # Code below is adapted and modified from https://github.com/ptrblck/pytorch_misc/blob/master/weighted_sampling.py
+        # See this discussion for how to implement WeightedRandomSampler: https://discuss.pytorch.org/t/is-weightedsampler-really-useful/40057/2
+        target_train_labels = torch.tensor([self.class_to_idx[x] for x in self.table_train.label.tolist()])
+        class_sample_count = torch.tensor(
+            [(target_train_labels == t).sum() for t in torch.unique(target_train_labels, sorted=True)])
+        weight = 1. / class_sample_count.float()
+        self.sampler_weight = torch.tensor([weight[t] for t in target_train_labels])
+
 
         if weighted_sampler:
-            sampler = torch.utils.data.sampler.WeightedRandomSampler(self.sampler_weights, self.batch_size)
+            sampler = torch.utils.data.sampler.WeightedRandomSampler(self.sampler_weight, len(self.sampler_weight))
             self.dataloader_train = torch.utils.data.DataLoader(self.dataset_train,batch_size=self.batch_size,shuffle=self.shuffle,num_workers=self.num_workers,sampler=sampler,)
 
         else:
@@ -277,6 +280,25 @@ class ImageDataset(Dataset): #OK
         if self.normalize:
             img = self._normalize(img)
         return img, label_id, uid
+
+    def info(self):
+        """
+        Returns breakdown of different attributes of your dataset.
+        """
+
+        info = pd.DataFrame.from_dict(
+            ({key: str(value) for key, value in self.__dict__.items()}).items()
+        )
+        info.columns = ["Property", "Value"]
+        for i in ["train", "valid", "test"]:
+            try:
+                info.loc[len(info.index)] = [
+                    i + " dataset size",
+                    len(self.tables[i]),
+                ]
+            except:
+                pass
+        return info
 
     def data_stat(self, plot=True, figsize=(8, 6), cmap="viridis"): #OK
         """
@@ -475,7 +497,6 @@ class VolumeObject(): #OK
         volume_tensor, min, max, orig_spacing  = directory_to_tensor(directory, 'dcm', transforms, out_channels, WW, WL)
         if resample_spacing !=[-1,-1,-1] or resample_slices !=None:
             volume_tensor = resample_dicom_volume(volume_tensor, orig_spacing, resample_spacing, resample_slices)
-        # volume_tensor = volume_tensor.moveaxis(1, 2)
         return volume_tensor
 
 

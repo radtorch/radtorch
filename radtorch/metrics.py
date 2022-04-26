@@ -129,53 +129,5 @@ class ClassifierMetrics(): #OK
 
         '''
         df = self.get_predictions(subset)
-        return pd.DataFrame(classification_report(df['label_id'], df['pred_id'], target_names=self.classifier.dataset.classes, output_dict=True))
-
-
-    # def test(self, subset='test'):
-    #     test_loss = 0.0
-    #     class_correct = list(0. for i in range(len(self.classifier.dataset.class_to_idx.keys())))
-    #     class_total = list(0. for i in range(len(self.classifier.dataset.class_to_idx.keys())))
-    #
-    #     if self.classifier.type == 'torch':
-    #         with torch.no_grad():
-    #             self.model.eval()
-    #             for imgs, labels, idx in self.classifier.dataset.loaders[subset]:
-    #                 imgs, labels = imgs.to(self.device), labels.to(self.device)
-    #                 output = self.model(imgs.float())
-    #                 loss = self.classifier.criterion(output, labels)
-    #                 test_loss += loss.item()*imgs.size(0)
-    #                 _, pred = torch.max(output, 1)
-    #                 correct = np.squeeze(pred.eq(labels.data.view_as(pred)))
-    #                 for i in range(imgs.shape[0]):
-    #                     label = labels.data[i]
-    #                     class_correct[label] += correct[i].item()
-    #                     class_total[label] += 1
-    #
-    #             test_loss = test_loss/len(self.classifier.dataset.loaders['test'].dataset)
-    #             print('Overall Test Loss: {:.6f}\n'.format(test_loss))
-    #
-    #     elif self.classifier.type == 'sklearn':
-    #         df = self.get_predictions(subset)
-    #         true_labels, pred_labels = df.label_id.values, df.pred_id.values
-    #         true_labels = torch.LongTensor(true_labels)
-    #         predictions = torch.FloatTensor(pred_labels)
-    #         correct = np.squeeze(predictions.eq(true_labels.data.view_as(predictions)))
-    #         for i in range(len(true_labels)):
-    #             label = true_labels.data[i]
-    #             class_correct[label] += correct[i].item()
-    #             class_total[label] += 1
-    #
-    #     for i in range(len(self.classifier.dataset.class_to_idx)):
-    #         c = next((k for k, v in self.classifier.dataset.class_to_idx.items() if v == i), None)
-    #         if class_total[i] > 0:
-    #             print('Test Accuracy of %5s: %2d%% (%2d/%2d)' % (
-    #                 c , 100 * class_correct[i] / class_total[i],
-    #                 np.sum(class_correct[i]), np.sum(class_total[i])))
-    #
-    #         else:
-    #             print('Test Accuracy of %5s: N/A (no examples)' % (c))
-    #
-    #     print('\nTest Accuracy (Overall): %2d%% (%2d/%2d)' % (
-    #         100. * np.sum(class_correct) / np.sum(class_total),
-    #         np.sum(class_correct), np.sum(class_total)))
+        report = pd.DataFrame(classification_report(df['label_id'], df['pred_id'], target_names=self.classifier.dataset.classes, output_dict=True))
+        return report.T
