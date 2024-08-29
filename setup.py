@@ -25,7 +25,7 @@ setup(
                         'seaborn',
                         'albumentations',
                         'pillow',
-                        'sklearn',
+                        'scikit-learn',
                         'tqdm',
                         'seaborn-image'
                         ],
